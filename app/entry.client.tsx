@@ -7,23 +7,22 @@ import { PersistGate } from "redux-persist/integration/react"
 
 import theme from './mui/theme'
 import createEmotionCache from './mui/createEmotionCache'
-
-import persistedStore from "./store"
+import { persistedStore } from "./store"
 
 const emotionCache = createEmotionCache()
 const { store, persistor } = persistedStore()
 
+// <Provider store={store}>
+// {/* <PersistGate loading={null} persistor={persistor}> */ }
 hydrate(
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <CacheProvider value={emotionCache}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <RemixBrowser />
-        </ThemeProvider>
-      </CacheProvider>
-    </PersistGate>
-  </Provider>,
+  <CacheProvider value={emotionCache}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <RemixBrowser />
+    </ThemeProvider>
+  </CacheProvider>,
   document,
 )
 
+{/* </PersistGate> */ }
+  // </Provider>,

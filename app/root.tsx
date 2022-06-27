@@ -64,14 +64,19 @@ function Document({ children, title }: { children: ReactNode; title?: string }) 
   )
 }
 
+
 export default function App() {
   const data = useLoaderData()
 
   return (
     <Document>
+      {/* <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}> */}
       <Layout>
         <Outlet />
       </Layout>
+      {/* </PersistGate>
+      </Provider> */}
 
       <script
         dangerouslySetInnerHTML={{

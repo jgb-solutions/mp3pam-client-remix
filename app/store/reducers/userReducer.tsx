@@ -1,6 +1,5 @@
-import { LOG_OUT, LOG_IN } from '../actions/user_action_types'
-import UserInterface from "../../interfaces/UserInterface"
-import { UPDATE_USER } from '../../graphql/mutations'
+import { LOG_OUT, LOG_IN, UPDATE_USER } from '../actions/user_action_types'
+import type UserInterface from "../../interfaces/UserInterface"
 
 const INITIAL_USER_STATE = {
   token: null,
