@@ -6,7 +6,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import useTracks from "../../hooks/useTracks"
+import useTracks from "../../graphql/requests/useTracks"
 import TrackThumbnail from "../../components/TrackThumbnail"
 import { TrackWithArtistThumbnailData } from "../../components/TrackScrollingList"
 import SEO from "../../components/SEO"

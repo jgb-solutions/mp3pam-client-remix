@@ -1,10 +1,9 @@
-
 import {
   PlayCircleOutline,
   PauseCircleOutline
 } from "@mui/icons-material"
 
-import { connect } from "react-redux"
+import { useSelector } from "react-redux"
 import IconButton from "@mui/material/IconButton"
 
 
@@ -91,23 +90,23 @@ type Props = {
   track: TrackWithArtistThumbnailData
   className?: string
   style?: object,
-  isPlaying: boolean
-  listId: string
 }
 
-const TrackThumbnail = (props: Props) => {
+const TrackThumbnail = ({ track }: Props) => {
   const styles = {}
   const navigate = useNavigate()
-
-  const { track, listId, isPlaying } = props
+  const { listId, isPlaying } = useSelector(({ player }: AppStateInterface) => ({
+    listId: get(player, 'list.id'),
+    isPlaying: player.isPlaying
+  }))
 
   const goToTrackPage = () => {
-    const route = Routes.track.detailPage(track.hash)
+    const route = AppRoutes.track.detailPage(track.hash)
     navigate(route, { state: { hash: track.hash } })
   }
 
   const goToArtistPage = () => {
-    const route = Routes.artist.detailPage(track.artist.hash)
+    const route = AppRoutes.artist.detailPage(track.artist.hash)
     navigate(route, { state: { hash: track.artist.hash } })
   }
 
@@ -150,9 +149,4 @@ const TrackThumbnail = (props: Props) => {
   )
 }
 
-export default connect(
-  ({ player }: AppStateInterface) => ({
-    listId: get(player, 'list.id'),
-    isPlaying: player.isPlaying
-  })
-)(TrackThumbnail)
+export default TrackThumbnail

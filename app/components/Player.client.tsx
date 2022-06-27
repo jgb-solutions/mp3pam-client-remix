@@ -31,7 +31,7 @@ import {
 import AppStateInterface from "../interfaces/AppStateInterface"
 // import PlayerStyle from "../styles/PlayerStyle"
 import colors from "../utils/colors"
-import useUpdatePlayCount from "../hooks/useUpdatePlayCount"
+import useUpdatePlayCount from "../graphql/requests/useUpdatePlayCount"
 import Image from "./Image"
 import { useNavigate } from "@remix-run/react"
 

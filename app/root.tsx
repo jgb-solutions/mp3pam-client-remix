@@ -1,24 +1,22 @@
-import type { ReactNode } from 'react'
-import { useContext } from 'react'
-import Box from '@mui/material/Box'
 import {
-  Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
   useCatch,
-  useLoaderData
+  LiveReload,
+  useLoaderData,
+  ScrollRestoration,
 } from '@remix-run/react'
-
-import StylesContext from './mui/StylesContext'
+import { useContext } from 'react'
+import Box from '@mui/material/Box'
+import type { ReactNode } from 'react'
+import { json } from '@remix-run/cloudflare'
+import type { LoaderFunction } from '@remix-run/cloudflare'
 
 import theme from './mui/theme'
-
 import Layout from './componentss/layout'
-import { json, LoaderFunction } from '@remix-run/cloudflare'
-import RootLayout from './components/layouts/Root'
+import StylesContext from './mui/StylesContext'
+// import RootLayout from './components/layouts/Root'
 
 export const loader: LoaderFunction = async ({ context }) => {
   return json({
@@ -40,7 +38,7 @@ function Document({ children, title }: { children: ReactNode; title?: string }) 
         <meta name="theme-color" content={theme.palette.primary.main} />
         {title ? <title>{title}</title> : null}
         <Meta />
-        <Links />
+
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
@@ -55,19 +53,17 @@ function Document({ children, title }: { children: ReactNode; title?: string }) 
         ))}
       </head>
       <Box component="body" sx={{ bgcolor: "black" }}>
-        <RootLayout>
-          {children}
-        </RootLayout>
+        {/* <RootLayout> */}
+        {children}
+        {/* </RootLayout> */}
         <ScrollRestoration />
         <Scripts />
-        {/* {process.env.NODE_ENV === 'development' && <LiveReload />} */}
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
       </Box>
     </html>
   )
 }
 
-// https://remix.run/api/conventions#default-export
-// https://remix.run/api/conventions#route-filenames
 export default function App() {
   const data = useLoaderData()
 
@@ -89,7 +85,6 @@ export default function App() {
   )
 }
 
-// https://remix.run/docs/en/v1/api/conventions#errorboundary
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error)
 
@@ -107,7 +102,6 @@ export function ErrorBoundary({ error }: { error: Error }) {
   )
 }
 
-// https://remix.run/docs/en/v1/api/conventions#catchboundary
 export function CatchBoundary() {
   const caught = useCatch()
 

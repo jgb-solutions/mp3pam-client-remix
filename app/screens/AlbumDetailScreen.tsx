@@ -25,7 +25,7 @@ import colors from "../utils/colors"
 import More from "../components/More"
 import Tabs, { TabItem } from "../components/Tabs"
 import AlbumTracksTable from "../components/AlbumTracksTable"
-import useAlbumDetail from '../hooks/useAlbumDetail'
+import useAlbumDetail from '../graphql/requests/useAlbumDetail'
 import Button from "../components/Button"
 import ListInterface, { SoundInterface } from "../interfaces/ListInterface"
 import * as playerActions from "../store/actions/playerActions"
@@ -33,12 +33,11 @@ import AppStateInterface from "../interfaces/AppStateInterface"
 import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_ALBUM_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
 import Spinner from "../components/Spinner"
 import { AlbumScrollingList } from "../components/AlbumScrollingList"
-import useRandomAlbums from "../hooks/useRandomAlbums"
+import useRandomAlbums from "../graphql/requests/useRandomAlbums"
 import SEO from "../components/SEO"
 import FourOrFour from "../components/FourOrFour"
 import HeaderTitle from "../components/HeaderTitle"
 import Image from "../components/Image"
-import AppRoutes from "~/app-routes"
 import { Grid } from "@mui/material"
 
 // const useStyles = makeStyles(theme => ({

@@ -6,7 +6,7 @@ import { Grid } from "@material-ui/core"
 import SearchIcon from '@mui/icons-material/Search'
 
 import AppStateInterface from "../interfaces/AppStateInterface"
-import useSearch from '../hooks/useSearch'
+import useSearch from '../graphql/requests/useSearch'
 import Spinner from "../components/Spinner"
 import HeaderTitle from "../components/HeaderTitle"
 import { TrackWithArtistThumbnailData } from "../components/TrackScrollingList"

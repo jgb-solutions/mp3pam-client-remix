@@ -5,7 +5,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
 
-import { Grid } from "@material-ui/core"
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import InstagramIcon from '@mui/icons-material/Instagram'
@@ -17,15 +16,16 @@ import Button from '../../components/Button'
 import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
 import HeaderTitle from "../../components/HeaderTitle"
-import useFileUpload from "../../hooks/useFileUpload"
+import useFileUpload from "../../graphql/requests/useFileUpload"
 import TextIcon from "../../components/TextIcon"
 import { addArtistScreenStyles } from "../../styles/addArtistScreenStyles"
-import useAddArtist from '../../hooks/useAddArtist'
+import useAddArtist from '../../graphql/requests/useAddArtist'
 import AppRoutes from "~/app-routes"
 import AlertDialog from "../../components/AlertDialog"
 import { getFile } from "../../utils/helpers"
 import { IMG_BUCKET, MAX_IMG_FILE_SIZE, MIN_SOCIAL_MEDIA_USERNAME_LENGTH, MIN_ARTIST_BIO_LENGTH } from "../../utils/constants.server"
 import SEO from "../../components/SEO"
+import { Grid } from "@mui/material"
 
 
 type IconFieldProps = {

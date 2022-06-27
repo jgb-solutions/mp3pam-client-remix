@@ -52,11 +52,11 @@ const Left = (props: Props) => {
 			<div className={styles.mainMenu}>
 				{mainMenu.map((menuItem, index) => (
 					<NavLink
-						activeClassName={styles.activeClassName}
-						exact
+						className={({ isActive }) => {
+							return `${styles.link} ${styles.mainMenuLink} ${isActive ? styles.activeClassName : ""}`
+						}}
 						key={index}
 						to={menuItem.to}
-						className={`${styles.link} ${styles.mainMenuLink}`}
 						onClick={closeDrawer}>
 						<span className={styles.linkIcon}>{menuItem.icon}</span>
 						<span className={styles.linkText}>{menuItem.name}</span>
@@ -68,21 +68,21 @@ const Left = (props: Props) => {
 			<div className={styles.browseMenu}>
 				<p>
 					<NavLink
-						activeClassName={styles.activeClassName}
-						exact
+						className={({ isActive }) => {
+							return `${styles.yourLibraryLink} ${isActive ? styles.activeClassName : ""}`
+						}}
 						to={AppRoutes.pages.browse}
-						className={styles.yourLibraryLink}
 						onClick={closeDrawer}>
 						Browse
 					</NavLink>
 				</p>
 				{browsingMenu.map((menuItem, index) => (
 					<NavLink
-						activeClassName={styles.activeClassName}
-						exact
+						className={({ isActive }) => {
+							return `${styles.link} ${styles.libraryLink} ${isActive ? styles.activeClassName : ""}`
+						}}
 						key={index}
 						to={menuItem.to}
-						className={`${styles.link} ${styles.libraryLink}`}
 						onClick={closeDrawer}>
 						<span className={styles.linkIcon}>{menuItem.icon}</span>
 						<span className={styles.linkText}>{menuItem.name}</span>
@@ -104,11 +104,12 @@ const Left = (props: Props) => {
 				</p> */}
 				{favoriteMenu.map((menuItem, index) => (
 					<NavLink
-						activeClassName={styles.activeClassName}
-						exact
+						className={({ isActive }) => {
+							return `${styles.link} ${styles.libraryLink} ${isActive ? styles.activeClassName : ""}`
+						}}
+
 						key={index}
 						to={menuItem.to}
-						className={`${styles.link} ${styles.libraryLink}`}
 						onClick={closeDrawer}>
 						<span className={styles.linkIcon}>{menuItem.icon}</span>
 						<span className={styles.linkText}>{menuItem.name}</span>

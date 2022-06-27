@@ -30,7 +30,7 @@ export default function Logo({ style, size }: { style?: string, size?: number })
 
   return (
     <>
-      <Link to={Routes.pages.home} className={styles.logoLink}>
+      <Link to={AppRoutes.pages.home} className={styles.logoLink}>
         <img
           style={sizes}
           className={`${styles.logo} ${style}`}

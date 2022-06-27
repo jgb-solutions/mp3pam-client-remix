@@ -46,4 +46,4 @@ export const GOOGLE_ADS_CLIENT = `ca-pub-3793163111580068`
 // export const DOMAIN = process.env.REACT_APP_DOMAIN || `https://mp3pam.com`
 // export const API_URL = process.env.REACT_APP_API_URL || `https://api.mp3pam.com/graphql`
 export const DOMAIN = `https://mp3pam.com`
-export const API_URL = `https://api.mp3pam.com/graphql`
+export const API_URL = `http://api.mp3pam.test/graphql`

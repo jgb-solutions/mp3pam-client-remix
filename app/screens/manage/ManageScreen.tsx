@@ -5,7 +5,7 @@ import { get } from "lodash-es"
 
 
 import Spinner from '../../components/Spinner'
-import useManage from "../../hooks/useManage"
+import useManage from "../../graphql/requests/useManage"
 import HeaderTitle from "../../components/HeaderTitle"
 import { TrackScrollingList } from "../../components/TrackScrollingList"
 import { ArtistScrollingList } from "../../components/ArtistScrollingList"

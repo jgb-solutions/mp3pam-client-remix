@@ -6,7 +6,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import usePlaylists from "../../hooks/usePlaylists"
+import usePlaylists from "../../graphql/requests/usePlaylists"
 import PlaylistThumbnail from "../../components/PlaylistThumbnail"
 import { PlaylistThumbnailData } from "../../components/PlaylistScrollingList"
 import SEO from "../../components/SEO"

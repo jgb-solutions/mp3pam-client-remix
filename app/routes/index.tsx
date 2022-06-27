@@ -1,7 +1,6 @@
 import HomeIcon from '@mui/icons-material/Home'
 
-import Spinner from '~/components/Spinner'
-import useHome from "~/hooks/useHome"
+import { fetchHomeData } from "~/graphql/requests/fetchHomeData"
 import HeaderTitle from "~/components/HeaderTitle"
 import { TrackScrollingList } from "~/components/TrackScrollingList"
 import { ArtistScrollingList } from "~/components/ArtistScrollingList"
@@ -11,50 +10,67 @@ import { AlbumScrollingList } from "~/components/AlbumScrollingList"
 import SEO from "~/components/SEO"
 import AppRoutes from "~/app-routes"
 import MainLayout from '~/components/layouts/Main'
+import { useLoaderData } from '@remix-run/react'
+import { json, LoaderFunction } from '@remix-run/cloudflare'
 
-export default function HomeScreen() {
-	const { loading, error, homeData } = useHome()
+export const loader: LoaderFunction = async ({ context }) => {
+	const data = await fetchHomeData()
 
-	if (loading) return <Spinner.Full />
+	console.log('context', context)
 
-	if (error) return <h1>Error Loading the homepage data. Please refresh the page.</h1>
+	return json(data)
+}
+
+
+export default function Index() {
+	const {
+		latestTracks,
+		latestPlaylists,
+		latestArtists,
+		latestAlbums
+	} = useLoaderData()
+
+	// console.log('latestTracks', latestTracks)
+	// console.log('latestPlaylists', latestPlaylists)
+	// console.log('latestArtists', latestArtists)
+	// console.log('latestAlbums', latestAlbums)
 
 	return (
 		<MainLayout>
 			<HeaderTitle icon={<HomeIcon />} text="Home" />
 			<SEO />
 
-			{homeData.latestTracks.data.length ? (
+			{latestTracks.data.length ? (
 				<TrackScrollingList
 					category="New Tracks"
-					tracks={homeData.latestTracks.data}
+					tracks={latestTracks.data}
 					browse={AppRoutes.browse.tracks}
 				/>
 			) : null}
 
-			{homeData.latestPlaylists.data.length ? (
+			{/* {latestPlaylists.data.length ? (
 				<PlaylistScrollingList
 					category="New Playlists"
-					playlists={homeData.latestPlaylists.data}
+					playlists={latestPlaylists.data}
 					browse={AppRoutes.browse.playlists}
 				/>
 			) : null}
 
-			{homeData.latestArtists.data.length ? (
+			{latestArtists.data.length ? (
 				<ArtistScrollingList
 					category="New Artists"
-					artists={homeData.latestArtists.data}
+					artists={latestArtists.data}
 					browse={AppRoutes.browse.artists}
 				/>
 			) : null}
 
-			{homeData.latestAlbums.data.length ? (
+			{latestAlbums.data.length ? (
 				<AlbumScrollingList
 					category="New Albums"
-					albums={homeData.latestAlbums.data}
+					albums={latestAlbums.data}
 					browse={AppRoutes.browse.albums}
 				/>
-			) : null}
+			) : null} */}
 		</MainLayout>
 	)
 }

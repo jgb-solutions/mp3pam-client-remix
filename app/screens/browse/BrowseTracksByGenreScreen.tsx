@@ -7,7 +7,7 @@ import { useParams } from "@remix-run/react"
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import useTracksByGenre from "../../hooks/useTracksByGenre"
+import useTracksByGenre from "../../graphql/requests/useTracksByGenre"
 import TrackThumbnail from "../../components/TrackThumbnail"
 import { TrackWithArtistThumbnailData } from "../../components/TrackScrollingList"
 import SEO from "../../components/SEO"

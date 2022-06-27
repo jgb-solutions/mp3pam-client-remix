@@ -6,7 +6,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import useArtists from "../../hooks/useArtists"
+import useArtists from "../../graphql/requests/useArtists"
 import ArtistThumbnail from "../../components/ArtistThumbnail"
 import { ArtistThumbnailData } from "../../components/ArtistScrollingList"
 import SEO from "../../components/SEO"

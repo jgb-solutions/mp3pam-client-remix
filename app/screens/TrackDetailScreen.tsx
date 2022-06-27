@@ -26,7 +26,7 @@ import AppRoutes from "~/app-routes"
 import colors from "../utils/colors"
 import More from "../components/More"
 import Tabs, { TabItem } from "../components/Tabs"
-import useTrackDetail from '../hooks/useTrackDetail'
+import useTrackDetail from '../graphql/requests/useTrackDetail'
 import Button from "../components/Button"
 import ListInterface, { SoundInterface } from "../interfaces/ListInterface"
 import * as playerActions from "../store/actions/playerActions"
@@ -34,13 +34,12 @@ import AppStateInterface from "../interfaces/AppStateInterface"
 import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_TRACK_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
 import Spinner from "../components/Spinner"
 import { TrackScrollingList } from "../components/TrackScrollingList"
-import useRelatedTracks from "../hooks/useRelatedTracks"
+import useRelatedTracks from "../graphql/requests/useRelatedTracks"
 import SEO from "../components/SEO"
 import FourOrFour from "../components/FourOrFour"
 import HeaderTitle from "../components/HeaderTitle"
 import { AddTrackToPlaylist } from "./manage/PlaylistEditScreen"
 import Image from "../components/Image"
-import AppRoutes from "~/app-routes"
 import { Grid } from "@mui/material"
 
 // const useStyles = makeStyles(theme => ({

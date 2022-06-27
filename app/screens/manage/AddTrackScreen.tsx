@@ -18,16 +18,16 @@ import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
 import HeaderTitle from "../../components/HeaderTitle"
 import { TRACK_UPLOAD_DATA_QUERY } from "../../graphql/queries"
-import useFileUpload from "../../hooks/useFileUpload"
+import useFileUpload from "../../graphql/requests/useFileUpload"
 import TextIcon from "../../components/TextIcon"
 import { addTrackScreenStyles } from "../../styles/addTrackScreenStyles"
-import useAddTrack from '../../hooks/useAddTrack'
+import useAddTrack from '../../graphql/requests/useAddTrack'
 import AppRoutes from "~/app-routes"
 import AlertDialog from "../../components/AlertDialog"
 import { ADD_GENRE_MUTATION } from "../../graphql/mutations"
 import { IMG_BUCKET, AUDIO_BUCKET, MAX_AUDIO_FILE_SIZE, MAX_IMG_FILE_SIZE, MIN_TRACK_LYRICS_LENGTH, MIN_TRACK_DETAIL_LENGTH } from "../../utils/constants.server"
 import { getFile } from "../../utils/helpers"
-import useAddArtist from "../../hooks/useAddArtist"
+import useAddArtist from "../../graphql/requests/useAddArtist"
 import SEO from "../../components/SEO"
 
 export interface FormData {

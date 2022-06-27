@@ -14,9 +14,9 @@ import colors from '../utils/colors'
 import SearchInput from './SearchInput'
 import { SMALL_SCREEN_SIZE } from '../utils/constants.server'
 import Routes from '../routes'
-import AppStateInterface from '../interfaces/AppStateInterface'
 import { useSelector } from 'react-redux'
 import Right from './Right'
+import type AppStateInterface from '~/interfaces/AppStateInterface'
 
 // const useStyles = makeStyles(theme => ({
 //   grow: {

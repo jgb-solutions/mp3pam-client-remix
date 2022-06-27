@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import AppStateInterface from '../interfaces/AppStateInterface'
 import { useLocation } from '@remix-run/react'

@@ -5,7 +5,7 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import useGenres from "../../hooks/useGenres"
+import useGenres from "../../graphql/requests/useGenres"
 import GenreThumbnail, { GenreInterface } from "../../components/GenreThumbnail"
 import SEO from "../../components/SEO"
 

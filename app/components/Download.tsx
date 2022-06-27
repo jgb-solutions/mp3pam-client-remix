@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
-import useDownload from '../hooks/useDownload'
+import useDownload from '../graphql/requests/useDownload'
 import colors from '../utils/colors'
 import Spinner from './Spinner'
 import { useNavigate } from '@remix-run/react'
