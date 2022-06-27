@@ -28,7 +28,7 @@ import AppRoutes from "~/app-routes"
 //     // display: "flex",
 //     alignItems: "center",
 //     justifyContent: "center",
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       width: 100,
 //       height: 100,
 //     },
@@ -58,7 +58,7 @@ import AppRoutes from "~/app-routes"
 //     margin: 0,
 //     fontSize: 14,
 //     color: colors.white,
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       fontSize: 12,
 //       overflow: 'hidden',
 //       whiteSpace: 'nowrap',
@@ -70,7 +70,7 @@ import AppRoutes from "~/app-routes"
 //     color: "#9d9d9d",
 //     marginTop: 5,
 //     marginBottom: 0,
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       fontSize: 11,
 //       overflow: 'hidden',
 //       whiteSpace: 'nowrap',

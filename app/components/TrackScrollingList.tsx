@@ -1,15 +1,15 @@
-import Box from "@mui/material/Box"
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
-import { Link } from "@remix-run/react"
 import { useRef } from "react"
+import Box from "@mui/material/Box"
+import { Link } from "@remix-run/react"
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft"
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"
 
 import TrackThumbnail from "./TrackThumbnail"
-import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
 import type { BoxStyles } from "~/interfaces/types"
 
 export const styles: BoxStyles = {
   container: {
-    marginBottom: 30
+    marginBottom: 8
   },
   list: {
     display: "flex",
@@ -17,25 +17,20 @@ export const styles: BoxStyles = {
     overflowX: "auto"
   },
   thumbnail: {
-    width: 175,
-    marginRight: 21,
-    sm: {
-      width: 100,
-      marginRight: 10,
-    },
+    mr: 2
   },
-  link: { color: "#fff", textDecoration: "none" },
   listHeader: {
     borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
     paddingBottom: 3,
     paddingHorizontal: 0,
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: 15
   },
   category: {
     margin: 0,
-    fontSize: 16
+    fontSize: 16,
+    color: "#fff",
+    textDecoration: "none"
   }
 }
 
@@ -56,16 +51,14 @@ export const TrackScrollingList = (props: { tracks: TrackWithArtistThumbnailData
   const divRef = useRef<HTMLDivElement>(null)
 
   const scroll = (dir: string) => {
+    if (!divRef.current) return
+
     const distance = 400
     if (dir === "left") {
-      divRef?.current?.scrollLeft -= distance
+      divRef.current.scrollLeft -= distance
     } else {
-      divRef?.current?.scrollLeft += distance
+      divRef.current.scrollLeft += distance
     }
-
-    // console.log("clientWidth", divRef.current.clientWidth)
-    // console.log("offsetWidth", divRef.current.offsetWidth)
-    // console.log("scrollWidth", divRef.current.scrollWidth)
   }
 
   return (
@@ -75,11 +68,12 @@ export const TrackScrollingList = (props: { tracks: TrackWithArtistThumbnailData
           <Box component="h2" sx={styles.category}>{category}</Box>
         </Link>
         <Box>
-          <KeyboardArrowLeft onClick={() => scroll("left")} />
+          <KeyboardArrowLeftIcon onClick={() => scroll("left")} />
           &nbsp;
-          <KeyboardArrowRight onClick={() => scroll("right")} />
+          <KeyboardArrowRightIcon onClick={() => scroll("right")} />
         </Box>
       </Box>
+
       <Box
         sx={styles.list}
         ref={divRef}

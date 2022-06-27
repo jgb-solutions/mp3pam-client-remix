@@ -1,24 +1,21 @@
 
 import { Link } from "@remix-run/react"
-
+import Box from "@mui/material/Box"
 
 import AppRoutes from "~/app-routes"
+import type { BoxStyles } from "~/interfaces/types"
 
-// const useStyles = makeStyles({
-//   logo: {
-//     maxWidth: "100%",
-//     width: "200px",
-//   },
-//   logoLink: {
-//     marginBottom: 20,
-//     display: 'inline-block',
-//   },
-// })
+const styles: BoxStyles = {
+  logo: {
+    maxWidth: "100%",
+    width: "200px",
+    marginBottom: 2,
+    display: 'inline-block',
+  },
+}
 
 
-export default function Logo({ style, size }: { style?: string, size?: number }) {
-  const styles = {}
-
+export default function Logo({ size }: { size?: number }) {
   let sizes = undefined
 
   if (size) {
@@ -30,10 +27,10 @@ export default function Logo({ style, size }: { style?: string, size?: number })
 
   return (
     <>
-      <Link to={AppRoutes.pages.home} className={styles.logoLink}>
-        <img
+      <Link to={AppRoutes.pages.home}>
+        <Box component="img"
+          sx={styles.logo}
           style={sizes}
-          className={`${styles.logo} ${style}`}
           src="/assets/images/logo-trans-red-white.png"
           alt="MP3 Pam logo"
         />

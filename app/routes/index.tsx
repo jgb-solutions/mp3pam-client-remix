@@ -48,7 +48,7 @@ export default function Index() {
 				/>
 			) : null}
 
-			{/* {latestPlaylists.data.length ? (
+			{latestPlaylists.data.length ? (
 				<PlaylistScrollingList
 					category="New Playlists"
 					playlists={latestPlaylists.data}
@@ -56,7 +56,7 @@ export default function Index() {
 				/>
 			) : null}
 
-			{latestArtists.data.length ? (
+			{/* {latestArtists.data.length ? (
 				<ArtistScrollingList
 					category="New Artists"
 					artists={latestArtists.data}

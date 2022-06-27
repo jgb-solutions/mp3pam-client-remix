@@ -1,6 +1,15 @@
-import type { EntryContext } from "@remix-run/cloudflare"
+import { Buffer } from "buffer"
 import { RemixServer } from "@remix-run/react"
+import { CacheProvider } from '@emotion/react'
 import { renderToString } from "react-dom/server"
+import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider } from '@mui/material/styles'
+import type { EntryContext } from "@remix-run/cloudflare"
+import createEmotionServer from '@emotion/server/create-instance'
+
+import theme from './mui/theme'
+import StylesContext from './mui/StylesContext'
+import createEmotionCache from './mui/createEmotionCache'
 
 export default function handleRequest(
   request: Request,
@@ -20,19 +29,9 @@ export default function handleRequest(
   })
 }
 
-// import * as React from 'react'
-// import { renderToString } from 'react-dom/server'
-// import { RemixServer } from 'remix'
-// import type { EntryContext } from 'remix'
 
-// import createEmotionCache from './src/createEmotionCache'
-// import theme from './src/theme'
-// import StylesContext from './src/StylesContext'
 
-// import CssBaseline from '@mui/material/CssBaseline'
-// import { ThemeProvider } from '@mui/material/styles'
-// import { CacheProvider } from '@emotion/react'
-// import createEmotionServer from '@emotion/server/create-instance'
+// globalThis.Buffer = Buffer
 
 // export default function handleRequest(
 //   request: Request,

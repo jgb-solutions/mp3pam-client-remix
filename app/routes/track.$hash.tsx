@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { connect, useSelector } from "react-redux"
-import { Link, useNavigate, useParams } from "@remix-run/react"
-import { get } from 'lodash'
+import { Link, useCatch, useLoaderData, useNavigate, useParams } from "@remix-run/react"
 import InfoIcon from '@mui/icons-material/Info'
 import LineWeightIcon from '@mui/icons-material/LineWeight'
 import GetAppIcon from '@mui/icons-material/GetApp'
@@ -26,8 +25,7 @@ import AppRoutes from "~/app-routes"
 import colors from "../utils/colors"
 import More from "../components/More"
 import Tabs, { TabItem } from "../components/Tabs"
-import useTrackDetail from '../graphql/requests/useTrackDetail'
-import Button from "../components/Button"
+import fetchTrackDetail from '../graphql/requests/fetchTrackDetail'
 import ListInterface, { SoundInterface } from "../interfaces/ListInterface"
 import * as playerActions from "../store/actions/playerActions"
 import AppStateInterface from "../interfaces/AppStateInterface"
@@ -38,9 +36,11 @@ import useRelatedTracks from "../graphql/requests/useRelatedTracks"
 import SEO from "../components/SEO"
 import FourOrFour from "../components/FourOrFour"
 import HeaderTitle from "../components/HeaderTitle"
-import { AddTrackToPlaylist } from "./manage/PlaylistEditScreen"
+import { AddTrackToPlaylist } from "../screens/manage/PlaylistEditScreen"
 import Image from "../components/Image"
-import { Grid } from "@mui/material"
+import { Box, Button, Grid } from "@mui/material"
+import PlainLayout from "~/components/layouts/Plain"
+import { json, LoaderFunction } from "@remix-run/cloudflare"
 
 // const useStyles = makeStyles(theme => ({
 //   row: {
@@ -112,6 +112,15 @@ import { Grid } from "@mui/material"
 //   },
 // }))
 
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const { hash } = params
+
+  const data = await await fetchTrackDetail(`${hash}`)
+  console.log('hash', hash)
+
+  return json(data)
+}
+
 type Props = {
   playList(list: ListInterface): void
   pauseList(): void
@@ -124,17 +133,26 @@ type Props = {
 }
 
 const TrackDetailScreen = (props: Props) => {
+  // ({ player }: AppStateInterface) => ({
+  //   playingListHash: get(player, 'list.hash'),
+  //   isPlaying: player.isPlaying,
+  //   currentTime: player.currentTime
+  // }),
+  // {
+  //   playList: playerActions.playList,
+  //   pauseList: playerActions.pauseList,
+  //   resumeList: playerActions.resumeList,
+  //   playNext: playerActions.playNext,
+  //   addToQueue: playerActions.addToQueue,
+  // }
+
   const styles = {}
   const params = useParams()
   const navigate = useNavigate()
-  const hash = get(params, 'hash')
   const [openAddTrackToPlaylistPopup, setOpenAddTrackToPlaylistPopup] = useState(false)
-  const { loading: relatedLoading, data: relatedTracksData, fetchRelatedTracks } = useRelatedTracks(hash)
-  const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
-  const relatedTracks = get(relatedTracksData, 'relatedTracks')
+  // const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
 
-  const { data, loading, error } = useTrackDetail(hash)
-  const track = get(data, 'track')
+  const { track, relatedTracks } = useLoaderData()
 
   const makeList = () => {
     const { hash } = track
@@ -161,13 +179,6 @@ const TrackDetailScreen = (props: Props) => {
     }]
   }
 
-  useEffect(() => {
-    if (data) {
-      fetchRelatedTracks()
-    }
-    // eslint-disable-next-line
-  }, [data])
-
   const togglePlay = () => {
     if (props.isPlaying && props.playingListHash === track.hash) {
       props.pauseList()
@@ -182,147 +193,139 @@ const TrackDetailScreen = (props: Props) => {
     }
   }
 
+  // const getTabs = () => {
+  //   const url = window.location.href
+  //   const title = `Listen to ${track.title} by ${track.artist.stage_name}`
+  //   const hashtags = `${APP_NAME} music track share`
+  //   const tabs: TabItem[] = [
+  //     {
+  //       icon: <ShareIcon />,
+  //       label: "Share",
+  //       value: (
+  //         <>
+  //           <br />
+  //           <Grid container spacing={2}>
+  //             <Grid item>
+  //               <FacebookShareButton
+  //                 url={url}
+  //                 quote={title}
+  //                 hashtag={hashtags.split(' ').join(' #')}>
+  //                 <FacebookIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.facebook }} />
+  //               </FacebookShareButton>
+  //             </Grid>
+  //             <Grid item>
+  //               <TwitterShareButton
+  //                 url={url}
+  //                 title={title}
+  //                 via={TWITTER_HANDLE}
+  //                 hashtags={hashtags.split(' ')}>
+  //                 <TwitterIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.twitter }} />
+  //               </TwitterShareButton>
+  //             </Grid>
+  //             <Grid item>
+  //               <WhatsappShareButton url={url} title={title}>
+  //                 <WhatsappIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.whatsapp }} />
+  //               </WhatsappShareButton>
+  //             </Grid>
+  //             <Grid item>
+  //               <TelegramShareButton url={url} title={title}>
+  //                 <TelegramIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.telegram }} />
+  //               </TelegramShareButton>
+  //             </Grid>
+  //             <Grid item>
+  //               <EmailShareButton url={url} subject={title} body={title}>
+  //                 <EmailIcon style={{ fontSize: 48, cursor: 'pointer' }} />
+  //               </EmailShareButton>
+  //             </Grid>
+  //           </Grid>
+  //         </>
+  //       )
+  //     }
+  //   ]
 
-  if (loading) return <Spinner.Full />
+  //   if (track.allowDownload) {
+  //     tabs.push({
+  //       icon: <GetAppIcon />,
+  //       label: "Download",
+  //       value: (
+  //         <>
+  //           <p>
+  //             File Size: {track.audio_file_size}
+  //           </p>
+  //           <Button
+  //             size="large"
+  //             style={{ minWidth: 150 }}
+  //             onClick={() => navigate(AppRoutes.download.trackPage(track.hash))}>
+  //             Download
+  //           </Button>
+  //         </>
+  //       )
+  //     })
+  //   }
 
+  //   if (track.detail) {
+  //     tabs.push({
+  //       icon: <InfoIcon />,
+  //       label: "Detail",
+  //       value: <p dangerouslySetInnerHTML={{ __html: track.detail }} style={{ wordWrap: 'normal' }} />
+  //     })
+  //   }
 
-  if (error) {
-    return (<h1>Error loading track detail. Please reload page.</h1>)
-  }
+  //   if (track.lyrics) {
+  //     tabs.push({
+  //       icon: <LineWeightIcon />,
+  //       label: "Lyrics",
+  //       value: <p dangerouslySetInnerHTML={{ __html: track.lyrics }} style={{ wordWrap: 'normal' }} />
+  //     })
+  //   }
 
-  const getTabs = () => {
-    const url = window.location.href
-    const title = `Listen to ${track.title} by ${track.artist.stage_name}`
-    const hashtags = `${APP_NAME} music track share`
-    const tabs: TabItem[] = [
-      {
-        icon: <ShareIcon />,
-        label: "Share",
-        value: (
-          <>
-            <br />
-            <Grid container spacing={2}>
-              <Grid item>
-                <FacebookShareButton
-                  url={url}
-                  quote={title}
-                  hashtag={hashtags.split(' ').join(' #')}>
-                  <FacebookIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.facebook }} />
-                </FacebookShareButton>
-              </Grid>
-              <Grid item>
-                <TwitterShareButton
-                  url={url}
-                  title={title}
-                  via={TWITTER_HANDLE}
-                  hashtags={hashtags.split(' ')}>
-                  <TwitterIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.twitter }} />
-                </TwitterShareButton>
-              </Grid>
-              <Grid item>
-                <WhatsappShareButton url={url} title={title}>
-                  <WhatsappIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.whatsapp }} />
-                </WhatsappShareButton>
-              </Grid>
-              <Grid item>
-                <TelegramShareButton url={url} title={title}>
-                  <TelegramIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.telegram }} />
-                </TelegramShareButton>
-              </Grid>
-              <Grid item>
-                <EmailShareButton url={url} subject={title} body={title}>
-                  <EmailIcon style={{ fontSize: 48, cursor: 'pointer' }} />
-                </EmailShareButton>
-              </Grid>
-            </Grid>
-          </>
-        )
-      }
-    ]
+  //   return tabs
+  // }
 
-    if (track.allowDownload) {
-      tabs.push({
-        icon: <GetAppIcon />,
-        label: "Download",
-        value: (
-          <>
-            <p>
-              File Size: {track.audio_file_size}
-            </p>
-            <Button
-              size="large"
-              style={{ minWidth: 150 }}
-              onClick={() => navigate(AppRoutes.download.trackPage(track.hash))}>
-              Download
-            </Button>
-          </>
-        )
-      })
-    }
+  // const handleAddTrackToPlaylist = () => {
+  //   setOpenAddTrackToPlaylistPopup(true)
+  // }
 
-    if (track.detail) {
-      tabs.push({
-        icon: <InfoIcon />,
-        label: "Detail",
-        value: <p dangerouslySetInnerHTML={{ __html: track.detail }} style={{ wordWrap: 'normal' }} />
-      })
-    }
+  // const getMoreOptions = () => {
+  //   let options = [
+  //     {
+  //       name: 'Play Next',
+  //       method: () => props.playNext(makeSoundList())
+  //     }
+  //   ]
 
-    if (track.lyrics) {
-      tabs.push({
-        icon: <LineWeightIcon />,
-        label: "Lyrics",
-        value: <p dangerouslySetInnerHTML={{ __html: track.lyrics }} style={{ wordWrap: 'normal' }} />
-      })
-    }
+  //   if (currentUser.loggedIn) {
+  //     options.push({
+  //       name: 'Add To Playlist',
+  //       method: handleAddTrackToPlaylist
+  //     })
+  //   }
 
-    return tabs
-  }
+  //   options.push({
+  //     name: 'Go To Artist',
+  //     method: () => {
+  //       navigate(AppRoutes.artist.detailPage(track.artist.hash))
+  //     }
+  //   })
 
-  const handleAddTrackToPlaylist = () => {
-    setOpenAddTrackToPlaylistPopup(true)
-  }
+  //   if (track.album) {
+  //     options.push({
+  //       name: 'Go To Album',
+  //       method: () => {
+  //         navigate(AppRoutes.album.detailPage(track.album.hash))
+  //       }
+  //     })
+  //   }
 
-  const getMoreOptions = () => {
-    let options = [
-      {
-        name: 'Play Next',
-        method: () => props.playNext(makeSoundList())
-      }
-    ]
+  //   options.push({
+  //     name: 'Add To Queue',
+  //     method: () => props.addToQueue(makeSoundList())
+  //   })
 
-    if (currentUser.loggedIn) {
-      options.push({
-        name: 'Add To Playlist',
-        method: handleAddTrackToPlaylist
-      })
-    }
+  //   return options
+  // }
 
-    options.push({
-      name: 'Go To Artist',
-      method: () => {
-        navigate.push(AppRoutes.artist.detailPage(track.artist.hash))
-      }
-    })
-
-    if (track.album) {
-      options.push({
-        name: 'Go To Album',
-        method: () => {
-          navigate.push(AppRoutes.album.detailPage(track.album.hash))
-        }
-      })
-    }
-
-    options.push({
-      name: 'Add To Queue',
-      method: () => props.addToQueue(makeSoundList())
-    })
-
-    return options
-  }
-
-  return track ? (
+  return (
     <div className="react-transition flip-in-x-reverse">
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} className={styles.imageContainer}>
@@ -383,7 +386,7 @@ const TrackDetailScreen = (props: Props) => {
               <Grid item>
                 {/* <Heart border />
                 &nbsp; &nbsp; */}
-                <More border options={getMoreOptions()} />
+                {/* <More border options={getMoreOptions()} /> */}
               </Grid>
             </Grid>
           </div>
@@ -392,46 +395,65 @@ const TrackDetailScreen = (props: Props) => {
 
       <br />
 
-      {getTabs().length ? (
+      {/* {getTabs().length ? (
         <Tabs
           title="Detail Tabs"
           tabs={getTabs()}
         />
-      ) : null}
+      ) : null} */}
 
       <br />
       <br />
 
-      {relatedLoading && <Spinner.Full />}
-      {relatedTracks ? (
+      {/* {relatedTracks ? (
         <TrackScrollingList
           category="Related Tracks"
           tracks={relatedTracks}
           browse={AppRoutes.browse.tracks}
         />
-      ) : null}
+      ) : null} */}
+
       {/* handling SEO */}
-      <SEO
+      {/* <SEO
         title={`${track.title} by ${track.artist.stage_name}`}
         url={`${DOMAIN}/track/${track.hash}`}
         description={`Listen to ${track.title} by ${track.artist.stage_name} on ${APP_NAME}`}
         type={SEO_TRACK_TYPE}
         image={track.poster_url}
         artist={`${DOMAIN}/artist/${track.artist.hash}`}
-      />
+      /> */}
 
-      {openAddTrackToPlaylistPopup && (
+      {/* {openAddTrackToPlaylistPopup && (
         <AddTrackToPlaylist
           trackHash={track.hash}
           onRequestClose={() => {
             setOpenAddTrackToPlaylistPopup(false)
           }}
         />
-      )}
+      )} */}
     </div>
-  ) : (
-    <>
-      <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Track was not found." />
+  )
+}
+
+export function CatchBoundary() {
+  const caught = useCatch()
+
+  let message
+  switch (caught.status) {
+    case 401:
+      message = "Oops! Looks like you tried to visit a page that you do not have access to."
+      break
+    case 404:
+      message = "OOPS! The Track was not found."
+      break
+
+    default:
+      throw new Error(caught.data || caught.statusText)
+  }
+
+  return (
+    <Box>
+      <HeaderTitle icon={<FindReplaceIcon />} text={message} />
       <h3>
         Go to the <Link style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
         or
@@ -442,21 +464,8 @@ const TrackDetailScreen = (props: Props) => {
         </Link>.
       </h3>
       <FourOrFour />
-    </>
+    </Box>
   )
 }
 
-export default connect(
-  ({ player }: AppStateInterface) => ({
-    playingListHash: get(player, 'list.hash'),
-    isPlaying: player.isPlaying,
-    currentTime: player.currentTime
-  }),
-  {
-    playList: playerActions.playList,
-    pauseList: playerActions.pauseList,
-    resumeList: playerActions.resumeList,
-    playNext: playerActions.playNext,
-    addToQueue: playerActions.addToQueue,
-  }
-)(TrackDetailScreen)
+export default TrackDetailScreen

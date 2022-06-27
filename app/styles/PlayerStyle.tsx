@@ -27,7 +27,7 @@ import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
 //     flex: 1,
 //     display: "flex",
 //     alignItems: "center",
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       display: 'none',
 //     },
 //     cursor: 'pointer',
@@ -54,7 +54,7 @@ import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
 //     display: "flex",
 //     justifyContent: "flex-end",
 //     alignItems: "center",
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       display: 'none',
 //     },
 //   },
@@ -69,7 +69,7 @@ import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
 //     justifyContent: "space-between",
 //     alignItems: "center",
 //     alignSelf: "center",
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       width: '70%',
 //     },
 //   },

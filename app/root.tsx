@@ -6,18 +6,24 @@ import {
   LiveReload,
   useLoaderData,
   ScrollRestoration,
+  Links,
 } from '@remix-run/react'
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
 import type { ReactNode } from 'react'
+import type { LinksFunction } from '@remix-run/cloudflare'
 import { json } from '@remix-run/cloudflare'
 import type { LoaderFunction } from '@remix-run/cloudflare'
 
 import theme from './mui/theme'
-import Layout from './componentss/layout'
 import StylesContext from './mui/StylesContext'
-// import RootLayout from './components/layouts/Root'
+import RootLayout from './components/layouts/Root'
+import reactTransitionSheetUrl from '~/styles/react-transitions.css'
+import PlainLayout from './components/layouts/Plain'
 
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: reactTransitionSheetUrl }]
+}
 export const loader: LoaderFunction = async ({ context }) => {
   return json({
     ENV: {
@@ -38,7 +44,7 @@ function Document({ children, title }: { children: ReactNode; title?: string }) 
         <meta name="theme-color" content={theme.palette.primary.main} />
         {title ? <title>{title}</title> : null}
         <Meta />
-
+        <Links />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
@@ -52,10 +58,12 @@ function Document({ children, title }: { children: ReactNode; title?: string }) 
           />
         ))}
       </head>
+
       <Box component="body" sx={{ bgcolor: "black" }}>
-        {/* <RootLayout> */}
-        {children}
-        {/* </RootLayout> */}
+        <RootLayout>
+          {children}
+        </RootLayout>
+
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
@@ -72,9 +80,7 @@ export default function App() {
     <Document>
       {/* <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}> */}
-      <Layout>
-        <Outlet />
-      </Layout>
+      <Outlet />
       {/* </PersistGate>
       </Provider> */}
 
@@ -95,14 +101,14 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
   return (
     <Document title="Error!">
-      <Layout>
+      <PlainLayout>
         <div>
           <h1>There was an error</h1>
           <p>{error.message}</p>
           <hr />
           <p>Hey, developer, you should replace this with what you want your users to see.</p>
         </div>
-      </Layout>
+      </PlainLayout>
     </Document>
   )
 }
@@ -125,12 +131,12 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>
+      <PlainLayout>
         <h1>
           {caught.status}: {caught.statusText}
         </h1>
         {message}
-      </Layout>
+      </PlainLayout>
     </Document>
   )
 }

@@ -8,6 +8,7 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import { Link } from '@remix-run/react'
 import Avatar from '@mui/material/Avatar'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import Box from "@mui/material/Box"
 
 import Left from './Left'
 import colors from '../utils/colors'
@@ -17,102 +18,103 @@ import Routes from '../routes'
 import { useSelector } from 'react-redux'
 import Right from './Right'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
+import AppRoutes from '~/app-routes'
+import { BoxStyles } from '~/interfaces/types'
 
-// const useStyles = makeStyles(theme => ({
-//   grow: {
-//     flex: 1,
-//     backgroundColor: colors.black,
-//     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-//       position: 'relative',
-//     }
-//   },
-//   appBar: {
-//     width: '100%',
-//     backgroundColor: colors.black,
-//     position: "absolute",
-//   },
-//   toolbar: {
-//     flex: 1,
-//   },
-//   menuButton: {
-//     marginRight: theme.spacing(2)
-//   },
-//   title: {
-//     display: 'none',
-//     [theme.breakpoints.up('sm')]: {
-//       display: 'block'
-//     }
-//   },
-//   drawer: {
-//     backgroundColor: colors.black,
-//     height: '100vh',
-//     padding: 24,
-//     paddingTop: 10,
-//     width: 230
-//   },
-//   leftMenuIcon: {
-//     paddingLeft: 0,
-//     [theme.breakpoints.up('sm')]: {
-//       display: 'none'
-//     }
-//   },
-//   accountButton: {
-//     padding: 0,
-//   },
-//   accountIcon: {
-//     fontSize: 35,
-//   },
-//   loginButton: {
-//     color: colors.white
-//   },
-//   avatarWrapper: {
-//     cursor: 'pointer',
-//     display: 'flex',
-//     alignItems: 'center',
-//   },
-//   avatar: {
-//     marginRight: 5,
-//   }
-// }))
+const styles: BoxStyles = {
+  grow: {
+    flex: 1,
+    backgroundColor: colors.black,
+    sm: {
+      position: 'relative',
+    }
+  },
+  appBar: {
+    width: '100%',
+    backgroundColor: colors.black,
+    position: "absolute",
+  },
+  toolbar: {
+    flex: 1,
+  },
+  menuButton: {
+    marginRight: 2,
+  },
+  title: {
+    display: 'none',
+    md: {
+      display: 'block'
+    }
+  },
+  drawer: {
+    backgroundColor: colors.black,
+    height: '100vh',
+    padding: 24,
+    paddingTop: 10,
+    width: 230
+  },
+  leftMenuIcon: {
+    paddingLeft: 0,
+    md: {
+      display: 'none'
+    }
+  },
+  accountButton: {
+    padding: 0,
+  },
+  accountIcon: {
+    fontSize: 35,
+  },
+  loginButton: {
+    color: colors.white
+  },
+  avatarWrapper: {
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  avatar: {
+    marginRight: 5,
+  }
+}
 
 type Props = {}
 
 const Header = (props: Props) => {
-  const styles = {}
   const [drawerLeftOPen, setDrawerLeftOpen] = useState(false)
   const [drawerRightOPen, setDrawerRightOpen] = useState(false)
-  const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
-  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  // const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
+  const currentUser = { loggedIn: false, data: {} }
 
   return (
-    <div className={styles.grow}>
-      <AppBar className={styles.appBar}>
-        <Toolbar className={styles.toolbar}>
+    <Box sx={styles.grow}>
+      <AppBar sx={styles.appBar}>
+        <Toolbar sx={styles.toolbar}>
           <IconButton
             aria-label="Open left menu"
             onClick={() => setDrawerLeftOpen(true)}
             color="inherit"
-            className={styles.leftMenuIcon}>
+            sx={styles.leftMenuIcon}>
             <MenuIcon />
           </IconButton>
-          <SearchInput />
-          <div className={styles.grow} />
-          <div>
+          {/* <SearchInput /> */}
+          <Box sx={styles.grow} />
+          <Box>
             {
               currentUser.loggedIn && currentUser.data ? (
-                <div className={styles.avatarWrapper} onClick={() => setDrawerRightOpen(true)}>
-                  <Avatar alt={currentUser.data.name} src={currentUser.data.avatar_url} className={styles.avatar} />
+                <Box sx={styles.avatarWrapper} onClick={() => setDrawerRightOpen(true)}>
+                  <Avatar alt={currentUser.data.name} src={currentUser.data.avatar_url} sx={styles.avatar} />
                   <KeyboardArrowDownIcon />
-                </div>
+                </Box>
               ) : (
-                <Link to={Routes.pages.login} className={styles.loginButton}>
-                  <IconButton aria-label="Login" color="inherit" className={styles.accountButton}>
-                    <AccountCircle className={styles.accountIcon} />
+                <Link to={AppRoutes.pages.login} sx={styles.loginButton}>
+                  <IconButton aria-label="Login" color="inherit" sx={styles.accountButton}>
+                    <AccountCircle sx={styles.accountIcon} />
                   </IconButton>
                 </Link>
               )
             }
-          </div>
+          </Box>
         </Toolbar>
       </AppBar>
       {/* Left Drawer */}
@@ -120,29 +122,25 @@ const Header = (props: Props) => {
         onOpen={() => setDrawerLeftOpen(true)}
         open={drawerLeftOPen}
         onClose={() => setDrawerLeftOpen(false)}
-        disableBackdropTransition={!iOS}
-        disableDiscovery={iOS}
       >
-        <div className={styles.drawer}>
+        <Box sx={styles.drawer}>
           <Left closeDrawerLeft={setDrawerLeftOpen} />
-        </div>
+        </Box>
       </SwipeableDrawer>
       {currentUser.loggedIn && (
         <SwipeableDrawer
           onOpen={() => setDrawerRightOpen(true)}
           anchor='right' open={drawerRightOPen}
           onClose={() => setDrawerRightOpen(false)}
-          disableBackdropTransition={!iOS}
-          disableDiscovery={iOS}
         >
-          <div className={styles.drawer}>
+          <Box sx={styles.drawer}>
             {currentUser.data && (
               <Right closeDrawerRight={setDrawerRightOpen} user={currentUser.data} />
             )}
-          </div>
+          </Box>
         </SwipeableDrawer>
       )}
-    </div >
+    </Box >
   )
 }
 

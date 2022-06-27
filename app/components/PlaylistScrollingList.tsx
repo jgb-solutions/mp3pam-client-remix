@@ -1,40 +1,45 @@
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
+import { useRef } from "react"
+import Box from "@mui/material/Box"
 import { Link } from "@remix-run/react"
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft"
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"
 
-import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
+import type { BoxStyles } from "~/interfaces/types"
 import PlaylistThumbnail from "./PlaylistThumbnail"
 
-// const useStyles = makeStyles(theme => ({
-//   container: {
-//     marginBottom: 30
-//   },
-//   list: {
-//     display: "flex",
-//     flexWrap: "nowrap",
-//     overflowX: "auto"
-//   },
-//   thumbnail: {
-//     width: 175,
-//     marginRight: 21,
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
-//       width: 100,
-//       marginRight: 10,
-//     },
-//   },
-//   link: { color: "#fff", textDecoration: "none" },
-//   listHeader: {
-//     borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-//     paddingBottom: 3,
-//     paddingHorizontal: 0,
-//     display: "flex",
-//     justifyContent: "space-between",
-//     marginBottom: 15
-//   },
-//   category: {
-//     margin: 0,
-//     fontSize: 16
-//   }
-// }))
+const styles: BoxStyles = {
+  container: {
+    marginBottom: 30
+  },
+  list: {
+    display: "flex",
+    flexWrap: "nowrap",
+    overflowX: "auto"
+  },
+  thumbnail: {
+    width: 175,
+    marginRight: 21,
+    sm: {
+      width: 100,
+      marginRight: 10,
+    },
+  },
+  link: {},
+  listHeader: {
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+    paddingBottom: 3,
+    paddingHorizontal: 0,
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: 15
+  },
+  category: {
+    margin: 0,
+    fontSize: 16,
+    color: "#fff",
+    textDecoration: "none"
+  }
+}
 
 export interface PlaylistThumbnailData {
   title: string,
@@ -44,40 +49,40 @@ export interface PlaylistThumbnailData {
 
 export const PlaylistScrollingList = (props: { playlists: PlaylistThumbnailData[], category: string, browse: string }) => {
   const { playlists, category, browse } = props
-  const styles = {}
-  let domElement: any
+  const divRef = useRef<HTMLDivElement>(null)
 
   const scroll = (dir: string) => {
+    if (!divRef.current) return
+
     const distance = 400
+
     if (dir === "left") {
-      domElement.scrollLeft -= distance
+      divRef.current.scrollLeft -= distance
     } else {
-      domElement.scrollLeft += distance
+      divRef.current.scrollLeft += distance
     }
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.listHeader}>
-        <Link to={browse} className={styles.link}>
-          <h2 className={styles.category}>{category}</h2>
+    <Box sx={styles.container}>
+      <Box sx={styles.listHeader}>
+        <Link to={browse}>
+          <Box component="h2" sx={styles.category}>{category}</Box>
         </Link>
-        <div>
-          <KeyboardArrowLeft onClick={() => scroll("left")} />
+        <Box>
+          <KeyboardArrowLeftIcon onClick={() => scroll("left")} />
           &nbsp;
-          <KeyboardArrowRight onClick={() => scroll("right")} />
-        </div>
-      </div>
-      <div
-        className={styles.list}
-        ref={el => {
-          domElement = el
-        }}
+          <KeyboardArrowRightIcon onClick={() => scroll("right")} />
+        </Box>
+      </Box>
+      <Box
+        sx={styles.list}
+        ref={divRef}
       >
         {playlists.map(playlist => (
-          <PlaylistThumbnail key={playlist.hash} className={styles.thumbnail} playlist={playlist} />
+          <PlaylistThumbnail key={playlist.hash} sx={styles.thumbnail} playlist={playlist} />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

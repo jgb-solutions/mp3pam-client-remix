@@ -14,7 +14,7 @@ import AlbumThumbnail from "./AlbumThumbnail"
 //   thumbnail: {
 //     width: 175,
 //     marginRight: 21,
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       width: 100,
 //       marginRight: 10,
 //     },

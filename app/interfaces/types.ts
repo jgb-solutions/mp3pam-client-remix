@@ -1,3 +1,3 @@
-import type { SxProps, Theme } from "@mui/material"
+import type { BoxProps } from "@mui/material"
 
-export type BoxStyles = { [key: string]: SxProps<Theme> }
+export type BoxStyles = { [key: string]: BoxProps['sx'] }

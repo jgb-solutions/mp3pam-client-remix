@@ -1,16 +1,16 @@
-
+import Box from "@mui/material/Box"
 import { NavLink } from "@remix-run/react"
 import HomeIcon from "@mui/icons-material/Home"
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import InfoIcon from '@mui/icons-material/Info'
 import AlbumIcon from '@mui/icons-material/Album'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
-import InfoIcon from '@mui/icons-material/Info'
-import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 
 import Logo from "./Logo"
-// import { menuStyles } from "../styles/menuStyles"
 import AppRoutes from "~/app-routes"
+import { menuStyles as styles } from "../styles/menuStyles"
 
 const mainMenu = [
 	{ name: "Home", to: AppRoutes.pages.home, icon: <HomeIcon /> },
@@ -39,7 +39,6 @@ type Props = {
 }
 
 const Left = (props: Props) => {
-	const styles = {} // menuStyles()
 	const closeDrawer = () => {
 		if (props.closeDrawerLeft) {
 			props.closeDrawerLeft(false)
@@ -49,28 +48,31 @@ const Left = (props: Props) => {
 	return (
 		<>
 			<Logo />
-			<div className={styles.mainMenu}>
+			<Box sx={styles.mainMenu}>
 				{mainMenu.map((menuItem, index) => (
 					<NavLink
-						className={({ isActive }) => {
-							return `${styles.link} ${styles.mainMenuLink} ${isActive ? styles.activeClassName : ""}`
-						}}
+						style={({ isActive }) => ({
+							...styles.link,
+							...styles.mainMenuLink,
+							...(isActive ? styles.activeClassName : {})
+						})}
 						key={index}
 						to={menuItem.to}
 						onClick={closeDrawer}>
-						<span className={styles.linkIcon}>{menuItem.icon}</span>
-						<span className={styles.linkText}>{menuItem.name}</span>
+						<Box component="span" sx={styles.linkIcon}>{menuItem.icon}</Box>
+						<Box component="span" sx={styles.linkText}>{menuItem.name}</Box>
 					</NavLink>
 				))}
-			</div>
+			</Box>
 
 			{/* Browse Menu */}
-			<div className={styles.browseMenu}>
+			<Box sx={styles.browseMenu}>
 				<p>
 					<NavLink
-						className={({ isActive }) => {
-							return `${styles.yourLibraryLink} ${isActive ? styles.activeClassName : ""}`
-						}}
+						style={({ isActive }) => ({
+							...styles.yourLibraryLink,
+							...(isActive ? styles.activeClassName : {})
+						})}
 						to={AppRoutes.pages.browse}
 						onClick={closeDrawer}>
 						Browse
@@ -78,20 +80,22 @@ const Left = (props: Props) => {
 				</p>
 				{browsingMenu.map((menuItem, index) => (
 					<NavLink
-						className={({ isActive }) => {
-							return `${styles.link} ${styles.libraryLink} ${isActive ? styles.activeClassName : ""}`
-						}}
+						style={({ isActive }) => ({
+							...styles.link,
+							...styles.library,
+							...(isActive ? styles.activeClassName : {})
+						})}
 						key={index}
 						to={menuItem.to}
 						onClick={closeDrawer}>
-						<span className={styles.linkIcon}>{menuItem.icon}</span>
-						<span className={styles.linkText}>{menuItem.name}</span>
+						<Box component="span" sx={styles.linkIcon}>{menuItem.icon}</Box>
+						<Box component="span" sx={styles.linkText}>{menuItem.name}</Box>
 					</NavLink>
 				))}
-			</div>
+			</Box>
 
 			{/* Favorite Menu */}
-			<div>
+			<Box>
 				{/* <p>
 					<NavLink
 						activeClassName={styles.activeClassName}
@@ -104,18 +108,19 @@ const Left = (props: Props) => {
 				</p> */}
 				{favoriteMenu.map((menuItem, index) => (
 					<NavLink
-						className={({ isActive }) => {
-							return `${styles.link} ${styles.libraryLink} ${isActive ? styles.activeClassName : ""}`
-						}}
-
+						style={({ isActive }) => ({
+							...styles.link,
+							...styles.libraryLink,
+							...(isActive ? styles.activeClassName : {})
+						})}
 						key={index}
 						to={menuItem.to}
 						onClick={closeDrawer}>
-						<span className={styles.linkIcon}>{menuItem.icon}</span>
-						<span className={styles.linkText}>{menuItem.name}</span>
+						<Box component="span" sx={styles.linkIcon}>{menuItem.icon}</Box>
+						<Box component="span" sx={styles.linkText}>{menuItem.name}</Box>
 					</NavLink>
 				))}
-			</div>
+			</Box>
 		</>
 	)
 }

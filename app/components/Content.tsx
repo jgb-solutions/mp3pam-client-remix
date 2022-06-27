@@ -1,34 +1,40 @@
-import { ReactNode, useEffect } from 'react'
+import { type FC, useRef } from 'react'
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import AppStateInterface from '../interfaces/AppStateInterface'
+import type { BoxProps } from '@mui/material'
+import Box from '@mui/material/Box'
 import { useLocation } from '@remix-run/react'
 
-const Content = (props: { style?: Object, children: ReactNode, className?: string }) => {
-  const currentTrack = useSelector(({ player }: AppStateInterface) => player.currentSound)
+import type AppStateInterface from '~/interfaces/AppStateInterface'
+
+type Props = {
+} & BoxProps
+
+const Content: FC<Props> = (props: Props) => {
+  // const currentTrack = useSelector(({ player }: AppStateInterface) => player.currentSound)
   const { pathname } = useLocation()
-  let mainRef: HTMLElement | null
+
+  const mainRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (mainRef) {
-      mainRef.scrollTo(0, 0)
+    if (mainRef.current) {
+      mainRef.current.scrollTo(0, 0)
     }
-    // eslint-disable-next-line
   }, [pathname])
 
   return (
-    <main
-      ref={ref => { mainRef = ref }}
+    <Box component="main"
+      ref={mainRef}
       className={props.className}
       style={{
         paddingTop: 70,
         paddingLeft: 15,
         paddingRight: 15,
-        paddingBottom: currentTrack ? 100 : 50,
-        ...props.style
+        // paddingBottom: currentTrack ? 100 : 50,
       }}
     >
       {props.children}
-    </main>
+    </Box>
   )
 }
 

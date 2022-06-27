@@ -1,21 +1,20 @@
-import React, { ReactNode } from 'react'
-import { Grid } from '@material-ui/core'
+import type { FC } from 'react'
+import Grid from '@mui/material/Grid'
 
 
 import Content from '../Content'
+import { plainLayoutStyles as styles } from '~/styles/plainLayoutStyles'
 
-import { plainLayoutStyles } from '../../styles/plainLayoutStyles'
+type Props = {}
 
-type Props = { children: ReactNode }
-
-export default function PlainLayout({ children }: Props) {
-  const styles = plainLayoutStyles()
-
+const PlainLayout: FC<Props> = ({ children }) => {
   return (
     <>
       <Grid item sm={12} xs={12} className={`${styles.col} ${styles.mainGrid}`}>
-        <Content className={styles.col}>{children}</Content>
+        <Content sx={styles.col}>{children}</Content>
       </Grid>
     </>
   )
 }
+
+export default PlainLayout

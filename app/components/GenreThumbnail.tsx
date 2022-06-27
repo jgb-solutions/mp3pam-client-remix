@@ -54,7 +54,7 @@ export interface GenreInterface {
 //     fontSize: 14,
 //     fontWeight: 'bold',
 //     color: colors.white,
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       fontSize: 12,
 //       overflow: 'hidden',
 //       whiteSpace: 'nowrap',
@@ -66,7 +66,7 @@ export interface GenreInterface {
 //     color: "#9d9d9d",
 //     marginTop: 5,
 //     marginBottom: 0,
-//     [theme.breakpoints.down(SMALL_SCREEN_SIZE)]: {
+//     sm: {
 //       fontSize: 11,
 //       overflow: 'hidden',
 //       whiteSpace: 'nowrap',

@@ -10,38 +10,24 @@ import IconButton from "@mui/material/IconButton"
 import colors from "../utils/colors"
 import AppRoutes from "~/app-routes"
 import { get } from "lodash-es"
-import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
 import type { TrackWithArtistThumbnailData } from "./TrackScrollingList"
 import AppStateInterface from "../interfaces/AppStateInterface"
 import Image from "./Image"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link } from "@remix-run/react"
 import type { BoxStyles } from "~/interfaces/types"
 import { FC } from "react"
 
 const styles: BoxStyles = {
   imgContainer: {
-    backgroundSize: "contain",
-    backgroundRepeat: 'no-repeat',
-    cursor: "pointer",
-    width: 175,
-    height: 175,
-    maxWidth: '100%',
-    maxHeight: '100%',
-    position: "relative",
-    marginBottom: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    sm: {
-      width: 100,
-      height: 100,
-    },
   },
   transparentBackground: {
     opacity: 0,
     position: "absolute",
     backgroundColor: "#000",
-    width: "100%",
-    height: "100%",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -71,8 +57,6 @@ const styles: BoxStyles = {
   details: {
     fontSize: 13,
     color: "#9d9d9d",
-    marginTop: 5,
-    marginBottom: 0,
     sm: {
       fontSize: 11,
       overflow: 'hidden',
@@ -89,52 +73,52 @@ const styles: BoxStyles = {
 
 type Props = {
   track: TrackWithArtistThumbnailData
-  className?: string
-  style?: object,
-} & BoxProps
-const TrackThumbnail: FC<Props> = ({ track, style, className, ...props }: Props) => {
+  sx?: BoxProps['sx']
+}
+
+const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
   // const { listId, isPlaying } = useSelector(({ player }: AppStateInterface) => ({
   //   listId: get(player, 'list.id'),
   //   isPlaying: player.isPlaying
   // }))
 
   return (
-    <Box className={className} style={style} {...props}>
-      <Box
-        sx={styles.imgContainer}
-        style={{
-          backgroundImage: `url(${Image.phoneCdnUrl(track.poster_url, {
-            ulb: true,
-            lb: {
-              width: 250,
-              height: 250
-            }
-          })})`
-        }}
-      >
+    <Box {...props}>
+      <Box sx={{ position: 'relative' }}>
         <Link to={AppRoutes.track.detailPage(track.hash)}>
+          <Box
+            component="img"
+            sx={styles.imgContainer}
+            src={Image.phoneCdnUrl(track.poster_url, {
+              ulb: true,
+              lb: {
+                width: 200,
+                height: 200
+              }
+            })}
+          />
+
           <Box sx={styles.transparentBackground}>
-            {/* <IconButton>
-            {(isPlaying && listId === track.hash) && (
-              <PauseCircleOutline sx={styles.icon} />
-            )}
-            {(!isPlaying || (isPlaying && listId !== track.hash)) && (
+            <IconButton>
+              {/* {(isPlaying && listId === track.hash) && ( */}
+              {/* <PauseCircleOutline sx={styles.icon} /> */}
+              {/* )} */}
+              {/* {(!isPlaying || (isPlaying && listId !== track.hash)) && ( */}
               <PlayCircleOutline sx={styles.icon} />
-            )}
-          </IconButton> */}
-          </Box>
-        </Link>
-      </Box >
-      <Box component="h3" sx={styles.title}>{track.title}</Box>
-      <Box component="p" sx={styles.details}>
-        {/* by: */}
-        <Link to={AppRoutes.artist.detailPage(track.artist.hash)}>
-          <Box component="span" sx={styles.link}>
-            {track.artist.stage_name}
+              {/* )} */}
+            </IconButton>
           </Box>
         </Link>
       </Box>
-    </Box >
+      <Box component="h3" sx={styles.title}>{track.title}</Box>
+      <Link to={AppRoutes.artist.detailPage(track.artist.hash)}>
+        <Box component="p" sx={styles.details}>
+          <Box component="span" sx={styles.link}>
+            {track.artist.stage_name}
+          </Box>
+        </Box>
+      </Link>
+    </Box>
   )
 }
 
