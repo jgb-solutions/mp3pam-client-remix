@@ -1,0 +1,504 @@
+import { gql } from "@apollo/client"
+
+export const FETCH_HOME = gql`
+  query homePageData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
+    # Latest 10 tracks
+    latestTracks: tracks(first: $first, page: $page, orderBy: $orderBy) {
+      data {
+        hash
+        title
+        poster_url
+        artist {
+          stage_name
+          hash
+        }
+      }
+    }
+
+    # Latest 10 playlists
+    latestPlaylists: playlists(first: $first, page: $page, orderBy: $orderBy) {
+      data {
+        hash
+        title
+        cover_url
+      }
+    }
+
+    # latest 1o artists
+    latestArtists: artists(first: $first, orderBy: $orderBy) {
+      data {
+        stage_name
+        hash
+        poster_url
+      }
+    }
+
+    # latest 1o albums
+    latestAlbums: albums(first: $first, orderBy: $orderBy) {
+      data {
+        title
+        hash
+        cover_url
+        artist {
+          stage_name
+          hash
+          poster_url
+        }
+      }
+    }
+  }
+`
+
+export const FETCH_MANAGE_SCREEN = gql`
+  query managePageData($page: Int, $first: Int) {
+    me {
+      latestTracks: tracks(first: $first, page: $page) {
+        data {
+          hash
+          title
+          poster_url
+          artist {
+            stage_name
+            hash
+          }
+        }
+      }
+
+      latestPlaylists: playlists(first: $first, page: $page,) {
+        data {
+          hash
+          title
+          cover_url
+        }
+      }
+
+      latestArtists: artists(first: $first, page: $page) {
+        data {
+          stage_name
+          hash
+          poster_url
+        }
+      }
+
+      latestAlbums: albums(first: $first, page: $page) {
+        data {
+          title
+          hash
+          cover_url
+          artist {
+            stage_name
+            hash
+            poster_url
+          }
+        }
+      }
+    }
+  }
+`
+
+export const FETCH_TRACKS = gql`
+  query tracksData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
+    # Latest 10 tracks
+    tracks(first: $first, page: $page, orderBy: $orderBy) {
+      data {
+        hash
+        title
+        poster_url
+        artist {
+          stage_name
+          hash
+        }
+      }
+      paginatorInfo {
+        hasMorePages
+        currentPage
+      }
+    }
+  }
+`
+
+export const FETCH_TRACKS_BY_GENRE = gql`
+  query tracksDataByGenre($page: Int, $first: Int, $orderBy: [OrderByClause!], $slug: String!) {
+    genre(slug: $slug) {
+      name
+    }
+
+    tracksByGenre(first: $first, page: $page, orderBy: $orderBy, slug: $slug) {
+      data {
+        hash
+        title
+        poster_url
+        artist {
+          stage_name
+          hash
+        }
+      }
+      paginatorInfo {
+        hasMorePages
+        currentPage
+      }
+    }
+  }
+`
+
+export const FETCH_RELATED_TRACKS = gql`
+  query relatedTracksData($input: RelatedTracksInput!) {
+    relatedTracks(input: $input) {
+      hash
+      title
+      poster_url
+      artist {
+        stage_name
+        hash
+      }
+    }
+  }
+`
+
+export const FETCH_RANDOM_ARTISTS = gql`
+  query randomArtistsData($input: RandomArtistsInput!) {
+    randomArtists(input: $input) {
+      hash
+      name
+      poster_url
+    }
+  }
+`
+
+export const FETCH_GENRES = gql`
+  query fetchGenres {
+    genres {
+      name
+      slug
+    }
+  }
+`
+
+export const FETCH_RANDOM_ALBUMS = gql`
+  query randomAlbumsData($input: RandomAlbumsInput!) {
+    randomAlbums(input: $input) {
+      hash
+      title
+      cover_url
+      artist {
+        hash
+        stage_name
+      }
+    }
+  }
+`
+
+export const FETCH_RANDOM_PLAYLISTS = gql`
+  query randomPlaylistsData($input: RandomPlaylistsInput!) {
+    randomPlaylists(input: $input) {
+      hash
+      title
+      cover_url
+    }
+  }
+`
+
+export const FETCH_ARTISTS = gql`
+  query artistsData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
+    # Latest 10 artists
+    artists(first: $first, page: $page, orderBy: $orderBy) {
+      data {
+        hash
+        stage_name
+        poster_url
+      }
+      paginatorInfo {
+        hasMorePages
+        currentPage
+      }
+    }
+  }
+`
+
+export const FETCH_PLAYLISTS = gql`
+  query playlistsData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
+    # Latest 10 playlists
+    playlists(first: $first, page: $page, orderBy: $orderBy) {
+      data {
+        hash
+        title
+        cover_url
+      }
+      paginatorInfo {
+        hasMorePages
+        currentPage
+      }
+    }
+  }
+`
+
+export const FETCH_ALBUMS = gql`
+  query albumsData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
+    # Latest 10 albums
+    albums(first: $first, page: $page, orderBy: $orderBy) {
+      data {
+        hash
+        title
+        cover_url
+        artist {
+          hash
+          stage_name
+          poster_url
+        }
+      }
+      paginatorInfo {
+        hasMorePages
+        currentPage
+      }
+    }
+  }
+`
+
+export const FETCH_MY_ALBUMS = gql`
+  query myAlbumsData($page: Int, $first: Int) {
+    me {
+      albums(first: $first, page: $page) {
+        data {
+          hash
+          title
+        }
+      }
+    }
+  }
+`
+
+export const FETCH_MY_PLAYLISTS = gql`
+  query myPlaylistsData($page: Int, $first: Int) {
+    me {
+      playlists(first: $first, page: $page) {
+        data {
+          hash
+          title
+        }
+      }
+    }
+  }
+`
+
+export const FETCH_MY_TRACKS = gql`
+  query myTracksData($page: Int, $first: Int) {
+    me {
+      tracks(first: $first, page: $page) {
+        data {
+          hash
+          title
+        }
+      }
+    }
+  }
+`
+
+export const FETCH_MY_ARTISTS = gql`
+  query myArtistData($page: Int, $first: Int) {
+    me {
+      artists(first: $first, page: $page) {
+        data {
+          hash
+          stage_name
+        }
+      }
+    }
+  }
+`
+
+export const FETCH_TRACK = gql`
+  query trackDetail($hash: String!) {
+    track(hash: $hash) {
+      title
+      hash
+      allowDownload
+      audio_url
+      poster_url
+      featured
+      detail
+      lyrics
+      play_count
+	    download_count
+      audio_file_size
+      genre {
+        name
+        slug
+      }
+      artist {
+        stage_name
+        hash
+      }
+      album {
+        title
+        hash
+      }
+    }
+  }
+`
+
+export const FETCH_ARTIST = gql`
+  query artistDetail($hash: String!) {
+    artist(hash: $hash) {
+      hash
+      name
+      stage_name
+      poster_url
+      bio
+      facebook_url
+      twitter_url
+      youtube_url
+      instagram_url
+      tracks {
+        hash
+        title
+        poster_url
+      }
+      albums {
+        hash
+        title
+        cover_url
+      }
+    }
+  }
+`
+
+export const FETCH_ALBUM = gql`
+  query albumDetail($hash: String!) {
+    album(hash: $hash) {
+      id
+      title
+      hash
+      cover_url
+      detail
+      release_year
+      tracks {
+        hash
+        title
+        poster_url
+        audio_url
+        number
+        play_count
+        download_count
+      }
+      artist {
+        hash
+        stage_name
+      }
+    }
+  }
+`
+
+export const FETCH_PLAYLIST = gql`
+  query playlistDetail($hash: String!) {
+    playlist(hash: $hash) {
+      id
+      title
+      hash
+      cover_url
+      tracks {
+        hash
+        title
+        poster_url
+        audio_url
+        number
+        play_count
+        download_count
+        artist {
+          hash
+          stage_name
+        }
+      }
+      user {
+        name
+      }
+    }
+  }
+`
+
+export const FETCH_DOWNLOAD_URL = gql`
+  query download($input: DownloadInput!) {
+    download(input: $input) {
+      url
+    }
+  }
+`
+
+export const UPLOAD_URL_QUERY = gql`
+  query getUploadUrl($input: UploadUrlInput!) {
+    uploadUrl(input: $input) {
+     signedUrl
+     filename
+    }
+  }
+`
+
+export const TRACK_UPLOAD_DATA_QUERY = gql`
+  query fetchTrackUploadData {
+    genres {
+      id
+      name
+  	}
+    me {
+      artists_by_stage_name_asc(first: 50) {
+        data {
+          id
+          stage_name
+        }
+      }
+    }
+  }
+`
+
+export const SEARCH_QUERY = gql`
+  query search($query: String!) {
+    search(query: $query) {
+      tracks {
+        hash
+        title
+        poster_url
+        artist {
+          hash
+          stage_name
+        }
+      }
+      artists {
+        hash
+        stage_name
+        poster_url
+      }
+      albums {
+        hash
+        title
+        cover_url
+         artist {
+          hash
+          stage_name
+        }
+      }
+    }
+  }
+`
+
+export const LOG_USER_IN = gql`
+  query logUserIn($input: LoginInput!) {
+    login(input: $input) {
+      token
+      data {
+        id
+        name
+        email
+        avatar_url
+        telephone
+        created_at
+      }
+    }
+  }
+`
+
+export const FACEBOOK_LOGIN_URL = gql`
+  query facebookLoginUrl {
+    facebookLoginUrl {
+      url
+    }
+  }
+`
