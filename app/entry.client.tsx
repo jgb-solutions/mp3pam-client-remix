@@ -8,21 +8,41 @@ import { PersistGate } from "redux-persist/integration/react"
 import theme from './mui/theme'
 import createEmotionCache from './mui/createEmotionCache'
 import { persistedStore } from "./store"
+import { useState } from "react"
+import ClientStyleContext from "./mui/ClientStyleContext"
 
 const emotionCache = createEmotionCache()
 const { store, persistor } = persistedStore()
 
-// <Provider store={store}>
-// {/* <PersistGate loading={null} persistor={persistor}> */ }
+interface ClientCacheProviderProps {
+  children: React.ReactNode
+}
+
+function ClientCacheProvider({ children }: ClientCacheProviderProps) {
+  const [cache, setCache] = useState(createEmotionCache())
+
+  function reset() {
+    setCache(createEmotionCache())
+  }
+
+  return (
+    <ClientStyleContext.Provider value={{ reset }}>
+      <CacheProvider value={cache}>{children}</CacheProvider>
+    </ClientStyleContext.Provider>
+  )
+}
+
+
 hydrate(
-  <CacheProvider value={emotionCache}>
+  <ClientCacheProvider>
+    {/* <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}> */}
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <RemixBrowser />
     </ThemeProvider>
-  </CacheProvider>,
+    {/* </PersistGate>
+    </Provider> */}
+  </ClientCacheProvider>,
   document,
 )
-
-{/* </PersistGate> */ }
-  // </Provider>,

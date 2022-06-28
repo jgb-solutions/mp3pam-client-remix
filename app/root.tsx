@@ -8,6 +8,8 @@ import {
   ScrollRestoration,
   Links,
 } from '@remix-run/react'
+import { withEmotionCache } from '@emotion/react'
+import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
 import type { ReactNode } from 'react'
@@ -20,6 +22,7 @@ import StylesContext from './mui/StylesContext'
 import RootLayout from './components/layouts/Root'
 // import reactTransitionSheetUrl from '~/styles/react-transitions.css'
 import PlainLayout from './components/layouts/Plain'
+import ClientStyleContext from './mui/ClientStyleContext'
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: reactTransitionSheetUrl }]
@@ -34,9 +37,29 @@ export const loader: LoaderFunction = async () => {
   })
 }
 
+interface DocumentProps {
+  children: React.ReactNode
+  title?: string
+}
 
-function Document({ children, title }: { children: ReactNode; title?: string }) {
-  const styleData = useContext(StylesContext)
+const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
+  const clientStyleData = useContext(ClientStyleContext)
+
+  // Only executed on client
+  useEnhancedEffect(() => {
+    // re-link sheet container
+    emotionCache.sheet.container = document.head
+    // re-inject tags
+    const tags = emotionCache.sheet.tags
+    emotionCache.sheet.flush()
+    tags.forEach((tag) => {
+      // eslint-disable-next-line no-underscore-dangle
+      (emotionCache.sheet as any)._insertTag(tag)
+    })
+    // reset cache to reapply global styles
+    clientStyleData.reset()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <html lang="en">
@@ -51,28 +74,23 @@ function Document({ children, title }: { children: ReactNode; title?: string }) 
           rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
-        {styleData?.map(({ key, ids, css }) => (
-          <style
-            key={key}
-            data-emotion={`${key} ${ids.join(' ')}`}
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: css }}
-          />
-        ))}
+        <meta name="emotion-insertion-point" content="emotion-insertion-point" />
       </head>
 
       <Box component="body" sx={{ bgcolor: "black" }}>
         <RootLayout>
           {children}
         </RootLayout>
-
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === 'development' && <LiveReload />}
+        <LiveReload />
       </Box>
     </html>
   )
-}
+})
+
+import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
+
 
 
 export default function App() {

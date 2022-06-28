@@ -16,8 +16,6 @@ import { json, LoaderFunction } from '@remix-run/node'
 export const loader: LoaderFunction = async ({ context }) => {
 	const data = await fetchHomeData()
 
-	console.log('context', context)
-
 	return json(data)
 }
 
