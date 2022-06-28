@@ -89,12 +89,11 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
   )
 })
 
-import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
 
 
 
 export default function App() {
-  const data = useLoaderData()
+  const { ENV } = useLoaderData()
 
   return (
     <Document>
@@ -106,9 +105,7 @@ export default function App() {
 
       <script
         dangerouslySetInnerHTML={{
-          __html: `process.env = ${JSON.stringify(
-            data.ENV
-          )}`,
+          __html: `window.ENV = ${JSON.stringify(ENV)}`,
         }}
       />
 
