@@ -1,7 +1,6 @@
-import React, { ReactNode } from 'react'
-import { get } from "lodash-es"
+import type { ReactNode } from 'react'
 
-import Button from './Button'
+import Button from "@mui/material/Button"
 
 export interface ImageDimensions {
   width: number
@@ -55,7 +54,7 @@ const UploadButton = ({
   }
 
   const handleOnChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file: File = get(event, 'target.files[0]')
+    const file: File | undefined = event.target.files?.[0]
 
     if (file) {
       if (allowedFileSize && onFileSizeInvalid) {
@@ -96,11 +95,11 @@ const UploadButton = ({
         let image = new Image()
 
         image.onload = imgEvt => {
-          const { width, height } = get(imgEvt, 'path[0]') || get(imgEvt, 'srcElement')
+          const { width, height } = image
           resolve({ width, height })
         }
 
-        image.src = get(readerEvt, 'target.result')
+        image.src = `${readerEvt.target!.result}`
 
         reader.onerror = () => {
           reader.abort()

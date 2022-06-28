@@ -5,7 +5,7 @@ import {
 import IconButton from "@mui/material/IconButton"
 import { connect } from 'react-redux'
 
-import { get } from "lodash-es"
+
 
 import colors from "../utils/colors"
 import * as playerActions from "../store/actions/playerActions"

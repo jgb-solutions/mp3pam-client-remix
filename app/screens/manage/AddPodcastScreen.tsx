@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react"
 import { gql } from "@apollo/client"
 
 import { useApolloClient } from '@apollo/client'
-import { get } from "lodash-es"
+
 import useForm from 'react-hook-form'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'

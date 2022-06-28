@@ -1,7 +1,7 @@
 
 import GroupWorkIcon from '@mui/icons-material/GroupWork'
 import { Link } from "@remix-run/react"
-import { get } from "lodash-es"
+
 
 
 import Spinner from '../../components/Spinner'

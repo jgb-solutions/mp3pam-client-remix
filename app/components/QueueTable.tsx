@@ -13,7 +13,7 @@ import AppStateInterface from '../interfaces/AppStateInterface'
 import { SoundInterface } from '../interfaces/ListInterface'
 import { Link } from '@remix-run/react'
 import Routes from '../routes'
-import { get } from 'lodash-es'
+
 import AppRoutes from '~/app-routes'
 
 // const useStyles = makeStyles(theme => ({

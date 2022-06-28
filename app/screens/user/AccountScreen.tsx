@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import HeaderTitle from "../../components/HeaderTitle"
 import { useParams, useNavigate } from "@remix-run/react"
-import { get } from "lodash-es"
+
 import { useSelector, useDispatch } from 'react-redux'
 import Avatar from '@mui/material/Avatar'
 import { useMutation, useApolloClient } from '@apollo/client'

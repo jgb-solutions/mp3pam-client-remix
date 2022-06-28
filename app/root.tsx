@@ -11,23 +11,25 @@ import {
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
 import type { ReactNode } from 'react'
-import type { LinksFunction } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
-import type { LoaderFunction } from '@remix-run/cloudflare'
+import type { LinksFunction } from '@remix-run/node'
+import { json } from '@remix-run/node'
+import type { LoaderFunction } from '@remix-run/node'
 
 import theme from './mui/theme'
 import StylesContext from './mui/StylesContext'
 import RootLayout from './components/layouts/Root'
-import reactTransitionSheetUrl from '~/styles/react-transitions.css'
+// import reactTransitionSheetUrl from '~/styles/react-transitions.css'
 import PlainLayout from './components/layouts/Plain'
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: reactTransitionSheetUrl }]
-}
-export const loader: LoaderFunction = async ({ context }) => {
+// export const links: LinksFunction = () => {
+//   return [{ rel: "stylesheet", href: reactTransitionSheetUrl }]
+// }
+
+
+export const loader: LoaderFunction = async () => {
   return json({
     ENV: {
-      STRIPE_PUBLIC_KEY: context.STRIPE_PUBLIC_KEY,
+      STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
     },
   })
 }
@@ -86,7 +88,7 @@ export default function App() {
 
       <script
         dangerouslySetInnerHTML={{
-          __html: `window.ENV = ${JSON.stringify(
+          __html: `process.env = ${JSON.stringify(
             data.ENV
           )}`,
         }}

@@ -11,7 +11,7 @@ import SEO from "~/components/SEO"
 import AppRoutes from "~/app-routes"
 import MainLayout from '~/components/layouts/Main'
 import { useLoaderData } from '@remix-run/react'
-import { json, LoaderFunction } from '@remix-run/cloudflare'
+import { json, LoaderFunction } from '@remix-run/node'
 
 export const loader: LoaderFunction = async ({ context }) => {
 	const data = await fetchHomeData()

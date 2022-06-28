@@ -1,6 +1,5 @@
-
 import { useParams } from "@remix-run/react"
-import { get } from "lodash-es"
+
 
 import Logo from "../components/Logo"
 import Download from "../components/Download"
@@ -16,16 +15,14 @@ export interface Credentials {
 
 
 export default function DownloadScreen() {
-  const params = useParams()
-  const hash = get(params, 'hash')
-  const type = get(params, 'type')
+  const { hash, type } = useParams() as { hash: string, type: string }
 
   return (
     <div style={{ maxWidth: 450, margin: '0 auto', textAlign: 'center' }}>
       <SEO title={`Download ${type}`} />
       <Logo size={300} />
 
-      {!!window.ENV.REACT_APP_SHOW_ADS && (
+      {!!process.env.REACT_APP_SHOW_ADS && (
         <GoogleAdsense
           client={GOOGLE_ADS_CLIENT}
           slot="1295262381"

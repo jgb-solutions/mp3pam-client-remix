@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { get } from 'lodash-es'
+
 
 import { FETCH_PLAYLISTS } from '../queries'
 import { FETCH_PLAYLISTS_NUMBER } from '../../utils/constants.server'

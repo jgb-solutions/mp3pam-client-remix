@@ -9,7 +9,7 @@ import IconButton from "@mui/material/IconButton"
 
 import colors from "../utils/colors"
 import AppRoutes from "~/app-routes"
-import { get } from "lodash-es"
+
 import type { TrackWithArtistThumbnailData } from "./TrackScrollingList"
 import AppStateInterface from "../interfaces/AppStateInterface"
 import Image from "./Image"
