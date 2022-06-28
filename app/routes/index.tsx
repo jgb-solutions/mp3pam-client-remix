@@ -9,9 +9,16 @@ import { AlbumScrollingList } from "~/components/AlbumScrollingList"
 
 import SEO from "~/components/SEO"
 import AppRoutes from "~/app-routes"
+import { json } from '@remix-run/node'
 import MainLayout from '~/components/layouts/Main'
 import { useLoaderData } from '@remix-run/react'
-import { json, LoaderFunction } from '@remix-run/node'
+import type { HeadersFunction, LoaderFunction } from '@remix-run/node'
+
+export const headers: HeadersFunction = () => {
+	return {
+		"Cache-Control": "s-maxage=360, stale-while-revalidate=3600",
+	}
+}
 
 export const loader: LoaderFunction = async ({ context }) => {
 	const data = await fetchHomeData()
