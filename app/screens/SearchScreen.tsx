@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import { debounce } from "lodash-es"
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 import SearchIcon from '@mui/icons-material/Search'
 
 import AppStateInterface from "../interfaces/AppStateInterface"
-import useSearch from '../graphql/requests/useSearch'
+import useSearch from '../hooks/useSearch'
 import Spinner from "../components/Spinner"
 import HeaderTitle from "../components/HeaderTitle"
 import { TrackWithArtistThumbnailData } from "../components/TrackScrollingList"

@@ -1,23 +1,19 @@
 
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 import InfiniteScroll from 'react-infinite-scroller'
-import { useParams } from "@remix-run/react"
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import useTracksByGenre from "../../graphql/requests/useTracksByGenre"
+import useTracks from "../../hooks/useTracks"
 import TrackThumbnail from "../../components/TrackThumbnail"
 import { TrackWithArtistThumbnailData } from "../../components/TrackScrollingList"
 import SEO from "../../components/SEO"
 
-export default function BrowseTracksByGenreScreen() {
-  const params = useParams()
-  const slug = get(params, 'slug')
-  const { loading, error, data, loadMoreTracks, hasMore } = useTracksByGenre(slug)
-  const tracksByGenre = get(data, 'tracksByGenre')
-  const genre = get(data, 'genre')
+export default function BrowseTracksScreen() {
+  const { loading, error, data, loadMoreTracks, hasMore } = useTracks()
+  const tracks = get(data, 'tracks')
 
   if (loading) return <Spinner.Full />
 
@@ -25,8 +21,8 @@ export default function BrowseTracksByGenreScreen() {
 
   return (
     <>
-      <HeaderTitle icon={<MusicNoteIcon />} text={`Browse ${genre ? genre.name : ''}  Tracks`} />
-      <SEO title={`Browse ${genre ? genre.name : ''}  Tracks`} />
+      <HeaderTitle icon={<MusicNoteIcon />} text="Browse Tracks" />
+      <SEO title={`Browse Tracks`} />
 
       <InfiniteScroll
         pageStart={1}
@@ -36,7 +32,7 @@ export default function BrowseTracksByGenreScreen() {
         useWindow={false}
       >
         <Grid container spacing={2}>
-          {tracksByGenre.data.map((track: TrackWithArtistThumbnailData) => (
+          {tracks.data.map((track: TrackWithArtistThumbnailData) => (
             <Grid item xs={4} md={3} sm={4} key={track.hash}>
               <TrackThumbnail track={track} />
             </Grid>

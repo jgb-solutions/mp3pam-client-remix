@@ -1,19 +1,21 @@
-
+import Grid from "@mui/material/Grid"
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
-
-import { Grid } from "@material-ui/core"
 import InfiniteScroll from 'react-infinite-scroller'
+
+import { useParams } from "@remix-run/react"
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import useTracks from "../../graphql/requests/useTracks"
+import fetchTracksByGenre from "../../hooks/fetchTracksByGenre"
 import TrackThumbnail from "../../components/TrackThumbnail"
-import { TrackWithArtistThumbnailData } from "../../components/TrackScrollingList"
 import SEO from "../../components/SEO"
+import type { TracksWithArtist } from '~/components/TrackScrollingList'
 
-export default function BrowseTracksScreen() {
-  const { loading, error, data, loadMoreTracks, hasMore } = useTracks()
-  const tracks = get(data, 'tracks')
+export default function BrowseTracksByGenreScreen() {
+  const { slug } = useParams() as { slug: string }
+  const { loading, error, data, loadMoreTracks, hasMore } = fetchTracksByGenre(slug)
+  const tracksByGenre = get(data, 'tracksByGenre')
+  const genre = get(data, 'genre')
 
   if (loading) return <Spinner.Full />
 
@@ -21,8 +23,8 @@ export default function BrowseTracksScreen() {
 
   return (
     <>
-      <HeaderTitle icon={<MusicNoteIcon />} text="Browse Tracks" />
-      <SEO title={`Browse Tracks`} />
+      <HeaderTitle icon={<MusicNoteIcon />} text={`Browse ${genre ? genre.name : ''}  Tracks`} />
+      <SEO title={`Browse ${genre ? genre.name : ''}  Tracks`} />
 
       <InfiniteScroll
         pageStart={1}
@@ -32,8 +34,8 @@ export default function BrowseTracksScreen() {
         useWindow={false}
       >
         <Grid container spacing={2}>
-          {tracks.data.map((track: TrackWithArtistThumbnailData) => (
-            <Grid item xs={4} md={3} sm={4} key={track.hash}>
+          {tracksByGenre.data.map((track: TracksWithArtist[0]) => (
+            <Grid item xs={4} md={3} sm={4} key={track!.hash}>
               <TrackThumbnail track={track} />
             </Grid>
           ))}

@@ -15,15 +15,6 @@ import Button from '../../components/Button'
 import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
 
-export const UPLOAD_URL = gql`
-  query getUploadUrl($name: String!, $type: String!) {
-    uploadUrl(name: $name, type: $type) {
-     signedUrl
-		 fileUrl
-    }
-  }
-`
-
 export default function CreatePlaylistScreen() {
   const client = useApolloClient()
   const [completed, setCompleted] = useState(0)

@@ -8,7 +8,7 @@ import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
 import { useHistory, useLocation } from "@remix-run/react"
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
-import { Grid, FormControlLabel, Checkbox } from "@material-ui/core"
+import { Grid, FormControlLabel, Checkbox } from "@mui/material"
 import { useMutation } from '@apollo/client'
 
 import ProgressBar from "../../components/ProgressBar"
@@ -18,16 +18,16 @@ import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
 import HeaderTitle from "../../components/HeaderTitle"
 import { TRACK_UPLOAD_DATA_QUERY } from "../../graphql/queries"
-import useFileUpload from "../../graphql/requests/useFileUpload"
+import useFileUpload from "../../hooks/useFileUpload"
 import TextIcon from "../../components/TextIcon"
 import { addTrackScreenStyles } from "../../styles/addTrackScreenStyles"
-import useAddTrack from '../../graphql/requests/useAddTrack'
+import useAddTrack from '../../hooks/useAddTrack'
 import AppRoutes from "~/app-routes"
 import AlertDialog from "../../components/AlertDialog"
 import { ADD_GENRE_MUTATION } from "../../graphql/mutations"
 import { IMG_BUCKET, AUDIO_BUCKET, MAX_AUDIO_FILE_SIZE, MAX_IMG_FILE_SIZE, MIN_TRACK_LYRICS_LENGTH, MIN_TRACK_DETAIL_LENGTH } from "../../utils/constants.server"
 import { getFile } from "../../utils/helpers"
-import useAddArtist from "../../graphql/requests/useAddArtist"
+import useAddArtist from "../../hooks/useAddArtist"
 import SEO from "../../components/SEO"
 
 export interface FormData {

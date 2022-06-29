@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client"
 
-export const FETCH_HOME = gql`
-  query homePageData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
+export const HomepageQueryDocument = gql`
+  query homepage($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
     # Latest 10 tracks
     latestTracks: tracks(first: $first, page: $page, orderBy: $orderBy) {
       data {
@@ -117,7 +117,7 @@ export const FETCH_TRACKS = gql`
   }
 `
 
-export const FETCH_TRACKS_BY_GENRE = gql`
+export const FetchTracksByGenreDocument = gql`
   query tracksDataByGenre($page: Int, $first: Int, $orderBy: [OrderByClause!], $slug: String!) {
     genre(slug: $slug) {
       name

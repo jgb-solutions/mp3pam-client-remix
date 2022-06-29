@@ -1,12 +1,12 @@
 
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 import InfiniteScroll from 'react-infinite-scroller'
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import usePlaylists from "../../graphql/requests/usePlaylists"
+import usePlaylists from "../../hooks/usePlaylists"
 import PlaylistThumbnail from "../../components/PlaylistThumbnail"
 import { PlaylistThumbnailData } from "../../components/PlaylistScrollingList"
 import SEO from "../../components/SEO"

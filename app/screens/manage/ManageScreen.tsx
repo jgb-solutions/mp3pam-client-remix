@@ -5,7 +5,7 @@ import { Link } from "@remix-run/react"
 
 
 import Spinner from '../../components/Spinner'
-import useManage from "../../graphql/requests/useManage"
+import useManage from "../../hooks/useManage"
 import HeaderTitle from "../../components/HeaderTitle"
 import { TrackScrollingList } from "../../components/TrackScrollingList"
 import { ArtistScrollingList } from "../../components/ArtistScrollingList"

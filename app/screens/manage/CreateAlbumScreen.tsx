@@ -7,7 +7,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
 
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 
 
 import ProgressBar from "../../components/ProgressBar"
@@ -17,10 +17,10 @@ import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
 import HeaderTitle from "../../components/HeaderTitle"
 import { TRACK_UPLOAD_DATA_QUERY } from "../../graphql/queries"
-import useFileUpload from "../../graphql/requests/useFileUpload"
+import useFileUpload from "../../hooks/useFileUpload"
 import TextIcon from "../../components/TextIcon"
 import { createAlbumScreenStyles } from "../../styles/createAlbumScreenStyles"
-import useCreateAlbum from '../../graphql/requests/useCreateAlbum'
+import useCreateAlbum from '../../hooks/useCreateAlbum'
 import AppRoutes from "~/app-routes"
 import AlertDialog from "../../components/AlertDialog"
 import { IMG_BUCKET, MAX_IMG_FILE_SIZE, CURRENT_YEAR } from "../../utils/constants.server"

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "@remix-run/react"
 import { useSelector, useDispatch } from "react-redux"
 import { useApolloClient } from '@apollo/client'
 import useForm from 'react-hook-form'
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 
 import ErrorIcon from '@mui/icons-material/Error'
 

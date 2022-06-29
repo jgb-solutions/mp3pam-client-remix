@@ -1,13 +1,13 @@
 
 
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
-import Spinner from "../../components/Spinner"
-import HeaderTitle from "../../components/HeaderTitle"
-import useGenres from "../../graphql/requests/useGenres"
-import GenreThumbnail, { GenreInterface } from "../../components/GenreThumbnail"
-import SEO from "../../components/SEO"
+import Spinner from "../components/Spinner"
+import HeaderTitle from "../components/HeaderTitle"
+import useGenres from "../hooks/useGenres"
+import GenreThumbnail, { GenreInterface } from "../components/GenreThumbnail"
+import SEO from "../components/SEO"
 
 export default function BrowseScreen() {
   const { loading, error, data } = useGenres()

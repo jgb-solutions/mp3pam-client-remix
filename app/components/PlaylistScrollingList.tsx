@@ -1,4 +1,5 @@
 import { useRef } from "react"
+import type { FC } from "react"
 import Box from "@mui/material/Box"
 import { Link } from "@remix-run/react"
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft"
@@ -6,6 +7,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"
 
 import type { BoxStyles } from "~/interfaces/types"
 import PlaylistThumbnail from "./PlaylistThumbnail"
+import type { HomePageDataQuery } from "~/graphql/generated-types"
 
 const styles: BoxStyles = {
   container: {
@@ -41,13 +43,15 @@ const styles: BoxStyles = {
   }
 }
 
-export interface PlaylistThumbnailData {
-  title: string,
-  hash: string,
-  cover_url: string,
+type Playlists = NonNullable<HomePageDataQuery["latestPlaylists"]>["data"]
+
+type Props = {
+  playlists: Playlists,
+  category: string,
+  browse: string
 }
 
-export const PlaylistScrollingList = (props: { playlists: PlaylistThumbnailData[], category: string, browse: string }) => {
+export const PlaylistScrollingList: FC<Props> = (props) => {
   const { playlists, category, browse } = props
   const divRef = useRef<HTMLDivElement>(null)
 

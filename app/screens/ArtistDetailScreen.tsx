@@ -26,12 +26,12 @@ import {
 import AppRoutes from "~/app-routes"
 import colors from "../utils/colors"
 import Tabs, { TabItem } from "../components/Tabs"
-import useArtistDetail from '../graphql/requests/useArtistDetail'
+import useArtistDetail from '../hooks/useArtistDetail'
 import Grid from '@mui/material/Grid'
 import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_ARTIST_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
 import Spinner from "../components/Spinner"
 import { ArtistScrollingList } from "../components/ArtistScrollingList"
-import useRandomArtists from "../graphql/requests/useRandomArtists"
+import useRandomArtists from "../hooks/useRandomArtists"
 import SEO from "../components/SEO"
 import FourOrFour from "../components/FourOrFour"
 import HeaderTitle from "../components/HeaderTitle"

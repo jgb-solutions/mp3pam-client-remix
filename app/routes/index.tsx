@@ -13,6 +13,7 @@ import { json } from '@remix-run/node'
 import MainLayout from '~/components/layouts/Main'
 import { useLoaderData } from '@remix-run/react'
 import type { HeadersFunction, LoaderFunction } from '@remix-run/node'
+import { HomePageDataQuery } from '~/graphql/generated-types'
 
 export const headers: HeadersFunction = () => {
 	return {
@@ -33,7 +34,7 @@ export default function Index() {
 		latestPlaylists,
 		latestArtists,
 		latestAlbums
-	} = useLoaderData()
+	} = useLoaderData<HomePageDataQuery>()
 
 	// console.log('latestTracks', latestTracks)
 	// console.log('latestPlaylists', latestPlaylists)
@@ -45,21 +46,21 @@ export default function Index() {
 			<HeaderTitle icon={<HomeIcon />} text="Home" />
 			<SEO />
 
-			{latestTracks.data.length ? (
+			{latestTracks?.data && (
 				<TrackScrollingList
 					category="New Tracks"
 					tracks={latestTracks.data}
 					browse={AppRoutes.browse.tracks}
 				/>
-			) : null}
+			)}
 
-			{latestPlaylists.data.length ? (
+			{latestPlaylists?.data && (
 				<PlaylistScrollingList
 					category="New Playlists"
 					playlists={latestPlaylists.data}
 					browse={AppRoutes.browse.playlists}
 				/>
-			) : null}
+			)}
 
 			{/* {latestArtists.data.length ? (
 				<ArtistScrollingList

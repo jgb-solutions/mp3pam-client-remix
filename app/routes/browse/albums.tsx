@@ -1,12 +1,12 @@
 
 import AlbumIcon from '@mui/icons-material/Album'
 
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 import InfiniteScroll from 'react-infinite-scroller'
 
 import Spinner from "../../components/Spinner"
 import HeaderTitle from "../../components/HeaderTitle"
-import useAlbums from "../../graphql/requests/useAlbums"
+import useAlbums from "../../hooks/useAlbums"
 import AlbumThumbnail from "../../components/AlbumThumbnail"
 import { AlbumThumbnailData } from "../../components/AlbumScrollingList"
 import SEO from "../../components/SEO"

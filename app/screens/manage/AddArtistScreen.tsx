@@ -16,10 +16,10 @@ import Button from '../../components/Button'
 import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
 import HeaderTitle from "../../components/HeaderTitle"
-import useFileUpload from "../../graphql/requests/useFileUpload"
+import useFileUpload from "../../hooks/useFileUpload"
 import TextIcon from "../../components/TextIcon"
 import { addArtistScreenStyles } from "../../styles/addArtistScreenStyles"
-import useAddArtist from '../../graphql/requests/useAddArtist'
+import useAddArtist from '../../hooks/useAddArtist'
 import AppRoutes from "~/app-routes"
 import AlertDialog from "../../components/AlertDialog"
 import { getFile } from "../../utils/helpers"

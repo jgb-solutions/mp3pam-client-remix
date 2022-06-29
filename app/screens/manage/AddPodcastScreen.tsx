@@ -4,25 +4,16 @@ import { gql } from "@apollo/client"
 
 import { useApolloClient } from '@apollo/client'
 
-import useForm from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled'
 
 import ProgressBar from "../../components/ProgressBar"
 import TextField from "@mui/material/TextField"
-import Button from '../../components/Button'
 import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
-
-export const UPLOAD_URL = gql`
-  query getUploadUrl($name: String!, $type: String!) {
-    uploadUrl(name: $name, type: $type) {
-     signedUrl
-		 fileUrl
-    }
-  }
-`
+import Button from "@mui/material/Button"
 
 export default function AddTrackScreen() {
   const client = useApolloClient()
@@ -30,7 +21,8 @@ export default function AddTrackScreen() {
   const [isUploaded, setIsUploaded] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [fileUrl, setFileUrl] = useState("")
-  const { register, handleSubmit, errors } = useForm<Values>()
+  const { register, handleSubmit, formState: { errors } } = useForm<Values>()
+
   useEffect(() => {
     if (completed === 100) setCompleted(0)
   }, [completed])
@@ -164,7 +156,7 @@ export default function AddTrackScreen() {
         <h2>Render Function as Children</h2>
         <div>
           <label>Phone</label>
-          <TextField name="phone" inputRef={register({})} placeholder="Phone" />
+          <TextField {...register("phone")} placeholder="Phone" />
         </div>
         <Button type="submit">Submit</Button>
       </form>

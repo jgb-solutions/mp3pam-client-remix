@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from "axios"
 import { useApolloClient } from '@apollo/client'
 
-import { UPLOAD_URL_QUERY } from '../queries'
+import { UPLOAD_URL_QUERY } from '../graphql/queries'
 
 type UploadFileType = {
   upload: (file: File) => void,
