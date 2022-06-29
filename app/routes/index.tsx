@@ -1,19 +1,19 @@
+import { json } from '@remix-run/node'
 import HomeIcon from '@mui/icons-material/Home'
+import { useLoaderData } from '@remix-run/react'
+import type { HeadersFunction, LoaderFunction } from '@remix-run/node'
 
-import { fetchHomeData } from "~/graphql/requests/fetchHomeData"
 import HeaderTitle from "~/components/HeaderTitle"
+import { fetchHomepage } from "~/graphql/requests.server"
 import { TrackScrollingList } from "~/components/TrackScrollingList"
-import { ArtistScrollingList } from "~/components/ArtistScrollingList"
+import type { ArtistScrollingList } from "~/components/ArtistScrollingList"
 import { PlaylistScrollingList } from "~/components/PlaylistScrollingList"
-import { AlbumScrollingList } from "~/components/AlbumScrollingList"
+import type { AlbumScrollingList } from "~/components/AlbumScrollingList"
 
 import SEO from "~/components/SEO"
 import AppRoutes from "~/app-routes"
-import { json } from '@remix-run/node'
 import MainLayout from '~/components/layouts/Main'
-import { useLoaderData } from '@remix-run/react'
-import type { HeadersFunction, LoaderFunction } from '@remix-run/node'
-import { HomePageDataQuery } from '~/graphql/generated-types'
+import type { HomepageQuery } from '~/graphql/generated-types'
 
 export const headers: HeadersFunction = () => {
 	return {
@@ -21,8 +21,8 @@ export const headers: HeadersFunction = () => {
 	}
 }
 
-export const loader: LoaderFunction = async ({ context }) => {
-	const data = await fetchHomeData()
+export const loader: LoaderFunction = async () => {
+	const data = await fetchHomepage()
 
 	return json(data)
 }
@@ -34,7 +34,7 @@ export default function Index() {
 		latestPlaylists,
 		latestArtists,
 		latestAlbums
-	} = useLoaderData<HomePageDataQuery>()
+	} = useLoaderData<HomepageQuery>()
 
 	// console.log('latestTracks', latestTracks)
 	// console.log('latestPlaylists', latestPlaylists)

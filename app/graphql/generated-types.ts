@@ -927,10 +927,10 @@ export type RandomArtistsDataQueryVariables = Exact<{
 
 export type RandomArtistsDataQuery = { __typename?: 'Query', randomArtists?: Array<{ __typename?: 'Artist', hash: string, name: string, poster_url: string }> | null };
 
-export type FetchGenresQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllGenresQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchGenresQuery = { __typename?: 'Query', genres: Array<{ __typename?: 'Genre', name: string, slug: string }> };
+export type AllGenresQuery = { __typename?: 'Query', genres: Array<{ __typename?: 'Genre', name: string, slug: string }> };
 
 export type RandomAlbumsDataQueryVariables = Exact<{
   input: RandomAlbumsInput;

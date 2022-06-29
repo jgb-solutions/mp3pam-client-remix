@@ -1,21 +1,25 @@
-
-
-import { Grid } from "@mui/material"
+import Grid from "@mui/material/Grid"
+import { json } from "@remix-run/node"
+import { useLoaderData } from "@remix-run/react"
+import type { LoaderFunction } from "@remix-run/node"
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
-import Spinner from "../components/Spinner"
-import HeaderTitle from "../components/HeaderTitle"
-import useGenres from "../hooks/useGenres"
-import GenreThumbnail, { GenreInterface } from "../components/GenreThumbnail"
 import SEO from "../components/SEO"
+import HeaderTitle from "../components/HeaderTitle"
+import { fetchGenres } from "~/graphql/requests.server"
+import GenreThumbnail from "../components/GenreThumbnail"
+import type { AllGenresQuery } from "~/graphql/generated-types"
+import type { GenreInterface } from "../components/GenreThumbnail"
+
+export const loader: LoaderFunction = async () => {
+  const data = await fetchGenres()
+
+  return json(data)
+}
+
 
 export default function BrowseScreen() {
-  const { loading, error, data } = useGenres()
-  const genres = get(data, 'genres')
-
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
+  const { genres } = useLoaderData<AllGenresQuery>()
 
   return (
     <>

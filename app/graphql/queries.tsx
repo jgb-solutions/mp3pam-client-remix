@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client"
+import { gql } from "graphql-request"
 
 export const HomepageQueryDocument = gql`
   query homepage($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
@@ -165,8 +165,8 @@ export const FETCH_RANDOM_ARTISTS = gql`
   }
 `
 
-export const FETCH_GENRES = gql`
-  query fetchGenres {
+export const GenresQueryDocument = gql`
+  query allGenres {
     genres {
       name
       slug

@@ -4,7 +4,7 @@ import {
   FETCH_ALBUM,
   FETCH_TRACK,
   FETCH_ARTIST,
-  FETCH_GENRES,
+  GenresQueryDocument,
   FETCH_TRACKS,
   FETCH_ALBUMS,
   FETCH_ARTISTS,
@@ -30,6 +30,7 @@ import type {
   TracksDataByGenreQuery,
   HomepageQueryVariables,
   TracksDataByGenreQueryVariables,
+  AllGenresQuery,
 } from './generated-types'
 
 import {
@@ -556,7 +557,7 @@ export function download(input: DownloadProps): TrackDetail {
 }
 
 export function fetchGenres() {
-  return graphQLClient.request(FETCH_GENRES)
+  return graphQLClient.request<AllGenresQuery>(GenresQueryDocument)
 }
 
 
