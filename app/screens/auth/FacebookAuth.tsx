@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useLocation, useHistory, Redirect } from 'react-router'
 import queryString from 'query-string'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient } from 'graphql-request'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Routes from '../../routes'

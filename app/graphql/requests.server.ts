@@ -79,7 +79,7 @@ import type AlbumInterface from '~/interfaces/AlbumInterface'
 import type { SearchData } from '~/interfaces/SearchInterface'
 import type { Credentials } from '~/screens/auth/LoginScreen'
 import type { AlbumData } from '~/screens/manage/CreateAlbumScreen'
-import PlaylistInterface from '~/interfaces/PlaylistInterface'
+import type PlaylistInterface from '~/interfaces/PlaylistInterface'
 
 export function fetchHomepage() {
   return graphQLClient.request<HomepageQuery, HomepageQueryVariables>(HomepageQueryDocument, {

@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "@remix-run/react"
 
 import { useSelector, useDispatch } from 'react-redux'
 import Avatar from '@mui/material/Avatar'
-import { useMutation, useApolloClient } from '@apollo/client'
+import { useMutation, useApolloClient } from 'graphql-request'
 import EditIcon from '@mui/icons-material/Edit'
 import ErrorIcon from '@mui/icons-material/Error'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'

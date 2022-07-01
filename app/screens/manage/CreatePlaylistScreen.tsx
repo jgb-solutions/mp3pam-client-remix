@@ -1,8 +1,8 @@
 import axios from "axios"
 import React, { useState, useEffect } from "react"
-import { gql } from "@apollo/client"
+import { gql } from "graphql-request"
 
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient } from 'graphql-request'
 
 import useForm from 'react-hook-form'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'

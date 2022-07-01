@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useQuery } from '@apollo/client'
+import { useQuery } from 'graphql-request'
 
 import useForm from 'react-hook-form'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
@@ -9,7 +9,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import { useHistory, useLocation } from "@remix-run/react"
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import { Grid, FormControlLabel, Checkbox } from "@mui/material"
-import { useMutation } from '@apollo/client'
+import { useMutation } from 'graphql-request'
 
 import ProgressBar from "../../components/ProgressBar"
 import TextField from "../../components/TextField"

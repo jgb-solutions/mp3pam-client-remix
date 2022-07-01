@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from "axios"
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient } from 'graphql-request'
 
 import { UPLOAD_URL_QUERY } from '../graphql/queries'
 

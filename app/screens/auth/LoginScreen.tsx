@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useLocation, useNavigate } from "@remix-run/react"
 import { useSelector, useDispatch } from "react-redux"
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient } from 'graphql-request'
 import useForm from 'react-hook-form'
 import { Grid } from "@mui/material"
 

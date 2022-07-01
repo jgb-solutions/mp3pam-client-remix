@@ -1,7 +1,7 @@
 
-import { gql } from "@apollo/client"
+import { gql } from "graphql-request"
 
-import { useQuery } from '@apollo/client'
+import { useQuery } from 'graphql-request'
 import { UserData } from "../interfaces/UserInterface"
 import Spinner from "../components/Spinner"
 

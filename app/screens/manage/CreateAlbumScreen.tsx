@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useQuery } from '@apollo/client'
+import { useQuery } from 'graphql-request'
 
 import useForm from 'react-hook-form'
 import AlbumIcon from '@mui/icons-material/Album'
