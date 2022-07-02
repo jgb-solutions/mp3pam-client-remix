@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux'
 import AppStateInterface from '../interfaces/AppStateInterface'
 import ListInterface, { SoundInterface } from '../interfaces/ListInterface'
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   table: {
 //     width: '100%',
 //     marginTop: theme.spacing(3),
@@ -23,7 +23,7 @@ import ListInterface, { SoundInterface } from '../interfaces/ListInterface'
 //   },
 // }))
 
-// const StyledTableCell = withStyles(theme => ({
+// const StyledTableCell = withStyles({
 //   head: {
 //     color: colors.grey,
 //     textTransform: 'uppercase',
@@ -45,12 +45,12 @@ type Props = {
 }
 
 export default function ListTable(props: Props) {
-  const styles = {}
+
   const sounds = props.list.sounds
   const currentSound = useSelector(({ player }: AppStateInterface) => player.currentSound)
 
   return (
-    <Table className={styles.table} size="small">
+    <Table sx={styles.table} size="small">
       <TableHead>
         <TableRow>
           {/* <StyledTableCell>&nbsp;</StyledTableCell>

@@ -7,18 +7,18 @@ import IconButton from "@mui/material/IconButton"
 import colors from "../utils/colors"
 
 
-// const useStyles = makeStyles({
-//   icon: {
-//     fontSize: 18,
-//     color: colors.grey
-//   },
-//   border: {
-//     color: colors.white,
-//     padding: 5,
-//     border: "1px solid white",
-//     borderRadius: "50%",
-//   },
-// })
+const styles = {
+  icon: {
+    fontSize: "18px",
+    color: colors.grey
+  },
+  border: {
+    color: colors.white,
+    padding: 1,
+    border: "1px solid white",
+    borderRadius: "50%",
+  },
+}
 
 type Props = {
   toggleFavorite?: () => void,
@@ -28,15 +28,15 @@ type Props = {
 
 function Heart(props: Props) {
   const { toggleFavorite, isFavorite } = props
-  const styles = {}
+
 
   return (
-    <IconButton onClick={toggleFavorite} className={props.border ? styles.border : ''}>
+    <IconButton onClick={toggleFavorite} sx={props.border ? styles.border : {}}>
       {isFavorite && (
-        <Favorite className={styles.icon} />
+        <Favorite sx={styles.icon} />
       )}
       {!isFavorite && (
-        <FavoriteBorder className={styles.icon} />
+        <FavoriteBorder sx={styles.icon} />
       )}
     </IconButton>
   )

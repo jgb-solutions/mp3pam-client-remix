@@ -12,7 +12,7 @@ function Spinner({ size = 100, className }: Props) {
       style={{ background: "none" }}
       width={size}
       height={size}
-      className={className}
+      sx={className}
       preserveAspectRatio="xMidYMid"
       viewBox="0 0 100 100"
     >
@@ -37,7 +37,7 @@ function Spinner({ size = 100, className }: Props) {
 
 export const SpinnerFull = ({ size, className }: { size?: number, className?: string }) => (
   <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', paddingTop: 70 }}>
-    <Spinner size={size} className={className} />
+    <Spinner size={size} sx={className} />
   </div>
 )
 

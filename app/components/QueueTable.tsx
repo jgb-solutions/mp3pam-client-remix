@@ -15,7 +15,7 @@ import { Link } from '@remix-run/react'
 
 import AppRoutes from '~/app-routes'
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   table: {
 //     width: '100%',
 //     marginTop: theme.spacing(3),
@@ -28,7 +28,7 @@ import AppRoutes from '~/app-routes'
 //   }
 // }))
 
-// const StyledTableCell = withStyles(theme => ({
+// const StyledTableCell = withStyles({
 //   head: {
 //     color: colors.grey,
 //     textTransform: 'uppercase',
@@ -46,14 +46,14 @@ import AppRoutes from '~/app-routes'
 // }))(TableCell)
 
 export default function QueueTable() {
-  const styles = {}
+
 
   const { currentSound, currentPlayingIndex, queueList, list } = useSelector(
     (appState: AppStateInterface) => appState.player
   )
 
   return (
-    <Table className={styles.table} size="small">
+    <Table sx={styles.table} size="small">
       <TableHead>
         <TableRow>
           {/* App */}
@@ -78,10 +78,10 @@ export default function QueueTable() {
                 <PlayPause sound={sound} list={list} />
               </StyledTableCell>
               <StyledTableCell style={{ width: '30%', color }}>
-                <Link to={soundPage} className={styles.link} style={{ color }}>{sound.title}</Link>
+                <Link to={soundPage} sx={styles.link} style={{ color }}>{sound.title}</Link>
               </StyledTableCell>
               <StyledTableCell style={{ width: '35%' }}>
-                <Link to={authorPage} className={styles.link} style={{ color }}>{sound.author_name}</Link>
+                <Link to={authorPage} sx={styles.link} style={{ color }}>{sound.author_name}</Link>
               </StyledTableCell>
               <StyledTableCell style={{ width: '20%', color }}>{sound.type.toUpperCase()}</StyledTableCell> */}
 

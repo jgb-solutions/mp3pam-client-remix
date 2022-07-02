@@ -1,11 +1,11 @@
 import type { FC } from 'react'
 import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
 
 
-// import Player from '../Player.client'
 import colors from "../../utils/colors"
 import type { BoxStyles } from '~/interfaces/types'
-import { Container } from '@mui/material'
+import Player from '../Player.client'
 
 export const styles: BoxStyles = ({
   '@global': {
@@ -29,8 +29,8 @@ export const styles: BoxStyles = ({
 
 const RootLayout: FC = ({ children }) => {
   return (
-    <Container className="transition-container" maxWidth="lg">
-      <Grid container sx={styles.container} className="react-transition scale-in">
+    <Container maxWidth="lg">
+      <Grid container sx={styles.container} >
         {children}
       </Grid>
       {/* <Player /> */}

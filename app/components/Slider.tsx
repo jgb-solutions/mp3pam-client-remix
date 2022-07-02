@@ -3,7 +3,7 @@ import Slider from "@mui/material/Slider"
 
 import colors from "../utils/colors"
 
-// const useStyles = makeStyles({
+// const styles = {
 // 	root: {
 // 		color: colors.grey
 // 	},
@@ -17,7 +17,7 @@ import colors from "../utils/colors"
 // })
 
 const CustomSlider = (props: any) => {
-	const styles = {}
+
 
 	return <Slider classes={styles} {...props} />
 }

@@ -16,12 +16,12 @@ import useMyPlaylists from "../../hooks/useMyPlaylists"
 // import { StyledTableCell } from "../../components/PlaylistTracksTable"
 import { Link } from "@remix-run/react"
 import AppRoutes from "~/app-routes"
-import Button from "../../components/Button"
+import Button from "@mui/material/Button"
 import colors from "../../utils/colors"
 import useDeletePlaylist from "../../hooks/useDeletePlaylist"
 import SEO from "../../components/SEO"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   table: {
 //     width: '100%',
 //     overflowX: 'auto',
@@ -38,7 +38,7 @@ import SEO from "../../components/SEO"
 // }))
 
 export default function ManagePlaylistsScreen() {
-  const styles = {}
+
   const [playlistHashToDelete, setPlaylistHashToDelete] = useState('')
   const { deletePlaylist, deletePlaylistResponse, deletingPlaylist, errorDeletingPlaylist } = useDeletePlaylist()
   const { loading, error, data, refetch } = useMyPlaylists()
@@ -74,7 +74,7 @@ export default function ManagePlaylistsScreen() {
         <>
           <HeaderTitle icon={<PlaylistAddIcon />} text="Your Playlists" />
 
-          <Table className={styles.table} size="small">
+          <Table sx={styles.table} size="small">
             <TableHead>
               <TableRow>
                 {/* <StyledTableCell>Title</StyledTableCell>
@@ -89,15 +89,15 @@ export default function ManagePlaylistsScreen() {
                     borderBottom: playlists.data.length - 1 === index ? '' : '1px solid white',
                   }}>
                     {/* <StyledTableCell style={{ width: '80%' }}>
-                      <Link to={Routes.playlist.detailPage(playlist.hash)} className={styles.link}>{playlist.title}</Link>
+                      <Link to={Routes.playlist.detailPage(playlist.hash)} sx={styles.link}>{playlist.title}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <Link to={Routes.playlist.editPage(playlist.hash)} className={styles.link}>Edit</Link>
+                      <Link to={Routes.playlist.editPage(playlist.hash)} sx={styles.link}>Edit</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span
                         onClick={() => confirmDelete(playlist.hash)}
-                        className={styles.link}
+                        sx={styles.link}
                         style={{ cursor: 'pointer' }}>Delete</span>
                     </StyledTableCell> */}
                   </TableRow>
@@ -116,7 +116,7 @@ export default function ManagePlaylistsScreen() {
         handleClose={() => setPlaylistHashToDelete('')}>
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
-          icon={<ErrorIcon className={styles.errorColor} />}
+          icon={<ErrorIcon sx={styles.errorColor} />}
           text={`Are you sure you want to delete this playlist?`} />
         <DialogActions>
           <Button size='small' onClick={() => setPlaylistHashToDelete('')}>
@@ -125,7 +125,7 @@ export default function ManagePlaylistsScreen() {
           <Button
             size='small'
             onClick={() => handleDeletePlaylist(playlistHashToDelete)}
-            className={styles.noBgButton}
+            sx={styles.noBgButton}
             disabled={deletingPlaylist}>
             Delete
           </Button>

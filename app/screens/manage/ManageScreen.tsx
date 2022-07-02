@@ -14,12 +14,12 @@ import AppRoutes from "~/app-routes"
 import { PlaylistScrollingList } from "../../components/PlaylistScrollingList"
 import SEO from "../../components/SEO"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   link: { color: "#fff", fontWeight: 'bold' },
 // }))
 
 export default function ManageScreen() {
-  const styles = {}
+
   const { loading, error, data } = useManage()
   const latestTracks = get(data, 'me.latestTracks.data')
   const latestArtists = get(data, 'me.latestArtists.data')
@@ -42,7 +42,7 @@ export default function ManageScreen() {
           browse={AppRoutes.user.manage.tracks}
         />
       ) : (
-        <h3>You have no tracks yet. <Link className={styles.link} to={AppRoutes.user.create.track}>Add a new track</Link>.</h3>
+        <h3>You have no tracks yet. <Link sx={styles.link} to={AppRoutes.user.create.track}>Add a new track</Link>.</h3>
       )}
 
       {latestPlaylists.length ? (
@@ -52,7 +52,7 @@ export default function ManageScreen() {
           browse={AppRoutes.user.manage.playlists}
         />
       ) : (
-        <h3>You have no playlists yet. <Link className={styles.link} to={AppRoutes.user.create.playlist}>Create a new playlist</Link>.</h3>
+        <h3>You have no playlists yet. <Link sx={styles.link} to={AppRoutes.user.create.playlist}>Create a new playlist</Link>.</h3>
       )
       }
 
@@ -63,7 +63,7 @@ export default function ManageScreen() {
           browse={AppRoutes.user.manage.artists}
         />
       ) : (
-        <h3>You have no artists yet. <Link className={styles.link} to={AppRoutes.user.create.artist}>Add a new artist</Link>.</h3>
+        <h3>You have no artists yet. <Link sx={styles.link} to={AppRoutes.user.create.artist}>Add a new artist</Link>.</h3>
       )}
 
       {latestAlbums.length ? (
@@ -73,7 +73,7 @@ export default function ManageScreen() {
           browse={AppRoutes.user.manage.albums}
         />
       ) : (
-        <h3>You have no albums yet. <Link className={styles.link} to={AppRoutes.user.create.album}>Create a new album</Link>.</h3>
+        <h3>You have no albums yet. <Link sx={styles.link} to={AppRoutes.user.create.album}>Create a new album</Link>.</h3>
       )}
     </>
   )

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Link, useParams, useNavigate } from "@remix-run/react"
-import { get } from 'lodash'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import Avatar from '@mui/material/Avatar'
@@ -12,141 +11,132 @@ import DialogActions from "@mui/material/DialogActions"
 import ErrorIcon from '@mui/icons-material/Error'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 
-import TextField from "../../components/TextField"
+import TextField from "@mui/material/TextField"
 import AppRoutes from "~/app-routes"
-import colors from "../../utils/colors"
-import usePlaylistDetail from '../../hooks/usePlaylistDetail'
-import Button from "../../components/Button"
-import { PlaylistTrackInterface } from "../../interfaces/PlaylistInterface"
-import { SMALL_SCREEN_SIZE, } from "../../utils/constants.server"
-import Spinner from "../../components/Spinner"
-import useAddTrackToPlaylist from "../../hooks/useAddTrackToPlaylist"
-import FourOrFour from "../../components/FourOrFour"
-import HeaderTitle from "../../components/HeaderTitle"
-import AlertDialog from "../../components/AlertDialog"
-import CheckAuth from "../../components/CheckAuth"
-// import { StyledTableCell } from "../../components/PlaylistTracksTable"
-import useDeletePlaylistTrack from "../../hooks/useDeletePlaylistTrack"
-import useMyPlaylists from "../../hooks/useMyPlaylists"
-import useCreatePlaylist from "../../hooks/useCreatePlaylist"
-import SEO from "../../components/SEO"
+import colors from "~/utils/colors"
+import Button from "@mui/material/Button"
+import type { PlaylistTrackInterface } from "~/interfaces/PlaylistInterface"
+import { SMALL_SCREEN_SIZE, } from "~/utils/constants.server"
+import Spinner from "~/components/Spinner"
+import FourOrFour from "~/components/FourOrFour"
+import HeaderTitle from "~/components/HeaderTitle"
+import AlertDialog from "~/components/AlertDialog"
+import CheckAuth from "~/components/CheckAuth"
+// import { StyledTableCell } from "~/components/PlaylistTracksTable"
+import SEO from "~/components/SEO"
 import { useForm } from "react-hook-form"
-import { Grid } from "@mui/material"
+import { Box, darken, Grid } from "@mui/material"
+import { BoxStyles } from "~/interfaces/types"
+import theme from "~/mui/theme"
 
 
-// const useStyles = makeStyles(theme => ({
-//   row: {
-//     display: "flex",
-//     flexDirection: "row"
-//   },
-//   table: {
-//     width: '100%',
-//     overflowX: 'auto',
-//   },
-//   imageContainer: {
-//     textAlign: 'center',
-//   },
-//   image: {
-//     width: 250,
-//     height: 'auto',
-//     maxWidth: "100%",
-//   },
-//   listByAuthor: {
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//   },
-//   link: {
-//     color: 'white',
-//     fontWeight: 'bold'
-//   },
-//   listBy: {
-//     color: darken(colors.white, 0.5),
-//     fontSize: 12
-//   },
-//   listAuthor: {
-//     textDecoration: "none",
-//     color: colors.white,
-//     "&:hover": {
-//       textDecoration: "underline"
-//     },
-//     "&:link": {
-//       textDecoration: "none",
-//       color: "white"
-//     }
-//   },
-//   detailsWrapper: {
-//     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-//       position: 'relative',
-//     },
-//   },
-//   listDetails: {
-//     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-//       position: 'absolute',
-//       bottom: 4,
-//     },
-//     "& > *": {
-//       padding: 0,
-//       margin: 0
-//     },
-//     [theme.breakpoints.down('xs')]: {
-//       textAlign: 'center',
-//     },
-//   },
-//   listType: {
-//     fontSize: 12,
-//     fontWeight: 400,
-//     textTransform: "uppercase"
-//   },
-//   listName: {
-//     fontSize: 36,
-//     fontWeight: "bold",
-//     [theme.breakpoints.down('xs')]: {
-//       fontSize: 32,
-//     },
-//   },
-//   ctaButtons: {
-//     marginTop: 10,
-//   },
-//   errorColor: { color: colors.error },
-//   noBgButton: {
-//     backgroundColor: colors.contentGrey,
-//     border: `1px solid ${colors.primary}`
-//   },
-// }))
+const styles: BoxStyles = {
+  row: {
+    display: "flex",
+    flexDirection: "row"
+  },
+  table: {
+    width: '100%',
+    overflowX: 'auto',
+  },
+  imageContainer: {
+    textAlign: 'center',
+  },
+  image: {
+    width: 250,
+    height: 'auto',
+    maxWidth: "100%",
+  },
+  listByAuthor: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  link: {
+    color: 'white',
+    fontWeight: 'bold'
+  },
+  listBy: {
+    color: darken(colors.white, 0.5),
+    fontSize: 12
+  },
+  listAuthor: {
+    textDecoration: "none",
+    color: colors.white,
+    "&:hover": {
+      textDecoration: "underline"
+    },
+    "&:link": {
+      textDecoration: "none",
+      color: "white"
+    }
+  },
+  detailsWrapper: {
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+      position: 'relative',
+    },
+  },
+  listDetails: {
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+      position: 'absolute',
+      bottom: 4,
+    },
+    "& > *": {
+      padding: 0,
+      margin: 0
+    },
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+    },
+  },
+  listType: {
+    fontSize: 12,
+    fontWeight: 400,
+    textTransform: "uppercase"
+  },
+  listName: {
+    fontSize: 36,
+    fontWeight: "bold",
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 32,
+    },
+  },
+  ctaButtons: {
+    marginTop: 10,
+  },
+  errorColor: { color: colors.error },
+  noBgButton: {
+    backgroundColor: colors.contentGrey,
+    border: `1px solid ${colors.primary}`
+  },
+}
 
 export const CreatePlaylistForm = ({ onPlaylistCreate, playlists }: {
   onPlaylistCreate: (hash: string) => void,
   playlists: { title: string }[]
 }) => {
-  const styles = {}
-  const { createPlaylist, data, loading, error } = useCreatePlaylist()
+
+  // const { createPlaylist, data, loading, error } = useCreatePlaylist()
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm<{ title: string }>({ mode: 'onBlur' })
 
-  useEffect(() => {
-    if (data) {
-      console.log(data)
-      onPlaylistCreate(data.CreatePlaylist.hash)
-    }
-    // eslint-disable-next-line
-  }, [data])
+  // useEffect(() => {
+  //   if (data) {
+  //     console.log(data)
+  //     onPlaylistCreate(data.CreatePlaylist.hash)
+  //   }
+  //   // eslint-disable-next-line
+  // }, [data])
 
   const handleCreatePlaylist = ({ title }: { title: string }) => {
-    createPlaylist(title)
-  }
-
-  if (loading) return <Spinner.Full />
-
-  if (error) {
-    return (<h3>Error creating the playlist. Please reload page.</h3>)
+    // createPlaylist(title)
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit(handleCreatePlaylist)} noValidate>
+      <Box component="form" onSubmit={handleSubmit(handleCreatePlaylist)} noValidate>
         <Grid container direction='row' spacing={2}>
           <Grid item xs={8}>
             <TextField
@@ -162,7 +152,7 @@ export const CreatePlaylistForm = ({ onPlaylistCreate, playlists }: {
               type="text"
               error={!!errors.title}
               helperText={errors.title && (
-                <span className={styles.errorColor}>{errors.title.message}</span>
+                <Box component="span" sx={styles.errorColor}>{errors.title.message}</Box>
               )}
             />
           </Grid>
@@ -170,7 +160,7 @@ export const CreatePlaylistForm = ({ onPlaylistCreate, playlists }: {
             <Button size='small' type="submit">Create</Button>
           </Grid>
         </Grid>
-      </form>
+      </Box>
     </>
   )
 }
@@ -179,39 +169,31 @@ export const AddTrackToPlaylist = ({ trackHash, onRequestClose }: {
   trackHash: string,
   onRequestClose: () => void,
 }) => {
-  const styles = {}
+
   const [openCreatePlaylistPopup, setOpenCreatePlaylistPopup] = useState(false)
-  const {
-    addTrackToPlaylist,
-    data: addTrackToPlaylistResponse,
-    loading: addingTrackToPlaylist,
-    error: errorAddingTrackToPlaylist
-  } = useAddTrackToPlaylist()
-  const { loading, error, data } = useMyPlaylists()
-  const playlists = get(data, 'me.playlists.data')
+  // const {
+  //   addTrackToPlaylist,
+  //   data: addTrackToPlaylistResponse,
+  //   loading: addingTrackToPlaylist,
+  //   error: errorAddingTrackToPlaylist
+  // } = useAddTrackToPlaylist()
+  // const { loading, error, data } = useMyPlaylists()
+  // const playlists = get(data, 'me.playlists.data')
 
-  useEffect(() => {
-    if (addTrackToPlaylistResponse) {
-      onRequestClose()
-    }
-    // eslint-disable-next-line
-  }, [addTrackToPlaylistResponse])
+  // useEffect(() => {
+  //   if (addTrackToPlaylistResponse) {
+  //     onRequestClose()
+  //   }
+  //   // eslint-disable-next-line
+  // }, [addTrackToPlaylistResponse])
 
-  const handleAddTrackToPlaylist = (playlistHash: string) => {
-    addTrackToPlaylist(playlistHash, trackHash)
-  }
+  // const handleAddTrackToPlaylist = (playlistHash: string) => {
+  //   addTrackToPlaylist(playlistHash, trackHash)
+  // }
 
-  if (loading) return <Spinner.Full />
-
-  if (addingTrackToPlaylist) return <Spinner.Full />
-
-  if (error) {
-    return (<h3>Error loading your tracks. Please reload page.</h3>)
-  }
-
-  if (errorAddingTrackToPlaylist) {
-    return (<h3>Error adding the track to the playlist.</h3>)
-  }
+  // if (errorAddingTrackToPlaylist) {
+  //   return (<h3>Error adding the track to the playlist.</h3>)
+  // }
 
   return (
     <AlertDialog
@@ -231,21 +213,22 @@ export const AddTrackToPlaylist = ({ trackHash, onRequestClose }: {
         </Button>
       </p>
 
-      {openCreatePlaylistPopup && (
+      {/* {openCreatePlaylistPopup && (
         <CreatePlaylistForm
           playlists={playlists}
           onPlaylistCreate={handleAddTrackToPlaylist}
         />
-      )}
+      )} */}
 
       {/* {!openCreatePlaylistPopup ? (
 
       ) : null } */}
-      {playlists ? (
+
+      {/* {playlists ? (
         <>
           <HeaderTitle icon={<FormatListNumberedIcon />} text="Your Playlists" />
 
-          <Table className={styles.table} size="small">
+          <Table sx={styles.table} size="small">
             <TableBody>
               {playlists.map((playlist: { hash: string, title: string }, index: number) => {
                 return (
@@ -262,7 +245,7 @@ export const AddTrackToPlaylist = ({ trackHash, onRequestClose }: {
 
                           handleAddTrackToPlaylist(playlist.hash)
                         }}
-                        className={styles.link}
+                        sx={styles.link}
                         style={{ cursor: 'pointer' }}>Add</span>
                     </StyledTableCell>
                   </TableRow>
@@ -273,13 +256,13 @@ export const AddTrackToPlaylist = ({ trackHash, onRequestClose }: {
         </>
       ) : (
         <HeaderTitle icon={<FormatListNumberedIcon />} text="You have no playlists yet" />
-      )}
+      )} */}
 
       <DialogActions>
         <Button
           size='small'
           onClick={onRequestClose}
-          className={styles.noBgButton}>
+          sx={styles.noBgButton}>
           Cancel
         </Button>
       </DialogActions>
@@ -288,71 +271,65 @@ export const AddTrackToPlaylist = ({ trackHash, onRequestClose }: {
 }
 
 export default function PlaylistEditScreen() {
-  const styles = {}
   const params = useParams()
   const navigate = useNavigate()
   const hash = get(params, 'hash')
   const [trackHashToDelete, setTrackHashToDelete] = useState('')
-  const {
-    deletePlaylistTrack,
-    deletePlaylistTrackResponse,
-    deletingPlaylistTrack,
-    errorDeletingPlaylistTrack
-  } = useDeletePlaylistTrack()
+  // const {
+  //   deletePlaylistTrack,
+  //   deletePlaylistTrackResponse,
+  //   deletingPlaylistTrack,
+  //   errorDeletingPlaylistTrack
+  // } = useDeletePlaylistTrack()
 
-  const { data, loading, error, refetch } = usePlaylistDetail(hash)
-  const playlist = get(data, 'playlist')
+  // const { data, loading, error, refetch } = usePlaylistDetail(hash)
 
   const confirmDelete = (hash: string) => {
     setTrackHashToDelete(hash)
   }
 
   const handleDeletePlaylistTrack = (trackHash: string) => {
-    deletePlaylistTrack(trackHash, playlist.hash)
+    // deletePlaylistTrack(trackHash, playlist.hash)
   }
 
-  useEffect(() => {
-    if (deletePlaylistTrackResponse || errorDeletingPlaylistTrack) {
-      setTrackHashToDelete('')
+  // useEffect(() => {
+  //   if (deletePlaylistTrackResponse || errorDeletingPlaylistTrack) {
+  //     setTrackHashToDelete('')
 
-      if (deletePlaylistTrackResponse) {
-        refetch()
-      }
-    }
-    // eslint-disable-next-line
-  }, [deletePlaylistTrackResponse, errorDeletingPlaylistTrack])
-
-  if (loading) return <Spinner.Full />
-
-  if (error) {
-    return (<h1>Error loading playlist detail. Please reload page.</h1>)
-  }
+  //     if (deletePlaylistTrackResponse) {
+  //       refetch()
+  //     }
+  //   }
+  //   // eslint-disable-next-line
+  // }, [deletePlaylistTrackResponse, errorDeletingPlaylistTrack])
 
   return (
-    <CheckAuth className="react-transition flip-in-x-reverse">
+    <CheckAuth sx="react-transition flip-in-x-reverse">
       <SEO title={`Edit Playlist`} />
 
-      {playlist ? (
+      {/* {playlist ? (
         <>
           <HeaderTitle
-            onClick={() => navigate(Routes.playlist.detailPage(playlist.hash))}
+            onClick={() => navigate(AppRoutes.playlist.detailPage(playlist.hash))}
             icon={(
               <Avatar style={{ width: 75, height: 75 }} alt={playlist.title} src={playlist.cover_url} />
             )}
             textStyle={{ paddingLeft: 10 }}
             text={playlist.title}
-          />
+          /> */}
 
-          {playlist.tracks.length ? (
+      {/* {playlist.tracks.length ? (
             <>
               <HeaderTitle icon={<MusicNoteIcon />} text="Playlist Tracks" />
 
-              <Table className={styles.table} size="small">
+              <Table sx={styles.table} size="small">
                 <TableHead>
                   <TableRow>
                     <StyledTableCell>Title</StyledTableCell>
                     <StyledTableCell>Artist</StyledTableCell>
-                    {/* <StyledTableCell>&nbsp;</StyledTableCell> */}
+
+                    <StyledTableCell>&nbsp;</StyledTableCell>
+
                     <StyledTableCell>&nbsp;</StyledTableCell>
                   </TableRow>
                 </TableHead>
@@ -363,15 +340,15 @@ export default function PlaylistEditScreen() {
                         borderBottom: playlist.tracks.length - 1 === index ? '' : '1px solid white',
                       }}>
                         <StyledTableCell style={{ width: '40%' }}>
-                          <Link to={Routes.track.detailPage(track.hash)} className={styles.link}>{track.title}</Link>
+                          <Link to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '40%' }}>
-                          <Link to={Routes.artist.detailPage(track.artist.hash)} className={styles.link}>{track.artist.stage_name}</Link>
+                          <Link to={AppRoutes.artist.detailPage(track.artist.hash)} sx={styles.link}>{track.artist.stage_name}</Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '10%' }}>
                           <span
                             onClick={() => confirmDelete(track.hash)}
-                            className={styles.link}
+                            sx={styles.link}
                             style={{ cursor: 'pointer' }}>Delete</span>
                         </StyledTableCell>
                       </TableRow>
@@ -383,46 +360,47 @@ export default function PlaylistEditScreen() {
           ) : (
             <>
               <HeaderTitle icon={<MusicNoteIcon />} text="This playlist has no tracks yet" />
-              <p><Link style={{ color: 'white' }} to={Routes.browse.tracks}>Start browsing</Link> some tracks to add to your playlist.</p>
+              <p><Link style={{ color: 'white' }} to={AppRoutes.browse.tracks}>Start browsing</Link> some tracks to add to your playlist.</p>
             </>
-          )}
-        </>
-      ) : (
-        <>
-          <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Playlist was not found." />
-          <h3>
-            Go to the <Link style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
-            or
-            {' '}
-            <Link
-              style={{ cursor: 'pointer', textDecoration: 'underline', color: colors.white }}
-              to={Routes.browse.playlists}>browse other playlists.
-            </Link>.
-          </h3>
-          <FourOrFour />
-        </>
-      )}
+          )} */}
+      {/* </>
+  ) : (
+    <>
+      <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Playlist was not found." />
+      <h3>
+        Go to the <Link style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
+        or
+        {' '}
+        <Link
+          style={{ cursor: 'pointer', textDecoration: 'underline', color: colors.white }}
+          to={AppRoutes.browse.playlists}>browse other playlists.
+        </Link>.
+      </h3>
+      <FourOrFour />
+    </> */}
+
+
       {/* Deletion confirmation */}
-      <AlertDialog
+      {/* <AlertDialog
         open={!!trackHashToDelete}
         handleClose={() => setTrackHashToDelete('')}>
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
-          icon={<ErrorIcon className={styles.errorColor} />}
+          icon={<ErrorIcon sx={styles.errorColor} />}
           text={`Are you sure you want to delete this track?`} />
         <DialogActions>
           <Button size='small' onClick={() => setTrackHashToDelete('')}>
             Cancel
-          </Button>
-          <Button
+          </Button> */}
+      {/* <Button
             size='small'
             onClick={() => handleDeletePlaylistTrack(trackHashToDelete)}
-            className={styles.noBgButton}
+            sx={styles.noBgButton}
             disabled={deletingPlaylistTrack}>
             Delete
-          </Button>
-        </DialogActions>
-      </AlertDialog>
+          </Button> */}
+      {/* </DialogActions>
+      </AlertDialog> */}
     </CheckAuth>
   )
 }

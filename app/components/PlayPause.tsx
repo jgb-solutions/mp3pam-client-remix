@@ -8,30 +8,31 @@ import { connect } from 'react-redux'
 
 
 import colors from "../utils/colors"
-import * as playerActions from "../store/actions/playerActions"
-import AppStateInterface from "../interfaces/AppStateInterface"
-import ListInterface from "../interfaces/ListInterface"
-import { SoundInterface } from "../interfaces/ListInterface"
+import * as playerActions from "../redux/actions/playerActions"
+import type AppStateInterface from "../interfaces/AppStateInterface"
+import type ListInterface from "../interfaces/ListInterface"
+import type { SoundInterface } from "../interfaces/ListInterface"
+import type { BoxStyles } from "~/interfaces/types"
 
-// const useStyles = makeStyles({
-//   icon: {
-//     fontSize: 18,
-//     color: colors.grey,
-//     '&:hover': {
-//       color: colors.white
-//     }
-//   },
-//   border: {
-//     color: colors.white,
-//     padding: 5,
-//     border: "1px solid white",
-//     borderRadius: "50%",
-//     marginLeft: 15
-//   },
-//   button: {
-//     padding: 0
-//   },
-// })
+const styles: BoxStyles = {
+  icon: {
+    fontSize: 18,
+    color: colors.grey,
+    '&:hover': {
+      color: colors.white
+    }
+  },
+  border: {
+    color: colors.white,
+    padding: 5,
+    border: "1px solid white",
+    borderRadius: "50%",
+    marginLeft: 15
+  },
+  button: {
+    padding: 0
+  },
+}
 
 type Props = {
   border?: boolean,
@@ -62,7 +63,7 @@ function PlayPause({
   pauseSound,
 }: Props
 ) {
-  const styles = {}
+
 
   const togglePlay = () => {
     if (currentSound && list.hash === playingListHash) {
@@ -101,15 +102,15 @@ function PlayPause({
   }
 
   return currentSound ? (
-    <IconButton onClick={togglePlay} className={styles.button}>
+    <IconButton onClick={togglePlay} sx={styles.button}>
       {sound.hash === currentSound.hash && isPlaying ? (
         <PauseCircleOutline
-          className={styles.icon}
+          sx={styles.icon}
           style={{ fontSize: 35 }}
         />
       ) : (
         <PlayCircleOutline
-          className={styles.icon}
+          sx={styles.icon}
           style={{ fontSize: 35 }}
         />
       )}

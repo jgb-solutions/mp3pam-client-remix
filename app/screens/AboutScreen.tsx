@@ -15,7 +15,7 @@ import colors from '../utils/colors'
 export default class AboutScreen extends Component {
   render() {
     return (
-      <div className='react-transition flip-in-x' style={{
+      <div sx='react-transition flip-in-x' style={{
         paddingTop: 100,
         textAlign: 'center',
       }}>

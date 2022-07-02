@@ -98,10 +98,10 @@ const Left = (props: Props) => {
 			<Box>
 				{/* <p>
 					<NavLink
-						activeClassName={styles.activeClassName}
+						activesx={styles.activeClassName}
 						exact
 						to={AppRoutes.pages.library}
-						className={styles.yourLibraryLink}
+						sx={styles.yourLibraryLink}
 						onClick={closeDrawer}>
 						What You Like
 					</NavLink>

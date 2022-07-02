@@ -13,11 +13,11 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import ErrorIcon from '@mui/icons-material/Error'
 import { useForm } from "react-hook-form"
 
-import TextField from "../../components/TextField"
+import TextField from "@mui/material/TextField"
 import AppRoutes from "~/app-routes"
 import colors from "../../utils/colors"
 import useAlbumDetail from '../../hooks/useAlbumDetail'
-import Button from "../../components/Button"
+import Button from "@mui/material/Button"
 import { AlbumTrackInterface } from "../../interfaces/AlbumInterface"
 import { SMALL_SCREEN_SIZE, } from "../../utils/constants.server"
 import Spinner from "../../components/Spinner"
@@ -34,7 +34,7 @@ import SEO from "../../components/SEO"
 import { Grid } from "@mui/material"
 
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   row: {
 //     display: "flex",
 //     flexDirection: "row"
@@ -118,7 +118,7 @@ export const AskTrackNumberForm = ({ onNumberChange, tracks }: {
   onNumberChange: (value: { track_number: number }) => void,
   tracks: AlbumTrackInterface[]
 }) => {
-  const styles = {}
+
   const {
     register,
     handleSubmit,
@@ -144,7 +144,7 @@ export const AskTrackNumberForm = ({ onNumberChange, tracks }: {
               type="number"
               error={!!errors.track_number}
               helperText={errors.track_number && (
-                <span className={styles.errorColor}>{errors.track_number.message}</span>
+                <span sx={styles.errorColor}>{errors.track_number.message}</span>
               )}
             />
           </Grid>
@@ -162,7 +162,7 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
   onRequestClose: () => void,
   trackNumber: number
 }) => {
-  const styles = {}
+
   const {
     addTrackToAlbum,
     data: addTrackToAlbumResponse,
@@ -205,7 +205,7 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
         <>
           <HeaderTitle icon={<MusicNoteIcon />} text="Tracks" />
 
-          <Table className={styles.table} size="small">
+          <Table sx={styles.table} size="small">
             <TableHead>
               <TableRow>
                 {/* <StyledTableCell>Title</StyledTableCell>
@@ -228,7 +228,7 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
 
                           handleAddTrackToAlbum(track.hash)
                         }}
-                        className={styles.link}
+                        sx={styles.link}
                         style={{ cursor: 'pointer' }}>Add</span>
                     </StyledTableCell> */}
                   </TableRow>
@@ -245,7 +245,7 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
 }
 
 export default function AlbumEditScreen() {
-  const styles = {}
+
   const params = useParams()
   const navigate = useNavigate()
   const hash = get(params, 'hash')
@@ -301,7 +301,7 @@ export default function AlbumEditScreen() {
   }
 
   return (
-    <CheckAuth className="react-transition flip-in-x-reverse">
+    <CheckAuth sx="react-transition flip-in-x-reverse">
       <SEO title={`Edit Album`} />
 
       {album ? (
@@ -335,7 +335,7 @@ export default function AlbumEditScreen() {
             <>
               <HeaderTitle icon={<MusicNoteIcon />} text="Album Tracks" />
 
-              <Table className={styles.table} size="small">
+              <Table sx={styles.table} size="small">
                 <TableHead>
                   <TableRow>
                     {/* <StyledTableCell>#</StyledTableCell>
@@ -356,12 +356,12 @@ export default function AlbumEditScreen() {
                           {track.number}
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '80%' }}>
-                          <Link to={AppRoutes.track.detailPage(track.hash)} className={styles.link}>{track.title}</Link>
+                          <Link to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '10%' }}>
                           <span
                             onClick={() => confirmDelete(track.hash)}
-                            className={styles.link}
+                            sx={styles.link}
                             style={{ cursor: 'pointer' }}>Delete</span>
                         </StyledTableCell> */}
                       </TableRow>
@@ -395,7 +395,7 @@ export default function AlbumEditScreen() {
         handleClose={() => setTrackHashToDelete('')}>
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
-          icon={<ErrorIcon className={styles.errorColor} />}
+          icon={<ErrorIcon sx={styles.errorColor} />}
           text={`Are you sure you want to delete this track?`} />
         <DialogActions>
           <Button size='small' onClick={() => setTrackHashToDelete('')}>
@@ -404,7 +404,7 @@ export default function AlbumEditScreen() {
           <Button
             size='small'
             onClick={() => handleDeleteAlbum(trackHashToDelete)}
-            className={styles.noBgButton}
+            sx={styles.noBgButton}
             disabled={deletingAlbumTrack}>
             Delete
           </Button>
@@ -427,7 +427,7 @@ export default function AlbumEditScreen() {
           <Button
             size='small'
             onClick={() => setOpenAskTrackNumberPopup(false)}
-            className={styles.noBgButton}>
+            sx={styles.noBgButton}>
             Cancel
           </Button>
         </DialogActions>
@@ -467,7 +467,7 @@ export default function AlbumEditScreen() {
           <Button
             size='small'
             onClick={() => setOpenChooseOptionsToAddPopup(false)}
-            className={styles.noBgButton}>
+            sx={styles.noBgButton}>
             Cancel
           </Button>
         </DialogActions>
@@ -492,7 +492,7 @@ export default function AlbumEditScreen() {
           <Button
             size='small'
             onClick={() => setOpenChooseExistingTracksPopup(false)}
-            className={styles.noBgButton}>
+            sx={styles.noBgButton}>
             Cancel
           </Button>
         </DialogActions>

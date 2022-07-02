@@ -14,7 +14,7 @@ import { makeSoundFromTrack } from '../utils/helpers'
 import ListInterface from '../interfaces/ListInterface'
 import { Link } from '@remix-run/react'
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   table: {
 //     width: '100%',
 //     marginTop: theme.spacing(3),
@@ -27,7 +27,7 @@ import { Link } from '@remix-run/react'
 //   }
 // }))
 
-// export const StyledTableCell = withStyles(theme => ({
+// export const StyledTableCell = withStyles({
 //   head: {
 //     color: colors.grey,
 //     textTransform: 'uppercase',
@@ -47,14 +47,14 @@ import { Link } from '@remix-run/react'
 type Props = { playlist: PlaylistInterface, list: ListInterface }
 
 export default function PlaylistTracksTable({ playlist, list }: Props) {
-  const styles = {}
+
 
   const { currentSound } = useSelector(
     (appState: AppStateInterface) => appState.player
   )
 
   return (
-    <Table className={styles.table} size="small">
+    <Table sx={styles.table} size="small">
       <TableHead>
         <TableRow>
           {/* <StyledTableCell>#</StyledTableCell>
@@ -84,7 +84,7 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
                 {/* <Heart /> */}
               </StyledTableCell>
               <StyledTableCell style={{ width: '90%', color }}>
-                <Link to={Routes.track.detailPage(track.hash)} className={styles.link} style={{ color }}>{track.title}</Link>
+                <Link to={Routes.track.detailPage(track.hash)} sx={styles.link} style={{ color }}>{track.title}</Link>
               </StyledTableCell>
               {/* <StyledTableCell style={{ width: '1.5%', color }}>{track.play_count}</StyledTableCell> */}
               {/* <StyledTableCell style={{ width: '1.5%', color }}>{track.download_count}</StyledTableCell> */}

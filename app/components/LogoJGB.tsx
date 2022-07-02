@@ -1,4 +1,4 @@
-// const useStyles = makeStyles({
+// const styles = {
 //   logo: {
 //     maxWidth: "100%",
 //     width: "200px",
@@ -13,7 +13,7 @@ import AppRoutes from "~/app-routes"
 
 
 export default function LOGOJGB({ style, size }: { style?: string, size?: number }) {
-  const styles = {}
+
 
   let sizes = undefined
 
@@ -29,11 +29,11 @@ export default function LOGOJGB({ style, size }: { style?: string, size?: number
       <a
         target="_blank"
         href={AppRoutes.links.jgbSolutions}
-        className={styles.logoLink}
+        sx={styles.logoLink}
         rel="noopener noreferrer">
         <img
           style={sizes}
-          className={`${styles.logo} ${style}`}
+          sx={`${styles.logo} ${style}`}
           src="/assets/images/Logo-JGB-Solutions-500x110.png"
           alt="JGB Solutions logo"
         />

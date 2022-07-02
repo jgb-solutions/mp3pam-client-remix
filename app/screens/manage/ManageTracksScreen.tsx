@@ -15,12 +15,12 @@ import useMyTracks from "../../hooks/useMyTracks"
 import { StyledTableCell } from "../../components/AlbumTracksTable"
 import { Link } from "@remix-run/react"
 import AppRoutes from "~/app-routes"
-import Button from "../../components/Button"
+import Button from "@mui/material/Button"
 import colors from "../../utils/colors"
 import useDeleteTrack from "../../hooks/useDeleteTrack"
 import SEO from "../../components/SEO"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   table: {
 //     width: '100%',
 //     overflowX: 'auto',
@@ -37,7 +37,7 @@ import SEO from "../../components/SEO"
 // }))
 
 export default function ManageTracksScreen() {
-  const styles = {}
+
   const [trackHashToDelete, setTrackHashToDelete] = useState('')
   const { deleteTrack, deleteTrackResponse, deletingTrack, errorDeletingTrack } = useDeleteTrack()
   const { loading, error, data, refetch } = useMyTracks()
@@ -73,7 +73,7 @@ export default function ManageTracksScreen() {
           <HeaderTitle icon={<MusicNoteIcon />} text="Your Tracks" />
           <SEO title={`Your Tracks`} />
 
-          <Table className={styles.table} size="small">
+          <Table sx={styles.table} size="small">
             <TableHead>
               <TableRow>
                 {/* <StyledTableCell>Title</StyledTableCell>
@@ -87,12 +87,12 @@ export default function ManageTracksScreen() {
                     borderBottom: tracks.data.length - 1 === index ? '' : '1px solid white',
                   }}>
                     {/* <StyledTableCell style={{ width: '90%' }}>
-                      <Link to={Routes.track.detailPage(track.hash)} className={styles.link}>{track.title}</Link>
+                      <Link to={Routes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span
                         onClick={() => confirmDelete(track.hash)}
-                        className={styles.link}
+                        sx={styles.link}
                         style={{ cursor: 'pointer' }}>Delete</span>
                     </StyledTableCell> */}
                   </TableRow>
@@ -111,7 +111,7 @@ export default function ManageTracksScreen() {
         handleClose={() => setTrackHashToDelete('')}>
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
-          icon={<ErrorIcon className={styles.errorColor} />}
+          icon={<ErrorIcon sx={styles.errorColor} />}
           text={`Are you sure you want to delete this track?`} />
         <DialogActions>
           <Button size='small' onClick={() => setTrackHashToDelete('')}>
@@ -120,7 +120,7 @@ export default function ManageTracksScreen() {
           <Button
             size='small'
             onClick={() => handleDeleteTrack(trackHashToDelete)}
-            className={styles.noBgButton}
+            sx={styles.noBgButton}
             disabled={deletingTrack}>
             Delete
           </Button>

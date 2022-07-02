@@ -1,7 +1,7 @@
 
 import colors from "../utils/colors"
 
-// export const addTrackScreenStyles = makeStyles({
+// export const addTrackScreenStyles = {
 //   uploadButton: {
 //     marginTop: 10,
 //     marginBottom: 5,

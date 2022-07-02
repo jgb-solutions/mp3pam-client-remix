@@ -12,7 +12,7 @@ import { Grid, FormControlLabel, Checkbox } from "@mui/material"
 import { useMutation } from 'graphql-request'
 
 import ProgressBar from "../../components/ProgressBar"
-import TextField from "../../components/TextField"
+import TextField from "@mui/material/TextField"
 import Button from '../../components/Button'
 import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
@@ -117,8 +117,8 @@ export function AddArtistForm({ open, handleClose, onArtistCreated }: AddArtistF
 				error={!!errors.name}
 				helperText={errors.name && (
 					<TextIcon
-						icon={<ErrorIcon className={styles.errorColor} />}
-						text={<span className={styles.errorColor}>{errors.name.message}</span>}
+						icon={<ErrorIcon sx={styles.errorColor} />}
+						text={<span sx={styles.errorColor}>{errors.name.message}</span>}
 					/>
 				)}
 			/>
@@ -135,8 +135,8 @@ export function AddArtistForm({ open, handleClose, onArtistCreated }: AddArtistF
 				error={!!errors.stage_name}
 				helperText={errors.stage_name && (
 					<TextIcon
-						icon={<ErrorIcon className={styles.errorColor} />}
-						text={<span className={styles.errorColor}>{errors.stage_name.message}</span>}
+						icon={<ErrorIcon sx={styles.errorColor} />}
+						text={<span sx={styles.errorColor}>{errors.stage_name.message}</span>}
 					/>
 				)}
 			/>
@@ -194,8 +194,8 @@ export function AddGenreForm({ open, handleClose, onGenreCreated }: AddGenreForm
 				error={!!errors.name}
 				helperText={errors.name && (
 					<TextIcon
-						icon={<ErrorIcon className={styles.errorColor} />}
-						text={<span className={styles.errorColor}>{errors.name.message}</span>}
+						icon={<ErrorIcon sx={styles.errorColor} />}
+						text={<span sx={styles.errorColor}>{errors.name.message}</span>}
 					/>
 				)}
 			/>
@@ -419,7 +419,7 @@ export default function AddTrackScreen() {
 	const styles = addTrackScreenStyles()
 
 	return (
-		<CheckAuth className='react-transition scale-in'>
+		<CheckAuth sx='react-transition scale-in'>
 			<HeaderTitle icon={<MusicNoteIcon />} text={`Add a new track`} />
 			<SEO title={`Add a new track`} />
 
@@ -436,8 +436,8 @@ export default function AddTrackScreen() {
 					error={!!errors.title}
 					helperText={errors.title && (
 						<TextIcon
-							icon={<ErrorIcon className={styles.errorColor} />}
-							text={<span className={styles.errorColor}>{errors.title.message}</span>}
+							icon={<ErrorIcon sx={styles.errorColor} />}
+							text={<span sx={styles.errorColor}>{errors.title.message}</span>}
 						/>
 					)}
 					style={{ marginBottom: 15 }}
@@ -455,8 +455,8 @@ export default function AddTrackScreen() {
 							error={!!errors.artistId}
 							helperText={errors.artistId && (
 								<TextIcon
-									icon={<ErrorIcon className={styles.errorColor} />}
-									text={<span className={styles.errorColor}>{errors.artistId.message}</span>}
+									icon={<ErrorIcon sx={styles.errorColor} />}
+									text={<span sx={styles.errorColor}>{errors.artistId.message}</span>}
 								/>
 							)}
 							margin="normal"
@@ -487,8 +487,8 @@ export default function AddTrackScreen() {
 							error={!!errors.genreId}
 							helperText={errors.genreId && (
 								<TextIcon
-									icon={<ErrorIcon className={styles.errorColor} />}
-									text={<span className={styles.errorColor}>{errors.genreId.message}</span>}
+									icon={<ErrorIcon sx={styles.errorColor} />}
+									text={<span sx={styles.errorColor}>{errors.genreId.message}</span>}
 								/>
 							)}
 							margin="normal"
@@ -513,7 +513,7 @@ export default function AddTrackScreen() {
 
 				<Grid container direction='row' spacing={2}>
 					<Grid item xs={12} sm>
-						<Grid container direction='row' alignItems='center' spacing={1} className={styles.uploadButton}>
+						<Grid container direction='row' alignItems='center' spacing={1} sx={styles.uploadButton}>
 							<Grid item xs={9}>
 								<UploadButton
 									allowedFileSize={MAX_AUDIO_FILE_SIZE()}
@@ -530,7 +530,7 @@ export default function AddTrackScreen() {
 							</Grid>
 							<Grid item xs={3}>
 								{audioUploaded && (
-									<CheckCircleIcon className={styles.successColor} />
+									<CheckCircleIcon sx={styles.successColor} />
 								)}
 							</Grid>
 						</Grid>
@@ -538,8 +538,8 @@ export default function AddTrackScreen() {
 
 						{formState.isSubmitted && !audioValid && (
 							<TextIcon
-								icon={<ErrorIcon className={styles.errorColor} />}
-								text={<span className={styles.errorColor}>{audioErrorMessage}</span>}
+								icon={<ErrorIcon sx={styles.errorColor} />}
+								text={<span sx={styles.errorColor}>{audioErrorMessage}</span>}
 							/>
 						)}
 
@@ -552,7 +552,7 @@ export default function AddTrackScreen() {
 						)}
 					</Grid>
 					<Grid item xs={12} sm>
-						<Grid container direction='row' alignItems='center' spacing={1} className={styles.uploadButton}>
+						<Grid container direction='row' alignItems='center' spacing={1} sx={styles.uploadButton}>
 							<Grid item xs={9}>
 								<UploadButton
 									allowedFileSize={MAX_IMG_FILE_SIZE()}
@@ -566,14 +566,14 @@ export default function AddTrackScreen() {
 								/>
 							</Grid>
 							<Grid item xs={3}>
-								{imgUploaded && <CheckCircleIcon className={styles.successColor} />}
+								{imgUploaded && <CheckCircleIcon sx={styles.successColor} />}
 							</Grid>
 						</Grid>
 
 						{formState.isSubmitted && !imgValid && (
 							<TextIcon
-								icon={<ErrorIcon className={styles.errorColor} />}
-								text={<span className={styles.errorColor}>{imgErrorMessage}</span>}
+								icon={<ErrorIcon sx={styles.errorColor} />}
+								text={<span sx={styles.errorColor}>{imgErrorMessage}</span>}
 							/>
 						)}
 
@@ -603,8 +603,8 @@ export default function AddTrackScreen() {
 					error={!!errors.detail}
 					helperText={errors.detail && (
 						<TextIcon
-							icon={<ErrorIcon className={styles.errorColor} />}
-							text={<span className={styles.errorColor}>{errors.detail.message}</span>}
+							icon={<ErrorIcon sx={styles.errorColor} />}
+							text={<span sx={styles.errorColor}>{errors.detail.message}</span>}
 						/>
 					)}
 				/>
@@ -625,8 +625,8 @@ export default function AddTrackScreen() {
 					error={!!errors.lyrics}
 					helperText={errors.lyrics && (
 						<TextIcon
-							icon={<ErrorIcon className={styles.errorColor} />}
-							text={<span className={styles.errorColor}>{errors.lyrics.message}</span>}
+							icon={<ErrorIcon sx={styles.errorColor} />}
+							text={<span sx={styles.errorColor}>{errors.lyrics.message}</span>}
 						/>
 					)}
 				/>
@@ -655,7 +655,7 @@ export default function AddTrackScreen() {
 				handleClose={handleTrackSucessDialogClose}
 				disableBackdropClick>
 				<DialogContentText id="alert-dialog-description" align='center'>
-					<span><CheckCircleIcon style={{ fontSize: 64 }} className={styles.successColor} /></span>
+					<span><CheckCircleIcon style={{ fontSize: 64 }} sx={styles.successColor} /></span>
 					<br />
 					<span>Track successfully added!</span>
 					<br />
@@ -692,7 +692,7 @@ export default function AddTrackScreen() {
 				handleClose={handleOpenInvalidFileSizeClose}>
 				<DialogContentText id="alert-dialog-description" align='center'>
 					<span>
-						<ErrorIcon style={{ fontSize: 64 }} className={styles.errorColor} />
+						<ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
 					</span>
 					<br />
 					<span dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />

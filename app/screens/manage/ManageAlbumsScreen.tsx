@@ -15,12 +15,12 @@ import useMyAlbums from "../../hooks/useMyAlbums"
 import { StyledTableCell } from "../../components/AlbumTracksTable"
 import { Link } from "@remix-run/react"
 import AppRoutes from "~/app-routes"
-import Button from "../../components/Button"
+import Button from "@mui/material/Button"
 import colors from "../../utils/colors"
 import useDeleteAlbum from "../../hooks/useDeleteAlbum"
 import SEO from "../../components/SEO"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   table: {
 //     width: '100%',
 //     overflowX: 'auto',
@@ -37,7 +37,7 @@ import SEO from "../../components/SEO"
 // }))
 
 export default function ManageAlbumsScreen() {
-  const styles = {}
+
   const [albumHashToDelete, setAlbumHashToDelete] = useState('')
   const { deleteAlbum, deleteAlbumResponse, deletingAlbum, errorDeletingAlbum } = useDeleteAlbum()
   const { loading, error, data, refetch } = useMyAlbums()
@@ -73,7 +73,7 @@ export default function ManageAlbumsScreen() {
           <HeaderTitle icon={<AlbumIcon />} text="Your Albums" />
           <SEO title={`Your Albums`} />
 
-          <Table className={styles.table} size="small">
+          <Table sx={styles.table} size="small">
             <TableHead>
               <TableRow>
                 {/* <StyledTableCell>Title</StyledTableCell>
@@ -88,15 +88,15 @@ export default function ManageAlbumsScreen() {
                     borderBottom: albums.data.length - 1 === index ? '' : '1px solid white',
                   }}>
                     {/* <StyledTableCell style={{ width: '80%' }}>
-                      <Link to={Routes.album.detailPage(album.hash)} className={styles.link}>{album.title}</Link>
+                      <Link to={Routes.album.detailPage(album.hash)} sx={styles.link}>{album.title}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <Link to={Routes.album.editPage(album.hash)} className={styles.link}>Edit</Link>
+                      <Link to={Routes.album.editPage(album.hash)} sx={styles.link}>Edit</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span
                         onClick={() => confirmDelete(album.hash)}
-                        className={styles.link}
+                        sx={styles.link}
                         style={{ cursor: 'pointer' }}>Delete</span>
                     </StyledTableCell> */}
                   </TableRow>
@@ -115,7 +115,7 @@ export default function ManageAlbumsScreen() {
         handleClose={() => setAlbumHashToDelete('')}>
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
-          icon={<ErrorIcon className={styles.errorColor} />}
+          icon={<ErrorIcon sx={styles.errorColor} />}
           text={`Are you sure you want to delete this album?`} />
         <DialogActions>
           <Button size='small' onClick={() => setAlbumHashToDelete('')}>
@@ -124,7 +124,7 @@ export default function ManageAlbumsScreen() {
           <Button
             size='small'
             onClick={() => handleDeleteAlbum(albumHashToDelete)}
-            className={styles.noBgButton}
+            sx={styles.noBgButton}
             disabled={deletingAlbum}>
             Delete
           </Button>

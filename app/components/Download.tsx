@@ -7,7 +7,7 @@ import Spinner from './Spinner'
 import { useNavigate } from '@remix-run/react'
 import AppRoutes from '~/app-routes'
 
-// const useStyles = makeStyles({
+// const styles = {
 //   root: {
 //     padding: 30
 //   },
@@ -46,7 +46,7 @@ let intervalId: any
 
 export default function Download(input: Props) {
   const { data, loading, error, updateDownloadCount } = useDownload(input)
-  const styles = {}
+
   const [count, setCount] = useState(5)
   const navigate = useNavigate()
 
@@ -78,7 +78,7 @@ export default function Download(input: Props) {
   if (error) return <p>There was an error fetching the download url. Try again.</p>
 
   return (
-    <div className={styles.root}>
+    <div sx={styles.root}>
       <div style={{ textAlign: 'center' }}>
         {count > 0 && <h3>Your Download will start in:</h3>}
         {count <= 0 && (
@@ -105,12 +105,12 @@ export default function Download(input: Props) {
             to the {input.type} again.
           </h3>
         )}
-        <div className={styles.counterContainer}
+        <div sx={styles.counterContainer}
           style={{ backgroundImage: `url(/assets/images/loader.svg)` }}>
-          <div className={styles.transparentBackground}>
-            <span className={styles.count}>
+          <div sx={styles.transparentBackground}>
+            <span sx={styles.count}>
               {count > 0 ? count : (
-                <CheckCircleIcon style={{ fontSize: 48 }} className={styles.successColor} />
+                <CheckCircleIcon style={{ fontSize: 48 }} sx={styles.successColor} />
               )}
             </span>
           </div>

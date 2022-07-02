@@ -50,43 +50,43 @@ const Right = (props: Props) => {
   return (
     <>
       {userData ? (
-        <div className={styles.container}>
-          <div className={styles.menuList}>
-            <div className={styles.mainMenu}>
+        <div sx={styles.container}>
+          <div sx={styles.menuList}>
+            <div sx={styles.mainMenu}>
               <NavLink
-                activeClassName={styles.activeClassName}
+                activesx={styles.activeClassName}
                 exact
                 to={Routes.user.account}
-                className={`${styles.link} ${styles.mainMenuLink}`}
+                sx={`${styles.link} ${styles.mainMenuLink}`}
                 onClick={closeDrawer}>
-                <span className={styles.linkIcon}>
+                <span sx={styles.linkIcon}>
                   <Avatar style={{ width: 20, height: 20 }} alt={user.name} src={user.avatar_url} />
                 </span>
-                <span className={styles.linkText}>Your Account</span>
+                <span sx={styles.linkText}>Your Account</span>
               </NavLink>
             </div>
 
             <div>
               <p>
                 <NavLink
-                  activeClassName={styles.activeClassName}
+                  activesx={styles.activeClassName}
                   exact
                   to={AppRoutes.user.manage.home}
-                  className={styles.yourLibraryLink}
+                  sx={styles.yourLibraryLink}
                   onClick={closeDrawer}>
                   Manage Your Library
                 </NavLink>
               </p>
               {libraryMenu.map((menuItem, index) => (
                 <NavLink
-                  activeClassName={styles.activeClassName}
+                  activesx={styles.activeClassName}
                   exact
                   key={index}
                   to={menuItem.to}
-                  className={`${styles.link} ${styles.libraryLink}`}
+                  sx={`${styles.link} ${styles.libraryLink}`}
                   onClick={closeDrawer}>
-                  <span className={styles.linkIcon}>{menuItem.icon}</span>
-                  <span className={styles.linkText}>{menuItem.name}</span>
+                  <span sx={styles.linkIcon}>{menuItem.icon}</span>
+                  <span sx={styles.linkText}>{menuItem.name}</span>
                 </NavLink>
               ))}
 
@@ -94,14 +94,14 @@ const Right = (props: Props) => {
 
               {CreateMenu.map((menuItem, index) => (
                 <NavLink
-                  activeClassName={styles.activeClassName}
+                  activesx={styles.activeClassName}
                   exact
                   key={index}
                   to={menuItem.to}
-                  className={`${styles.link} ${styles.libraryLink}`}
+                  sx={`${styles.link} ${styles.libraryLink}`}
                   onClick={closeDrawer}>
-                  <span className={styles.linkIcon}>{menuItem.icon}</span>
-                  <span className={styles.linkText}>{menuItem.name}</span>
+                  <span sx={styles.linkIcon}>{menuItem.icon}</span>
+                  <span sx={styles.linkText}>{menuItem.name}</span>
                 </NavLink>
               ))}
             </div>

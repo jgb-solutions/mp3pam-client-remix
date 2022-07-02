@@ -18,9 +18,9 @@ import AppStateInterface from "../../interfaces/AppStateInterface"
 import { LOG_OUT_MUTATION, UPDATE_USER } from "../../graphql/mutations"
 import { LOG_OUT } from "../../redux/actions/user_action_types"
 import colors from "../../utils/colors"
-import Button from "../../components/Button"
+import Button from "@mui/material/Button"
 import { getFormattedDate, getFile } from "../../utils/helpers"
-import TextField from "../../components/TextField"
+import TextField from "@mui/material/TextField"
 import { IMG_BUCKET, MAX_IMG_FILE_SIZE } from "../../utils/constants.server"
 import TextIcon from "../../components/TextIcon"
 import UploadButton from "../../components/UploadButton"
@@ -33,7 +33,7 @@ import { useForm } from "react-hook-form"
 import AppRoutes from "~/app-routes"
 
 
-// export const useStyles = makeStyles({
+// export const styles = {
 //   noBgButton: {
 //     width: 150,
 //     backgroundColor: colors.contentGrey,
@@ -72,7 +72,7 @@ export default function AccountScreen() {
   const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
   const [logOutMutation] = useMutation(LOG_OUT_MUTATION)
   const userData = get(currentUser, 'data')
-  const styles = {}
+
   const {
     register,
     handleSubmit,
@@ -147,7 +147,7 @@ export default function AccountScreen() {
   ) => { uploadImg(getFile(event)) }
 
   return (
-    <CheckAuth className='react-transition scale-in'>
+    <CheckAuth sx='react-transition scale-in'>
       <SEO title={`Your Account`} />
       {userData && (
         <>
@@ -180,8 +180,8 @@ export default function AccountScreen() {
                       error={!!errors.name}
                       helperText={errors.name && (
                         <TextIcon
-                          icon={<ErrorIcon className={styles.errorColor} />}
-                          text={<span className={styles.errorColor}>{errors.name.message}</span>}
+                          icon={<ErrorIcon sx={styles.errorColor} />}
+                          text={<span sx={styles.errorColor}>{errors.name.message}</span>}
                         />
                       )}
                       style={{ marginBottom: 15 }}
@@ -200,8 +200,8 @@ export default function AccountScreen() {
                       error={!!errors.email}
                       helperText={errors.email && (
                         <TextIcon
-                          icon={<ErrorIcon className={styles.errorColor} />}
-                          text={<span className={styles.errorColor}>{errors.email.message}</span>}
+                          icon={<ErrorIcon sx={styles.errorColor} />}
+                          text={<span sx={styles.errorColor}>{errors.email.message}</span>}
                         />
                       )}
                       style={{ marginBottom: 15 }}
@@ -226,8 +226,8 @@ export default function AccountScreen() {
                       error={!!errors.telephone}
                       helperText={errors.telephone && (
                         <TextIcon
-                          icon={<ErrorIcon className={styles.errorColor} />}
-                          text={<span className={styles.errorColor}>{errors.telephone.message}</span>}
+                          icon={<ErrorIcon sx={styles.errorColor} />}
+                          text={<span sx={styles.errorColor}>{errors.telephone.message}</span>}
                         />
                       )}
                       style={{ marginBottom: 15 }}
@@ -250,8 +250,8 @@ export default function AccountScreen() {
                       error={!!errors.password}
                       helperText={errors.password && (
                         <TextIcon
-                          icon={<ErrorIcon className={styles.errorColor} />}
-                          text={<span className={styles.errorColor}>{errors.password.message}</span>}
+                          icon={<ErrorIcon sx={styles.errorColor} />}
+                          text={<span sx={styles.errorColor}>{errors.password.message}</span>}
                         />
                       )}
                       style={{ marginBottom: 15 }}
@@ -261,7 +261,7 @@ export default function AccountScreen() {
 
                 <Grid container direction='row' spacing={2}>
                   <Grid item xs={12} sm={6}>
-                    <Grid container direction='row' alignItems='center' spacing={1} className={styles.uploadButton}>
+                    <Grid container direction='row' alignItems='center' spacing={1} sx={styles.uploadButton}>
                       <Grid item xs={9}>
                         <UploadButton
                           allowedFileSize={MAX_IMG_FILE_SIZE()}
@@ -275,7 +275,7 @@ export default function AccountScreen() {
                         />
                       </Grid>
                       <Grid item xs={3}>
-                        {imgUploaded && <CheckCircleIcon className={styles.successColor} />}
+                        {imgUploaded && <CheckCircleIcon sx={styles.successColor} />}
                       </Grid>
                     </Grid>
 
@@ -301,7 +301,7 @@ export default function AccountScreen() {
                   type="button"
                   size='large'
                   style={{ marginTop: 15 }}
-                  className={styles.noBgButton}
+                  sx={styles.noBgButton}
                   onClick={() => setShouldEdit(false)}>
                   Cancel
                 </Button>
@@ -312,7 +312,7 @@ export default function AccountScreen() {
                 handleClose={() => setOpenInvalidFileSize('')}>
                 <DialogContentText id="alert-dialog-description" align='center'>
                   <span>
-                    <ErrorIcon style={{ fontSize: 64 }} className={styles.errorColor} />
+                    <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
                   </span>
                   <br />
                   <span dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />
@@ -345,7 +345,7 @@ export default function AccountScreen() {
                 <Button
                   size='large'
                   onClick={() => setShouldEdit(true)}
-                  className={styles.noBgButton}>
+                  sx={styles.noBgButton}>
                   Edit Profile
                 </Button>
               </p>
@@ -354,7 +354,7 @@ export default function AccountScreen() {
                 <Button
                   size='large'
                   onClick={logout}
-                  className={styles.noBgButton}>
+                  sx={styles.noBgButton}>
                   Log out
                 </Button>
               </p>

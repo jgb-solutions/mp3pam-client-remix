@@ -12,7 +12,7 @@ import Image from "./Image"
 import { useNavigate } from "@remix-run/react"
 import AppRoutes from "~/app-routes"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   imgContainer: {
 //     // minWidth: 100,
 //     // minHeight: 100,
@@ -91,7 +91,7 @@ type Props = {
 }
 
 export default function ArtistThumbnail(props: Props) {
-  const styles = {}
+
   const navigate = useNavigate()
 
   const { artist } = props
@@ -102,9 +102,9 @@ export default function ArtistThumbnail(props: Props) {
   }
 
   return (
-    <div className={props.className} style={props.style}>
+    <div sx={props.className} style={props.style}>
       <div
-        className={styles.imgContainer}
+        sx={styles.imgContainer}
         style={{
           backgroundImage: `url(${Image.phoneCdnUrl(artist.poster_url, {
             ulb: true,
@@ -116,15 +116,15 @@ export default function ArtistThumbnail(props: Props) {
         }}
       >
         <div
-          className={styles.transparentBackground}
+          sx={styles.transparentBackground}
           onClick={goToArtistPage}
         >
           <IconButton>
-            <PlayCircleOutline className={styles.icon} />
+            <PlayCircleOutline sx={styles.icon} />
           </IconButton>
         </div>
       </div>
-      <h3 className={styles.title}>{artist.stage_name}</h3>
+      <h3 sx={styles.title}>{artist.stage_name}</h3>
     </div>
   )
 }

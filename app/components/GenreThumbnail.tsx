@@ -15,7 +15,7 @@ export interface GenreInterface {
   slug: string
 }
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   imgContainer: {
 //     backgroundSize: "contain",
 //     backgroundRepeat: 'no-repeat',
@@ -87,7 +87,7 @@ type Props = {
 }
 
 export default function GenreThumbnail(props: Props) {
-  const styles = {}
+
   const navigate = useNavigate()
 
   const { genre } = props
@@ -97,19 +97,19 @@ export default function GenreThumbnail(props: Props) {
   }
 
   return (
-    <div className={props.className} style={props.style}>
+    <div sx={props.className} style={props.style}>
       <div
-        className={styles.imgContainer}
+        sx={styles.imgContainer}
         style={{ backgroundImage: `url(/assets/images/genres.jpg)` }}
       >
         <div
-          className={styles.transparentBackground}
+          sx={styles.transparentBackground}
           onClick={goToGenrePage}
         >
           <IconButton>
-            <PlayCircleOutlineIcon className={styles.icon} />
+            <PlayCircleOutlineIcon sx={styles.icon} />
           </IconButton>
-          <h3 className={styles.title}>{genre.name}</h3>
+          <h3 sx={styles.title}>{genre.name}</h3>
         </div>
       </div>
     </div>

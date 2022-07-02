@@ -25,7 +25,7 @@ const Content: FC<Props> = (props: Props) => {
   return (
     <Box component="main"
       ref={mainRef}
-      className={props.className}
+      sx={props.className}
       style={{
         paddingTop: 70,
         paddingLeft: 15,

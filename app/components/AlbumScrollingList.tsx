@@ -2,7 +2,7 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
 import { Link } from "@remix-run/react"
 import AlbumThumbnail from "./AlbumThumbnail"
 
-// const useStyles = {
+// const styles = {
 //   container: {
 //     marginBottom: 30
 //   },
@@ -46,7 +46,7 @@ export interface AlbumThumbnailData {
 
 export const AlbumScrollingList = (props: { albums: AlbumThumbnailData[], category: string, browse: string }) => {
   const { albums, category, browse } = props
-  const styles = {}
+
   let domElement: any
 
   const scroll = (dir: string) => {
@@ -59,10 +59,10 @@ export const AlbumScrollingList = (props: { albums: AlbumThumbnailData[], catego
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.listHeader}>
-        <Link to={browse} className={styles.link}>
-          <h2 className={styles.category}>{category}</h2>
+    <div sx={styles.container}>
+      <div sx={styles.listHeader}>
+        <Link to={browse} sx={styles.link}>
+          <h2 sx={styles.category}>{category}</h2>
         </Link>
         <div>
           <KeyboardArrowLeft onClick={() => scroll("left")} />
@@ -71,13 +71,13 @@ export const AlbumScrollingList = (props: { albums: AlbumThumbnailData[], catego
         </div>
       </div>
       <div
-        className={styles.list}
+        sx={styles.list}
         ref={el => {
           domElement = el
         }}
       >
         {albums.map(album => (
-          <AlbumThumbnail key={album.hash} className={styles.thumbnail} album={album} />
+          <AlbumThumbnail key={album.hash} sx={styles.thumbnail} album={album} />
         ))}
       </div>
     </div>

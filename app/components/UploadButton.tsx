@@ -113,9 +113,9 @@ const UploadButton = ({
   }
 
   return (
-    <div className={style}>
+    <div sx={style}>
       <Button
-        className={buttonStyle}
+        sx={buttonStyle}
         onClick={triggerInput}
         size={buttonSize}
         disabled={disabled}

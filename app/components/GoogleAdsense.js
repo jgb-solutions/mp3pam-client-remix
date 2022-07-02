@@ -12,7 +12,7 @@ export default function GoogleAdsense({
 
   return (
     <ins
-      className="adsbygoogle"
+      sx="adsbygoogle"
       style={{ display: 'block' }}
       data-ad-client={client}
       data-ad-slot={slot}

@@ -11,7 +11,7 @@ import {
 	VolumeMuteOutlined,
 	PlaylistPlayOutlined
 } from "@mui/icons-material"
-
+import { Link } from "@remix-run/react"
 import { useDispatch, useSelector } from "react-redux"
 import { useState, useEffect, useRef } from "react"
 import IconButton from "@mui/material/IconButton"
@@ -20,7 +20,7 @@ import LoopIcon from '@mui/icons-material/Loop'
 
 import Slider from "./Slider"
 import { debounce } from "../utils/helpers"
-import { ALL, ONE, NONE, SECONDS_TO_UPDATE_PLAY_COUNT } from '../utils/constants.server'
+import { ALL, ONE, NONE, SECONDS_TO_UPDATE_PLAY_COUNT, SMALL_SCREEN_SIZE } from '../utils/constants.server'
 import { SoundInterface } from "../interfaces/ListInterface"
 import PlayerInterface from "../interfaces/PlayerInterface"
 import * as playerActions from "../redux/actions/playerActions"
@@ -30,19 +30,144 @@ import {
 import AppStateInterface from "../interfaces/AppStateInterface"
 // import PlayerStyle from "../styles/PlayerStyle"
 import colors from "../utils/colors"
-import useUpdatePlayCount from "../hooks/useUpdatePlayCount"
 import Image from "./Image"
 import { useNavigate } from "@remix-run/react"
+import { Box, Slide } from "@mui/material"
+import type { BoxStyles } from "~/interfaces/types"
+import AppRoutes from "~/app-routes"
+import theme from "~/mui/theme"
 
 let syncStateTimeoutId: number
 
+const styles: BoxStyles = {
+	container: {
+		display: "flex",
+		position: "fixed",
+		bottom: 0,
+		left: 0,
+		right: 0,
+		height: 86,
+		backgroundColor: colors.darkGrey,
+		color: "white",
+		paddingLeft: 24,
+		paddingRight: 24,
+		zIndex: 999
+	},
+	player: {
+		flex: 1,
+		maxWidth: 1216,
+		marginLeft: "auto",
+		marginRight: "auto",
+		display: "flex",
+		justifyContent: "space-between"
+	},
+	posterTitle: {
+		flex: 1,
+		display: "flex",
+		alignItems: "center",
+		sm: {
+			display: 'none',
+		},
+		cursor: 'pointer',
+	},
+	image: {
+		width: 55,
+		height: 55
+	},
+	titleArtist: {
+		paddingLeft: 10
+	},
+	title: {
+		fontSize: 11,
+		fontWeight: "bold",
+		display: "block",
+		marginBottom: -10
+	},
+	artist: {
+		fontSize: 9,
+		display: "block"
+	},
+	playlistVolume: {
+		flex: 1,
+		display: "flex",
+		justifyContent: "flex-end",
+		alignItems: "center",
+		sm: {
+			display: 'none',
+		},
+	},
+	controls: {
+		flex: 2,
+		display: "flex",
+		flexDirection: "column"
+	},
+	buttons: {
+		width: "37%",
+		display: "flex",
+		justifyContent: "space-between",
+		alignItems: "center",
+		alignSelf: "center",
+		sm: {
+			width: '70%',
+		},
+	},
+	sliderTime: {
+		display: "flex",
+		width: "90%",
+		alignSelf: "center",
+		position: "relative"
+	},
+	slider: {
+		flex: 1,
+		marginLeft: 40,
+		marginRight: 40,
+		marginTop: -9
+	},
+	startTime: {
+		fontSize: 10,
+		position: "absolute",
+		top: -4
+	},
+	endTime: {
+		fontSize: 10,
+		position: "absolute",
+		top: -4,
+		right: 0
+	},
+	icon: {
+		fontSize: 18,
+		color: colors.grey
+	},
+	playIcon: {
+		fontSize: 48
+	},
+	volumeSliderContainer: {
+		width: 70,
+		marginLeft: 7
+	},
+	volumeIcons: {
+		marginLeft: 15
+	},
+	bottomDrawer: {
+		height: 100,
+		backgroundColor: colors.darkGrey
+	},
+	bottomMenuIcon: {
+		position: 'absolute',
+		right: 0,
+		bottom: 0,
+		[theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+			display: 'none'
+		},
+	}
+}
+
 export default function Player() {
 	const audio = useRef<HTMLAudioElement>(new Audio()).current
-	const styles = {}
+
 	const history = useNavigate()
 	const dispatch = useDispatch()
 	const [soundLoading, setSoundLoading] = useState(false)
-	const { updatePlayCount } = useUpdatePlayCount()
 	const [loggedHash, setLoggedHash] = useState('')
 	const storePlayerData = useSelector((appState: AppStateInterface) => appState.player)
 	const syncState = (state: any) => dispatch(playerActions.syncState(state))
@@ -299,10 +424,6 @@ export default function Player() {
 		}))
 	}
 
-	const handleQueue = () => {
-		history.push(Routes.user.library.queue)
-	}
-
 	const toggleRepeat = () => {
 		setState(prevState => {
 			let newRepeatVal
@@ -450,7 +571,7 @@ export default function Player() {
 				Math.floor(state.currentTime) === SECONDS_TO_UPDATE_PLAY_COUNT
 			) {
 				setLoggedHash(hash)
-				updatePlayCount({ hash, type })
+				// updatePlayCount({ hash, type })
 			}
 		}
 		// eslint-disable-next-line
@@ -506,20 +627,20 @@ export default function Player() {
 
 	return (
 		<Slide direction="up" timeout={500} in={!!state.currentSound} mountOnEnter unmountOnExit>
-			<div className={styles.container}>
-				<div className={styles.player}>
-					<div className={styles.posterTitle} onClick={() => {
+			<Box sx={styles.container}>
+				<Box sx={styles.player}>
+					<Box sx={styles.posterTitle} onClick={() => {
 						const type = get(state, 'currentSound.type')
 						const hash = get(state, 'currentSound.hash')
 						let route: string
 
 						switch (type) {
 							case 'track':
-								route = Routes.track.detailPage(hash)
+								route = AppRoutes.track.detailPage(hash)
 								history.push(route)
 								break
 							case 'episode':
-								route = Routes.episode.detailPage(hash)
+								route = AppRoutes.episode.detailPage(hash)
 								history.push(route)
 								break
 						}
@@ -527,7 +648,7 @@ export default function Player() {
 						{state.currentSound ? (
 							<Image
 								src={state.currentSound.image}
-								className={styles.image}
+								sx={styles.image}
 								alt={state.currentSound && state.currentSound.title}
 								photon={{
 									ulb: true,
@@ -538,42 +659,42 @@ export default function Player() {
 								}}
 							/>
 						) : (
-							<img
+							<Box component="img"
 								src={'/assets/images/loader.svg'}
-								className={styles.image}
+								sx={styles.image}
 								alt={''}
 							/>
 						)}
 
-						<div className={styles.titleArtist}>
-							<span className={styles.title}>
+						<Box sx={styles.titleArtist}>
+							<Box component="span" sx={styles.title}>
 								{state.currentSound && state.currentSound.title}
 								{/* <Heart /> */}
-							</span>
+							</Box>
 							<br />
-							<span className={styles.artist}>
+							<Box component="span" sx={styles.artist}>
 								{state.currentSound && state.currentSound.author_name}
-							</span>
-						</div>
-					</div>
-					<div className={styles.controls}>
-						<div className={styles.buttons}>
+							</Box>
+						</Box>
+					</Box>
+					<Box sx={styles.controls}>
+						<Box sx={styles.buttons}>
 							<IconButton onClick={toggleShuffle}>
-								{!state.isShuffled && <Shuffle className={styles.icon} />}
+								{!state.isShuffled && <Shuffle sx={styles.icon} />}
 								{state.isShuffled && (
-									<Shuffle className={styles.icon}
+									<Shuffle sx={styles.icon}
 										style={{ color: colors.primary }}
 									/>
 								)}
 							</IconButton>
 							<IconButton onClick={playPrevious}>
-								<SkipPrevious className={styles.icon} />
+								<SkipPrevious sx={styles.icon} />
 							</IconButton>
 
 							<IconButton onClick={togglePlay} disabled={soundLoading}>
 								{soundLoading ? (
 									<LoopIcon
-										className={styles.icon}
+										sx={styles.icon}
 										style={{
 											fontSize: 42,
 											color: colors.primary,
@@ -584,13 +705,13 @@ export default function Player() {
 									<>
 										{state.isPlaying && (
 											<PauseCircleOutline
-												className={styles.icon}
+												sx={styles.icon}
 												style={{ fontSize: 42 }}
 											/>
 										)}
 										{!state.isPlaying && (
 											<PlayCircleOutline
-												className={styles.icon}
+												sx={styles.icon}
 												style={{ fontSize: 42 }}
 											/>
 										)}
@@ -599,64 +720,66 @@ export default function Player() {
 							</IconButton>
 
 							<IconButton onClick={playNext}>
-								<SkipNext className={styles.icon} />
+								<SkipNext sx={styles.icon} />
 							</IconButton>
 
 							<IconButton onClick={toggleRepeat}>
-								{state.repeat === NONE && <Repeat className={styles.icon} />}
+								{state.repeat === NONE && <Repeat sx={styles.icon} />}
 								{state.repeat === ALL && (
 									<Repeat
-										className={styles.icon}
+										sx={styles.icon}
 										style={{ color: colors.primary }}
 									/>
 								)}
 								{state.repeat === ONE && (
 									<RepeatOne
-										className={styles.icon}
+										sx={styles.icon}
 										style={{ color: colors.primary }}
 									/>
 								)}
 							</IconButton>
-						</div>
-						<div className={styles.sliderTime}>
-							<div className={styles.startTime}>{state.elapsed}</div>
-							<div className={styles.slider}>
+						</Box>
+						<Box sx={styles.sliderTime}>
+							<Box sx={styles.startTime}>{state.elapsed}</Box>
+							<Box sx={styles.slider}>
 								<Slider
 									value={state.position}
 									onChange={handleSeekChange}
 									aria-labelledby="continuous-slider"
 								/>
-							</div>
-							<div className={styles.endTime}>{state.duration}</div>
-						</div>
-					</div>
-					<div className={styles.playlistVolume}>
-						<IconButton onClick={handleQueue}>
-							<PlaylistPlayOutlined
-								className={styles.icon}
-							/>
-						</IconButton>
-						<div className={styles.volumeIcons}>
+							</Box>
+							<Box sx={styles.endTime}>{state.duration}</Box>
+						</Box>
+					</Box>
+					<Box sx={styles.playlistVolume}>
+						<Link to={AppRoutes.user.library.queue}>
+							<IconButton>
+								<PlaylistPlayOutlined
+									sx={styles.icon}
+								/>
+							</IconButton>
+						</Link>
+						<Box sx={styles.volumeIcons}>
 							{state.volume === 0 && (
-								<VolumeMuteOutlined className={styles.icon} />
+								<VolumeMuteOutlined sx={styles.icon} />
 							)}
 							{state.volume > 0 && state.volume <= 70 && (
-								<VolumeDownOutlined className={styles.icon} />
+								<VolumeDownOutlined sx={styles.icon} />
 							)}
 							{state.volume > 0 && state.volume > 70 && (
-								<VolumeUpOutlined className={styles.icon} />
+								<VolumeUpOutlined sx={styles.icon} />
 							)}
-						</div>
-						<div className={styles.volumeSliderContainer}>
+						</Box>
+						<Box sx={styles.volumeSliderContainer}>
 							<Slider
 								value={state.volume}
 								onChange={handleVolumeChange}
 								aria-labelledby="continuous-slider"
 							/>
-						</div>
-					</div>
-				</div>
-			</div>
+						</Box>
+					</Box>
+				</Box>
+			</Box>
 		</Slide >
 	)
 }

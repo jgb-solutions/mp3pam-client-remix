@@ -1,7 +1,8 @@
 // https://developer.wordpress.com/docs/photon/api/
 
-import React from 'react'
-import { CSSProperties } from '@mui/material/styles/withStyles'
+import { Box } from '@mui/material'
+import type { BoxProps } from '@mui/material'
+import type { CSSProperties } from 'react'
 
 const PHOTON_HOSTS = ['i0.wp.com', 'i1.wp.com', 'i2.wp.com', 'i3.wp.com']
 
@@ -9,7 +10,7 @@ interface Props {
   src: string
   title?: string
   alt?: string
-  className?: string
+  sx?: BoxProps['sx']
   style?: CSSProperties
   photon?: Photon
 }
@@ -174,7 +175,7 @@ function Image(props: Props) {
     optimizedProps.src = makePhotonUrl(photon, domainWithoutProtocol)
   }
 
-  return <img {...rest} style={style} {...optimizedProps} alt={alt} />
+  return <Box component={"img"} {...rest} style={style} {...optimizedProps} alt={alt} />
 }
 
 Image.phoneCdnUrl = function (url: string, options: Photon) {

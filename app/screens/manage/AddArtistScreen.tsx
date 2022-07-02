@@ -11,7 +11,7 @@ import InstagramIcon from '@mui/icons-material/Instagram'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 
 import ProgressBar from "../../components/ProgressBar"
-import TextField from "../../components/TextField"
+import TextField from "@mui/material/TextField"
 import Button from '../../components/Button'
 import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
@@ -118,7 +118,7 @@ export default function AddArtistScreen() {
   const styles = addArtistScreenStyles()
 
   return (
-    <CheckAuth className='react-transition scale-in'>
+    <CheckAuth sx='react-transition scale-in'>
       <HeaderTitle icon={<PersonPinCircleIcon />} text={`Add a new artist`} />
       <SEO title={`Add a new artist`} />
 
@@ -137,8 +137,8 @@ export default function AddArtistScreen() {
               error={!!errors.name}
               helperText={errors.name && (
                 <TextIcon
-                  icon={<ErrorIcon className={styles.errorColor} />}
-                  text={<span className={styles.errorColor}>{errors.name.message}</span>}
+                  icon={<ErrorIcon sx={styles.errorColor} />}
+                  text={<span sx={styles.errorColor}>{errors.name.message}</span>}
                 />
               )}
             />
@@ -156,8 +156,8 @@ export default function AddArtistScreen() {
               error={!!errors.stage_name}
               helperText={errors.stage_name && (
                 <TextIcon
-                  icon={<ErrorIcon className={styles.errorColor} />}
-                  text={<span className={styles.errorColor}>{errors.stage_name.message}</span>}
+                  icon={<ErrorIcon sx={styles.errorColor} />}
+                  text={<span sx={styles.errorColor}>{errors.stage_name.message}</span>}
                 />
               )}
               style={{ marginBottom: 15 }}
@@ -165,7 +165,7 @@ export default function AddArtistScreen() {
           </Grid>
         </Grid>
 
-        <Grid container direction='row' alignItems='center' spacing={1} className={styles.uploadButton}>
+        <Grid container direction='row' alignItems='center' spacing={1} sx={styles.uploadButton}>
           <Grid item>
             <UploadButton
               allowedFileSize={MAX_IMG_FILE_SIZE()}
@@ -178,14 +178,14 @@ export default function AddArtistScreen() {
             />
           </Grid>
           <Grid item>
-            {imgUploaded && <CheckCircleIcon className={styles.successColor} />}
+            {imgUploaded && <CheckCircleIcon sx={styles.successColor} />}
           </Grid>
         </Grid>
 
         {formState.isSubmitted && !imgValid && (
           <TextIcon
-            icon={<ErrorIcon className={styles.errorColor} />}
-            text={<span className={styles.errorColor}>{imgErrorMessage}</span>}
+            icon={<ErrorIcon sx={styles.errorColor} />}
+            text={<span sx={styles.errorColor}>{imgErrorMessage}</span>}
           />
         )}
 
@@ -199,7 +199,7 @@ export default function AddArtistScreen() {
         <Grid container direction='row' spacing={2}>
           <Grid item xs={12} sm={6}>
             <IconField
-              icon={<FacebookIcon className={!!errors.facebook ? styles.errorColor : ''} />}
+              icon={<FacebookIcon sx={!!errors.facebook ? styles.errorColor : ''} />}
               field={(
                 <TextField
                   onChange={e => e.target.value = e.target.value.trim()}
@@ -216,8 +216,8 @@ export default function AddArtistScreen() {
                   error={!!errors.facebook}
                   helperText={!!errors.facebook && (
                     <TextIcon
-                      icon={<ErrorIcon className={styles.errorColor} />}
-                      text={<span className={styles.errorColor}>{errors.facebook.message}</span>}
+                      icon={<ErrorIcon sx={styles.errorColor} />}
+                      text={<span sx={styles.errorColor}>{errors.facebook.message}</span>}
                     />
                   )}
                 />
@@ -227,7 +227,7 @@ export default function AddArtistScreen() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <IconField
-              icon={<TwitterIcon className={!!errors.twitter ? styles.errorColor : ''} />}
+              icon={<TwitterIcon sx={!!errors.twitter ? styles.errorColor : ''} />}
               field={(
                 <TextField
                   onChange={e => e.target.value = e.target.value.trim()}
@@ -244,8 +244,8 @@ export default function AddArtistScreen() {
                   error={!!errors.twitter}
                   helperText={!!errors.twitter && (
                     <TextIcon
-                      icon={<ErrorIcon className={styles.errorColor} />}
-                      text={<span className={styles.errorColor}>{errors.twitter.message}</span>}
+                      icon={<ErrorIcon sx={styles.errorColor} />}
+                      text={<span sx={styles.errorColor}>{errors.twitter.message}</span>}
                     />
                   )}
                 />
@@ -255,7 +255,7 @@ export default function AddArtistScreen() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <IconField
-              icon={<InstagramIcon className={!!errors.instagram ? styles.errorColor : ''} />}
+              icon={<InstagramIcon sx={!!errors.instagram ? styles.errorColor : ''} />}
               field={(
                 <TextField
                   onChange={e => e.target.value = e.target.value.trim()}
@@ -272,8 +272,8 @@ export default function AddArtistScreen() {
                   error={!!errors.instagram}
                   helperText={!!errors.instagram && (
                     <TextIcon
-                      icon={<ErrorIcon className={styles.errorColor} />}
-                      text={<span className={styles.errorColor}>{errors.instagram.message}</span>}
+                      icon={<ErrorIcon sx={styles.errorColor} />}
+                      text={<span sx={styles.errorColor}>{errors.instagram.message}</span>}
                     />
                   )}
                 />
@@ -283,7 +283,7 @@ export default function AddArtistScreen() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <IconField
-              icon={<YouTubeIcon className={!!errors.youtube ? styles.errorColor : ''} />}
+              icon={<YouTubeIcon sx={!!errors.youtube ? styles.errorColor : ''} />}
               field={(
                 <TextField
                   onChange={e => e.target.value = e.target.value.trim()}
@@ -300,8 +300,8 @@ export default function AddArtistScreen() {
                   error={!!errors.youtube}
                   helperText={!!errors.youtube && (
                     <TextIcon
-                      icon={<ErrorIcon className={styles.errorColor} />}
-                      text={<span className={styles.errorColor}>{errors.youtube.message}</span>}
+                      icon={<ErrorIcon sx={styles.errorColor} />}
+                      text={<span sx={styles.errorColor}>{errors.youtube.message}</span>}
                     />
                   )}
                 />
@@ -327,8 +327,8 @@ export default function AddArtistScreen() {
           error={!!errors.bio}
           helperText={errors.bio && (
             <TextIcon
-              icon={<ErrorIcon className={styles.errorColor} />}
-              text={<span className={styles.errorColor}>{errors.bio.message}</span>}
+              icon={<ErrorIcon sx={styles.errorColor} />}
+              text={<span sx={styles.errorColor}>{errors.bio.message}</span>}
             />
           )}
         />
@@ -346,7 +346,7 @@ export default function AddArtistScreen() {
         handleClose={handleArtistSucessDialogClose}
         disableBackdropClick >
         <DialogContentText id="alert-dialog-description" align='center'>
-          <span><CheckCircleIcon style={{ fontSize: 64 }} className={styles.successColor} /></span>
+          <span><CheckCircleIcon style={{ fontSize: 64 }} sx={styles.successColor} /></span>
           <br />
           <span>Artist successfully added!</span>
           <br />
@@ -363,7 +363,7 @@ export default function AddArtistScreen() {
         handleClose={handleOpenInvalidFileSizeClose}>
         <DialogContentText id="alert-dialog-description" align='center'>
           <span>
-            <ErrorIcon style={{ fontSize: 64 }} className={styles.errorColor} />
+            <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
           </span>
           <br />
           <span dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />

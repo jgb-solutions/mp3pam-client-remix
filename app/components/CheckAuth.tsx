@@ -17,5 +17,5 @@ export default function CheckAuth({ children, className }: { children: ReactNode
     }
   }, [currentUser.loggedIn, location, navigate])
 
-  return <div className={className}>{children}</div>
+  return <div sx={className}>{children}</div>
 }

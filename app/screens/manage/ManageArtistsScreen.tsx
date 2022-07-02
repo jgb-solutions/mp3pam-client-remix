@@ -15,12 +15,12 @@ import useMyArtists from "../../hooks/useMyArtists"
 import { StyledTableCell } from "../../components/AlbumTracksTable"
 import { Link } from "@remix-run/react"
 import AppRoutes from "~/app-routes"
-import Button from "../../components/Button"
+import Button from "@mui/material/Button"
 import colors from "../../utils/colors"
 import useDeleteArtist from "../../hooks/useDeleteArtist"
 import SEO from "../../components/SEO"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   table: {
 //     width: '100%',
 //     overflowX: 'auto',
@@ -37,7 +37,7 @@ import SEO from "../../components/SEO"
 // }))
 
 export default function ManageArtistsScreen() {
-  const styles = {}
+
   const [artistHashToDelete, setArtistHashToDelete] = useState('')
   const { deleteArtist, deleteArtistResponse, deletingArtist, errorDeletingArtist } = useDeleteArtist()
   const { loading, error, data, refetch } = useMyArtists()
@@ -73,7 +73,7 @@ export default function ManageArtistsScreen() {
           <HeaderTitle icon={<MusicNoteIcon />} text="Your Artists" />
           <SEO title={`Your Artists`} />
 
-          <Table className={styles.table} size="small">
+          <Table sx={styles.table} size="small">
             <TableHead>
               <TableRow>
                 {/* <StyledTableCell>Stage Name</StyledTableCell>
@@ -87,12 +87,12 @@ export default function ManageArtistsScreen() {
                     borderBottom: artists.data.length - 1 === index ? '' : '1px solid white',
                   }}>
                     {/* <StyledTableCell style={{ width: '90%' }}>
-                      <Link to={Routes.artist.detailPage(artist.hash)} className={styles.link}>{artist.stage_name}</Link>
+                      <Link to={Routes.artist.detailPage(artist.hash)} sx={styles.link}>{artist.stage_name}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span
                         onClick={() => confirmDelete(artist.hash)}
-                        className={styles.link}
+                        sx={styles.link}
                         style={{ cursor: 'pointer' }}>Delete</span>
                     </StyledTableCell> */}
                   </TableRow>
@@ -111,7 +111,7 @@ export default function ManageArtistsScreen() {
         handleClose={() => setArtistHashToDelete('')}>
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
-          icon={<ErrorIcon className={styles.errorColor} />}
+          icon={<ErrorIcon sx={styles.errorColor} />}
           text={`
           Are you sure you want to delete this artist? <br />
           <small>Their tracks and albums will also be deleted.</small>
@@ -123,7 +123,7 @@ export default function ManageArtistsScreen() {
           <Button
             size='small'
             onClick={() => handleDeleteArtist(artistHashToDelete)}
-            className={styles.noBgButton}
+            sx={styles.noBgButton}
             disabled={deletingArtist}>
             Delete
           </Button>

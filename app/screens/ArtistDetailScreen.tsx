@@ -55,7 +55,7 @@ export const LinkWrapper = (
   </a>
 )
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   row: {
 //     display: "flex",
 //     flexDirection: "row"
@@ -126,7 +126,7 @@ export const LinkWrapper = (
 // }))
 
 export default function ArtistDetailScreen() {
-  const styles = {}
+
   const params = useParams()
   const hash = get(params, 'hash')
   const { loading: randomLoading, data: randomArtistsData, fetchRandomdArtists } = useRandomArtists(hash)
@@ -270,13 +270,13 @@ export default function ArtistDetailScreen() {
   }
 
   return artist ? (
-    <div className="react-transition flip-in-x-reverse">
+    <div sx="react-transition flip-in-x-reverse">
       <Grid container spacing={2}>
-        <Grid item sm={4} xs={12} className={styles.imageContainer}>
+        <Grid item sm={4} xs={12} sx={styles.imageContainer}>
           <Image
             src={artist.poster_url}
             alt={artist.stage_name}
-            className={styles.image}
+            sx={styles.image}
             photon={{
               ulb: true,
               lb: {
@@ -285,10 +285,10 @@ export default function ArtistDetailScreen() {
               }
             }} />
         </Grid>
-        <Grid item sm={8} xs={12} className={styles.detailsWrapper}>
-          <div className={styles.listDetails}>
-            <h5 className={styles.listType}>Artist</h5>
-            <h1 className={styles.listName}>{artist.stage_name}</h1>
+        <Grid item sm={8} xs={12} sx={styles.detailsWrapper}>
+          <div sx={styles.listDetails}>
+            <h5 sx={styles.listType}>Artist</h5>
+            <h1 sx={styles.listName}>{artist.stage_name}</h1>
             <Grid container spacing={2}>
               {artist.facebook_url && (
                 <Grid item>

@@ -6,7 +6,7 @@ import { Link } from "@remix-run/react"
 import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
 import ArtistThumbnail from "./ArtistThumbnail"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   container: {
 //     marginBottom: 30
 //   },
@@ -46,7 +46,7 @@ export interface ArtistThumbnailData {
 
 export const ArtistScrollingList = (props: { artists: ArtistThumbnailData[], category: string, browse: string }) => {
   const { artists, category, browse } = props
-  const styles = {}
+
   let domElement: any
 
   const scroll = (dir: string) => {
@@ -59,10 +59,10 @@ export const ArtistScrollingList = (props: { artists: ArtistThumbnailData[], cat
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.listHeader}>
-        <Link to={browse} className={styles.link}>
-          <h2 className={styles.category}>{category}</h2>
+    <div sx={styles.container}>
+      <div sx={styles.listHeader}>
+        <Link to={browse} sx={styles.link}>
+          <h2 sx={styles.category}>{category}</h2>
         </Link>
         <div>
           <KeyboardArrowLeft onClick={() => scroll("left")} />
@@ -71,13 +71,13 @@ export const ArtistScrollingList = (props: { artists: ArtistThumbnailData[], cat
         </div>
       </div>
       <div
-        className={styles.list}
+        sx={styles.list}
         ref={el => {
           domElement = el
         }}
       >
         {artists.map(artist => (
-          <ArtistThumbnail key={artist.hash} className={styles.thumbnail} artist={artist} />
+          <ArtistThumbnail key={artist.hash} sx={styles.thumbnail} artist={artist} />
         ))}
       </div>
     </div>

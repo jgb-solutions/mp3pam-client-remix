@@ -39,7 +39,7 @@ import Image from "../components/Image"
 import { Grid } from "@mui/material"
 import AppRoutes from "~/app-routes"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   imageContainer: {
 //     textAlign: 'center',
 //   },
@@ -106,7 +106,7 @@ type Props = {
 }
 
 const PlaylistDetailScreen = (props: Props) => {
-  const styles = {}
+
   const params = useParams()
   const hash = get(params, 'hash')
   const { loading: randomLoading, data: randomPlaylistsData, fetchRandomPlaylists } = useRandomPlaylists(hash)
@@ -253,13 +253,13 @@ const PlaylistDetailScreen = (props: Props) => {
   }
 
   return playlist ? (
-    <div className="react-transition flip-in-x-reverse">
+    <div sx="react-transition flip-in-x-reverse">
       <Grid container spacing={2}>
-        <Grid item sm={4} xs={12} className={styles.imageContainer}>
+        <Grid item sm={4} xs={12} sx={styles.imageContainer}>
           <Image
             src={playlist.cover_url}
             alt={playlist.title}
-            className={styles.image}
+            sx={styles.image}
             photon={{
               ulb: true,
               lb: {
@@ -269,14 +269,14 @@ const PlaylistDetailScreen = (props: Props) => {
             }}
           />
         </Grid>
-        <Grid item sm={8} xs={12} className={styles.detailsWrapper}>
-          <div className={styles.listDetails}>
-            <h5 className={styles.listType}>Playlist</h5>
-            <h1 className={styles.listName}>{playlist.title}</h1>
-            <p className={styles.listByAuthor} style={{ marginBottom: 5 }}>
-              <span className={styles.listBy}>By </span> {playlist.user.name}
+        <Grid item sm={8} xs={12} sx={styles.detailsWrapper}>
+          <div sx={styles.listDetails}>
+            <h5 sx={styles.listType}>Playlist</h5>
+            <h1 sx={styles.listName}>{playlist.title}</h1>
+            <p sx={styles.listByAuthor} style={{ marginBottom: 5 }}>
+              <span sx={styles.listBy}>By </span> {playlist.user.name}
             </p>
-            <Grid className={styles.ctaButtons} container spacing={2}>
+            <Grid sx={styles.ctaButtons} container spacing={2}>
               <Grid item xs={2} implementation="css" smUp component={Hidden} />
               <Grid item >
                 <Button fullWidth style={{ width: 100 }} onClick={togglePlay}>

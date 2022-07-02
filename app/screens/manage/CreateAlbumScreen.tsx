@@ -11,7 +11,7 @@ import { Grid } from "@mui/material"
 
 
 import ProgressBar from "../../components/ProgressBar"
-import TextField from "../../components/TextField"
+import TextField from "@mui/material/TextField"
 import Button from '../../components/Button'
 import UploadButton from '../../components/UploadButton'
 import CheckAuth from "../../components/CheckAuth"
@@ -158,7 +158,7 @@ export default function AddAlbumScreen() {
   const styles = createAlbumScreenStyles()
 
   return (
-    <CheckAuth className='react-transition scale-in'>
+    <CheckAuth sx='react-transition scale-in'>
       <HeaderTitle icon={<AlbumIcon />} text={`Create a new Album`} />
       <SEO title={`Create a new album`} />
 
@@ -177,8 +177,8 @@ export default function AddAlbumScreen() {
               error={!!errors.title}
               helperText={errors.title && (
                 <TextIcon
-                  icon={<ErrorIcon className={styles.errorColor} />}
-                  text={<span className={styles.errorColor}>{errors.title.message}</span>}
+                  icon={<ErrorIcon sx={styles.errorColor} />}
+                  text={<span sx={styles.errorColor}>{errors.title.message}</span>}
                 />
               )}
               style={{ marginBottom: 15 }}
@@ -201,8 +201,8 @@ export default function AddAlbumScreen() {
               error={!!errors.release_year}
               helperText={errors.release_year && (
                 <TextIcon
-                  icon={<ErrorIcon className={styles.errorColor} />}
-                  text={<span className={styles.errorColor}>{errors.release_year.message}</span>}
+                  icon={<ErrorIcon sx={styles.errorColor} />}
+                  text={<span sx={styles.errorColor}>{errors.release_year.message}</span>}
                 />
               )}
               style={{ marginBottom: 15 }}
@@ -222,8 +222,8 @@ export default function AddAlbumScreen() {
               error={!!errors.artist_id}
               helperText={errors.artist_id && (
                 <TextIcon
-                  icon={<ErrorIcon className={styles.errorColor} />}
-                  text={<span className={styles.errorColor}>{errors.artist_id.message}</span>}
+                  icon={<ErrorIcon sx={styles.errorColor} />}
+                  text={<span sx={styles.errorColor}>{errors.artist_id.message}</span>}
                 />
               )}
               margin="normal"
@@ -245,7 +245,7 @@ export default function AddAlbumScreen() {
             </TextField>
           </Grid>
           <Grid item xs={12} sm>
-            <Grid container direction='row' alignItems='center' spacing={1} className={styles.uploadButton}>
+            <Grid container direction='row' alignItems='center' spacing={1} sx={styles.uploadButton}>
               <Grid item xs={9}>
                 <UploadButton
                   allowedFileSize={MAX_IMG_FILE_SIZE()}
@@ -259,14 +259,14 @@ export default function AddAlbumScreen() {
                 />
               </Grid>
               <Grid item xs={3}>
-                {imgUploaded && <CheckCircleIcon className={styles.successColor} />}
+                {imgUploaded && <CheckCircleIcon sx={styles.successColor} />}
               </Grid>
             </Grid>
 
             {formState.isSubmitted && !imgValid && (
               <TextIcon
-                icon={<ErrorIcon className={styles.errorColor} />}
-                text={<span className={styles.errorColor}>{imgErrorMessage}</span>}
+                icon={<ErrorIcon sx={styles.errorColor} />}
+                text={<span sx={styles.errorColor}>{imgErrorMessage}</span>}
               />
             )}
 
@@ -296,8 +296,8 @@ export default function AddAlbumScreen() {
           error={!!errors.detail}
           helperText={errors.detail && (
             <TextIcon
-              icon={<ErrorIcon className={styles.errorColor} />}
-              text={<span className={styles.errorColor}>{errors.detail.message}</span>}
+              icon={<ErrorIcon sx={styles.errorColor} />}
+              text={<span sx={styles.errorColor}>{errors.detail.message}</span>}
             />
           )}
         />
@@ -315,7 +315,7 @@ export default function AddAlbumScreen() {
         handleClose={handleAlbumSucessDialogClose}
         disableBackdropClick>
         <DialogContentText id="alert-dialog-description" align='center'>
-          <span><CheckCircleIcon style={{ fontSize: 64 }} className={styles.successColor} /></span>
+          <span><CheckCircleIcon style={{ fontSize: 64 }} sx={styles.successColor} /></span>
           <br />
           <span>Album successfully createed!</span>
           <br />
@@ -340,7 +340,7 @@ export default function AddAlbumScreen() {
         handleClose={handleOpenInvalidFileSizeClose}>
         <DialogContentText id="alert-dialog-description" align='center'>
           <span>
-            <ErrorIcon style={{ fontSize: 64 }} className={styles.errorColor} />
+            <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
           </span>
           <br />
           <span dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />

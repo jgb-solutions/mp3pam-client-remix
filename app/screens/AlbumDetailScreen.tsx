@@ -40,7 +40,7 @@ import HeaderTitle from "../components/HeaderTitle"
 import Image from "../components/Image"
 import { Grid } from "@mui/material"
 
-// const useStyles = makeStyles(theme => ({
+// const styles = {
 //   row: {
 //     display: "flex",
 //     flexDirection: "row"
@@ -122,7 +122,7 @@ type Props = {
 }
 
 const AlbumDetailScreen = (props: Props) => {
-  const styles = {}
+
   const params = useParams()
   const navigate = useNavigate()
   const hash = get(params, 'hash')
@@ -278,13 +278,13 @@ const AlbumDetailScreen = (props: Props) => {
   }
 
   return album ? (
-    <div className="react-transition flip-in-x-reverse">
+    <div sx="react-transition flip-in-x-reverse">
       <Grid container spacing={2}>
-        <Grid item sm={4} xs={12} className={styles.imageContainer}>
+        <Grid item sm={4} xs={12} sx={styles.imageContainer}>
           <Image
             src={album.cover_url}
             alt={album.title}
-            className={styles.image}
+            sx={styles.image}
             photon={{
               ulb: true,
               lb: {
@@ -294,25 +294,25 @@ const AlbumDetailScreen = (props: Props) => {
             }}
           />
         </Grid>
-        <Grid item sm={8} xs={12} className={styles.detailsWrapper}>
-          <div className={styles.listDetails}>
-            <h5 className={styles.listType}>Album</h5>
-            <h1 className={styles.listName}>{album.title}</h1>
-            <p className={styles.listByAuthor} style={{ marginBottom: 5 }}>
-              <span className={styles.listBy}>By </span>
+        <Grid item sm={8} xs={12} sx={styles.detailsWrapper}>
+          <div sx={styles.listDetails}>
+            <h5 sx={styles.listType}>Album</h5>
+            <h1 sx={styles.listName}>{album.title}</h1>
+            <p sx={styles.listByAuthor} style={{ marginBottom: 5 }}>
+              <span sx={styles.listBy}>By </span>
               <Link
                 to={Routes.artist.detailPage(album.artist.hash)}
-                className={styles.listAuthor}
+                sx={styles.listAuthor}
               >
                 {album.artist.stage_name}
               </Link>
               <br />
-              <span className={styles.listBy}>Released In </span>
-              <span className={styles.listAuthor} style={{ textDecoration: 'none' }}>
+              <span sx={styles.listBy}>Released In </span>
+              <span sx={styles.listAuthor} style={{ textDecoration: 'none' }}>
                 {album.release_year}
               </span>
             </p>
-            <Grid className={styles.ctaButtons} container spacing={2}>
+            <Grid sx={styles.ctaButtons} container spacing={2}>
               <Grid item xs={2} implementation="css" smUp component={Hidden} />
               <Grid item >
                 <Button fullWidth style={{ width: 100 }} onClick={togglePlay}>

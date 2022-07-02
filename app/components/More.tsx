@@ -7,28 +7,29 @@ import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 
 import colors from "../utils/colors"
+import type { BoxStyles } from "~/interfaces/types"
 
 
-// const useStyles = makeStyles({
-//   icon: {
-//     fontSize: 18,
-//     color: colors.grey,
-//     '&:hover': {
-//       color: colors.white
-//     }
-//   },
-//   border: {
-//     color: colors.white,
-//     padding: 5,
-//     border: "1px solid white",
-//     borderRadius: "50%",
-//   },
-//   menuItem: {
-//     '&:hover': {
-//       backgroundColor: colors.black, color: colors.white
-//     }
-//   }
-// })
+const styles: BoxStyles = {
+  icon: {
+    fontSize: 18,
+    color: colors.grey,
+    '&:hover': {
+      color: colors.white
+    }
+  },
+  border: {
+    color: colors.white,
+    padding: 1,
+    border: "1px solid white",
+    borderRadius: "50%",
+  },
+  menuItem: {
+    '&:hover': {
+      backgroundColor: colors.black, color: colors.white
+    }
+  }
+}
 
 type Option = {
   name: string,
@@ -41,7 +42,7 @@ type Props = {
 }
 
 function Heart(props: Props) {
-  const styles = {}
+
   const [anchorEl, listAnchorEl] = useState(null)
 
   const handleMenu = (event: any) => {
@@ -62,8 +63,8 @@ function Heart(props: Props) {
       <IconButton
         aria-controls="context-menu"
         aria-haspopup="true"
-        onClick={handleMenu} className={props.border ? styles.border : ''}>
-        <MoreHorizOutlined className={styles.icon} />
+        onClick={handleMenu} sx={props.border ? styles.border : {}}>
+        <MoreHorizOutlined sx={styles.icon} />
       </IconButton>
       <Menu
         id="context-menu"
@@ -82,7 +83,7 @@ function Heart(props: Props) {
           <MenuItem
             key={index}
             onClick={() => handleClick(option.method)}
-            className={styles.menuItem}>
+            sx={styles.menuItem}>
             {option.name}
           </MenuItem>
         )}
