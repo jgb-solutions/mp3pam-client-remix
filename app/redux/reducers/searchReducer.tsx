@@ -1,9 +1,16 @@
+import type SearchInterface from "~/interfaces/SearchInterface"
 import { SAVE_SEARCH, SEARCH } from "../actions/search_action_types"
-import SearchInterface from "../../interfaces/SearchInterface"
-const location: any = document.location
+
+const getSearchTerm = () => {
+	if (typeof window === 'undefined') return ''
+
+	const location = window.location
+
+	return new URL(location.href).searchParams.get("query") || ''
+}
 
 const INITIAL_STATE: SearchInterface = {
-	term: new URL(location).searchParams.get("query") || "",
+	term: getSearchTerm(),
 	data: {
 		tracks: [],
 		artists: [],

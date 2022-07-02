@@ -1,19 +1,28 @@
 import type { FC } from 'react'
 import Grid from '@mui/material/Grid'
-
+import type { GridProps } from '@mui/material/Grid'
 
 import Content from '../Content'
-import { plainLayoutStyles as styles } from '~/styles/plainLayoutStyles'
+import type { GridStyles } from "~/interfaces/types"
 
-type Props = {}
+export const styles: GridStyles = {
+  mainGrid: {
+    height: '100vh',
+    overflowY: 'auto',
+    // backgroundColor: colors.contentGrey,
+    position: 'relative'
+  }
+}
 
-const PlainLayout: FC<Props> = ({ children }) => {
+type Props = {
+  sx?: GridProps['sx']
+}
+
+const PlainLayout: FC<Props> = ({ children, sx = {} }) => {
   return (
-    <>
-      <Grid item sm={12} xs={12} className={`${styles.col} ${styles.mainGrid}`}>
-        <Content sx={styles.col}>{children}</Content>
-      </Grid>
-    </>
+    <Grid item sm={12} xs={12} sx={{ ...styles.mainGrid, ...sx } as GridProps['sx']}>
+      <Content sx={styles.col}>{children}</Content>
+    </Grid>
   )
 }
 

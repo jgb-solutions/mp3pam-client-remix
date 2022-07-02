@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 import useDownload from '../hooks/useDownload'
 import colors from '../utils/colors'
 import Spinner from './Spinner'
 import { useNavigate } from '@remix-run/react'
-import Routes from '../routes'
 import AppRoutes from '~/app-routes'
 
 // const useStyles = makeStyles({

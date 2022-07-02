@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useLocation, useHistory, Redirect } from 'react-router'
 import queryString from 'query-string'
-import { useApolloClient } from 'graphql-request'
 import { useDispatch, useSelector } from 'react-redux'
 
-import Routes from '../../routes'
 import Spinner from '../../components/Spinner'
-import { LOG_IN } from '../../store/actions/user_action_types'
+import { LOG_IN } from '../../redux/actions/user_action_types'
 import { FACEOOK_LOGIN } from '../../graphql/mutations'
 import AppStateInterface from '../../interfaces/AppStateInterface'
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import { connect } from "react-redux"
 import { Link, useParams, useNavigate } from "@remix-run/react"
 import { get } from 'lodash'
@@ -28,7 +28,7 @@ import AlbumTracksTable from "../components/AlbumTracksTable"
 import useAlbumDetail from '../hooks/useAlbumDetail'
 import Button from "../components/Button"
 import ListInterface, { SoundInterface } from "../interfaces/ListInterface"
-import * as playerActions from "../store/actions/playerActions"
+import * as playerActions from "../redux/actions/playerActions"
 import AppStateInterface from "../interfaces/AppStateInterface"
 import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_ALBUM_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
 import Spinner from "../components/Spinner"

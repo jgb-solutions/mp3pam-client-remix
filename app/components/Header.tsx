@@ -14,7 +14,6 @@ import Left from './Left'
 import colors from '../utils/colors'
 import SearchInput from './SearchInput'
 import { SMALL_SCREEN_SIZE } from '../utils/constants.server'
-import Routes from '../routes'
 import { useSelector } from 'react-redux'
 import Right from './Right'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
@@ -97,7 +96,7 @@ const Header = (props: Props) => {
             sx={styles.leftMenuIcon}>
             <MenuIcon />
           </IconButton>
-          {/* <SearchInput /> */}
+          <SearchInput />
           <Box sx={styles.grow} />
           <Box>
             {

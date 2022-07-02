@@ -13,21 +13,20 @@ import {
 } from "@mui/icons-material"
 
 import { useDispatch, useSelector } from "react-redux"
-import React, { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import IconButton from "@mui/material/IconButton"
 
 import LoopIcon from '@mui/icons-material/Loop'
 
 import Slider from "./Slider"
-import Routes from '../routes'
 import { debounce } from "../utils/helpers"
 import { ALL, ONE, NONE, SECONDS_TO_UPDATE_PLAY_COUNT } from '../utils/constants.server'
 import { SoundInterface } from "../interfaces/ListInterface"
 import PlayerInterface from "../interfaces/PlayerInterface"
-import * as playerActions from "../store/actions/playerActions"
+import * as playerActions from "../redux/actions/playerActions"
 import {
 	RESUME, PAUSE, PLAY, PLAY_SOUND, PAUSE_SOUND, RESUME_SOUND, PLAY_NEXT, ADD_TO_QUEUE
-} from "../store/actions/player_action_types"
+} from "../redux/actions/player_action_types"
 import AppStateInterface from "../interfaces/AppStateInterface"
 // import PlayerStyle from "../styles/PlayerStyle"
 import colors from "../utils/colors"

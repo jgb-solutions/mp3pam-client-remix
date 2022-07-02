@@ -913,13 +913,6 @@ export type TracksDataByGenreQueryVariables = Exact<{
 
 export type TracksDataByGenreQuery = { __typename?: 'Query', genre?: { __typename?: 'Genre', name: string } | null, tracksByGenre?: { __typename?: 'TrackPaginator', data: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, artist: { __typename?: 'Artist', stage_name: string, hash: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', hasMorePages: boolean, currentPage: number } } | null };
 
-export type RelatedTracksDataQueryVariables = Exact<{
-  input: RelatedTracksInput;
-}>;
-
-
-export type RelatedTracksDataQuery = { __typename?: 'Query', relatedTracks?: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, artist: { __typename?: 'Artist', stage_name: string, hash: string } }> | null };
-
 export type RandomArtistsDataQueryVariables = Exact<{
   input: RandomArtistsInput;
 }>;
@@ -1007,10 +1000,11 @@ export type MyArtistDataQuery = { __typename?: 'Query', me: { __typename?: 'User
 
 export type TrackDetailQueryVariables = Exact<{
   hash: Scalars['String'];
+  input: RelatedTracksInput;
 }>;
 
 
-export type TrackDetailQuery = { __typename?: 'Query', track?: { __typename?: 'Track', title: string, hash: string, allowDownload: boolean, audio_url: string, poster_url: string, featured: boolean, detail?: string | null, lyrics?: string | null, play_count: number, download_count: number, audio_file_size: string, genre: { __typename?: 'Genre', name: string, slug: string }, artist: { __typename?: 'Artist', stage_name: string, hash: string }, album?: { __typename?: 'Album', title: string, hash: string } | null } | null };
+export type TrackDetailQuery = { __typename?: 'Query', track?: { __typename?: 'Track', title: string, hash: string, allowDownload: boolean, audio_url: string, poster_url: string, featured: boolean, detail?: string | null, lyrics?: string | null, play_count: number, download_count: number, audio_file_size: string, genre: { __typename?: 'Genre', name: string, slug: string }, artist: { __typename?: 'Artist', stage_name: string, hash: string }, album?: { __typename?: 'Album', title: string, hash: string } | null } | null, relatedTracks?: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, artist: { __typename?: 'Artist', stage_name: string, hash: string } }> | null };
 
 export type ArtistDetailQueryVariables = Exact<{
   hash: Scalars['String'];

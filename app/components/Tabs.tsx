@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import AppBar from '@mui/material/AppBar'
 import BaseTabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'

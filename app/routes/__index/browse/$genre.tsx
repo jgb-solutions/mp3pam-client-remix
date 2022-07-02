@@ -2,24 +2,23 @@ import Grid from "@mui/material/Grid"
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import { useParams } from "@remix-run/react"
+import { useLoaderData, useParams } from "@remix-run/react"
 
-import Spinner from "../../components/Spinner"
-import HeaderTitle from "../../components/HeaderTitle"
-import fetchTracksByGenre from "../../hooks/fetchTracksByGenre"
-import TrackThumbnail from "../../components/TrackThumbnail"
-import SEO from "../../components/SEO"
+import SEO from "../../../components/SEO"
 import type { TracksWithArtist } from '~/components/TrackScrollingList'
+import { json, LoaderFunction } from "@remix-run/node"
+import { fetchTracksByGenre } from "~/graphql/requests.server"
+
+export const loader: LoaderFunction = async ({ params }) => {
+  const { genre } = params as { genre: string }
+
+  const data = await fetchTracksByGenre(genre)
+
+  return json(data)
+}
 
 export default function BrowseTracksByGenreScreen() {
-  const { slug } = useParams() as { slug: string }
-  const { loading, error, data, loadMoreTracks, hasMore } = fetchTracksByGenre(slug)
-  const tracksByGenre = get(data, 'tracksByGenre')
-  const genre = get(data, 'genre')
-
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
+  const { tracksByGenre } = useLoaderData()
 
   return (
     <>

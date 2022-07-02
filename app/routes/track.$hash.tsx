@@ -25,14 +25,12 @@ import AppRoutes from "~/app-routes"
 import colors from "../utils/colors"
 import More from "../components/More"
 import Tabs, { TabItem } from "../components/Tabs"
-import fetchTrackDetail from '../hooks/fetchTrackDetail'
 import ListInterface, { SoundInterface } from "../interfaces/ListInterface"
-import * as playerActions from "../store/actions/playerActions"
+import * as playerActions from "../redux/actions/playerActions"
 import AppStateInterface from "../interfaces/AppStateInterface"
 import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_TRACK_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
 import Spinner from "../components/Spinner"
 import { TrackScrollingList } from "../components/TrackScrollingList"
-import useRelatedTracks from "../hooks/useRelatedTracks"
 import SEO from "../components/SEO"
 import FourOrFour from "../components/FourOrFour"
 import HeaderTitle from "../components/HeaderTitle"
@@ -41,6 +39,7 @@ import Image from "../components/Image"
 import { Box, Button, Grid } from "@mui/material"
 import PlainLayout from "~/components/layouts/Plain"
 import { json, LoaderFunction } from "@remix-run/node"
+import { fetchTrackDetail } from "~/graphql/requests.server"
 
 // const useStyles = makeStyles(theme => ({
 //   row: {
@@ -113,9 +112,9 @@ import { json, LoaderFunction } from "@remix-run/node"
 // }))
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const { hash } = params
+  const { hash } = params as { hash: string }
 
-  const data = await await fetchTrackDetail(`${hash}`)
+  const data = await fetchTrackDetail(hash)
   console.log('hash', hash)
 
   return json(data)

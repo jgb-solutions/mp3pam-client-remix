@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import { useEffect } from 'react'
 
 export default function GoogleAdsense({
   client,
@@ -13,7 +13,7 @@ export default function GoogleAdsense({
   return (
     <ins
       className="adsbygoogle"
-      style={{ display: "block" }}
+      style={{ display: 'block' }}
       data-ad-client={client}
       data-ad-slot={slot}
       data-ad-format={format}

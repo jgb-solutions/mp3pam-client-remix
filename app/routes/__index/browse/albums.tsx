@@ -4,20 +4,21 @@ import AlbumIcon from '@mui/icons-material/Album'
 import { Grid } from "@mui/material"
 import InfiniteScroll from 'react-infinite-scroller'
 
-import Spinner from "../../components/Spinner"
-import HeaderTitle from "../../components/HeaderTitle"
-import useAlbums from "../../hooks/useAlbums"
-import AlbumThumbnail from "../../components/AlbumThumbnail"
-import { AlbumThumbnailData } from "../../components/AlbumScrollingList"
-import SEO from "../../components/SEO"
+
+import SEO from "../../../components/SEO"
+import { fetchAlbums } from '~/graphql/requests.server'
+import { AlbumsDataQuery } from '~/graphql/generated-types'
+import { useLoaderData } from '@remix-run/react'
+import { json, LoaderFunction } from '@remix-run/node'
+
+export const loader: LoaderFunction = async () => {
+  const data = await fetchAlbums()
+
+  return json(data)
+}
 
 export default function BrowseAlbumsScreen() {
-  const { loading, error, data, loadMoreAlbums, hasMore } = useAlbums()
-  const albums = get(data, 'albums')
-
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
+  const { albums } = useLoaderData()
 
   return (
     <>

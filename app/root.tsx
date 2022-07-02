@@ -12,17 +12,23 @@ import { withEmotionCache } from '@emotion/react'
 import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
-import type { ReactNode } from 'react'
 import type { LinksFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import type { LoaderFunction } from '@remix-run/node'
 
 import theme from './mui/theme'
-import StylesContext from './mui/StylesContext'
+import { PersistGate } from "redux-persist/integration/react"
+
 import RootLayout from './components/layouts/Root'
 // import reactTransitionSheetUrl from '~/styles/react-transitions.css'
-import PlainLayout from './components/layouts/Plain'
 import ClientStyleContext from './mui/ClientStyleContext'
+import MainLayout from './components/layouts/Main'
+import { Provider } from 'react-redux'
+import { persistedStore } from './redux/store'
+
+
+const { store, persistor } = persistedStore()
+
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: reactTransitionSheetUrl }]
@@ -78,9 +84,13 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
       </head>
 
       <Box component="body" sx={{ bgcolor: "black" }}>
-        <RootLayout>
-          {children}
-        </RootLayout>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <RootLayout>
+              {children}
+            </RootLayout>
+          </PersistGate>
+        </Provider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
@@ -118,14 +128,14 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
   return (
     <Document title="Error!">
-      <PlainLayout>
+      <MainLayout>
         <div>
           <h1>There was an error</h1>
           <p>{error.message}</p>
           <hr />
           <p>Hey, developer, you should replace this with what you want your users to see.</p>
         </div>
-      </PlainLayout>
+      </MainLayout>
     </Document>
   )
 }
@@ -148,12 +158,12 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <PlainLayout>
+      <MainLayout>
         <h1>
           {caught.status}: {caught.statusText}
         </h1>
         {message}
-      </PlainLayout>
+      </MainLayout>
     </Document>
   )
 }

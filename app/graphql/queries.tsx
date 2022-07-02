@@ -96,9 +96,8 @@ export const FETCH_MANAGE_SCREEN = gql`
   }
 `
 
-export const FETCH_TRACKS = gql`
+export const fetchTracksDocument = gql`
   query tracksData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
-    # Latest 10 tracks
     tracks(first: $first, page: $page, orderBy: $orderBy) {
       data {
         hash
@@ -141,19 +140,19 @@ export const FetchTracksByGenreDocument = gql`
   }
 `
 
-export const FETCH_RELATED_TRACKS = gql`
-  query relatedTracksData($input: RelatedTracksInput!) {
-    relatedTracks(input: $input) {
-      hash
-      title
-      poster_url
-      artist {
-        stage_name
-        hash
-      }
-    }
-  }
-`
+// export const FETCH_RELATED_TRACKS = gql`
+//   query relatedTracksData($input: RelatedTracksInput!) {
+//     relatedTracks(input: $input) {
+//       hash
+//       title
+//       poster_url
+//       artist {
+//         stage_name
+//         hash
+//       }
+//     }
+//   }
+// `
 
 export const FETCH_RANDOM_ARTISTS = gql`
   query randomArtistsData($input: RandomArtistsInput!) {
@@ -198,9 +197,8 @@ export const FETCH_RANDOM_PLAYLISTS = gql`
   }
 `
 
-export const FETCH_ARTISTS = gql`
+export const fetchArtistsDocument = gql`
   query artistsData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
-    # Latest 10 artists
     artists(first: $first, page: $page, orderBy: $orderBy) {
       data {
         hash
@@ -215,9 +213,8 @@ export const FETCH_ARTISTS = gql`
   }
 `
 
-export const FETCH_PLAYLISTS = gql`
+export const fetchPlaylistsDocument = gql`
   query playlistsData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
-    # Latest 10 playlists
     playlists(first: $first, page: $page, orderBy: $orderBy) {
       data {
         hash
@@ -232,9 +229,8 @@ export const FETCH_PLAYLISTS = gql`
   }
 `
 
-export const FETCH_ALBUMS = gql`
+export const fetchAlbumsDocument = gql`
   query albumsData($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
-    # Latest 10 albums
     albums(first: $first, page: $page, orderBy: $orderBy) {
       data {
         hash
@@ -306,8 +302,8 @@ export const FETCH_MY_ARTISTS = gql`
   }
 `
 
-export const FETCH_TRACK = gql`
-  query trackDetail($hash: String!) {
+export const fetchTrackDetailDocument = gql`
+  query trackDetail($hash: String!, $input: RelatedTracksInput!) {
     track(hash: $hash) {
       title
       hash
@@ -330,6 +326,16 @@ export const FETCH_TRACK = gql`
       }
       album {
         title
+        hash
+      }
+    }
+
+    relatedTracks(input: $input) {
+      hash
+      title
+      poster_url
+      artist {
+        stage_name
         hash
       }
     }

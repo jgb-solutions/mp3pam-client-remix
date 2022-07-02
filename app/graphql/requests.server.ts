@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import {
   FETCH_ALBUM,
-  FETCH_TRACK,
   FETCH_ARTIST,
   GenresQueryDocument,
   FETCH_TRACKS,
@@ -18,19 +17,33 @@ import {
   FETCH_MANAGE_SCREEN,
   FETCH_RANDOM_ALBUMS,
   FETCH_RANDOM_ARTISTS,
-  FETCH_RELATED_TRACKS,
   HomepageQueryDocument,
   FETCH_RANDOM_PLAYLISTS,
   LOG_USER_IN, SEARCH_QUERY,
   FetchTracksByGenreDocument,
+  fetchTrackDetailDocument,
+  fetchTracksDocument,
+  fetchPlaylistsDocument,
+  fetchAlbumsDocument,
+  fetchArtistsDocument,
 } from './queries'
 
-import type {
+import {
   HomepageQuery,
   TracksDataByGenreQuery,
   HomepageQueryVariables,
   TracksDataByGenreQueryVariables,
   AllGenresQuery,
+  TrackDetailQuery,
+  TrackDetailQueryVariables,
+  TracksDataQuery,
+  TracksDataQueryVariables,
+  PlaylistsDataQuery,
+  PlaylistsDataQueryVariables,
+  AlbumsDataQuery,
+  AlbumsDataQueryVariables,
+  ArtistsDataQuery,
+  ArtistsDataQueryVariables,
 } from './generated-types'
 
 import {
@@ -81,6 +94,8 @@ import type { Credentials } from '~/screens/auth/LoginScreen'
 import type { AlbumData } from '~/screens/manage/CreateAlbumScreen'
 import type PlaylistInterface from '~/interfaces/PlaylistInterface'
 
+const { request } = graphQLClient
+
 export function fetchHomepage() {
   return graphQLClient.request<HomepageQuery, HomepageQueryVariables>(HomepageQueryDocument, {
     first: HOMEPAGE_PER_PAGE_NUMBER,
@@ -89,11 +104,11 @@ export function fetchHomepage() {
 }
 
 
-export function fetchTracksByGenre(slug: string) {
+export function fetchTracksByGenre(genreSlug: string) {
   return graphQLClient.request<TracksDataByGenreQuery, TracksDataByGenreQueryVariables>(FetchTracksByGenreDocument, {
     first: FETCH_TRACKS_NUMBER,
     orderBy: [{ column: "created_at", order: SortOrder.Desc }],
-    slug
+    slug: genreSlug
   })
 
   const loadMoreTracks = () => {
@@ -124,9 +139,12 @@ export function fetchTracksByGenre(slug: string) {
 }
 
 export function fetchTrackDetail(hash: string) {
-  console.log('hash provided', hash)
-  return graphQLClient.request(FETCH_TRACK, {
-    variables: { hash }
+  return graphQLClient.request<TrackDetailQuery, TrackDetailQueryVariables>(fetchTrackDetailDocument, {
+    hash,
+    input: {
+      hash,
+      first: RELATED_TRACKS_NUMBER
+    }
   })
 }
 
@@ -138,7 +156,7 @@ type hookArtistValues = {
 }
 
 export function addArtist(): hookArtistValues {
-  const [addArtistMutation, { loading, error, data }] = graphQLClient.request(ADD_ARTIST_MUTATION, {
+  const [addArtistMutation, { loading, error, data }] = request(ADD_ARTIST_MUTATION, {
     fetchPolicy: 'no-cache'
   })
 
@@ -157,7 +175,7 @@ type hookTrackValues = {
 }
 
 export function addTrack(): hookTrackValues {
-  const [addTrackMutation, { loading, error, data }] = graphQLClient.request(ADD_TRACK_MUTATION, {
+  const [addTrackMutation, { loading, error, data }] = request(ADD_TRACK_MUTATION, {
     fetchPolicy: 'no-cache',
   })
 
@@ -183,7 +201,7 @@ type TrackToAlbumReturnType = {
 
 
 export function addTrackToAlbum(): TrackToAlbumReturnType {
-  const [addTrackToAlbumMutation, { data, loading, error }] = graphQLClient.request(ADD_TRACK_TO_ALBUM, {
+  const [addTrackToAlbumMutation, { data, loading, error }] = request(ADD_TRACK_TO_ALBUM, {
     fetchPolicy: 'no-cache',
   })
 
@@ -212,7 +230,7 @@ type TrackToPlaylistReturnType = {
 
 
 export function addTrackToPlaylist(): TrackToPlaylistReturnType {
-  const [addTrackToPlaylistMutation, { data, loading, error }] = graphQLClient.request(ADD_TRACK_TO_PLAYLIST, {
+  const [addTrackToPlaylistMutation, { data, loading, error }] = request(ADD_TRACK_TO_PLAYLIST, {
     fetchPolicy: 'no-cache',
   })
 
@@ -241,7 +259,7 @@ type AlbumDetail = {
 }
 
 export function fetchAlbumDetail(hash: string): AlbumDetail {
-  const { loading, error, data, refetch } = graphQLClient.request(FETCH_ALBUM, {
+  const { loading, error, data, refetch } = request(FETCH_ALBUM, {
     variables: { hash },
     fetchPolicy: 'network-only'
   })
@@ -250,11 +268,9 @@ export function fetchAlbumDetail(hash: string): AlbumDetail {
 }
 
 export function fetchAlbums() {
-  const { loading, error, data, fetchMore } = graphQLClient.request(FETCH_ALBUMS, {
-    variables: {
-      first: FETCH_ALBUMS_NUMBER,
-      orderBy: [{ column: "created_at", order: SortOrder.Desc }]
-    }
+  return request<AlbumsDataQuery, AlbumsDataQueryVariables>(fetchAlbumsDocument, {
+    first: FETCH_ALBUMS_NUMBER,
+    orderBy: [{ column: "created_at", order: SortOrder.Desc }]
   })
 
   const loadMoreAlbums = () => {
@@ -292,7 +308,7 @@ type ArtistDetail = {
 }
 
 export function fetchArtistDetail(hash: string): ArtistDetail {
-  const { loading, error, data } = graphQLClient.request(FETCH_ARTIST, {
+  const { loading, error, data } = request(FETCH_ARTIST, {
     variables: { hash }
   })
 
@@ -300,11 +316,9 @@ export function fetchArtistDetail(hash: string): ArtistDetail {
 }
 
 export function fetchArtists() {
-  const { loading, error, data, fetchMore } = graphQLClient.request(FETCH_ARTISTS, {
-    variables: {
-      first: FETCH_ARTISTS_NUMBER,
-      orderBy: [{ column: "created_at", order: SortOrder.Desc }]
-    }
+  return request<ArtistsDataQuery, ArtistsDataQueryVariables>(fetchArtistsDocument, {
+    first: FETCH_ARTISTS_NUMBER,
+    orderBy: [{ column: "created_at", order: SortOrder.Desc }]
   })
 
   const loadMoreArtists = () => {
@@ -341,7 +355,7 @@ type CreateAlbumhookValues = {
 }
 
 export function createAlbum(): CreateAlbumhookValues {
-  const [createAlbumMutation, { loading, error, data }] = graphQLClient.request(CREATE_ALBUM_MUTATION, {
+  const [createAlbumMutation, { loading, error, data }] = request(CREATE_ALBUM_MUTATION, {
     fetchPolicy: 'no-cache'
   })
 
@@ -365,7 +379,7 @@ type CreatePlaylistReturnType = {
 
 
 export function createPlaylist(): CreatePlaylistReturnType {
-  const [createPlaylistMutation, { data, loading, error }] = graphQLClient.request(CREATE_PLAYLIST, {
+  const [createPlaylistMutation, { data, loading, error }] = request(CREATE_PLAYLIST, {
     fetchPolicy: 'no-cache',
   })
 
@@ -393,7 +407,7 @@ type DeleteAlbumReturnType = {
 }
 
 export function deleteAlbum(): DeleteAlbumReturnType {
-  const [deleteAlbumMutation, { data, loading, error }] = graphQLClient.request(DELETE_ALBUM, {
+  const [deleteAlbumMutation, { data, loading, error }] = request(DELETE_ALBUM, {
     fetchPolicy: 'no-cache',
   })
 
@@ -416,7 +430,7 @@ type DeleteAlbumTrack = {
 }
 
 export function deleteAlbumTrack(): DeleteAlbumTrack {
-  const [deleteAlbumTrackMutation, { data, loading, error }] = graphQLClient.request(DELETE_ALBUM_TRACK, {
+  const [deleteAlbumTrackMutation, { data, loading, error }] = request(DELETE_ALBUM_TRACK, {
     fetchPolicy: 'no-cache',
   })
 
@@ -444,7 +458,7 @@ type DeleteArtistReturnType = {
 }
 
 export function deleteArtist(): DeleteArtistReturnType {
-  const [deleteArtistMutation, { data, loading, error }] = graphQLClient.request(DELETE_ARTIST, {
+  const [deleteArtistMutation, { data, loading, error }] = request(DELETE_ARTIST, {
     fetchPolicy: 'no-cache',
   })
 
@@ -467,7 +481,7 @@ type DeletePlaylistReturnType = {
 }
 
 export function deletePlaylist(): DeletePlaylistReturnType {
-  const [deletePlaylistMutation, { data, loading, error }] = graphQLClient.request(DELETE_PLAYLIST, {
+  const [deletePlaylistMutation, { data, loading, error }] = request(DELETE_PLAYLIST, {
     fetchPolicy: 'no-cache',
   })
 
@@ -490,7 +504,7 @@ type DeletePlaylistTrack = {
 }
 
 export function deletePlaylistTrack(): DeletePlaylistTrack {
-  const [deletePlaylistTrackMutation, { data, loading, error }] = graphQLClient.request(DELETE_PLAYLIST_TRACK,)
+  const [deletePlaylistTrackMutation, { data, loading, error }] = request(DELETE_PLAYLIST_TRACK,)
 
   const deletePlaylistTrack = (trackHash: string, playlistHash: string) => {
     deletePlaylistTrackMutation({
@@ -516,7 +530,7 @@ type ReturnType = {
 }
 
 export function deleteTrack(): ReturnType {
-  const [deleteTrackMutation, { data, loading, error }] = graphQLClient.request(DELETE_TRACK, {
+  const [deleteTrackMutation, { data, loading, error }] = request(DELETE_TRACK, {
     fetchPolicy: 'no-cache',
   })
 
@@ -544,11 +558,11 @@ type DownloadProps = {
 }
 
 export function download(input: DownloadProps): TrackDetail {
-  const { loading, error, data } = graphQLClient.request(FETCH_DOWNLOAD_URL, {
+  const { loading, error, data } = request(FETCH_DOWNLOAD_URL, {
     variables: { input }
   })
 
-  const [updateDownloadCount] = graphQLClient.request(UPDATE_DOWNLOAD_COUNT, {
+  const [updateDownloadCount] = request(UPDATE_DOWNLOAD_COUNT, {
     variables: { input },
     fetchPolicy: 'no-cache',
   })
@@ -569,7 +583,7 @@ export function fetchLogin(credentials: Credentials) {
 }
 
 export function fetchManage() {
-  return graphQLClient.request(FETCH_MANAGE_SCREEN, {
+  return request(FETCH_MANAGE_SCREEN, {
     first: MANAGE_PAGE_PER_PAGE_NUMBER,
   })
 }
@@ -593,7 +607,7 @@ type Props = {
 }
 
 export function updateUser(): Props {
-  const [updateUserMutation, { data, error, loading }] = graphQLClient.request(UPDATE_USER, {
+  const [updateUserMutation, { data, error, loading }] = request(UPDATE_USER, {
     fetchPolicy: 'no-cache',
   })
 
@@ -616,7 +630,7 @@ type PlayCount = {
 }
 
 export function updatePlayCount(): PlayCount {
-  const [updatePlayCountMutation] = graphQLClient.request(UPDATE_PLAY_COUNT, {
+  const [updatePlayCountMutation] = request(UPDATE_PLAY_COUNT, {
     fetchPolicy: 'no-cache',
   })
 
@@ -630,7 +644,7 @@ export function updatePlayCount(): PlayCount {
 }
 
 export function fetchMyAlbums() {
-  return graphQLClient.request(FETCH_MY_ALBUMS, {
+  return request(FETCH_MY_ALBUMS, {
     variables: {
       first: FETCH_MY_ALBUMS_NUMBER,
     }
@@ -638,7 +652,7 @@ export function fetchMyAlbums() {
 }
 
 export function fetchMyPlaylists() {
-  return graphQLClient.request(FETCH_MY_PLAYLISTS, {
+  return request(FETCH_MY_PLAYLISTS, {
     variables: {
       first: FETCH_MY_PLAYLISTS_NUMBER,
     }
@@ -647,7 +661,7 @@ export function fetchMyPlaylists() {
 
 
 export function fetchMyTracks() {
-  return graphQLClient.request(FETCH_MY_TRACKS, {
+  return request(FETCH_MY_TRACKS, {
     variables: {
       first: FETCH_MY_TRACKS_NUMBER,
     }
@@ -655,7 +669,7 @@ export function fetchMyTracks() {
 }
 
 export function fetchMyArtists() {
-  return graphQLClient.request(FETCH_MY_ARTISTS, {
+  return request(FETCH_MY_ARTISTS, {
     variables: {
       first: FETCH_MY_ARTISTS_NUMBER,
     }
@@ -672,7 +686,7 @@ type PlaylistDetail = {
 }
 
 export function fetchPlaylistDetail(hash: string): PlaylistDetail {
-  const { loading, error, data, refetch } = graphQLClient.request(FETCH_PLAYLIST, {
+  const { loading, error, data, refetch } = request(FETCH_PLAYLIST, {
     variables: { hash },
     fetchPolicy: 'network-only'
   })
@@ -681,11 +695,9 @@ export function fetchPlaylistDetail(hash: string): PlaylistDetail {
 }
 
 export function fetchPlaylists() {
-  const { loading, error, data, fetchMore } = graphQLClient.request(FETCH_PLAYLISTS, {
-    variables: {
-      first: FETCH_PLAYLISTS_NUMBER,
-      orderBy: [{ column: "created_at", order: SortOrder.Desc }]
-    }
+  return request<PlaylistsDataQuery, PlaylistsDataQueryVariables>(fetchPlaylistsDocument, {
+    first: FETCH_PLAYLISTS_NUMBER,
+    orderBy: [{ column: "created_at", order: SortOrder.Desc }]
   })
 
   const loadMorePlaylists = () => {
@@ -754,18 +766,18 @@ export function fetchRandomPlaylists(hash: string) {
 }
 
 
-export function fetchRelatedTracks(hash: string) {
-  const [fetchRelatedTracks, { loading, data, error }] = useLazyQuery(FETCH_RELATED_TRACKS, {
-    variables: {
-      input: {
-        hash,
-        first: RELATED_TRACKS_NUMBER
-      }
-    }
-  })
+// export function fetchRelatedTracks(hash: string) {
+//   const [fetchRelatedTracks, { loading, data, error }] = useLazyQuery(FETCH_RELATED_TRACKS, {
+//     variables: {
+//       input: {
+//         hash,
+//         first: RELATED_TRACKS_NUMBER
+//       }
+//     }
+//   })
 
-  return { loading, error, data, fetchRelatedTracks }
-}
+//   return { loading, error, data, fetchRelatedTracks }
+// }
 
 type SearchResult = {
   search: (query: string) => void,
@@ -787,11 +799,9 @@ export function doSearch(): SearchResult {
 }
 
 export function fetchTracks() {
-  const { loading, error, data, fetchMore } = graphQLClient.request(FETCH_TRACKS, {
-    variables: {
-      first: FETCH_TRACKS_NUMBER,
-      orderBy: [{ column: "created_at", order: SortOrder.Desc }]
-    }
+  return request<TracksDataQuery, TracksDataQueryVariables>(fetchTracksDocument, {
+    first: FETCH_TRACKS_NUMBER,
+    orderBy: [{ column: "created_at", order: SortOrder.Desc }]
   })
 
   const loadMoreTracks = () => {

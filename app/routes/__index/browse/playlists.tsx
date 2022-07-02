@@ -4,20 +4,22 @@ import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import { Grid } from "@mui/material"
 import InfiniteScroll from 'react-infinite-scroller'
 
-import Spinner from "../../components/Spinner"
-import HeaderTitle from "../../components/HeaderTitle"
-import usePlaylists from "../../hooks/usePlaylists"
-import PlaylistThumbnail from "../../components/PlaylistThumbnail"
-import { PlaylistThumbnailData } from "../../components/PlaylistScrollingList"
-import SEO from "../../components/SEO"
+
+import SEO from "../../../components/SEO"
+
+import { useLoaderData } from '@remix-run/react'
+import { fetchPlaylists } from '~/graphql/requests.server'
+import { json, LoaderFunction } from '@remix-run/node'
+
+export const loader: LoaderFunction = async () => {
+
+  const data = await fetchPlaylists()
+
+  return json(data)
+}
 
 export default function BrowsePlaylistsScreen() {
-  const { loading, error, data, loadMorePlaylists, hasMore } = usePlaylists()
-  const playlists = get(data, 'playlists')
-
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
+  const { playlists } = useLoaderData()
 
   return (
     <>

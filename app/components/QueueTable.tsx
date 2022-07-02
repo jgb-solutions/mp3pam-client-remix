@@ -12,7 +12,6 @@ import { useSelector } from 'react-redux'
 import AppStateInterface from '../interfaces/AppStateInterface'
 import { SoundInterface } from '../interfaces/ListInterface'
 import { Link } from '@remix-run/react'
-import Routes from '../routes'
 
 import AppRoutes from '~/app-routes'
 

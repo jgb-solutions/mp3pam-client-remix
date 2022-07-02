@@ -4,20 +4,20 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import { Grid } from "@mui/material"
 import InfiniteScroll from 'react-infinite-scroller'
 
-import Spinner from "../../components/Spinner"
-import HeaderTitle from "../../components/HeaderTitle"
-import useTracks from "../../hooks/useTracks"
-import TrackThumbnail from "../../components/TrackThumbnail"
-import { TrackWithArtistThumbnailData } from "../../components/TrackScrollingList"
-import SEO from "../../components/SEO"
+import SEO from "../../../components/SEO"
+import { useLoaderData } from '@remix-run/react'
+import { json, LoaderFunction } from '@remix-run/node'
+import { fetchTracks } from '~/graphql/requests.server'
+
+export const loader: LoaderFunction = async () => {
+
+  const data = await fetchTracks()
+
+  return json(data)
+}
 
 export default function BrowseTracksScreen() {
-  const { loading, error, data, loadMoreTracks, hasMore } = useTracks()
-  const tracks = get(data, 'tracks')
-
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
+  const { tracks } = useLoaderData()
 
   return (
     <>

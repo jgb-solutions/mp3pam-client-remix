@@ -1,10 +1,15 @@
-import React, { ReactNode } from 'react'
+import Box from '@mui/material/Box'
+import type { FC, ReactNode } from 'react'
 
-export default function TextIcon({ icon, text }: { icon?: ReactNode, text: string | ReactNode }) {
+type Props = { icon?: ReactNode, text: string | ReactNode }
+
+const TextIcon: FC<Props> = ({ icon, text }) => {
   return (
-    <span style={{ display: 'flex', alignItems: 'center' }}>
-      <span>{icon}</span>
-      <span>&nbsp;{text}</span>
-    </span>
+    <Box component="span" style={{ display: 'flex', alignItems: 'center' }}>
+      <Box component="span">{icon}</Box>
+      <Box component="span">&nbsp;{text}</Box>
+    </Box>
   )
 }
+
+export default TextIcon

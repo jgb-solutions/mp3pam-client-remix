@@ -9,7 +9,6 @@ import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import Avatar from '@mui/material/Avatar'
 
 
-import Routes from '../routes'
 import { menuStyles } from '../styles/menuStyles'
 import AppStateInterface from '../interfaces/AppStateInterface'
 import { UserData } from '../interfaces/UserInterface'

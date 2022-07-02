@@ -1,5 +1,5 @@
 import axios from "axios"
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { gql } from "graphql-request"
 
 import { useApolloClient } from 'graphql-request'
