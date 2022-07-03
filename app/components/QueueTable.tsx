@@ -78,10 +78,10 @@ export default function QueueTable() {
                 <PlayPause sound={sound} list={list} />
               </StyledTableCell>
               <StyledTableCell style={{ width: '30%', color }}>
-                <Link to={soundPage} sx={styles.link} style={{ color }}>{sound.title}</Link>
+                <Link prefetch="intent" to={soundPage} sx={styles.link} style={{ color }}>{sound.title}</Link>
               </StyledTableCell>
               <StyledTableCell style={{ width: '35%' }}>
-                <Link to={authorPage} sx={styles.link} style={{ color }}>{sound.author_name}</Link>
+                <Link prefetch="intent" to={authorPage} sx={styles.link} style={{ color }}>{sound.author_name}</Link>
               </StyledTableCell>
               <StyledTableCell style={{ width: '20%', color }}>{sound.type.toUpperCase()}</StyledTableCell> */}
 

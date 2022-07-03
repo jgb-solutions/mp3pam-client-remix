@@ -119,7 +119,7 @@ const AlbumThumbnail = (props: Props) => {
       <Box component="h3" sx={styles.title}>{album.title}</Box>
       <Box component="p" sx={styles.details}>
         {/* by: */}
-        <Link to={AppRoutes.artist.detailPage(album.artist.hash)}>
+        <Link prefetch="intent" to={AppRoutes.artist.detailPage(album.artist.hash)}>
           <Box component="span" sx={styles.link}>
             {album.artist.stage_name}
           </Box>

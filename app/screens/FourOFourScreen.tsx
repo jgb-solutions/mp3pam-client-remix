@@ -16,7 +16,7 @@ export default function FourOrFourScreen() {
       <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! Are You Lost?" />
       <SEO title={`OOPS! NOT FOUND`} />
 
-      <h3>Go to the <Link style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
+      <h3>Go to the <Link prefetch="intent" style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
         or <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={goBack}>go back</span>.</h3>
       <FourOrFour />
     </>

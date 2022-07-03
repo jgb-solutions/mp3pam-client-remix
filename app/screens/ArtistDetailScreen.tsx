@@ -359,7 +359,7 @@ export default function ArtistDetailScreen() {
     <>
       <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Artist was not found." />
       <h3>
-        Go to the <Link style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
+        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
         or
         {' '}
         <Link

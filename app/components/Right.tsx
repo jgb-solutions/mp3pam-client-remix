@@ -53,7 +53,7 @@ const Right = (props: Props) => {
         <div sx={styles.container}>
           <div sx={styles.menuList}>
             <div sx={styles.mainMenu}>
-              <NavLink
+              <NavLink prefetch="intent"
                 activesx={styles.activeClassName}
                 exact
                 to={Routes.user.account}
@@ -68,7 +68,7 @@ const Right = (props: Props) => {
 
             <div>
               <p>
-                <NavLink
+                <NavLink prefetch="intent"
                   activesx={styles.activeClassName}
                   exact
                   to={AppRoutes.user.manage.home}
@@ -78,7 +78,7 @@ const Right = (props: Props) => {
                 </NavLink>
               </p>
               {libraryMenu.map((menuItem, index) => (
-                <NavLink
+                <NavLink prefetch="intent"
                   activesx={styles.activeClassName}
                   exact
                   key={index}
@@ -93,7 +93,7 @@ const Right = (props: Props) => {
               <br />
 
               {CreateMenu.map((menuItem, index) => (
-                <NavLink
+                <NavLink prefetch="intent"
                   activesx={styles.activeClassName}
                   exact
                   key={index}

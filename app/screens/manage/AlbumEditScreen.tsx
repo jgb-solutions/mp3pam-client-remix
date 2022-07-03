@@ -356,7 +356,7 @@ export default function AlbumEditScreen() {
                           {track.number}
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '80%' }}>
-                          <Link to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
+                          <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '10%' }}>
                           <span
@@ -378,7 +378,7 @@ export default function AlbumEditScreen() {
         <>
           <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Album was not found." />
           <h3>
-            Go to the <Link style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
+            Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
             or
             {' '}
             <Link

@@ -61,7 +61,7 @@ export const AlbumScrollingList = (props: { albums: AlbumThumbnailData[], catego
   return (
     <div sx={styles.container}>
       <div sx={styles.listHeader}>
-        <Link to={browse} sx={styles.link}>
+        <Link prefetch="intent" to={browse} sx={styles.link}>
           <h2 sx={styles.category}>{category}</h2>
         </Link>
         <div>

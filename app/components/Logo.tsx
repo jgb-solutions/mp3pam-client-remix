@@ -27,7 +27,7 @@ export default function Logo({ size }: { size?: number }) {
 
   return (
     <>
-      <Link to={AppRoutes.pages.home}>
+      <Link prefetch="intent" to={AppRoutes.pages.home}>
         <Box component="img"
           sx={styles.logo}
           style={sizes}

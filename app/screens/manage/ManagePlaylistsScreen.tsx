@@ -89,10 +89,10 @@ export default function ManagePlaylistsScreen() {
                     borderBottom: playlists.data.length - 1 === index ? '' : '1px solid white',
                   }}>
                     {/* <StyledTableCell style={{ width: '80%' }}>
-                      <Link to={Routes.playlist.detailPage(playlist.hash)} sx={styles.link}>{playlist.title}</Link>
+                      <Link prefetch="intent" to={Routes.playlist.detailPage(playlist.hash)} sx={styles.link}>{playlist.title}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <Link to={Routes.playlist.editPage(playlist.hash)} sx={styles.link}>Edit</Link>
+                      <Link prefetch="intent" to={Routes.playlist.editPage(playlist.hash)} sx={styles.link}>Edit</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span

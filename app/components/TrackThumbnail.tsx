@@ -85,7 +85,7 @@ const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
   return (
     <Box {...props}>
       <Box sx={{ position: 'relative' }}>
-        <Link to={AppRoutes.track.detailPage(track.hash)}>
+        <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)}>
           <Box
             component="img"
             sx={styles.imgContainer}
@@ -111,7 +111,7 @@ const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
         </Link>
       </Box>
       <Box component="h3" sx={styles.title}>{track.title}</Box>
-      <Link to={AppRoutes.artist.detailPage(track.artist.hash)}>
+      <Link prefetch="intent" to={AppRoutes.artist.detailPage(track.artist.hash)}>
         <Box component="p" sx={styles.details}>
           <Box component="span" sx={styles.link}>
             {track.artist.stage_name}

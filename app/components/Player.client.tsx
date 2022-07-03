@@ -752,7 +752,7 @@ export default function Player() {
 						</Box>
 					</Box>
 					<Box sx={styles.playlistVolume}>
-						<Link to={AppRoutes.user.library.queue}>
+						<Link prefetch="intent" to={AppRoutes.user.library.queue}>
 							<IconButton>
 								<PlaylistPlayOutlined
 									sx={styles.icon}

@@ -62,7 +62,7 @@ export const TrackScrollingList: FC<Props> = (props) => {
   return (
     <Box sx={styles.container}>
       <Box sx={styles.listHeader}>
-        <Link to={browse}>
+        <Link prefetch="intent" to={browse}>
           <Box component="h2" sx={styles.category}>{category}</Box>
         </Link>
         <Box>

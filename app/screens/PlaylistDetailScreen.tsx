@@ -329,7 +329,7 @@ const PlaylistDetailScreen = (props: Props) => {
     <>
       <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Playlist was not found." />
       <h3>
-        Go to the <Link style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
+        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
         or
         {' '}
         <Link

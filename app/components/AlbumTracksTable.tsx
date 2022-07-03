@@ -80,7 +80,7 @@ export default function AlbumTracksTable({ album, list }: Props) {
                 <PlayPause sound={makeSoundFromTrack({ ...track, artist: album.artist })} list={list} />
               </StyledTableCell>
               <StyledTableCell style={{ width: '90%', color }}>
-                <Link to={Routes.track.detailPage(track.hash)} sx={styles.link} style={{ color }}>{track.title}</Link>
+                <Link prefetch="intent" to={Routes.track.detailPage(track.hash)} sx={styles.link} style={{ color }}>{track.title}</Link>
               </StyledTableCell> */}
 
               {/* <StyledTableCell style={{ width: '1.5%', color }}>{track.play_count}</StyledTableCell> */}

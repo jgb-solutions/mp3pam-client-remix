@@ -106,7 +106,7 @@ const Header = (props: Props) => {
                   <KeyboardArrowDownIcon />
                 </Box>
               ) : (
-                <Link to={AppRoutes.pages.login} sx={styles.loginButton}>
+                <Link prefetch="intent" to={AppRoutes.pages.login} sx={styles.loginButton}>
                   <IconButton aria-label="Login" color="inherit" sx={styles.accountButton}>
                     <AccountCircle sx={styles.accountIcon} />
                   </IconButton>

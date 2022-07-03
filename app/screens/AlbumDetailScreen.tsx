@@ -366,7 +366,7 @@ const AlbumDetailScreen = (props: Props) => {
     <>
       <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Album was not found." />
       <h3>
-        Go to the <Link style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
+        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
         or
         {' '}
         <Link

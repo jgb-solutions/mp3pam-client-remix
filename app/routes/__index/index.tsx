@@ -14,18 +14,16 @@ import type { AlbumScrollingList } from "~/components/AlbumScrollingList"
 import SEO from "~/components/SEO"
 import AppRoutes from "~/app-routes"
 import type { HomepageQuery } from '~/graphql/generated-types'
-import MainLayout from '~/components/layouts/Main'
-
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control": "public, s-maxage=360, stale-while-revalidate=3600",
-  }
-}
 
 export const loader: LoaderFunction = async () => {
   const data = await fetchHomepage()
 
-  return json(data)
+  return json(data, {
+    headers: {
+      "Cache-Control": "public, s-maxage=30, stale-while-revalidate=5",
+      "Vary": "Authorization, Cookie",
+    }
+  })
 }
 
 

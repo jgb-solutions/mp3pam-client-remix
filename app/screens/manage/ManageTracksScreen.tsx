@@ -87,7 +87,7 @@ export default function ManageTracksScreen() {
                     borderBottom: tracks.data.length - 1 === index ? '' : '1px solid white',
                   }}>
                     {/* <StyledTableCell style={{ width: '90%' }}>
-                      <Link to={Routes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
+                      <Link prefetch="intent" to={Routes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span

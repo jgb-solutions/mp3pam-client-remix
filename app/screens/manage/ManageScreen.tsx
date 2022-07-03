@@ -42,7 +42,7 @@ export default function ManageScreen() {
           browse={AppRoutes.user.manage.tracks}
         />
       ) : (
-        <h3>You have no tracks yet. <Link sx={styles.link} to={AppRoutes.user.create.track}>Add a new track</Link>.</h3>
+        <h3>You have no tracks yet. <Link prefetch="intent" sx={styles.link} to={AppRoutes.user.create.track}>Add a new track</Link>.</h3>
       )}
 
       {latestPlaylists.length ? (
@@ -52,7 +52,7 @@ export default function ManageScreen() {
           browse={AppRoutes.user.manage.playlists}
         />
       ) : (
-        <h3>You have no playlists yet. <Link sx={styles.link} to={AppRoutes.user.create.playlist}>Create a new playlist</Link>.</h3>
+        <h3>You have no playlists yet. <Link prefetch="intent" sx={styles.link} to={AppRoutes.user.create.playlist}>Create a new playlist</Link>.</h3>
       )
       }
 
@@ -63,7 +63,7 @@ export default function ManageScreen() {
           browse={AppRoutes.user.manage.artists}
         />
       ) : (
-        <h3>You have no artists yet. <Link sx={styles.link} to={AppRoutes.user.create.artist}>Add a new artist</Link>.</h3>
+        <h3>You have no artists yet. <Link prefetch="intent" sx={styles.link} to={AppRoutes.user.create.artist}>Add a new artist</Link>.</h3>
       )}
 
       {latestAlbums.length ? (
@@ -73,7 +73,7 @@ export default function ManageScreen() {
           browse={AppRoutes.user.manage.albums}
         />
       ) : (
-        <h3>You have no albums yet. <Link sx={styles.link} to={AppRoutes.user.create.album}>Create a new album</Link>.</h3>
+        <h3>You have no albums yet. <Link prefetch="intent" sx={styles.link} to={AppRoutes.user.create.album}>Create a new album</Link>.</h3>
       )}
     </>
   )

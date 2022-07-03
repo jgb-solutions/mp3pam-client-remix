@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import type { FC } from "react"
-import { json } from "@remix-run/node"
+import { HeadersFunction, json } from "@remix-run/node"
 import { useSelector } from "react-redux"
 import { Link, useCatch, useLoaderData, useNavigate, useParams } from "@remix-run/react"
 import InfoIcon from '@mui/icons-material/Info'
@@ -123,7 +123,12 @@ export const loader: LoaderFunction = async ({ params }) => {
   const data = await fetchTrackDetail(hash)
   console.log('hash', hash)
 
-  return json(data)
+  return json(data, {
+    headers: {
+      "Cache-Control": "public, s-maxage=30, stale-while-revalidate=5",
+      "Vary": "Authorization, Cookie",
+    }
+  })
 }
 
 type Props = {
@@ -467,7 +472,7 @@ export function CatchBoundary() {
     <Box>
       <HeaderTitle icon={<FindReplaceIcon />} text={message} />
       <h3>
-        Go to the <Link style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
+        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
         or
         {' '}
         <Link

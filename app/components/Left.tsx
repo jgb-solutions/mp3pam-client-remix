@@ -50,7 +50,7 @@ const Left = (props: Props) => {
 			<Logo />
 			<Box sx={styles.mainMenu}>
 				{mainMenu.map((menuItem, index) => (
-					<NavLink
+					<NavLink prefetch="intent"
 						style={({ isActive }) => ({
 							...styles.link,
 							...styles.mainMenuLink,
@@ -68,7 +68,7 @@ const Left = (props: Props) => {
 			{/* Browse Menu */}
 			<Box sx={styles.browseMenu}>
 				<p>
-					<NavLink
+					<NavLink prefetch="intent"
 						style={({ isActive }) => ({
 							...styles.yourLibraryLink,
 							...(isActive ? styles.activeClassName : {})
@@ -79,7 +79,7 @@ const Left = (props: Props) => {
 					</NavLink>
 				</p>
 				{browsingMenu.map((menuItem, index) => (
-					<NavLink
+					<NavLink prefetch="intent"
 						style={({ isActive }) => ({
 							...styles.link,
 							...styles.library,
@@ -97,7 +97,7 @@ const Left = (props: Props) => {
 			{/* Favorite Menu */}
 			<Box>
 				{/* <p>
-					<NavLink
+					<NavLink prefetch="intent"
 						activesx={styles.activeClassName}
 						exact
 						to={AppRoutes.pages.library}
@@ -107,7 +107,7 @@ const Left = (props: Props) => {
 					</NavLink>
 				</p> */}
 				{favoriteMenu.map((menuItem, index) => (
-					<NavLink
+					<NavLink prefetch="intent"
 						style={({ isActive }) => ({
 							...styles.link,
 							...styles.libraryLink,

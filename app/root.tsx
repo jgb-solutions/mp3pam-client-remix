@@ -76,9 +76,13 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
         {title ? <title>{title}</title> : null}
         <Meta />
         <Links />
+        <link rel="preconnect" href="https://fonts.googleapis.com/" crossOrigin='true' />
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossOrigin="true" />
         <link
-          rel="stylesheet"
+          rel="preload"
+          as="font"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+
         />
         <meta name="emotion-insertion-point" content="emotion-insertion-point" />
       </head>

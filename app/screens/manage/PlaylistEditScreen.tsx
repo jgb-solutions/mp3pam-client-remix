@@ -340,10 +340,10 @@ export default function PlaylistEditScreen() {
                         borderBottom: playlist.tracks.length - 1 === index ? '' : '1px solid white',
                       }}>
                         <StyledTableCell style={{ width: '40%' }}>
-                          <Link to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
+                          <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '40%' }}>
-                          <Link to={AppRoutes.artist.detailPage(track.artist.hash)} sx={styles.link}>{track.artist.stage_name}</Link>
+                          <Link prefetch="intent" to={AppRoutes.artist.detailPage(track.artist.hash)} sx={styles.link}>{track.artist.stage_name}</Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '10%' }}>
                           <span
@@ -360,7 +360,7 @@ export default function PlaylistEditScreen() {
           ) : (
             <>
               <HeaderTitle icon={<MusicNoteIcon />} text="This playlist has no tracks yet" />
-              <p><Link style={{ color: 'white' }} to={AppRoutes.browse.tracks}>Start browsing</Link> some tracks to add to your playlist.</p>
+              <p><Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.browse.tracks}>Start browsing</Link> some tracks to add to your playlist.</p>
             </>
           )} */}
       {/* </>
@@ -368,7 +368,7 @@ export default function PlaylistEditScreen() {
     <>
       <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Playlist was not found." />
       <h3>
-        Go to the <Link style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
+        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
         or
         {' '}
         <Link
