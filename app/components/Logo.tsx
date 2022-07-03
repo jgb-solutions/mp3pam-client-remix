@@ -30,7 +30,8 @@ export default function Logo({ size }: { size?: number }) {
       <Link prefetch="intent" to={AppRoutes.pages.home}>
         <Box component="img"
           sx={styles.logo}
-          style={sizes}
+          width={`${sizes?.width}px`}
+          height={`${sizes?.height}`}
           src="/assets/images/logo-trans-red-white.png"
           alt="MP3 Pam logo"
         />
