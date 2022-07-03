@@ -175,7 +175,7 @@ function Image(props: Props) {
     optimizedProps.src = makePhotonUrl(photon, domainWithoutProtocol)
   }
 
-  return <Box component={"img"} {...rest} style={style} {...optimizedProps} alt={alt} />
+  return <Box component={"img"} loading="lazy" {...rest} style={style} {...optimizedProps} alt={alt} />
 }
 
 Image.phoneCdnUrl = function (url: string, options: Photon) {

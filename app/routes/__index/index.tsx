@@ -18,12 +18,7 @@ import type { HomepageQuery } from '~/graphql/generated-types'
 export const loader: LoaderFunction = async () => {
   const data = await fetchHomepage()
 
-  return json(data, {
-    headers: {
-      "Cache-Control": "public, s-maxage=30, stale-while-revalidate=5",
-      "Vary": "Authorization, Cookie",
-    }
-  })
+  return json(data)
 }
 
 

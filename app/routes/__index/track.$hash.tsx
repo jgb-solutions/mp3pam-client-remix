@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import type { FC } from "react"
-import { HeadersFunction, json } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import { useSelector } from "react-redux"
 import { Link, useCatch, useLoaderData, useNavigate, useParams } from "@remix-run/react"
 import InfoIcon from '@mui/icons-material/Info'
@@ -123,12 +123,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   const data = await fetchTrackDetail(hash)
   console.log('hash', hash)
 
-  return json(data, {
-    headers: {
-      "Cache-Control": "public, s-maxage=30, stale-while-revalidate=5",
-      "Vary": "Authorization, Cookie",
-    }
-  })
+  return json(data)
 }
 
 type Props = {
