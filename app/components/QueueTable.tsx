@@ -15,7 +15,7 @@ import { Link } from '@remix-run/react'
 
 import AppRoutes from '~/app-routes'
 
-// const styles = {
+// const styles: BoxStyles = {
 //   table: {
 //     width: '100%',
 //     marginTop: theme.spacing(3),

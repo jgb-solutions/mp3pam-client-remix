@@ -39,7 +39,7 @@ import Image from "~/components/Image"
 import Grid from "@mui/material/Grid"
 import AppRoutes from "~/app-routes"
 
-// const styles = {
+// const styles: BoxStyles = {
 //   imageContainer: {
 //     textAlign: 'center',
 //   },

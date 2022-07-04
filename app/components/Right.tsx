@@ -34,7 +34,7 @@ type Props = {
 }
 
 const Right = (props: Props) => {
-  const styles = menuStyles()
+  const styles: BoxStyles = menuStyles()
   const user = props.user
   const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
   const userData = get(currentUser, 'data')

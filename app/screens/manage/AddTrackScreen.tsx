@@ -77,7 +77,7 @@ export function AddArtistForm({ open, handleClose, onArtistCreated }: AddArtistF
 		formState
 	} = useForm<AddArtistFormData>({ mode: 'onBlur' })
 	const { addArtist, data: artistData } = useAddArtist()
-	const styles = addTrackPageStyles()
+	const styles: BoxStyles = addTrackPageStyles()
 
 	const handleAddArtist = (artist: AddArtistFormData) => {
 		addArtist({ ...artist, img_bucket: IMG_BUCKET })
@@ -159,7 +159,7 @@ export function AddGenreForm({ open, handleClose, onGenreCreated }: AddGenreForm
 		formState
 	} = useForm<AddGenreFormData>({ mode: 'onBlur' })
 	const [addGenreMutation, { data: genreData }] = useMutation(ADD_GENRE_MUTATION)
-	const styles = addTrackPageStyles()
+	const styles: BoxStyles = addTrackPageStyles()
 
 	const handleAddGenre = (genre: AddGenreFormData) => {
 		addGenreMutation({ variables: { input: genre } })
@@ -416,7 +416,7 @@ export default function AddTrackPage() {
 		}
 	}, [uploadedTrack])
 
-	const styles = addTrackPageStyles()
+	const styles: BoxStyles = addTrackPageStyles()
 
 	return (
 		<CheckAuth sx='react-transition scale-in'>

@@ -11,7 +11,7 @@ import AlbumInterface, { AlbumTrackInterface } from '../interfaces/AlbumInterfac
 import { makeSoundFromTrack } from '../utils/helpers'
 import ListInterface from '../interfaces/ListInterface'
 
-// const styles = {
+// const styles: BoxStyles = {
 //   table: {
 //     width: '100%',
 //     marginTop: theme.spacing(3),

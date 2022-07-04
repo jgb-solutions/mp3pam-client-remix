@@ -7,9 +7,9 @@ import Box from '@mui/material/Box'
 import HeaderTitle from "~/components/HeaderTitle"
 import { fetchHomepage } from "~/graphql/requests.server"
 import { TrackScrollingList } from "~/components/TrackScrollingList"
-import type { ArtistScrollingList } from "~/components/ArtistScrollingList"
+import { ArtistScrollingList } from "~/components/ArtistScrollingList"
 import { PlaylistScrollingList } from "~/components/PlaylistScrollingList"
-import type { AlbumScrollingList } from "~/components/AlbumScrollingList"
+import { AlbumScrollingList } from "~/components/AlbumScrollingList"
 
 import AppRoutes from "~/app-routes"
 import type { HomepageQuery } from '~/graphql/generated-types'
@@ -37,51 +37,43 @@ export default function Index() {
     latestAlbums
   } = useLoaderData<HomepageQuery>()
 
-  // console.log('latestTracks', latestTracks)
-  // console.log('latestPlaylists', latestPlaylists)
-  // console.log('latestArtists', latestArtists)
-  // console.log('latestAlbums', latestAlbums)
-
   return (
     <Box>
       <HeaderTitle icon={
         <HomeIcon />} text="Home" />
 
-      {
-        latestTracks?.data && (
-          <TrackScrollingList
-            category="New Tracks"
-            tracks={latestTracks.data}
-            browse={AppRoutes.browse.tracks}
-          />
-        )
-      }
+      {latestTracks?.data.length ? (
+        <TrackScrollingList
+          category="New Tracks"
+          tracks={latestTracks.data}
+          browse={AppRoutes.browse.tracks}
+        />
+      ) : null}
 
-      {
-        latestPlaylists?.data && (
-          <PlaylistScrollingList
-            category="New Playlists"
-            playlists={latestPlaylists.data}
-            browse={AppRoutes.browse.playlists}
-          />
-        )
-      }
 
-      {/* {latestArtists.data.length ? (
-				<ArtistScrollingList
-					category="New Artists"
-					artists={latestArtists.data}
-					browse={AppRoutes.browse.artists}
-				/>
-			) : null}
+      {latestArtists?.data.length ? (
+        <ArtistScrollingList
+          category="New Artists"
+          artists={latestArtists.data}
+          browse={AppRoutes.browse.artists}
+        />
+      ) : null}
 
-			{latestAlbums.data.length ? (
-				<AlbumScrollingList
-					category="New Albums"
-					albums={latestAlbums.data}
-					browse={AppRoutes.browse.albums}
-				/>
-			) : null} */}
+      {latestAlbums?.data.length ? (
+        <AlbumScrollingList
+          category="New Albums"
+          albums={latestAlbums.data}
+          browse={AppRoutes.browse.albums}
+        />
+      ) : null}
+
+      {latestPlaylists?.data.length ? (
+        <PlaylistScrollingList
+          category="New Playlists"
+          playlists={latestPlaylists.data}
+          browse={AppRoutes.browse.playlists}
+        />
+      ) : null}
     </Box>
   )
 }

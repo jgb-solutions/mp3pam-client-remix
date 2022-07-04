@@ -20,7 +20,7 @@ import colors from "../../utils/colors"
 import useDeleteTrack from "../../hooks/useDeleteTrack"
 import SEO from "~/components/SEO"
 
-// const styles = {
+// const styles: BoxStyles = {
 //   table: {
 //     width: '100%',
 //     overflowX: 'auto',

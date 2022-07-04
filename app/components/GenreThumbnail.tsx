@@ -15,7 +15,7 @@ export interface GenreInterface {
   slug: string
 }
 
-// const styles = {
+// const styles: BoxStyles = {
 //   imgContainer: {
 //     backgroundSize: "contain",
 //     backgroundRepeat: 'no-repeat',

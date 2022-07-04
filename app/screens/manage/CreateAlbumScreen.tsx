@@ -155,7 +155,7 @@ export default function AddAlbumPage() {
     }
   }, [uploadedAlbum])
 
-  const styles = createAlbumPageStyles()
+  const styles: BoxStyles = createAlbumPageStyles()
 
   return (
     <CheckAuth sx='react-transition scale-in'>

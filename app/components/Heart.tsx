@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton"
 import colors from "../utils/colors"
 
 
-const styles = {
+const styles: BoxStyles = {
   icon: {
     fontSize: "18px",
     color: colors.grey

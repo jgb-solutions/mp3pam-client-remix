@@ -43,5 +43,3 @@ export const GOOGLE_ADS_CLIENT = `ca-pub-3793163111580068`
 
 export const DOMAIN = process.env.DOMAIN || `https://mp3pam.com`
 export const API_URL = process.env.API_URL || `https://mp3pam.graphcdn.app`
-
-console.log(API_URL)

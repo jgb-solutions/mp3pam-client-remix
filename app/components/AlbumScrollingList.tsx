@@ -1,57 +1,56 @@
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
-import { Link } from "@remix-run/react"
-import AlbumThumbnail from "./AlbumThumbnail"
+import type { FC } from 'react'
+import Box from '@mui/material/Box'
+import { Link } from '@remix-run/react'
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material'
 
-// const styles = {
-//   container: {
-//     marginBottom: 30
-//   },
-//   list: {
-//     display: "flex",
-//     flexWrap: "nowrap",
-//     overflowX: "auto"
-//   },
-//   thumbnail: {
-//     width: 175,
-//     marginRight: 21,
-//     sm: {
-//       width: 100,
-//       marginRight: 10,
-//     },
-//   },
-//   link: { color: "#fff", textDecoration: "none" },
-//   listHeader: {
-//     borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-//     paddingBottom: 3,
-//     paddingHorizontal: 0,
-//     display: "flex",
-//     justifyContent: "space-between",
-//     marginBottom: 15
-//   },
-//   category: {
-//     margin: 0,
-//     fontSize: 16
-//   }
-// }
+import AlbumThumbnail from './AlbumThumbnail'
+import type { BoxStyles } from '~/interfaces/types'
+import type { HomepageQuery } from '~/graphql/generated-types'
 
-export interface AlbumThumbnailData {
-  title: string,
-  hash: string,
-  cover_url: string,
-  artist: {
-    hash: string
-    stage_name: string
-  }
+const styles: BoxStyles = {
+  container: {
+    marginBottom: '30px',
+  },
+  list: {
+    display: 'flex',
+    flexWrap: 'nowrap',
+    overflowX: 'auto',
+  },
+  thumbnail: {
+    width: '175px',
+    marginRight: '21px',
+    sm: {
+      width: '100px',
+      marginRight: '10px',
+    },
+  },
+  link: { color: '#fff', textDecoration: 'none' },
+  listHeader: {
+    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    paddingBottom: '3px',
+    paddingHorizontal: 0,
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: '15px',
+  },
+  category: {
+    margin: 0,
+    fontSize: '16px',
+  },
 }
 
-export const AlbumScrollingList = (props: { albums: AlbumThumbnailData[], category: string, browse: string }) => {
-  const { albums, category, browse } = props
+type Props = {
+  albums: NonNullable<HomepageQuery['latestAlbums']>['data']
+  category: string
+  browse: string
+}
 
+export const AlbumScrollingList: FC<Props> = ({ albums, category, browse }) => {
   let domElement: any
 
   const scroll = (dir: string) => {
     const distance = 400
-    if (dir === "left") {
+    if (dir === 'left') {
       domElement.scrollLeft -= distance
     } else {
       domElement.scrollLeft += distance
@@ -59,27 +58,31 @@ export const AlbumScrollingList = (props: { albums: AlbumThumbnailData[], catego
   }
 
   return (
-    <div sx={styles.container}>
-      <div sx={styles.listHeader}>
-        <Link prefetch="intent" to={browse} sx={styles.link}>
-          <h2 sx={styles.category}>{category}</h2>
-        </Link>
-        <div>
-          <KeyboardArrowLeft onClick={() => scroll("left")} />
+    <Box sx={styles.container}>
+      <Box sx={styles.listHeader}>
+        <Box component={Link} prefetch="intent" to={browse} sx={styles.link}>
+          <Box component="h2" sx={styles.category}>{category}</Box>
+        </Box>
+        <Box>
+          <KeyboardArrowLeft onClick={() => scroll('left')} />
           &nbsp;
-          <KeyboardArrowRight onClick={() => scroll("right")} />
-        </div>
-      </div>
-      <div
+          <KeyboardArrowRight onClick={() => scroll('right')} />
+        </Box>
+      </Box>
+      <Box
         sx={styles.list}
-        ref={el => {
+        ref={(el) => {
           domElement = el
         }}
       >
-        {albums.map(album => (
-          <AlbumThumbnail key={album.hash} sx={styles.thumbnail} album={album} />
+        {albums.map((album) => (
+          <AlbumThumbnail
+            key={album.hash}
+            sx={styles.thumbnail}
+            album={album}
+          />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

@@ -33,7 +33,7 @@ import { useForm } from "react-hook-form"
 import AppRoutes from "~/app-routes"
 
 
-// export const styles = {
+// export const styles: BoxStyles = {
 //   noBgButton: {
 //     width: 150,
 //     backgroundColor: colors.contentGrey,

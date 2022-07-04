@@ -320,7 +320,7 @@ export const fetchArtistDocument = gql`
 
     randomArtists(input: $input) {
       hash
-      name
+      stage_name
       poster_url
     }
   }

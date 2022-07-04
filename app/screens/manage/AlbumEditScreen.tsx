@@ -34,7 +34,7 @@ import SEO from "~/components/SEO"
 import Grid from "@mui/material/Grid"
 
 
-// const styles = {
+// const styles: BoxStyles = {
 //   row: {
 //     display: "flex",
 //     flexDirection: "row"

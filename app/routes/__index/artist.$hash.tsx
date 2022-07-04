@@ -8,7 +8,7 @@ import {
 import Box from '@mui/material/Box'
 import { json } from "@remix-run/node"
 import Grid from '@mui/material/Grid'
-import { darken } from "@mui/material"
+import { darken, Typography } from "@mui/material"
 import InfoIcon from '@mui/icons-material/Info'
 import EmailIcon from '@mui/icons-material/Email'
 import ShareIcon from '@mui/icons-material/Share'
@@ -16,7 +16,7 @@ import type { BoxStyles } from '~/interfaces/types'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import type { LoaderFunction } from "@remix-run/node"
 import YouTubeIcon from '@mui/icons-material/YouTube'
-import { Link, useLoaderData } from "@remix-run/react"
+import { Form, Link, useLoaderData, useParams } from "@remix-run/react"
 import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import FacebookIcon from '@mui/icons-material/Facebook'
@@ -32,6 +32,7 @@ import {
   TWITTER_HANDLE,
   SEO_ARTIST_TYPE,
   SMALL_SCREEN_SIZE,
+  RANDOM_ARTISTS_NUMBER,
 } from "~/utils/constants.server"
 import theme from "~/mui/theme"
 import AppRoutes from "~/app-routes"
@@ -117,14 +118,23 @@ const styles: BoxStyles = {
   },
 }
 
+type ArtistParams = { hash: string }
+
 export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
+  if (!data) {
+    return {
+      title: `Artist not found!`,
+    }
+  }
+
   const { artist } = data as ArtistDetailQuery
 
-  const title = `${artist?.stage_name} on ${APP_NAME}`
-  const url = `${DOMAIN}/artist/${artist?.hash}`
-  const description = `Listen to ${artist?.stage_name} on ${APP_NAME}`
+
+  const title = `${artist.stage_name} on ${APP_NAME}`
+  const url = `${DOMAIN}/artist/${artist.hash}`
+  const description = `Listen to ${artist.stage_name} on ${APP_NAME}`
   const type = SEO_ARTIST_TYPE
-  const image = artist?.poster_url
+  const image = artist.poster_url
 
   return {
     title,
@@ -140,74 +150,74 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
 }
 
 
-export const loader: LoaderFunction = ({ params }) => {
+export const loader: LoaderFunction = async ({ params }) => {
   const { hash } = params as { hash: string }
 
-  const data = fetchArtistDetail(hash)
+  try {
+    const data = await fetchArtistDetail({
+      hash,
+      input: {
+        hash,
+        first: RANDOM_ARTISTS_NUMBER,
+      }
+    })
 
-  return json(data)
+
+    return json(data)
+  } catch (error) {
+    throw new Response("Not Found", {
+      status: 404,
+    })
+  }
 }
 
+export function CatchBoundary() {
+  return (
+    <Box sx={{
+      height: "100%",
+      borderWidth: '2px',
+      borderStyle: 'solid',
+      borderColor: 'red',
+      borderRadius: '8px',
+      padding: '2rem',
+      color: theme.palette.error.light,
+      textAlign: 'center',
+    }}>
+      <Typography variant="h1" component="h1">Not Found!</Typography>
+      <Typography variant="h5">We could not find this artist.</Typography>
+    </Box>
+  )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Box sx={{
+      height: "100%",
+      borderWidth: '2px',
+      borderStyle: 'solid',
+      borderColor: 'red',
+      borderRadius: '8px',
+      padding: '2rem',
+      color: theme.palette.error.light,
+      textAlign: 'center',
+    }}>
+      <Typography variant="h1" component="h1">Oops! Error.</Typography>
+      <Typography variant="h5">{error.message}</Typography>
+    </Box>
+  )
+}
+
+
+
 export default function ArtistDetailPage() {
-  const { randomArtists, artist } = useLoaderData()
+  const { artist, randomArtists } = useLoaderData<ArtistDetailQuery>()
 
   const getTabs = () => {
     const url = window.location.href
     const title = `${artist.stage_name} on ${APP_NAME}`
     const hashtags = `${APP_NAME} music artist share`
-    const tabs: TabItem[] = [
-      {
-        icon: <ShareIcon />,
-        label: "Share",
-        value: (
-          <>
-            <br />
-            <Grid container spacing={2}>
-              <Grid item>
-                <FacebookShareButton
-                  url={url}
-                  quote={title}
-                  hashtag={hashtags.split(' ').join(' #')}>
-                  <FacebookIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.facebook }} />
-                </FacebookShareButton>
-              </Grid>
-              <Grid item>
-                <TwitterShareButton
-                  url={url}
-                  title={title}
-                  via={TWITTER_HANDLE}
-                  hashtags={hashtags.split(' ')}>
-                  <TwitterIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.twitter }} />
-                </TwitterShareButton>
-              </Grid>
-              <Grid item>
-                <WhatsappShareButton url={url} title={title}>
-                  <WhatsAppIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.whatsapp }} />
-                </WhatsappShareButton>
-              </Grid>
-              <Grid item>
-                <TelegramShareButton url={url} title={title}>
-                  <TelegramIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.telegram }} />
-                </TelegramShareButton>
-              </Grid>
-              <Grid item>
-                <EmailShareButton url={url} subject={title} body={title}>
-                  <EmailIcon style={{ fontSize: 48, cursor: 'pointer' }} />
-                </EmailShareButton>
-              </Grid>
-            </Grid>
-          </>
-        )
-      }
-    ]
 
-    if (artist.bio) {
-      tabs.push({
-        icon: <InfoIcon />,
-        label: "Biography",
-        value: <p dangerouslySetInnerHTML={{ __html: artist.bio }} style={{ wordWrap: 'normal' }} />
-      })
-    }
+    const tabs: TabItem[] = []
 
     if (artist.tracks.length) {
       tabs.push({
@@ -266,6 +276,58 @@ export default function ArtistDetailPage() {
         )
       })
     }
+
+    if (artist.bio) {
+      tabs.push({
+        icon: <InfoIcon />,
+        label: "Biography",
+        value: <p dangerouslySetInnerHTML={{ __html: artist.bio }} style={{ wordWrap: 'normal' }} />
+      })
+    }
+
+    tabs.push({
+      icon: <ShareIcon />,
+      label: "Share",
+      value: (
+        <>
+          <br />
+          <Grid container spacing={2}>
+            <Grid item>
+              <FacebookShareButton
+                url={url}
+                quote={title}
+                hashtag={hashtags.split(' ').join(' #')}>
+                <FacebookIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.facebook }} />
+              </FacebookShareButton>
+            </Grid>
+            <Grid item>
+              <TwitterShareButton
+                url={url}
+                title={title}
+                via={TWITTER_HANDLE}
+                hashtags={hashtags.split(' ')}>
+                <TwitterIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.twitter }} />
+              </TwitterShareButton>
+            </Grid>
+            <Grid item>
+              <WhatsappShareButton url={url} title={title}>
+                <WhatsAppIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.whatsapp }} />
+              </WhatsappShareButton>
+            </Grid>
+            <Grid item>
+              <TelegramShareButton url={url} title={title}>
+                <TelegramIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.telegram }} />
+              </TelegramShareButton>
+            </Grid>
+            <Grid item>
+              <EmailShareButton url={url} subject={title} body={title}>
+                <EmailIcon style={{ fontSize: 48, cursor: 'pointer' }} />
+              </EmailShareButton>
+            </Grid>
+          </Grid>
+        </>
+      )
+    })
 
     return tabs
   }

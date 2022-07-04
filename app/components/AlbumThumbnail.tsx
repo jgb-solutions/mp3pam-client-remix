@@ -1,14 +1,17 @@
-import { connect } from "react-redux"
-import Box, { BoxProps } from "@mui/material/Box"
-
-import colors from "../utils/colors"
-import type { AlbumThumbnailData } from "./AlbumScrollingList"
-import Image from "./Image"
-import AppRoutes from "~/app-routes"
-import { IconButton } from "@mui/material"
-import { PauseCircleOutline, PlayCircleOutline } from "@mui/icons-material"
+import type { FC } from "react"
+import Box from "@mui/material/Box"
 import { Link } from "@remix-run/react"
-import { BoxStyles } from "~/interfaces/types"
+import { useSelector } from "react-redux"
+import { IconButton } from "@mui/material"
+import type { BoxProps } from "@mui/material/Box"
+import { PauseCircleOutline, PlayCircleOutline } from "@mui/icons-material"
+
+import Image from "./Image"
+import colors from "../utils/colors"
+import AppRoutes from "~/app-routes"
+import type { BoxStyles } from "~/interfaces/types"
+import type { Album } from "~/graphql/generated-types"
+import type AppStateInterface from "~/interfaces/AppStateInterface"
 
 const styles: BoxStyles = {
   imgContainer: {
@@ -81,17 +84,17 @@ const styles: BoxStyles = {
 }
 
 type Props = {
-  album: AlbumThumbnailData
+  album: Pick<Album, "hash" | "artist" | "cover_url" | "title">
   sx?: BoxProps['sx']
-  isPlaying: boolean
-  albumHash: string
 }
 
-const AlbumThumbnail = (props: Props) => {
-  const { album, albumHash, isPlaying } = props
+const AlbumThumbnail: FC<Props> = ({ album, sx }) => {
+  const { isPlaying } = useSelector(({ player }: AppStateInterface) => ({
+    isPlaying: player.isPlaying
+  }))
 
   return (
-    <Box sx={props.sx}>
+    <Box sx={sx}>
       <Box
         sx={styles.imgContainer}
         style={{
@@ -104,12 +107,12 @@ const AlbumThumbnail = (props: Props) => {
           })})`
         }}
       >
-        <Box component={Link} to={AppRoutes.album.detailPage(albumHash)} sx={styles.transparentBackground}>
+        <Box component={Link} to={AppRoutes.album.detailPage(album.hash)} sx={styles.transparentBackground}>
           <IconButton>
-            {(isPlaying && albumHash === album.hash) && (
+            {(isPlaying && album.hash === album.hash) && (
               <PauseCircleOutline sx={styles.icon} />
             )}
-            {(!isPlaying || (isPlaying && albumHash !== album.hash)) && (
+            {(!isPlaying || (isPlaying && album.hash !== album.hash)) && (
               <PlayCircleOutline sx={styles.icon} />
             )}
           </IconButton>
@@ -129,9 +132,4 @@ const AlbumThumbnail = (props: Props) => {
   )
 }
 
-export default connect(
-  ({ player }: any) => ({
-    albumHash: player.album.hash,
-    isPlaying: player.isPlaying
-  })
-)(AlbumThumbnail)
+export default AlbumThumbnail

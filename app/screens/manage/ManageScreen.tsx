@@ -14,7 +14,7 @@ import AppRoutes from "~/app-routes"
 import { PlaylistScrollingList } from "~/components/PlaylistScrollingList"
 import SEO from "~/components/SEO"
 
-// const styles = {
+// const styles: BoxStyles = {
 //   link: { color: "#fff", fontWeight: 'bold' },
 // }))
 

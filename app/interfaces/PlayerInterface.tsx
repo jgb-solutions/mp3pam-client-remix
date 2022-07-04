@@ -1,4 +1,5 @@
-import ListInterface, { SoundInterface } from "./ListInterface"
+import type ListInterface from "./ListInterface"
+import type { SoundInterface } from "./ListInterface"
 
 export default interface PlayerInterface {
 	volume: number

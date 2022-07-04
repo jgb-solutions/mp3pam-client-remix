@@ -3,7 +3,7 @@ import Slider from "@mui/material/Slider"
 
 import colors from "../utils/colors"
 
-// const styles = {
+// const styles: BoxStyles = {
 // 	root: {
 // 		color: colors.grey
 // 	},

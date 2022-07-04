@@ -7,7 +7,7 @@ import Spinner from './Spinner'
 import { useNavigate } from '@remix-run/react'
 import AppRoutes from '~/app-routes'
 
-// const styles = {
+// const styles: BoxStyles = {
 //   root: {
 //     padding: 30
 //   },

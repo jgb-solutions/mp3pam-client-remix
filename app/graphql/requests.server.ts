@@ -156,37 +156,37 @@ export function fetchTrackDetail(hash: string) {
   )
 }
 export function addArtist(artistInput: ArtistInput) {
-  return request<AddArtistMutation, AddArtistMutationVariables>(
+  return graphQLClient.request<AddArtistMutation, AddArtistMutationVariables>(
     AddArtistDocument,
     { input: artistInput }
   )
 }
 
 export function addTrack(trackInput: TrackInput) {
-  return request<AddTrackMutation, AddTrackMutationVariables>(AddTrackDocument, {
+  return graphQLClient.request<AddTrackMutation, AddTrackMutationVariables>(AddTrackDocument, {
     input: trackInput
   })
 }
 
 export function addTrackToAlbum(addTrackToAlbumInput: AddTrackToAlbumInput) {
-  return request<AddTrackToAlbumMutation, AddTrackToAlbumMutationVariables>(
+  return graphQLClient.request<AddTrackToAlbumMutation, AddTrackToAlbumMutationVariables>(
     AddTrackToAlbumDocument, {
     input: addTrackToAlbumInput
   })
 }
 
 export function addTrackToPlaylist(addTrackToPlaylistVariables: AddTrackToPlaylistMutationVariables) {
-  return request<AddTrackToPlaylistMutation, AddTrackToPlaylistMutationVariables>(
+  return graphQLClient.request<AddTrackToPlaylistMutation, AddTrackToPlaylistMutationVariables>(
     AddTrackToPlaylistDocument, addTrackToPlaylistVariables
   )
 }
 
 export function fetchAlbumDetail(variables: AlbumDetailQueryVariables) {
-  return request<AlbumDetailQuery, AlbumDetailQueryVariables>(fetchAlbumDocument, variables)
+  return graphQLClient.request<AlbumDetailQuery, AlbumDetailQueryVariables>(fetchAlbumDocument, variables)
 }
 
 export function fetchAlbums() {
-  return request<AlbumsDataQuery, AlbumsDataQueryVariables>(
+  return graphQLClient.request<AlbumsDataQuery, AlbumsDataQueryVariables>(
     fetchAlbumsDocument,
     {
       first: FETCH_ALBUMS_NUMBER,
@@ -196,14 +196,14 @@ export function fetchAlbums() {
 }
 
 export function fetchArtistDetail(variables: ArtistDetailQueryVariables) {
-  return request<ArtistDetailQuery, ArtistDetailQueryVariables>(
+  return graphQLClient.request<ArtistDetailQuery, ArtistDetailQueryVariables>(
     fetchArtistDocument,
     variables
   )
 }
 
 export function fetchArtists() {
-  return request<ArtistsDataQuery, ArtistsDataQueryVariables>(
+  return graphQLClient.request<ArtistsDataQuery, ArtistsDataQueryVariables>(
     fetchArtistsDocument,
     {
       first: FETCH_ARTISTS_NUMBER,
@@ -213,7 +213,7 @@ export function fetchArtists() {
 }
 
 export function createAlbum(albumInput: AlbumInput) {
-  return request<CreateAlbumMutation, CreateAlbumMutationVariables>(
+  return graphQLClient.request<CreateAlbumMutation, CreateAlbumMutationVariables>(
     CreateAlbumDocument, {
     input: albumInput
   }
@@ -221,56 +221,56 @@ export function createAlbum(albumInput: AlbumInput) {
 }
 
 export function createPlaylist(playlistTitle: string) {
-  return request<CreatePlaylistMutation, CreatePlaylistMutationVariables>(
+  return graphQLClient.request<CreatePlaylistMutation, CreatePlaylistMutationVariables>(
     CreatePlaylistDocument, {
     title: playlistTitle,
   })
 }
 
 export function deleteAlbum(albumHash: string) {
-  return request<DeleteAlbumMutation, DeleteAlbumMutationVariables>(
+  return graphQLClient.request<DeleteAlbumMutation, DeleteAlbumMutationVariables>(
     DeleteAlbumDocument, {
     hash: albumHash
   })
 }
 
 export function deleteAlbumTrack(albumTrackHash: string) {
-  return request<DeleteAlbumMutation, DeleteAlbumMutationVariables>(
+  return graphQLClient.request<DeleteAlbumMutation, DeleteAlbumMutationVariables>(
     DeleteAlbumTrackDocument, {
     hash: albumTrackHash
   })
 }
 
 export function deleteArtist(artistHash: string) {
-  return request<DeleteArtistMutation, DeleteArtistMutationVariables>(
+  return graphQLClient.request<DeleteArtistMutation, DeleteArtistMutationVariables>(
     DeleteArtistDocument, {
     hash: artistHash
   })
 }
 
 export function deletePlaylist(playlistHash: string) {
-  return request<DeletePlaylistMutation, DeletePlaylistMutationVariables>(
+  return graphQLClient.request<DeletePlaylistMutation, DeletePlaylistMutationVariables>(
     DeletePlaylistDocument, {
     hash: playlistHash
   })
 }
 
 export function deletePlaylistTrack(playlistTrackHash: string) {
-  return request<DeletePlaylistMutation, DeletePlaylistMutationVariables>(
+  return graphQLClient.request<DeletePlaylistMutation, DeletePlaylistMutationVariables>(
     DeletePlaylistTrackDocument, {
     hash: playlistTrackHash
   })
 }
 
 export function deleteTrack(trackHash: string) {
-  return request<DeleteTrackMutation, DeleteTrackMutationVariables>(
+  return graphQLClient.request<DeleteTrackMutation, DeleteTrackMutationVariables>(
     DeleteTrackDocument, {
     hash: trackHash
   })
 }
 
 export function download(downloadInput: DownloadInput) {
-  return request<DownloadQuery, DownloadQueryVariables>(fetchDownloadUrlDocument, {
+  return graphQLClient.request<DownloadQuery, DownloadQueryVariables>(fetchDownloadUrlDocument, {
     input: downloadInput
   })
 }
@@ -280,51 +280,51 @@ export function fetchGenres() {
 }
 
 export function fetchLogin(loginInput: LoginInput) {
-  return request<LogUserInQuery, LogUserInQueryVariables>(LogUserInDocument, {
+  return graphQLClient.request<LogUserInQuery, LogUserInQueryVariables>(LogUserInDocument, {
     input: loginInput
   })
 }
 
 export function fetchManage({ first = MANAGE_PAGE_PER_PAGE_NUMBER, page = 1 }: ManagePageDataQueryVariables) {
-  return request<ManagePageDataQuery, ManagePageDataQueryVariables>(fetchManagementDocument, {
+  return graphQLClient.request<ManagePageDataQuery, ManagePageDataQueryVariables>(fetchManagementDocument, {
     first, page
   })
 }
 
 export function updateUser(updateUserInput: UpdateUserInput) {
-  return request<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, {
+  return graphQLClient.request<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, {
     input: updateUserInput
   })
 }
 
 export function updatePlayCount(playInput: PlayInput) {
-  return request<UpdatePlayCountMutation, UpdatePlayCountMutationVariables>(UpdatePlayCountDocument, {
+  return graphQLClient.request<UpdatePlayCountMutation, UpdatePlayCountMutationVariables>(UpdatePlayCountDocument, {
     input: playInput
   })
 }
 
 export function fetchMyAlbums(variables: MyAlbumsDataQueryVariables) {
-  return request<MyAlbumsDataQuery, MyAlbumsDataQueryVariables>(fetchMyAlbumsDocument, variables)
+  return graphQLClient.request<MyAlbumsDataQuery, MyAlbumsDataQueryVariables>(fetchMyAlbumsDocument, variables)
 }
 
 export function fetchMyPlaylists(variables: MyPlaylistsDataQueryVariables) {
-  return request<MyPlaylistsDataQuery, MyPlaylistsDataQueryVariables>(fetchMyPlaylistsDocument, variables)
+  return graphQLClient.request<MyPlaylistsDataQuery, MyPlaylistsDataQueryVariables>(fetchMyPlaylistsDocument, variables)
 }
 
 export function fetchMyTracks(variables: MyTracksDataQueryVariables) {
-  return request<MyTracksDataQuery, MyTracksDataQueryVariables>(fetchMyTracksDocument, variables)
+  return graphQLClient.request<MyTracksDataQuery, MyTracksDataQueryVariables>(fetchMyTracksDocument, variables)
 }
 
 export function fetchMyArtists(variables: MyArtistDataQueryVariables) {
-  return request<MyArtistDataQuery, MyArtistDataQueryVariables>(fetchMyArtistsDocument, variables)
+  return graphQLClient.request<MyArtistDataQuery, MyArtistDataQueryVariables>(fetchMyArtistsDocument, variables)
 }
 
 export function fetchPlaylistDetail(variables: PlaylistDetailQueryVariables) {
-  return request<PlaylistDetailQuery, PlaylistDetailQueryVariables>(fetchPlaylistDocument, variables)
+  return graphQLClient.request<PlaylistDetailQuery, PlaylistDetailQueryVariables>(fetchPlaylistDocument, variables)
 }
 
 export function fetchPlaylists() {
-  return request<PlaylistsDataQuery, PlaylistsDataQueryVariables>(
+  return graphQLClient.request<PlaylistsDataQuery, PlaylistsDataQueryVariables>(
     fetchPlaylistsDocument,
     {
       first: FETCH_PLAYLISTS_NUMBER,
@@ -334,13 +334,13 @@ export function fetchPlaylists() {
 }
 
 export function doSearch(searchTerm: string) {
-  return request<SearchQuery, SearchQueryVariables>(searchDocument, {
+  return graphQLClient.request<SearchQuery, SearchQueryVariables>(searchDocument, {
     query: searchTerm,
   })
 }
 
 export function fetchTracks() {
-  return request<TracksDataQuery, TracksDataQueryVariables>(
+  return graphQLClient.request<TracksDataQuery, TracksDataQueryVariables>(
     fetchTracksDocument,
     {
       first: FETCH_TRACKS_NUMBER,

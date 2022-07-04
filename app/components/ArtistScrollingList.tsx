@@ -1,85 +1,96 @@
-
-
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
+import type { FC } from "react"
+import { useRef } from "react"
+import { Box, IconButton } from "@mui/material"
 import { Link } from "@remix-run/react"
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
 
-import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
 import ArtistThumbnail from "./ArtistThumbnail"
+import type { ArtistDetailQuery } from "~/graphql/generated-types"
 
-// const styles = {
-//   container: {
-//     marginBottom: 30
-//   },
-//   list: {
-//     display: "flex",
-//     flexWrap: "nowrap",
-//     overflowX: "auto"
-//   },
-//   thumbnail: {
-//     width: 175,
-//     marginRight: 21,
-//     sm: {
-//       width: 100,
-//       marginRight: 10,
-//     },
-//   },
-//   link: { color: "#fff", textDecoration: "none" },
-//   listHeader: {
-//     borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-//     paddingBottom: 3,
-//     paddingHorizontal: 0,
-//     display: "flex",
-//     justifyContent: "space-between",
-//     marginBottom: 15
-//   },
-//   category: {
-//     margin: 0,
-//     fontSize: 16
-//   }
-// }))
-
-export interface ArtistThumbnailData {
-  stage_name: string,
-  hash: string,
-  poster_url: string,
+const styles: BoxStyles = {
+  container: {
+    marginBottom: "30px"
+  },
+  list: {
+    display: "flex",
+    flexWrap: "nowrap",
+    overflowX: "auto"
+  },
+  thumbnail: {
+    width: "175px",
+    marginRight: "21px",
+    sm: {
+      width: "100px",
+      marginRight: "10px",
+    },
+  },
+  link: { color: "#fff", textDecoration: "none" },
+  listHeader: {
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+    paddingBottom: "30px",
+    paddingHorizontal: 0,
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "15px",
+  },
+  category: {
+    margin: 0,
+    fontSize: "16px",
+  }
 }
 
-export const ArtistScrollingList = (props: { artists: ArtistThumbnailData[], category: string, browse: string }) => {
+type Props = {
+  artists: ArtistDetailQuery['randomArtists'],
+  category: string, browse: string
+}
+
+export const ArtistScrollingList: FC<Props> = (props) => {
   const { artists, category, browse } = props
 
-  let domElement: any
+  const domRef = useRef<HTMLDivElement>(null)
 
   const scroll = (dir: string) => {
+    if (!domRef.current) return
+
     const distance = 400
     if (dir === "left") {
-      domElement.scrollLeft -= distance
+      domRef.current.scrollTo({
+        left: domRef.current.scrollLeft - distance,
+        behavior: "smooth"
+      })
     } else {
-      domElement.scrollLeft += distance
+      domRef.current.scrollTo({
+        left: domRef.current.scrollLeft + distance,
+        behavior: "smooth"
+      })
     }
   }
 
   return (
-    <div sx={styles.container}>
-      <div sx={styles.listHeader}>
-        <Link prefetch="intent" to={browse} sx={styles.link}>
-          <h2 sx={styles.category}>{category}</h2>
-        </Link>
-        <div>
-          <KeyboardArrowLeft onClick={() => scroll("left")} />
+    <Box sx={styles.container}>
+      <Box sx={styles.listHeader}>
+        <Box component={Link} prefetch="intent" to={browse} sx={styles.link}>
+          <Box component="h2" sx={styles.category}>{category}</Box>
+        </Box
+        >
+        <Box>
+          <IconButton onClick={() => scroll("left")}>
+            <KeyboardArrowLeft />
+          </IconButton>
           &nbsp;
-          <KeyboardArrowRight onClick={() => scroll("right")} />
-        </div>
-      </div>
-      <div
+          <IconButton onClick={() => scroll("right")}>
+            <KeyboardArrowRight />
+          </IconButton>
+        </Box>
+      </Box>
+      <Box
         sx={styles.list}
-        ref={el => {
-          domElement = el
-        }}
+        ref={domRef}
       >
         {artists.map(artist => (
           <ArtistThumbnail key={artist.hash} sx={styles.thumbnail} artist={artist} />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

@@ -14,7 +14,7 @@ import { makeSoundFromTrack } from '../utils/helpers'
 import ListInterface from '../interfaces/ListInterface'
 import { Link } from '@remix-run/react'
 
-// const styles = {
+// const styles: BoxStyles = {
 //   table: {
 //     width: '100%',
 //     marginTop: theme.spacing(3),

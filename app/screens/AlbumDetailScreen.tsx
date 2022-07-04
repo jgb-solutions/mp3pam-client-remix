@@ -39,7 +39,7 @@ import HeaderTitle from "~/components/HeaderTitle"
 import Image from "~/components/Image"
 import Grid from "@mui/material/Grid"
 
-// const styles = {
+// const styles: BoxStyles = {
 //   row: {
 //     display: "flex",
 //     flexDirection: "row"

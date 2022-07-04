@@ -115,7 +115,7 @@ export default function AddArtistPage() {
     }
   }, [uploadedArtist])
 
-  const styles = addArtistPageStyles()
+  const styles: BoxStyles = addArtistPageStyles()
 
   return (
     <CheckAuth sx='react-transition scale-in'>

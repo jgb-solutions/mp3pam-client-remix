@@ -1,109 +1,98 @@
-
+import { Link } from "@remix-run/react"
+import type { CSSProperties } from "react"
+import type { BoxProps } from "@mui/material"
+import { Box, Typography } from "@mui/material"
+import IconButton from "@mui/material/IconButton"
 import { PlayCircleOutline } from "@mui/icons-material"
 
-import IconButton from "@mui/material/IconButton"
-
-
+import Image from "./Image"
 import colors from "../utils/colors"
 import AppRoutes from "~/app-routes"
-import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
-import { ArtistThumbnailData } from "./ArtistScrollingList"
-import Image from "./Image"
-import { useNavigate } from "@remix-run/react"
-import AppRoutes from "~/app-routes"
+import type { BoxStyles } from "~/interfaces/types"
+import type { Artist } from "~/graphql/generated-types"
 
-// const styles = {
-//   imgContainer: {
-//     // minWidth: 100,
-//     // minHeight: 100,
-//     backgroundSize: "contain",
-//     backgroundRepeat: 'no-repeat',
-//     cursor: "pointer",
-//     width: 175,
-//     height: 175,
-//     maxWidth: '100%',
-//     maxHeight: '100%',
-//     position: "relative",
-//     marginBottom: 10,
-//     // display: "flex",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     sm: {
-//       width: 100,
-//       height: 100,
-//     },
-//   },
-//   transparentBackground: {
-//     opacity: 0,
-//     position: "absolute",
-//     backgroundColor: "#000",
-//     width: "100%",
-//     height: "100%",
-//     display: "flex",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     "&:hover": {
-//       opacity: 0.7
-//     }
-//   },
-//   icon: {
-//     fontSize: 75,
-//     color: colors.white,
-//     "&:hover": {
-//       fontSize: 80,
-//       opacity: 1
-//     }
-//   },
-//   title: {
-//     margin: 0,
-//     fontSize: 14,
-//     color: colors.white,
-//     sm: {
-//       fontSize: 12,
-//       overflow: 'hidden',
-//       whiteSpace: 'nowrap',
-//       textOverflow: 'ellipsis',
-//     },
-//   },
-//   details: {
-//     fontSize: 13,
-//     color: "#9d9d9d",
-//     marginTop: 5,
-//     marginBottom: 0,
-//     sm: {
-//       fontSize: 11,
-//       overflow: 'hidden',
-//       whiteSpace: 'nowrap',
-//       textOverflow: 'ellipsis',
-//     },
-//   },
-//   link: {
-//     color: colors.white,
-//     textDecoration: 'none',
-//     cursor: 'pointer',
-//   }
-// }))
-
-type Props = {
-  artist: ArtistThumbnailData
-  className?: string
-  style?: object,
+const styles: BoxStyles = {
+  imgContainer: {
+    // minWidth: 100,
+    // minHeight: 100,
+    backgroundSize: "contain",
+    backgroundRepeat: 'no-repeat',
+    cursor: "pointer",
+    width: "175px",
+    height: "175px",
+    maxWidth: '100%',
+    maxHeight: '100%',
+    position: "relative",
+    marginBottom: "10px",
+    // display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    sm: {
+      width: "100px",
+      height: "100px",
+    },
+  },
+  transparentBackground: {
+    opacity: 0,
+    position: "absolute",
+    backgroundColor: "#000",
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "&:hover": {
+      opacity: 0.7
+    }
+  },
+  icon: {
+    fontSize: 75,
+    color: colors.white,
+    "&:hover": {
+      fontSize: 80,
+      opacity: 1
+    }
+  },
+  title: {
+    margin: 0,
+    fontSize: "14px",
+    color: colors.white,
+    sm: {
+      fontSize: "12px",
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    },
+  },
+  details: {
+    fontSize: "13px",
+    color: "#9d9d9d",
+    marginTop: "5px",
+    marginBottom: 0,
+    sm: {
+      fontSize: "11px",
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    },
+  },
+  link: {
+    color: colors.white,
+    textDecoration: 'none',
+    cursor: 'pointer',
+  }
 }
 
-export default function ArtistThumbnail(props: Props) {
+type Props = {
+  artist: Pick<Artist, "poster_url" | "hash" | "stage_name">
+  style?: CSSProperties,
+  sx?: BoxProps['sx']
+}
 
-  const navigate = useNavigate()
-
-  const { artist } = props
-
-  const goToArtistPage = () => {
-    const route = AppRoutes.artist.detailPage(artist.hash)
-    navigate(route, { state: { hash: artist.hash } })
-  }
-
+export default function ArtistThumbnail({ artist, style, sx }: Props) {
   return (
-    <div sx={props.className} style={props.style}>
-      <div
+    <Box sx={sx} style={style}>
+      <Box
         sx={styles.imgContainer}
         style={{
           backgroundImage: `url(${Image.phoneCdnUrl(artist.poster_url, {
@@ -115,16 +104,17 @@ export default function ArtistThumbnail(props: Props) {
           })})`
         }}
       >
-        <div
+        <Box
           sx={styles.transparentBackground}
-          onClick={goToArtistPage}
+          component={Link}
+          to={AppRoutes.artist.detailPage(artist.hash)}
         >
           <IconButton>
             <PlayCircleOutline sx={styles.icon} />
           </IconButton>
-        </div>
-      </div>
-      <h3 sx={styles.title}>{artist.stage_name}</h3>
-    </div>
+        </Box>
+      </Box>
+      <Typography variant="h3" sx={styles.title}>{artist.stage_name}</Typography>
+    </Box >
   )
 }

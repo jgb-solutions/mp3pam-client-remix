@@ -21,7 +21,7 @@ import colors from "../../utils/colors"
 import useDeletePlaylist from "../../hooks/useDeletePlaylist"
 import SEO from "~/components/SEO"
 
-// const styles = {
+// const styles: BoxStyles = {
 //   table: {
 //     width: '100%',
 //     overflowX: 'auto',

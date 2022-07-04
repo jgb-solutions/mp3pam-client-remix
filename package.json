@@ -31,7 +31,7 @@
     "react-share": "^4.4.0",
     "react-window": "^1.8.5",
     "redux": "^4.0.4",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^5.10.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.6.2",

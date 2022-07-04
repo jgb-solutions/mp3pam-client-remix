@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux'
 import AppStateInterface from '../interfaces/AppStateInterface'
 import ListInterface, { SoundInterface } from '../interfaces/ListInterface'
 
-// const styles = {
+// const styles: BoxStyles = {
 //   table: {
 //     width: '100%',
 //     marginTop: theme.spacing(3),
