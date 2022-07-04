@@ -46,7 +46,7 @@ export default function FacebookAuth() {
   }
 
   if (currentUser.loggedIn) {
-    return <Redirect to={Routes.pages.home} />
+    return <Redirect to={AppRoutes.pages.home} />
   }
 
   return code ? (
@@ -54,5 +54,5 @@ export default function FacebookAuth() {
       <h1>Logging you in with Facebook</h1>
       <Spinner />
     </>
-  ) : <Redirect to={Routes.pages.login} />
+  ) : <Redirect to={AppRoutes.pages.login} />
 }

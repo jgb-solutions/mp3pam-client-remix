@@ -341,7 +341,7 @@ export default function ArtistDetailScreen() {
         <ArtistScrollingList
           category="Other Artists You Might Like"
           artists={randomArtists}
-          browse={Routes.browse.artists}
+          browse={AppRoutes.browse.artists}
         />
       ) : null}
 
@@ -359,12 +359,12 @@ export default function ArtistDetailScreen() {
     <>
       <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Artist was not found." />
       <h3>
-        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
+        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
         or
         {' '}
         <Link
           style={{ cursor: 'pointer', textDecoration: 'underline', color: colors.white }}
-          to={Routes.browse.artists}>browse other artists.
+          to={AppRoutes.browse.artists}>browse other artists.
         </Link>.
       </h3>
       <FourOrFour />

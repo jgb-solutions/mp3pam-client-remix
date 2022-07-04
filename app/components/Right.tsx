@@ -56,7 +56,7 @@ const Right = (props: Props) => {
               <NavLink prefetch="intent"
                 activesx={styles.activeClassName}
                 exact
-                to={Routes.user.account}
+                to={AppRoutes.user.account}
                 sx={`${styles.link} ${styles.mainMenuLink}`}
                 onClick={closeDrawer}>
                 <span sx={styles.linkIcon}>

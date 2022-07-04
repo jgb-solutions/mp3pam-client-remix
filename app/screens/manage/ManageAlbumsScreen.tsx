@@ -88,10 +88,10 @@ export default function ManageAlbumsScreen() {
                     borderBottom: albums.data.length - 1 === index ? '' : '1px solid white',
                   }}>
                     {/* <StyledTableCell style={{ width: '80%' }}>
-                      <Link prefetch="intent" to={Routes.album.detailPage(album.hash)} sx={styles.link}>{album.title}</Link>
+                      <Link prefetch="intent" to={AppRoutes.album.detailPage(album.hash)} sx={styles.link}>{album.title}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <Link prefetch="intent" to={Routes.album.editPage(album.hash)} sx={styles.link}>Edit</Link>
+                      <Link prefetch="intent" to={AppRoutes.album.editPage(album.hash)} sx={styles.link}>Edit</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span

@@ -87,7 +87,7 @@ export default function ManageArtistsScreen() {
                     borderBottom: artists.data.length - 1 === index ? '' : '1px solid white',
                   }}>
                     {/* <StyledTableCell style={{ width: '90%' }}>
-                      <Link prefetch="intent" to={Routes.artist.detailPage(artist.hash)} sx={styles.link}>{artist.stage_name}</Link>
+                      <Link prefetch="intent" to={AppRoutes.artist.detailPage(artist.hash)} sx={styles.link}>{artist.stage_name}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span

@@ -301,7 +301,7 @@ const AlbumDetailScreen = (props: Props) => {
             <p sx={styles.listByAuthor} style={{ marginBottom: 5 }}>
               <span sx={styles.listBy}>By </span>
               <Link
-                to={Routes.artist.detailPage(album.artist.hash)}
+                to={AppRoutes.artist.detailPage(album.artist.hash)}
                 sx={styles.listAuthor}
               >
                 {album.artist.stage_name}
@@ -349,7 +349,7 @@ const AlbumDetailScreen = (props: Props) => {
         <AlbumScrollingList
           category="Other Albums Your Might Like"
           albums={randomAlbums}
-          browse={Routes.browse.albums}
+          browse={AppRoutes.browse.albums}
         />
       ) : null}
       {/* handling SEO */}
@@ -366,12 +366,12 @@ const AlbumDetailScreen = (props: Props) => {
     <>
       <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Album was not found." />
       <h3>
-        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={Routes.pages.home}>home page</Link>{' '}
+        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
         or
         {' '}
         <Link
           style={{ cursor: 'pointer', textDecoration: 'underline', color: colors.white }}
-          to={Routes.browse.albums}>browse other albums.
+          to={AppRoutes.browse.albums}>browse other albums.
         </Link>.
       </h3>
       <FourOrFour />

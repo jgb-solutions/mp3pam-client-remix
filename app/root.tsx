@@ -80,7 +80,7 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
         <link rel="preconnect" href="https://fonts.gstatic.com/" crossOrigin="true" />
         <link
           rel="preload"
-          as="font"
+          as="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
 
         />

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import type { FC } from "react"
-import { json } from "@remix-run/node"
+import { HeadersFunction, json } from "@remix-run/node"
 import { useSelector } from "react-redux"
 import { Link, useCatch, useLoaderData, useNavigate, useParams } from "@remix-run/react"
 import InfoIcon from '@mui/icons-material/Info'
@@ -116,6 +116,14 @@ const styles: BoxStyles = {
     marginTop: 10,
   },
 }
+
+export const headers: HeadersFunction = () => {
+  return {
+    "Cache-Control": "public, s-maxage=5, stale-while-revalidate=3595",
+    "Vary": "Authorization, Cookie",
+  }
+}
+
 
 export const loader: LoaderFunction = async ({ params }) => {
   const { hash } = params as { hash: string }
