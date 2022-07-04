@@ -19,7 +19,6 @@ const CreateMenu = [
   // { name: "Create PlayList", to: AppRoutes.user.create.playlist, icon: <PlaylistAddIcon /> },
   { name: "Add Artist", to: AppRoutes.user.create.artist, icon: <PersonPinCircleIcon /> },
   { name: "Create Album", to: AppRoutes.user.create.album, icon: <AlbumIcon /> },
-  // { name: "Add Podcast", to: AppRoutes.user.create.podcast, icon: <MicIcon /> },
 ]
 
 const libraryMenu = [
@@ -27,7 +26,6 @@ const libraryMenu = [
   { name: "PlayLists", to: AppRoutes.user.manage.playlists, icon: <PlaylistAddIcon /> },
   { name: "Artists", to: AppRoutes.user.manage.artists, icon: <PersonPinCircleIcon /> },
   { name: "Albums", to: AppRoutes.user.manage.albums, icon: <AlbumIcon /> },
-  // { name: "Podcasts", to: AppRoutes.user.manage.podcasts, icon: <MicIcon /> },
 ]
 
 type Props = {

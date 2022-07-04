@@ -65,10 +65,10 @@ export default function QueueTable() {
             sound.hash === currentSound.hash &&
             index === currentPlayingIndex ? colors.primary
             : undefined
-          const soundPage = get(Routes, `${sound.type}`).detailPage(sound.hash)
-          const authorPage = sound.type === 'track' ?
-            AppRoutes.artist.detailPage(sound.author_hash) :
-            AppRoutes.podcast.goToAuthorDetail(sound.author_hash)
+          const soundPage = get(AppRoutes, `${sound.type}`).detailPage(sound.hash)
+          // const authorPage = sound.type === 'track' ?
+          //   AppRoutes.artist.detailPage(sound.author_hash) :
+          //   AppRoutes.podcast.goToAuthorDetail(sound.author_hash)
 
           return (
             <TableRow key={index} style={{

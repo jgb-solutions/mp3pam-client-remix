@@ -4,7 +4,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 
 import { useLoaderData, useParams } from "@remix-run/react"
 
-import SEO from "../../../components/SEO"
+
 import type { TracksWithArtist } from '~/components/TrackScrollingList'
 import { json, LoaderFunction } from "@remix-run/node"
 import { fetchTracksByGenre } from "~/graphql/requests.server"
@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(data)
 }
 
-export default function BrowseTracksByGenreScreen() {
+export default function BrowseTracksByGenrePage() {
   const { tracksByGenre } = useLoaderData()
 
   return (

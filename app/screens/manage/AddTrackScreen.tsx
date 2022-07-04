@@ -11,24 +11,24 @@ import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import { Grid, FormControlLabel, Checkbox } from "@mui/material"
 import { useMutation } from 'graphql-request'
 
-import ProgressBar from "../../components/ProgressBar"
+import ProgressBar from "~/components/ProgressBar"
 import TextField from "@mui/material/TextField"
-import Button from '../../components/Button'
-import UploadButton from '../../components/UploadButton'
-import CheckAuth from "../../components/CheckAuth"
-import HeaderTitle from "../../components/HeaderTitle"
+import Button from '../~/components/Button'
+import UploadButton from '../~/components/UploadButton'
+import CheckAuth from "~/components/CheckAuth"
+import HeaderTitle from "~/components/HeaderTitle"
 import { TRACK_UPLOAD_DATA_QUERY } from "../../graphql/queries"
 import useFileUpload from "../../hooks/useFileUpload"
-import TextIcon from "../../components/TextIcon"
-import { addTrackScreenStyles } from "../../styles/addTrackScreenStyles"
+import TextIcon from "~/components/TextIcon"
+import { addTrackPageStyles } from "../../styles/addTrackPageStyles"
 import useAddTrack from '../../hooks/useAddTrack'
 import AppRoutes from "~/app-routes"
-import AlertDialog from "../../components/AlertDialog"
+import AlertDialog from "~/components/AlertDialog"
 import { ADD_GENRE_MUTATION } from "../../graphql/mutations"
 import { IMG_BUCKET, AUDIO_BUCKET, MAX_AUDIO_FILE_SIZE, MAX_IMG_FILE_SIZE, MIN_TRACK_LYRICS_LENGTH, MIN_TRACK_DETAIL_LENGTH } from "../../utils/constants.server"
 import { getFile } from "../../utils/helpers"
 import useAddArtist from "../../hooks/useAddArtist"
-import SEO from "../../components/SEO"
+import SEO from "~/components/SEO"
 
 export interface FormData {
 	title: string
@@ -77,7 +77,7 @@ export function AddArtistForm({ open, handleClose, onArtistCreated }: AddArtistF
 		formState
 	} = useForm<AddArtistFormData>({ mode: 'onBlur' })
 	const { addArtist, data: artistData } = useAddArtist()
-	const styles = addTrackScreenStyles()
+	const styles = addTrackPageStyles()
 
 	const handleAddArtist = (artist: AddArtistFormData) => {
 		addArtist({ ...artist, img_bucket: IMG_BUCKET })
@@ -159,7 +159,7 @@ export function AddGenreForm({ open, handleClose, onGenreCreated }: AddGenreForm
 		formState
 	} = useForm<AddGenreFormData>({ mode: 'onBlur' })
 	const [addGenreMutation, { data: genreData }] = useMutation(ADD_GENRE_MUTATION)
-	const styles = addTrackScreenStyles()
+	const styles = addTrackPageStyles()
 
 	const handleAddGenre = (genre: AddGenreFormData) => {
 		addGenreMutation({ variables: { input: genre } })
@@ -209,7 +209,7 @@ export function AddGenreForm({ open, handleClose, onGenreCreated }: AddGenreForm
 	</AlertDialog>
 }
 
-export default function AddTrackScreen() {
+export default function AddTrackPage() {
 	const history = useHistory()
 	const location = useLocation()
 
@@ -416,7 +416,7 @@ export default function AddTrackScreen() {
 		}
 	}, [uploadedTrack])
 
-	const styles = addTrackScreenStyles()
+	const styles = addTrackPageStyles()
 
 	return (
 		<CheckAuth sx='react-transition scale-in'>

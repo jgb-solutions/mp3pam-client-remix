@@ -1,39 +1,55 @@
 import {
   Meta,
+  Links,
   Outlet,
   Scripts,
   useCatch,
   LiveReload,
   useLoaderData,
   ScrollRestoration,
-  Links,
 } from '@remix-run/react'
-import { withEmotionCache } from '@emotion/react'
-import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
-import type { LinksFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
+import { Provider } from 'react-redux'
+import { withEmotionCache } from '@emotion/react'
 import type { LoaderFunction } from '@remix-run/node'
+import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
+import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
 
 import theme from './mui/theme'
-import { PersistGate } from "redux-persist/integration/react"
-
-import RootLayout from './components/layouts/Root'
-// import reactTransitionSheetUrl from '~/styles/react-transitions.css'
-import ClientStyleContext from './mui/ClientStyleContext'
-import MainLayout from './components/layouts/Main'
-import { Provider } from 'react-redux'
 import { persistedStore } from './redux/store'
-
+import RootLayout from './components/layouts/Root'
+import MainLayout from './components/layouts/Main'
+import ClientStyleContext from './mui/ClientStyleContext'
+import { PersistGate } from "redux-persist/integration/react"
+import { APP_NAME, DOMAIN, FB_APP_ID, TWITTER_HANDLE } from './utils/constants.server'
 
 const { store, persistor } = persistedStore()
 
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = `${APP_NAME} | Listen, Download and Share Unlimited Sounds!`
+  const description = `${APP_NAME} is a free entertainment platform for sharing all kinds of sounds.
+      Music, and even Ad. You name it. Brought to you by JGB Solutions.
+  `
+  const image = `${DOMAIN}/assets/images/social-media-share.png`
 
-// export const links: LinksFunction = () => {
-//   return [{ rel: "stylesheet", href: reactTransitionSheetUrl }]
-// }
-
+  return {
+    title,
+    "og:title": title,
+    "og:site_name": APP_NAME,
+    "og:url": DOMAIN,
+    "og:description": description,
+    "og:type": "website",
+    "og:image": image,
+    "fb:app_id": FB_APP_ID,
+    "twitter:card": "summary",
+    "twitter:site": `@${TWITTER_HANDLE}`,
+    "twitter:title": title,
+    "twitter:description": { description },
+    "twitter:image": { image },
+  }
+}
 
 export const loader: LoaderFunction = async () => {
   return json({
@@ -80,7 +96,7 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
         <link rel="preconnect" href="https://fonts.gstatic.com/" crossOrigin="true" />
         <link
           rel="preload"
-          as="stylesheet"
+          as="font"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
 
         />

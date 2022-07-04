@@ -1,10 +1,10 @@
 
 
-import { Grid } from "@mui/material"
+import Grid from "@mui/material/Grid"
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
-import HeaderTitle from "../../../components/HeaderTitle"
-import SEO from "../../../components/SEO"
+import HeaderTitle from "~/components/HeaderTitle"
+
 import { json, LoaderFunction } from "@remix-run/node"
 import { fetchGenres } from "~/graphql/requests.server"
 import { useLoaderData } from "@remix-run/react"
@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async () => {
   return json(data)
 }
 
-export default function BrowseScreen() {
+export default function BrowsePage() {
   const { genres } = useLoaderData<AllGenresQuery>()
 
   return (

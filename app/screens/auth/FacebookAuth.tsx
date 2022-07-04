@@ -3,7 +3,7 @@ import { useLocation, useHistory, Redirect } from 'react-router'
 import queryString from 'query-string'
 import { useDispatch, useSelector } from 'react-redux'
 
-import Spinner from '../../components/Spinner'
+import Spinner from '../~/components/Spinner'
 import { LOG_IN } from '../../redux/actions/user_action_types'
 import { FACEOOK_LOGIN } from '../../graphql/mutations'
 import AppStateInterface from '../../interfaces/AppStateInterface'
@@ -35,13 +35,13 @@ export default function FacebookAuth() {
       dispatch({ type: LOG_IN, payload })
 
       if (payload.data.first_login) {
-        history.push(Routes.user.account, { editMode: true })
+        history.push(AppRoutes.user.account, { editMode: true })
       } else {
-        history.push(Routes.pages.home)
+        history.push(AppRoutes.pages.home)
       }
     } catch (error) {
       console.log(error)
-      history.push(Routes.pages.login)
+      history.push(AppRoutes.pages.login)
     }
   }
 

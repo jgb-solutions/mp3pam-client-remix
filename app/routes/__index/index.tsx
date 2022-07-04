@@ -11,7 +11,6 @@ import type { ArtistScrollingList } from "~/components/ArtistScrollingList"
 import { PlaylistScrollingList } from "~/components/PlaylistScrollingList"
 import type { AlbumScrollingList } from "~/components/AlbumScrollingList"
 
-import SEO from "~/components/SEO"
 import AppRoutes from "~/app-routes"
 import type { HomepageQuery } from '~/graphql/generated-types'
 
@@ -46,8 +45,7 @@ export default function Index() {
   return (
     <Box>
       <HeaderTitle icon={
-        < HomeIcon />} text="Home" />
-      <SEO />
+        <HomeIcon />} text="Home" />
 
       {
         latestTracks?.data && (

@@ -9,13 +9,13 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled'
 
-import ProgressBar from "../../components/ProgressBar"
+import ProgressBar from "~/components/ProgressBar"
 import TextField from "@mui/material/TextField"
-import UploadButton from '../../components/UploadButton'
-import CheckAuth from "../../components/CheckAuth"
+import UploadButton from '../~/components/UploadButton'
+import CheckAuth from "~/components/CheckAuth"
 import Button from "@mui/material/Button"
 
-export default function AddTrackScreen() {
+export default function AddTrackPage() {
   const client = useApolloClient()
   const [completed, setCompleted] = useState(0)
   const [isUploaded, setIsUploaded] = useState(false)

@@ -7,26 +7,26 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
 
-import { Grid } from "@mui/material"
+import Grid from "@mui/material/Grid"
 
 
-import ProgressBar from "../../components/ProgressBar"
+import ProgressBar from "~/components/ProgressBar"
 import TextField from "@mui/material/TextField"
-import Button from '../../components/Button'
-import UploadButton from '../../components/UploadButton'
-import CheckAuth from "../../components/CheckAuth"
-import HeaderTitle from "../../components/HeaderTitle"
+import Button from '../~/components/Button'
+import UploadButton from '../~/components/UploadButton'
+import CheckAuth from "~/components/CheckAuth"
+import HeaderTitle from "~/components/HeaderTitle"
 import { TRACK_UPLOAD_DATA_QUERY } from "../../graphql/queries"
 import useFileUpload from "../../hooks/useFileUpload"
-import TextIcon from "../../components/TextIcon"
-import { createAlbumScreenStyles } from "../../styles/createAlbumScreenStyles"
+import TextIcon from "~/components/TextIcon"
+import { createAlbumPageStyles } from "../../styles/createAlbumPageStyles"
 import useCreateAlbum from '../../hooks/useCreateAlbum'
 import AppRoutes from "~/app-routes"
-import AlertDialog from "../../components/AlertDialog"
+import AlertDialog from "~/components/AlertDialog"
 import { IMG_BUCKET, MAX_IMG_FILE_SIZE, CURRENT_YEAR } from "../../utils/constants.server"
-import { AddArtistForm } from "./AddTrackScreen"
+import { AddArtistForm } from "./AddTrackPage"
 import { getFile } from "../../utils/helpers"
-import SEO from "../../components/SEO"
+import SEO from "~/components/SEO"
 
 export interface FormData {
   title: string
@@ -45,7 +45,7 @@ export interface AlbumData extends FormData {
   img_bucket: string,
 }
 
-export default function AddAlbumScreen() {
+export default function AddAlbumPage() {
   const history = useHistory()
   const { register,
     handleSubmit,
@@ -155,7 +155,7 @@ export default function AddAlbumScreen() {
     }
   }, [uploadedAlbum])
 
-  const styles = createAlbumScreenStyles()
+  const styles = createAlbumPageStyles()
 
   return (
     <CheckAuth sx='react-transition scale-in'>

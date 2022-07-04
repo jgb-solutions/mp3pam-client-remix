@@ -1,7 +1,7 @@
 
 import colors from "../utils/colors"
 
-// export const addArtistScreenStyles = {
+// export const addArtistPageStyles = {
 //   uploadButton: {
 //     marginTop: 10,
 //     marginBottom: 5,

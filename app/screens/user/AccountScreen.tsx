@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import HeaderTitle from "../../components/HeaderTitle"
+import HeaderTitle from "~/components/HeaderTitle"
 import { useParams, useNavigate } from "@remix-run/react"
 
 import { useSelector, useDispatch } from 'react-redux'
@@ -12,8 +12,8 @@ import DialogContentText from '@mui/material/DialogContentText'
 
 
 
-import ProgressBar from "../../components/ProgressBar"
-import CheckAuth from "../../components/CheckAuth"
+import ProgressBar from "~/components/ProgressBar"
+import CheckAuth from "~/components/CheckAuth"
 import AppStateInterface from "../../interfaces/AppStateInterface"
 import { LOG_OUT_MUTATION, UPDATE_USER } from "../../graphql/mutations"
 import { LOG_OUT } from "../../redux/actions/user_action_types"
@@ -22,13 +22,13 @@ import Button from "@mui/material/Button"
 import { getFormattedDate, getFile } from "../../utils/helpers"
 import TextField from "@mui/material/TextField"
 import { IMG_BUCKET, MAX_IMG_FILE_SIZE } from "../../utils/constants.server"
-import TextIcon from "../../components/TextIcon"
-import UploadButton from "../../components/UploadButton"
+import TextIcon from "~/components/TextIcon"
+import UploadButton from "~/components/UploadButton"
 import useUpdateUser from "../../hooks/useUpdateUser"
 import useFileUpload from "../../hooks/useFileUpload"
-import AlertDialog from "../../components/AlertDialog"
-import Divider from "../../components/Divider"
-import SEO from "../../components/SEO"
+import AlertDialog from "~/components/AlertDialog"
+import Divider from "~/components/Divider"
+import SEO from "~/components/SEO"
 import { useForm } from "react-hook-form"
 import AppRoutes from "~/app-routes"
 
@@ -61,7 +61,7 @@ export interface UserFormData extends FormData {
   img_bucket?: string
 }
 
-export default function AccountScreen() {
+export default function AccountPage() {
   const params = useParams()
   const navigate = useNavigate()
   const editMode = get(params, 'editMode', false)

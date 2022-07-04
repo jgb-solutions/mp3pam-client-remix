@@ -4,21 +4,21 @@ import { Link } from "@remix-run/react"
 
 
 
-import Spinner from '../../components/Spinner'
+import Spinner from '../~/components/Spinner'
 import useManage from "../../hooks/useManage"
-import HeaderTitle from "../../components/HeaderTitle"
-import { TrackScrollingList } from "../../components/TrackScrollingList"
-import { ArtistScrollingList } from "../../components/ArtistScrollingList"
-import { AlbumScrollingList } from "../../components/AlbumScrollingList"
+import HeaderTitle from "~/components/HeaderTitle"
+import { TrackScrollingList } from "~/components/TrackScrollingList"
+import { ArtistScrollingList } from "~/components/ArtistScrollingList"
+import { AlbumScrollingList } from "~/components/AlbumScrollingList"
 import AppRoutes from "~/app-routes"
-import { PlaylistScrollingList } from "../../components/PlaylistScrollingList"
-import SEO from "../../components/SEO"
+import { PlaylistScrollingList } from "~/components/PlaylistScrollingList"
+import SEO from "~/components/SEO"
 
 // const styles = {
 //   link: { color: "#fff", fontWeight: 'bold' },
 // }))
 
-export default function ManageScreen() {
+export default function ManagePage() {
 
   const { loading, error, data } = useManage()
   const latestTracks = get(data, 'me.latestTracks.data')

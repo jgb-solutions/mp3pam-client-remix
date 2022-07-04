@@ -9,13 +9,13 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled'
 
-import ProgressBar from "../../components/ProgressBar"
+import ProgressBar from "~/components/ProgressBar"
 import TextField from "@mui/material/TextField"
-import Button from '../../components/Button'
-import UploadButton from '../../components/UploadButton'
-import CheckAuth from "../../components/CheckAuth"
+import Button from '../~/components/Button'
+import UploadButton from '../~/components/UploadButton'
+import CheckAuth from "~/components/CheckAuth"
 
-export default function CreatePlaylistScreen() {
+export default function CreatePlaylistPage() {
   const client = useApolloClient()
   const [completed, setCompleted] = useState(0)
   const [isUploaded, setIsUploaded] = useState(false)

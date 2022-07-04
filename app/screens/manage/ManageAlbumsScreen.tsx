@@ -8,17 +8,17 @@ import TableRow from '@mui/material/TableRow'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogActions from "@mui/material/DialogActions"
 
-import AlertDialog from "../../components/AlertDialog"
-import Spinner from "../../components/Spinner"
-import HeaderTitle from "../../components/HeaderTitle"
+import AlertDialog from "~/components/AlertDialog"
+import Spinner from "~/components/Spinner"
+import HeaderTitle from "~/components/HeaderTitle"
 import useMyAlbums from "../../hooks/useMyAlbums"
-import { StyledTableCell } from "../../components/AlbumTracksTable"
+import { StyledTableCell } from "~/components/AlbumTracksTable"
 import { Link } from "@remix-run/react"
 import AppRoutes from "~/app-routes"
 import Button from "@mui/material/Button"
 import colors from "../../utils/colors"
 import useDeleteAlbum from "../../hooks/useDeleteAlbum"
-import SEO from "../../components/SEO"
+import SEO from "~/components/SEO"
 
 // const styles = {
 //   table: {
@@ -36,7 +36,7 @@ import SEO from "../../components/SEO"
 //   },
 // }))
 
-export default function ManageAlbumsScreen() {
+export default function ManageAlbumsPage() {
 
   const [albumHashToDelete, setAlbumHashToDelete] = useState('')
   const { deleteAlbum, deleteAlbumResponse, deletingAlbum, errorDeletingAlbum } = useDeleteAlbum()

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import type { FC } from "react"
-import { HeadersFunction, json } from "@remix-run/node"
+import { HeadersFunction, HtmlMetaDescriptor, json, MetaFunction } from "@remix-run/node"
 import { useSelector } from "react-redux"
 import { Link, useCatch, useLoaderData, useNavigate, useParams } from "@remix-run/react"
 import InfoIcon from '@mui/icons-material/Info'
@@ -34,10 +34,10 @@ import type AppStateInterface from "~/interfaces/AppStateInterface"
 import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_TRACK_TYPE, TWITTER_HANDLE } from "~/utils/constants.server"
 import Spinner from "~/components/Spinner"
 import { TrackScrollingList } from "~/components/TrackScrollingList"
-import SEO from "~/components/SEO"
+
 import FourOrFour from "~/components/FourOrFour"
 import HeaderTitle from "~/components/HeaderTitle"
-// import { AddTrackToPlaylist } from "~/screens/manage/PlaylistEditScreen"
+// import { AddTrackToPlaylist } from "~/screens/manage/PlaylistEditPage"
 import Image from "~/components/Image"
 import { Box, Button, darken, Grid } from "@mui/material"
 import PlainLayout from "~/components/layouts/Plain"
@@ -46,6 +46,7 @@ import { fetchTrackDetail } from "~/graphql/requests.server"
 import type { BoxStyles } from "~/interfaces/types"
 import theme from "~/mui/theme"
 import Heart from "~/components/Heart"
+import { TrackDetailQuery } from "~/graphql/generated-types"
 
 const styles: BoxStyles = {
   row: {
@@ -124,6 +125,34 @@ export const headers: HeadersFunction = () => {
   }
 }
 
+export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
+  const { track } = data as TrackDetailQuery
+
+  if (!track) {
+    return {
+      title: "Track not found",
+    }
+  }
+
+  const title = `${track.title} by ${track.artist.stage_name}`
+  const url = `${DOMAIN}/track/${track.hash}`
+  const description = `Listen to ${track.title} by ${track.artist.stage_name} on ${APP_NAME}`
+  const type = SEO_TRACK_TYPE
+  const image = track.poster_url
+
+  return {
+    title,
+    "og:title": title,
+    "og:url": url,
+    "og:description": description,
+    "og:type": type,
+    "og:image": image,
+    "twitter:title": title,
+    "twitter:description": description,
+    "twitter:image": image,
+  }
+}
+
 
 export const loader: LoaderFunction = async ({ params }) => {
   const { hash } = params as { hash: string }
@@ -137,7 +166,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 type Props = {
 }
 
-const TrackDetailScreen: FC<Props> = (props) => {
+const TrackDetailPage: FC<Props> = (props) => {
   const {
     playList,
     pauseList,
@@ -433,16 +462,6 @@ const TrackDetailScreen: FC<Props> = (props) => {
         />
       ) : null}
 
-      {/* handling SEO */}
-      {/* <SEO
-        title={`${track.title} by ${track.artist.stage_name}`}
-        url={`${DOMAIN}/track/${track.hash}`}
-        description={`Listen to ${track.title} by ${track.artist.stage_name} on ${APP_NAME}`}
-        type={SEO_TRACK_TYPE}
-        image={track.poster_url}
-        artist={`${DOMAIN}/artist/${track.artist.hash}`}
-      /> */}
-
       {/* {openAddTrackToPlaylistPopup && (
         <AddTrackToPlaylist
           trackHash={track.hash}
@@ -488,4 +507,4 @@ export function CatchBoundary() {
   )
 }
 
-export default TrackDetailScreen
+export default TrackDetailPage

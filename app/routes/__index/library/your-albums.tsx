@@ -1,15 +1,15 @@
 
 // import { useSelector } from "react-redux";
 
-// import ListTable from '../components/ListTable';
+// import ListTable from '~/components/ListTable';
 // import AppStateInterface from "../interfaces/AppStateInterface";
 
-function BrowsePodcastsScreen() {
+function YourdAlbumsPage() {
   // const list = useSelector(({ player }: AppStateInterface) => player.list);
 
   return (
     <>
-      <h1>Browse Podcasts</h1>
+      <h1>Albums You Liked</h1>
 
       {/* {!list && <h3>Your queue is empty!</h3>} */}
 
@@ -17,4 +17,4 @@ function BrowsePodcastsScreen() {
   )
 }
 
-export default BrowsePodcastsScreen
+export default YourdAlbumsPage

@@ -23,7 +23,7 @@ import HeaderTitle from "~/components/HeaderTitle"
 import AlertDialog from "~/components/AlertDialog"
 import CheckAuth from "~/components/CheckAuth"
 // import { StyledTableCell } from "~/components/PlaylistTracksTable"
-import SEO from "~/components/SEO"
+
 import { useForm } from "react-hook-form"
 import { Box, darken, Grid } from "@mui/material"
 import { BoxStyles } from "~/interfaces/types"
@@ -270,7 +270,7 @@ export const AddTrackToPlaylist = ({ trackHash, onRequestClose }: {
   )
 }
 
-export default function PlaylistEditScreen() {
+export default function PlaylistEditPage() {
   const params = useParams()
   const navigate = useNavigate()
   const hash = get(params, 'hash')

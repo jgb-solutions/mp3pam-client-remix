@@ -1,6 +1,5 @@
-
-import { Link } from "@remix-run/react"
 import Box from "@mui/material/Box"
+import { Link } from "@remix-run/react"
 
 import AppRoutes from "~/app-routes"
 import type { BoxStyles } from "~/interfaces/types"

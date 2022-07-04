@@ -1,12 +1,12 @@
 import { useParams } from "@remix-run/react"
 
-import SEO from "../components/SEO"
-import Logo from "../components/Logo"
-import Download from "../components/Download"
-import GoogleAdsense from "../components/GoogleAdsense"
+
+import Logo from "~/components/Logo"
+import Download from "~/components/Download"
+import GoogleAdsense from "~/components/GoogleAdsense"
 import { GOOGLE_ADS_CLIENT } from "../utils/constants.server"
 
-export default function DownloadScreen() {
+export default function DownloadPage() {
   const { hash, type } = useParams() as { hash: string, type: string }
 
   return (

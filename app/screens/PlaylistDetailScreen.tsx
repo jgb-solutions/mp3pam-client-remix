@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { connect } from "react-redux"
 import { Link, useParams } from "@remix-run/react"
-import { get } from 'lodash'
+
 import ShareIcon from '@mui/icons-material/Share'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import FacebookIcon from '@mui/icons-material/Facebook'
@@ -20,23 +20,23 @@ import {
 } from 'react-share'
 
 import colors from "../utils/colors"
-import More from "../components/More"
-import Tabs, { TabItem } from "../components/Tabs"
-import PlaylistTracksTable from "../components/PlaylistTracksTable"
+import More from "~/components/More"
+import Tabs, { TabItem } from "~/components/Tabs"
+import PlaylistTracksTable from "~/components/PlaylistTracksTable"
 import usePlaylistDetail from '../hooks/usePlaylistDetail'
-import Button from "../components/Button"
+import Button from "@mui/material/Button"
 import ListInterface, { SoundInterface } from "../interfaces/ListInterface"
 import * as playerActions from "../redux/actions/playerActions"
 import AppStateInterface from "../interfaces/AppStateInterface"
 import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_PLAYLIST_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
-import Spinner from "../components/Spinner"
-import { PlaylistScrollingList } from "../components/PlaylistScrollingList"
+import Spinner from "~/components/Spinner"
+import { PlaylistScrollingList } from "~/components/PlaylistScrollingList"
 import useRandomPlaylists from "../hooks/useRandomPlaylists"
-import SEO from "../components/SEO"
-import FourOrFour from "../components/FourOrFour"
-import HeaderTitle from "../components/HeaderTitle"
-import Image from "../components/Image"
-import { Grid } from "@mui/material"
+
+import FourOrFour from "~/components/FourOrFour"
+import HeaderTitle from "~/components/HeaderTitle"
+import Image from "~/components/Image"
+import Grid from "@mui/material/Grid"
 import AppRoutes from "~/app-routes"
 
 // const styles = {
@@ -105,7 +105,7 @@ type Props = {
   currentTime: number
 }
 
-const PlaylistDetailScreen = (props: Props) => {
+const PlaylistDetailPage = (props: Props) => {
 
   const params = useParams()
   const hash = get(params, 'hash')
@@ -355,4 +355,4 @@ export default connect(
     playNext: playerActions.playNext,
     addToQueue: playerActions.addToQueue,
   }
-)(PlaylistDetailScreen)
+)(PlaylistDetailPage)

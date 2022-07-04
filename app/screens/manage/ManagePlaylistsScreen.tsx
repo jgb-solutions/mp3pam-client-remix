@@ -9,17 +9,17 @@ import TableRow from '@mui/material/TableRow'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogActions from "@mui/material/DialogActions"
 
-import AlertDialog from "../../components/AlertDialog"
-import Spinner from "../../components/Spinner"
-import HeaderTitle from "../../components/HeaderTitle"
+import AlertDialog from "~/components/AlertDialog"
+import Spinner from "~/components/Spinner"
+import HeaderTitle from "~/components/HeaderTitle"
 import useMyPlaylists from "../../hooks/useMyPlaylists"
-// import { StyledTableCell } from "../../components/PlaylistTracksTable"
+// import { StyledTableCell } from "~/components/PlaylistTracksTable"
 import { Link } from "@remix-run/react"
 import AppRoutes from "~/app-routes"
 import Button from "@mui/material/Button"
 import colors from "../../utils/colors"
 import useDeletePlaylist from "../../hooks/useDeletePlaylist"
-import SEO from "../../components/SEO"
+import SEO from "~/components/SEO"
 
 // const styles = {
 //   table: {
@@ -37,7 +37,7 @@ import SEO from "../../components/SEO"
 //   },
 // }))
 
-export default function ManagePlaylistsScreen() {
+export default function ManagePlaylistsPage() {
 
   const [playlistHashToDelete, setPlaylistHashToDelete] = useState('')
   const { deletePlaylist, deletePlaylistResponse, deletingPlaylist, errorDeletingPlaylist } = useDeletePlaylist()

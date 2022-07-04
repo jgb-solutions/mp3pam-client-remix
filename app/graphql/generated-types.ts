@@ -913,31 +913,10 @@ export type TracksDataByGenreQueryVariables = Exact<{
 
 export type TracksDataByGenreQuery = { __typename?: 'Query', genre?: { __typename?: 'Genre', name: string } | null, tracksByGenre?: { __typename?: 'TrackPaginator', data: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, artist: { __typename?: 'Artist', stage_name: string, hash: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', hasMorePages: boolean, currentPage: number } } | null };
 
-export type RandomArtistsDataQueryVariables = Exact<{
-  input: RandomArtistsInput;
-}>;
-
-
-export type RandomArtistsDataQuery = { __typename?: 'Query', randomArtists?: Array<{ __typename?: 'Artist', hash: string, name: string, poster_url: string }> | null };
-
 export type AllGenresQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type AllGenresQuery = { __typename?: 'Query', genres: Array<{ __typename?: 'Genre', name: string, slug: string }> };
-
-export type RandomAlbumsDataQueryVariables = Exact<{
-  input: RandomAlbumsInput;
-}>;
-
-
-export type RandomAlbumsDataQuery = { __typename?: 'Query', randomAlbums?: Array<{ __typename?: 'Album', hash: string, title: string, cover_url: string, artist: { __typename?: 'Artist', hash: string, stage_name: string } }> | null };
-
-export type RandomPlaylistsDataQueryVariables = Exact<{
-  input: RandomPlaylistsInput;
-}>;
-
-
-export type RandomPlaylistsDataQuery = { __typename?: 'Query', randomPlaylists?: Array<{ __typename?: 'Playlist', hash: string, title: string, cover_url?: string | null }> | null };
 
 export type ArtistsDataQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
@@ -1008,24 +987,27 @@ export type TrackDetailQuery = { __typename?: 'Query', track?: { __typename?: 'T
 
 export type ArtistDetailQueryVariables = Exact<{
   hash: Scalars['String'];
+  input: RandomArtistsInput;
 }>;
 
 
-export type ArtistDetailQuery = { __typename?: 'Query', artist?: { __typename?: 'Artist', hash: string, name: string, stage_name: string, poster_url: string, bio?: string | null, facebook_url?: string | null, twitter_url?: string | null, youtube_url?: string | null, instagram_url?: string | null, tracks: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string }>, albums: Array<{ __typename?: 'Album', hash: string, title: string, cover_url: string }> } | null };
+export type ArtistDetailQuery = { __typename?: 'Query', artist?: { __typename?: 'Artist', hash: string, name: string, stage_name: string, poster_url: string, bio?: string | null, facebook_url?: string | null, twitter_url?: string | null, youtube_url?: string | null, instagram_url?: string | null, tracks: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string }>, albums: Array<{ __typename?: 'Album', hash: string, title: string, cover_url: string }> } | null, randomArtists?: Array<{ __typename?: 'Artist', hash: string, name: string, poster_url: string }> | null };
 
 export type AlbumDetailQueryVariables = Exact<{
   hash: Scalars['String'];
+  input: RandomAlbumsInput;
 }>;
 
 
-export type AlbumDetailQuery = { __typename?: 'Query', album?: { __typename?: 'Album', id: string, title: string, hash: string, cover_url: string, detail?: string | null, release_year: number, tracks: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, audio_url: string, number?: number | null, play_count: number, download_count: number }>, artist: { __typename?: 'Artist', hash: string, stage_name: string } } | null };
+export type AlbumDetailQuery = { __typename?: 'Query', album?: { __typename?: 'Album', id: string, title: string, hash: string, cover_url: string, detail?: string | null, release_year: number, tracks: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, audio_url: string, number?: number | null, play_count: number, download_count: number }>, artist: { __typename?: 'Artist', hash: string, stage_name: string } } | null, randomAlbums?: Array<{ __typename?: 'Album', hash: string, title: string, cover_url: string, artist: { __typename?: 'Artist', hash: string, stage_name: string } }> | null };
 
 export type PlaylistDetailQueryVariables = Exact<{
   hash: Scalars['String'];
+  input: RandomPlaylistsInput;
 }>;
 
 
-export type PlaylistDetailQuery = { __typename?: 'Query', playlist?: { __typename?: 'Playlist', id: string, title: string, hash: string, cover_url?: string | null, tracks: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, audio_url: string, number?: number | null, play_count: number, download_count: number, artist: { __typename?: 'Artist', hash: string, stage_name: string } }>, user: { __typename?: 'User', name: string } } | null };
+export type PlaylistDetailQuery = { __typename?: 'Query', playlist?: { __typename?: 'Playlist', id: string, title: string, hash: string, cover_url?: string | null, tracks: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, audio_url: string, number?: number | null, play_count: number, download_count: number, artist: { __typename?: 'Artist', hash: string, stage_name: string } }>, user: { __typename?: 'User', name: string } } | null, randomPlaylists?: Array<{ __typename?: 'Playlist', hash: string, title: string, cover_url?: string | null }> | null };
 
 export type DownloadQueryVariables = Exact<{
   input: DownloadInput;

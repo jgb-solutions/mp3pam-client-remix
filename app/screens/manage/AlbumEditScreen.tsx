@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link, useParams, useNavigate } from "@remix-run/react"
-import { get } from 'lodash'
+
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import Avatar from '@mui/material/Avatar'
@@ -20,18 +20,18 @@ import useAlbumDetail from '../../hooks/useAlbumDetail'
 import Button from "@mui/material/Button"
 import { AlbumTrackInterface } from "../../interfaces/AlbumInterface"
 import { SMALL_SCREEN_SIZE, } from "../../utils/constants.server"
-import Spinner from "../../components/Spinner"
+import Spinner from "~/components/Spinner"
 import useAddTrackToAlbum from "../../hooks/useAddTrackToAlbum"
-import FourOrFour from "../../components/FourOrFour"
-import HeaderTitle from "../../components/HeaderTitle"
+import FourOrFour from "~/components/FourOrFour"
+import HeaderTitle from "~/components/HeaderTitle"
 import useMyTracks from "../../hooks/useMyTracks"
-import AlertDialog from "../../components/AlertDialog"
-import CheckAuth from "../../components/CheckAuth"
+import AlertDialog from "~/components/AlertDialog"
+import CheckAuth from "~/components/CheckAuth"
 import AlbumInterface from "../../interfaces/AlbumInterface"
-import { StyledTableCell } from "../../components/AlbumTracksTable"
+import { StyledTableCell } from "~/components/AlbumTracksTable"
 import useDeleteAlbumTrack from "../../hooks/useDeleteAlbumTrack"
-import SEO from "../../components/SEO"
-import { Grid } from "@mui/material"
+import SEO from "~/components/SEO"
+import Grid from "@mui/material/Grid"
 
 
 // const styles = {
@@ -244,7 +244,7 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
   )
 }
 
-export default function AlbumEditScreen() {
+export default function AlbumEditPage() {
 
   const params = useParams()
   const navigate = useNavigate()

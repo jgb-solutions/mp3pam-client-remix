@@ -1,6 +1,6 @@
 import { legacy_createStore as createStore } from "redux"
-import storage from "redux-persist/lib/storage"
 import { persistStore, persistReducer } from "redux-persist"
+import createWebStorage from "redux-persist/lib/storage/createWebStorage"
 
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 
@@ -8,6 +8,23 @@ import { combineReducers } from "redux"
 import searchReducer from "./reducers/searchReducer"
 import playerReducer from "./reducers/playerReducer"
 import userReducer from "./reducers/userReducer"
+
+const createNoopStorage = () => {
+	return {
+		getItem(_key: string) {
+			return Promise.resolve(null)
+		},
+		setItem(_key: string, value: string) {
+			return Promise.resolve(value)
+		},
+		removeItem(_key: string) {
+			return Promise.resolve()
+		},
+	}
+}
+
+const storage =
+	typeof window === "undefined" ? createNoopStorage() : createWebStorage()
 
 
 const rootReducer = combineReducers({

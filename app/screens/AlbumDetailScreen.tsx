@@ -1,7 +1,6 @@
 import { useEffect } from "react"
 import { connect } from "react-redux"
 import { Link, useParams, useNavigate } from "@remix-run/react"
-import { get } from 'lodash'
 import InfoIcon from '@mui/icons-material/Info'
 import ShareIcon from '@mui/icons-material/Share'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
@@ -22,23 +21,23 @@ import {
 
 import AppRoutes from "~/app-routes"
 import colors from "../utils/colors"
-import More from "../components/More"
-import Tabs, { TabItem } from "../components/Tabs"
-import AlbumTracksTable from "../components/AlbumTracksTable"
+import More from "~/components/More"
+import Tabs, { TabItem } from "~/components/Tabs"
+import AlbumTracksTable from "~/components/AlbumTracksTable"
 import useAlbumDetail from '../hooks/useAlbumDetail'
-import Button from "../components/Button"
+import Button from "@mui/material/Button"
 import ListInterface, { SoundInterface } from "../interfaces/ListInterface"
 import * as playerActions from "../redux/actions/playerActions"
 import AppStateInterface from "../interfaces/AppStateInterface"
 import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_ALBUM_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
-import Spinner from "../components/Spinner"
-import { AlbumScrollingList } from "../components/AlbumScrollingList"
+import Spinner from "~/components/Spinner"
+import { AlbumScrollingList } from "~/components/AlbumScrollingList"
 import useRandomAlbums from "../hooks/useRandomAlbums"
-import SEO from "../components/SEO"
-import FourOrFour from "../components/FourOrFour"
-import HeaderTitle from "../components/HeaderTitle"
-import Image from "../components/Image"
-import { Grid } from "@mui/material"
+
+import FourOrFour from "~/components/FourOrFour"
+import HeaderTitle from "~/components/HeaderTitle"
+import Image from "~/components/Image"
+import Grid from "@mui/material/Grid"
 
 // const styles = {
 //   row: {
@@ -121,7 +120,7 @@ type Props = {
   currentTime: number
 }
 
-const AlbumDetailScreen = (props: Props) => {
+const AlbumDetailPage = (props: Props) => {
 
   const params = useParams()
   const navigate = useNavigate()
@@ -392,4 +391,4 @@ export default connect(
     playNext: playerActions.playNext,
     addToQueue: playerActions.addToQueue,
   }
-)(AlbumDetailScreen)
+)(AlbumDetailPage)

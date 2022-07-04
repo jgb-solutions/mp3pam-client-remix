@@ -3,7 +3,7 @@ import { gql } from "graphql-request"
 
 import { useQuery } from 'graphql-request'
 import { UserData } from "../interfaces/UserInterface"
-import Spinner from "../components/Spinner"
+import Spinner from "~/components/Spinner"
 
 export const FETCH_USERS = gql`
   query allUsers {
@@ -24,7 +24,7 @@ export const FETCH_USERS = gql`
   }
 `
 
-export default function UsersScreen() {
+export default function UsersPage() {
   const { loading, error, data } = useQuery(FETCH_USERS)
 
   if (loading) return <Spinner.Full />

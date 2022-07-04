@@ -4,12 +4,12 @@ import { useLoaderData } from "@remix-run/react"
 import type { LoaderFunction } from "@remix-run/node"
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
-import SEO from "../../../components/SEO"
-import HeaderTitle from "../../../components/HeaderTitle"
+
+import HeaderTitle from "~/components/HeaderTitle"
 import { fetchGenres } from "~/graphql/requests.server"
-import GenreThumbnail from "../../../components/GenreThumbnail"
+import GenreThumbnail from "~/components/GenreThumbnail"
 import type { AllGenresQuery } from "~/graphql/generated-types"
-import type { GenreInterface } from "../../../components/GenreThumbnail"
+import type { GenreInterface } from "~/components/GenreThumbnail"
 
 export const loader: LoaderFunction = async () => {
   const data = await fetchGenres()
@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async () => {
 }
 
 
-export default function BrowseScreen() {
+export default function BrowsePage() {
   const { genres } = useLoaderData<AllGenresQuery>()
 
   return (

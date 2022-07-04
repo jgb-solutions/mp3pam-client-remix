@@ -22,7 +22,6 @@ const browsingMenu = [
 	{ name: "PlayLists", to: AppRoutes.browse.playlists, icon: <PlaylistAddIcon /> },
 	{ name: "Artists", to: AppRoutes.browse.artists, icon: <PersonPinCircleIcon /> },
 	{ name: "Albums", to: AppRoutes.browse.albums, icon: <AlbumIcon /> },
-	// { name: "Podcasts", to: AppRoutes.browse.podcasts, icon: <MicIcon /> },
 ]
 
 const favoriteMenu = [
@@ -30,7 +29,6 @@ const favoriteMenu = [
 	// { name: "Artists", to: AppRoutes.user.library.artists, icon: <PersonPinCircleIcon /> },
 	// { name: "Albums", to: AppRoutes.user.library.albums, icon: <AlbumIcon /> },
 	// { name: "PlayLists", to: AppRoutes.user.library.playlists, icon: <PlaylistAddIcon /> },
-	// { name: "Podcasts", to: AppRoutes.user.library.podcasts, icon: <MicIcon /> },
 	{ name: "Queue", to: AppRoutes.user.library.queue, icon: <QueueMusicIcon /> },
 ]
 

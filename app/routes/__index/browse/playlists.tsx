@@ -1,24 +1,22 @@
-
+import Grid from "@mui/material/Grid"
+import { json } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
+import type { LoaderFunction } from '@remix-run/node'
+import InfiniteScroll from 'react-infinite-scroller'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 
-import { Grid } from "@mui/material"
-import InfiniteScroll from 'react-infinite-scroller'
 
 
-import SEO from "../../../components/SEO"
-
-import { useLoaderData } from '@remix-run/react'
+import HeaderTitle from "~/components/HeaderTitle"
 import { fetchPlaylists } from '~/graphql/requests.server'
-import { json, LoaderFunction } from '@remix-run/node'
 
 export const loader: LoaderFunction = async () => {
-
   const data = await fetchPlaylists()
 
   return json(data)
 }
 
-export default function BrowsePlaylistsScreen() {
+export default function BrowsePlaylistsPage() {
   const { playlists } = useLoaderData()
 
   return (

@@ -1,154 +1,155 @@
-import { get } from 'lodash'
-import type { CSSProperties } from "react"
-import { useEffect } from "react"
-import type { ReactNode } from "react"
-import { Link, useParams } from "@remix-run/react"
-import InfoIcon from '@mui/icons-material/Info'
-import FacebookIcon from '@mui/icons-material/Facebook'
-import TwitterIcon from '@mui/icons-material/Twitter'
-import InstagramIcon from '@mui/icons-material/Instagram'
-import YouTubeIcon from '@mui/icons-material/YouTube'
-import TelegramIcon from '@mui/icons-material/Telegram'
-import WhatsAppIcon from '@mui/icons-material/WhatsApp'
-import EmailIcon from '@mui/icons-material/Email'
-import ShareIcon from '@mui/icons-material/Share'
-import FindReplaceIcon from '@mui/icons-material/FindReplace'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
-
 import {
-  FacebookShareButton,
+  EmailShareButton,
   TwitterShareButton,
+  FacebookShareButton,
   TelegramShareButton,
   WhatsappShareButton,
-  EmailShareButton,
 } from 'react-share'
-
-import AppRoutes from "~/app-routes"
-import colors from "../utils/colors"
-import Tabs, { TabItem } from "../components/Tabs"
-import useArtistDetail from '../hooks/useArtistDetail'
+import Box from '@mui/material/Box'
+import { json } from "@remix-run/node"
 import Grid from '@mui/material/Grid'
-import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_ARTIST_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
-import Spinner from "../components/Spinner"
-import { ArtistScrollingList } from "../components/ArtistScrollingList"
-import useRandomArtists from "../hooks/useRandomArtists"
-import SEO from "../components/SEO"
-import FourOrFour from "../components/FourOrFour"
-import HeaderTitle from "../components/HeaderTitle"
-import TrackThumbnail from "../components/TrackThumbnail"
-import AlbumThumbnail from "../components/AlbumThumbnail"
-import Image from "../components/Image"
+import { darken } from "@mui/material"
+import InfoIcon from '@mui/icons-material/Info'
+import EmailIcon from '@mui/icons-material/Email'
+import ShareIcon from '@mui/icons-material/Share'
+import type { BoxStyles } from '~/interfaces/types'
+import TwitterIcon from '@mui/icons-material/Twitter'
+import type { LoaderFunction } from "@remix-run/node"
+import YouTubeIcon from '@mui/icons-material/YouTube'
+import { Link, useLoaderData } from "@remix-run/react"
+import TelegramIcon from '@mui/icons-material/Telegram'
+import WhatsAppIcon from '@mui/icons-material/WhatsApp'
+import FacebookIcon from '@mui/icons-material/Facebook'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import InstagramIcon from '@mui/icons-material/Instagram'
+import FindReplaceIcon from '@mui/icons-material/FindReplace'
+import type { HtmlMetaDescriptor, MetaFunction } from "@remix-run/node"
 
-export const LinkWrapper = (
-  { children, url, color, style, target }: {
-    children: ReactNode,
-    url: string,
-    color?: string,
-    style?: CSSProperties,
-    target?: string
-  }) => (
-  <a
-    href={url}
-    style={{ color: color || 'white', textDecoration: 'none', ...style }}
-    target={target}>
-    {children}
-  </a>
-)
 
-// const styles = {
-//   row: {
-//     display: "flex",
-//     flexDirection: "row"
-//   },
-//   imageContainer: {
-//     textAlign: 'center',
-//   },
-//   image: {
-//     width: 250,
-//     height: 'auto',
-//     maxWidth: "100%",
-//   },
-//   listByAuthor: {
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//   },
-//   listBy: {
-//     color: darken(colors.white, 0.5),
-//     fontSize: 12
-//   },
-//   listAuthor: {
-//     textDecoration: "none",
-//     color: colors.white,
-//     "&:hover": {
-//       textDecoration: "underline"
-//     },
-//     "&:link": {
-//       textDecoration: "none",
-//       color: "white"
-//     }
-//   },
-//   detailsWrapper: {
-//     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-//       position: 'relative',
-//     },
-//   },
-//   listDetails: {
-//     // display: "flex",
-//     // flexDirection: "column",
-//     // justifyContent: "flex-end",
-//     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-//       position: 'absolute',
-//       bottom: 4,
-//     },
-//     "& > *": {
-//       padding: 0,
-//       margin: 0
-//     },
-//     [theme.breakpoints.down('xs')]: {
-//       textAlign: 'center',
-//     },
-//   },
-//   listType: {
-//     fontSize: 12,
-//     fontWeight: 400,
-//     textTransform: "uppercase"
-//   },
-//   listName: {
-//     fontSize: 36,
-//     fontWeight: "bold",
-//     [theme.breakpoints.down('xs')]: {
-//       fontSize: 32,
-//     },
-//   },
-//   ctaButtons: {
-//     marginTop: 10,
-//   },
-// }))
+import {
+  DOMAIN,
+  APP_NAME,
+  TWITTER_HANDLE,
+  SEO_ARTIST_TYPE,
+  SMALL_SCREEN_SIZE,
+} from "~/utils/constants.server"
+import theme from "~/mui/theme"
+import AppRoutes from "~/app-routes"
+import Tabs from "~/components/Tabs"
+import Image from "~/components/Image"
+import colors from "../../utils/colors"
+import type { TabItem } from "~/components/Tabs"
+import FourOrFour from "~/components/FourOrFour"
+import HeaderTitle from "~/components/HeaderTitle"
+import TrackThumbnail from "~/components/TrackThumbnail"
+import AlbumThumbnail from "~/components/AlbumThumbnail"
+import { fetchArtistDetail } from "~/graphql/requests.server"
+import type { ArtistDetailQuery } from "~/graphql/generated-types"
+import { ArtistScrollingList } from "~/components/ArtistScrollingList"
 
-export default function ArtistDetailScreen() {
-
-  const params = useParams()
-  const hash = get(params, 'hash')
-  const { loading: randomLoading, data: randomArtistsData, fetchRandomdArtists } = useRandomArtists(hash)
-  const randomArtists = get(randomArtistsData, 'randomArtists')
-
-  const { data, loading, error } = useArtistDetail(hash)
-  const artist = get(data, 'artist')
-
-  useEffect(() => {
-    if (data) {
-      fetchRandomdArtists()
+const styles: BoxStyles = {
+  row: {
+    display: "flex",
+    flexDirection: "row"
+  },
+  imageContainer: {
+    textAlign: 'center',
+  },
+  image: {
+    width: 250,
+    height: 'auto',
+    maxWidth: "100%",
+  },
+  listByAuthor: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  listBy: {
+    color: darken(colors.white, 0.5),
+    fontSize: 12
+  },
+  listAuthor: {
+    textDecoration: "none",
+    color: colors.white,
+    "&:hover": {
+      textDecoration: "underline"
+    },
+    "&:link": {
+      textDecoration: "none",
+      color: "white"
     }
-    // eslint-disable-next-line
-  }, [data])
+  },
+  detailsWrapper: {
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+      position: 'relative',
+    },
+  },
+  listDetails: {
+    // display: "flex",
+    // flexDirection: "column",
+    // justifyContent: "flex-end",
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+      position: 'absolute',
+      bottom: 4,
+    },
+    "& > *": {
+      padding: 0,
+      margin: 0
+    },
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+    },
+  },
+  listType: {
+    fontSize: 12,
+    fontWeight: 400,
+    textTransform: "uppercase"
+  },
+  listName: {
+    fontSize: 36,
+    fontWeight: "bold",
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 32,
+    },
+  },
+  ctaButtons: {
+    marginTop: 10,
+  },
+}
 
+export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
+  const { artist } = data as ArtistDetailQuery
 
-  if (loading) return <Spinner.Full />
+  const title = `${artist?.stage_name} on ${APP_NAME}`
+  const url = `${DOMAIN}/artist/${artist?.hash}`
+  const description = `Listen to ${artist?.stage_name} on ${APP_NAME}`
+  const type = SEO_ARTIST_TYPE
+  const image = artist?.poster_url
 
-
-  if (error) {
-    return (<h1>Error loading artist detail. Please reload page.</h1>)
+  return {
+    title,
+    "og:title": title,
+    "og:url": url,
+    "og:description": description,
+    "og:type": type,
+    "og:image": image,
+    "twitter:title": title,
+    "twitter:description": description,
+    "twitter:image": image,
   }
+}
+
+
+export const loader: LoaderFunction = ({ params }) => {
+  const { hash } = params as { hash: string }
+
+  const data = fetchArtistDetail(hash)
+
+  return json(data)
+}
+
+export default function ArtistDetailPage() {
+  const { randomArtists, artist } = useLoaderData()
 
   const getTabs = () => {
     const url = window.location.href
@@ -270,7 +271,7 @@ export default function ArtistDetailScreen() {
   }
 
   return artist ? (
-    <div sx="react-transition flip-in-x-reverse">
+    <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
           <Image
@@ -286,40 +287,40 @@ export default function ArtistDetailScreen() {
             }} />
         </Grid>
         <Grid item sm={8} xs={12} sx={styles.detailsWrapper}>
-          <div sx={styles.listDetails}>
-            <h5 sx={styles.listType}>Artist</h5>
-            <h1 sx={styles.listName}>{artist.stage_name}</h1>
+          <Box sx={styles.listDetails}>
+            <Box component="h5" sx={styles.listType}>Artist</Box>
+            <Box component="h1" sx={styles.listName}>{artist.stage_name}</Box>
             <Grid container spacing={2}>
               {artist.facebook_url && (
                 <Grid item>
-                  <LinkWrapper url={artist.facebook_url} target="_blank">
+                  <Link to={artist.facebook_url} target="_blank">
                     <FacebookIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.facebook }} />
-                  </LinkWrapper>
+                  </Link>
                 </Grid>
               )}
               {artist.twitter_url && (
                 <Grid item>
-                  <LinkWrapper url={artist.twitter_url} target="_blank">
+                  <Link to={artist.twitter_url} target="_blank">
                     <TwitterIcon style={{ fontSize: 48, color: colors.twitter }} />
-                  </LinkWrapper>
+                  </Link>
                 </Grid>
               )}
               {artist.instagram_url && (
                 <Grid item>
-                  <LinkWrapper url={artist.instagram_url} target="_blank">
+                  <Link to={artist.instagram_url} target="_blank">
                     <InstagramIcon style={{ fontSize: 48, color: colors.instagram }} />
-                  </LinkWrapper>
+                  </Link>
                 </Grid>
               )}
               {artist.youtube_url && (
                 <Grid item>
-                  <LinkWrapper url={artist.youtube_url} target="_blank">
+                  <Link to={artist.youtube_url} target="_blank">
                     <YouTubeIcon style={{ fontSize: 48, color: colors.youtube }} />
-                  </LinkWrapper>
+                  </Link>
                 </Grid>
               )}
             </Grid>
-          </div>
+          </Box>
         </Grid>
       </Grid>
 
@@ -336,7 +337,6 @@ export default function ArtistDetailScreen() {
       <br />
       <br />
 
-      {randomLoading && <Spinner.Full />}
       {randomArtists ? (
         <ArtistScrollingList
           category="Other Artists You Might Like"
@@ -344,17 +344,7 @@ export default function ArtistDetailScreen() {
           browse={AppRoutes.browse.artists}
         />
       ) : null}
-
-      {/* handling SEO */}
-      <SEO
-        title={`${artist.stage_name} on ${APP_NAME}`}
-        url={`${DOMAIN}/artist/${artist.hash}`}
-        description={`Listen to ${artist.stage_name} on ${APP_NAME}`}
-        type={SEO_ARTIST_TYPE}
-        image={artist.poster_url}
-        artist={`${DOMAIN}/artist/${artist.hash}`}
-      />
-    </div>
+    </Box>
   ) : (
     <>
       <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Artist was not found." />

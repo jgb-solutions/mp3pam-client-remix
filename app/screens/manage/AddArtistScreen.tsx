@@ -10,22 +10,22 @@ import TwitterIcon from '@mui/icons-material/Twitter'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 
-import ProgressBar from "../../components/ProgressBar"
+import ProgressBar from "~/components/ProgressBar"
 import TextField from "@mui/material/TextField"
-import Button from '../../components/Button'
-import UploadButton from '../../components/UploadButton'
-import CheckAuth from "../../components/CheckAuth"
-import HeaderTitle from "../../components/HeaderTitle"
+import Button from '../~/components/Button'
+import UploadButton from '../~/components/UploadButton'
+import CheckAuth from "~/components/CheckAuth"
+import HeaderTitle from "~/components/HeaderTitle"
 import useFileUpload from "../../hooks/useFileUpload"
-import TextIcon from "../../components/TextIcon"
-import { addArtistScreenStyles } from "../../styles/addArtistScreenStyles"
+import TextIcon from "~/components/TextIcon"
+import { addArtistPageStyles } from "../../styles/addArtistPageStyles"
 import useAddArtist from '../../hooks/useAddArtist'
 import AppRoutes from "~/app-routes"
-import AlertDialog from "../../components/AlertDialog"
+import AlertDialog from "~/components/AlertDialog"
 import { getFile } from "../../utils/helpers"
 import { IMG_BUCKET, MAX_IMG_FILE_SIZE, MIN_SOCIAL_MEDIA_USERNAME_LENGTH, MIN_ARTIST_BIO_LENGTH } from "../../utils/constants.server"
-import SEO from "../../components/SEO"
-import { Grid } from "@mui/material"
+import SEO from "~/components/SEO"
+import Grid from "@mui/material/Grid"
 
 
 type IconFieldProps = {
@@ -61,7 +61,7 @@ export interface ArtistData extends FormData {
   img_bucket: string
 }
 
-export default function AddArtistScreen() {
+export default function AddArtistPage() {
   const history = useHistory()
   const { register, handleSubmit, errors, formState } = useForm<FormData>({ mode: 'onBlur' })
   const { addArtist, loading: formWorking, data: uploadedArtist } = useAddArtist()
@@ -115,7 +115,7 @@ export default function AddArtistScreen() {
     }
   }, [uploadedArtist])
 
-  const styles = addArtistScreenStyles()
+  const styles = addArtistPageStyles()
 
   return (
     <CheckAuth sx='react-transition scale-in'>

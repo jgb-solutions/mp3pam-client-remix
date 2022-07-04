@@ -49,7 +49,7 @@ export const HomepageQueryDocument = gql`
   }
 `
 
-export const FETCH_MANAGE_SCREEN = gql`
+export const fetchManagementDocument = gql`
   query managePageData($page: Int, $first: Int) {
     me {
       latestTracks: tracks(first: $first, page: $page) {
@@ -140,59 +140,11 @@ export const FetchTracksByGenreDocument = gql`
   }
 `
 
-// export const FETCH_RELATED_TRACKS = gql`
-//   query relatedTracksData($input: RelatedTracksInput!) {
-//     relatedTracks(input: $input) {
-//       hash
-//       title
-//       poster_url
-//       artist {
-//         stage_name
-//         hash
-//       }
-//     }
-//   }
-// `
-
-export const FETCH_RANDOM_ARTISTS = gql`
-  query randomArtistsData($input: RandomArtistsInput!) {
-    randomArtists(input: $input) {
-      hash
-      name
-      poster_url
-    }
-  }
-`
-
 export const GenresQueryDocument = gql`
   query allGenres {
     genres {
       name
       slug
-    }
-  }
-`
-
-export const FETCH_RANDOM_ALBUMS = gql`
-  query randomAlbumsData($input: RandomAlbumsInput!) {
-    randomAlbums(input: $input) {
-      hash
-      title
-      cover_url
-      artist {
-        hash
-        stage_name
-      }
-    }
-  }
-`
-
-export const FETCH_RANDOM_PLAYLISTS = gql`
-  query randomPlaylistsData($input: RandomPlaylistsInput!) {
-    randomPlaylists(input: $input) {
-      hash
-      title
-      cover_url
     }
   }
 `
@@ -250,7 +202,7 @@ export const fetchAlbumsDocument = gql`
   }
 `
 
-export const FETCH_MY_ALBUMS = gql`
+export const fetchMyAlbumsDocument = gql`
   query myAlbumsData($page: Int, $first: Int) {
     me {
       albums(first: $first, page: $page) {
@@ -263,7 +215,7 @@ export const FETCH_MY_ALBUMS = gql`
   }
 `
 
-export const FETCH_MY_PLAYLISTS = gql`
+export const fetchMyPlaylistsDocument = gql`
   query myPlaylistsData($page: Int, $first: Int) {
     me {
       playlists(first: $first, page: $page) {
@@ -276,7 +228,7 @@ export const FETCH_MY_PLAYLISTS = gql`
   }
 `
 
-export const FETCH_MY_TRACKS = gql`
+export const fetchMyTracksDocument = gql`
   query myTracksData($page: Int, $first: Int) {
     me {
       tracks(first: $first, page: $page) {
@@ -289,7 +241,7 @@ export const FETCH_MY_TRACKS = gql`
   }
 `
 
-export const FETCH_MY_ARTISTS = gql`
+export const fetchMyArtistsDocument = gql`
   query myArtistData($page: Int, $first: Int) {
     me {
       artists(first: $first, page: $page) {
@@ -342,8 +294,8 @@ export const fetchTrackDetailDocument = gql`
   }
 `
 
-export const FETCH_ARTIST = gql`
-  query artistDetail($hash: String!) {
+export const fetchArtistDocument = gql`
+  query artistDetail($hash: String!, $input: RandomArtistsInput!) {
     artist(hash: $hash) {
       hash
       name
@@ -365,11 +317,17 @@ export const FETCH_ARTIST = gql`
         cover_url
       }
     }
+
+    randomArtists(input: $input) {
+      hash
+      name
+      poster_url
+    }
   }
 `
 
-export const FETCH_ALBUM = gql`
-  query albumDetail($hash: String!) {
+export const fetchAlbumDocument = gql`
+  query albumDetail($hash: String!, $input: RandomAlbumsInput!) {
     album(hash: $hash) {
       id
       title
@@ -391,11 +349,21 @@ export const FETCH_ALBUM = gql`
         stage_name
       }
     }
+
+    randomAlbums(input: $input) {
+      hash
+      title
+      cover_url
+      artist {
+        hash
+        stage_name
+      }
+    }
   }
 `
 
-export const FETCH_PLAYLIST = gql`
-  query playlistDetail($hash: String!) {
+export const fetchPlaylistDocument = gql`
+  query playlistDetail($hash: String!, $input: RandomPlaylistsInput!) {
     playlist(hash: $hash) {
       id
       title
@@ -418,10 +386,16 @@ export const FETCH_PLAYLIST = gql`
         name
       }
     }
+
+    randomPlaylists(input: $input) {
+      hash
+      title
+      cover_url
+    }
   }
 `
 
-export const FETCH_DOWNLOAD_URL = gql`
+export const fetchDownloadUrlDocument = gql`
   query download($input: DownloadInput!) {
     download(input: $input) {
       url
@@ -429,7 +403,7 @@ export const FETCH_DOWNLOAD_URL = gql`
   }
 `
 
-export const UPLOAD_URL_QUERY = gql`
+export const uploadUrlDocument = gql`
   query getUploadUrl($input: UploadUrlInput!) {
     uploadUrl(input: $input) {
      signedUrl
@@ -438,7 +412,7 @@ export const UPLOAD_URL_QUERY = gql`
   }
 `
 
-export const TRACK_UPLOAD_DATA_QUERY = gql`
+export const trackUploadDocument = gql`
   query fetchTrackUploadData {
     genres {
       id
@@ -455,7 +429,7 @@ export const TRACK_UPLOAD_DATA_QUERY = gql`
   }
 `
 
-export const SEARCH_QUERY = gql`
+export const searchDocument = gql`
   query search($query: String!) {
     search(query: $query) {
       tracks {
@@ -485,7 +459,7 @@ export const SEARCH_QUERY = gql`
   }
 `
 
-export const LOG_USER_IN = gql`
+export const LogUserInDocument = gql`
   query logUserIn($input: LoginInput!) {
     login(input: $input) {
       token
@@ -501,7 +475,7 @@ export const LOG_USER_IN = gql`
   }
 `
 
-export const FACEBOOK_LOGIN_URL = gql`
+export const facebookLoginUrl = gql`
   query facebookLoginUrl {
     facebookLoginUrl {
       url

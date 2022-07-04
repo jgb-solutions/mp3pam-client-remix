@@ -1,11 +1,11 @@
 
 import AlbumIcon from '@mui/icons-material/Album'
 
-import { Grid } from "@mui/material"
+import Grid from "@mui/material/Grid"
 import InfiniteScroll from 'react-infinite-scroller'
 
 
-import SEO from "../../../components/SEO"
+
 import { fetchAlbums } from '~/graphql/requests.server'
 import { AlbumsDataQuery } from '~/graphql/generated-types'
 import { useLoaderData } from '@remix-run/react'
@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async () => {
   return json(data)
 }
 
-export default function BrowseAlbumsScreen() {
+export default function BrowseAlbumsPage() {
   const { albums } = useLoaderData()
 
   return (

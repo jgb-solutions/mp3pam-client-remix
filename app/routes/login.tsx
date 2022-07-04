@@ -5,11 +5,11 @@ import { Box, Button, Grid, TextField } from "@mui/material"
 import ErrorIcon from '@mui/icons-material/Error'
 
 import colors from "../utils/colors"
-import Logo from "../components/Logo"
+import Logo from "~/components/Logo"
 import { emailRegex } from "../utils/validators"
-import TextIcon from "../components/TextIcon"
+import TextIcon from "~/components/TextIcon"
 import { LOG_USER_IN, FACEBOOK_LOGIN_URL } from "../graphql/queries"
-import SEO from "../components/SEO"
+
 import { BoxStyles } from "~/interfaces/types"
 import { graphQLClient } from "~/graphql/client.server"
 import PlainLayout from "~/components/layouts/Plain"
@@ -33,7 +33,7 @@ export interface Credentials {
   password: string
 }
 
-export default function LoginScreen() {
+export default function LoginPage() {
   const { register, formState: { errors }, handleSubmit } = useForm<Credentials>({
     mode: 'onBlur'
   })
@@ -55,7 +55,7 @@ export default function LoginScreen() {
       // if (payload) {
       //   client.resetStore()
       //   dispatch({ type: LOG_IN, payload })
-      //   history.push(Routes.pages.home)
+      //   history.push(AppRoutes.pages.home)
       // }
     } catch (error) {
       // setLoginError(error.graphQLErrors[0].message)

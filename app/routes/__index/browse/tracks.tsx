@@ -1,10 +1,10 @@
 
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 
-import { Grid } from "@mui/material"
+import Grid from "@mui/material/Grid"
 import InfiniteScroll from 'react-infinite-scroller'
 
-import SEO from "../../../components/SEO"
+
 import { useLoaderData } from '@remix-run/react'
 import { json, LoaderFunction } from '@remix-run/node'
 import { fetchTracks } from '~/graphql/requests.server'
@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async () => {
   return json(data)
 }
 
-export default function BrowseTracksScreen() {
+export default function BrowseTracksPage() {
   const { tracks } = useLoaderData()
 
   return (

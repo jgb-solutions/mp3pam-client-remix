@@ -1,7 +1,7 @@
 
 import colors from "../utils/colors"
 
-// export const createAlbumScreenStyles = {
+// export const createAlbumPageStyles = {
 //   uploadButton: {
 //     marginTop: 10,
 //     marginBottom: 5,

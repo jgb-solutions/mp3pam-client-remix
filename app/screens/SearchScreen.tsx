@@ -2,25 +2,25 @@ import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import { debounce } from "lodash-es"
-import { Grid } from "@mui/material"
+import Grid from "@mui/material/Grid"
 import SearchIcon from '@mui/icons-material/Search'
 
 import AppStateInterface from "../interfaces/AppStateInterface"
 import useSearch from '../hooks/useSearch'
-import Spinner from "../components/Spinner"
-import HeaderTitle from "../components/HeaderTitle"
-import { TrackWithArtistThumbnailData } from "../components/TrackScrollingList"
-import TrackThumbnail from "../components/TrackThumbnail"
+import Spinner from "~/components/Spinner"
+import HeaderTitle from "~/components/HeaderTitle"
+import { TrackWithArtistThumbnailData } from "~/components/TrackScrollingList"
+import TrackThumbnail from "~/components/TrackThumbnail"
 import { SearchData } from "../interfaces/SearchInterface"
 import { SAVE_SEARCH } from "../redux/actions/search_action_types"
-import ArtistThumbnail from "../components/ArtistThumbnail"
-import AlbumThumbnail from "../components/AlbumThumbnail"
-import { AlbumThumbnailData } from "../components/AlbumScrollingList"
-import { ArtistThumbnailData } from "../components/ArtistScrollingList"
-import SEO from "../components/SEO"
+import ArtistThumbnail from "~/components/ArtistThumbnail"
+import AlbumThumbnail from "~/components/AlbumThumbnail"
+import { AlbumThumbnailData } from "~/components/AlbumScrollingList"
+import { ArtistThumbnailData } from "~/components/ArtistScrollingList"
 
 
-export default function SearchScreen() {
+
+export default function SearchPage() {
 	const dispatch = useDispatch()
 	const { search, data: resultData, loading, error } = useSearch()
 	const debounceSearch = debounce(search, 300)

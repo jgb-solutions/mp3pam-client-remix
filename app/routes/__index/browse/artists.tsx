@@ -1,13 +1,13 @@
 
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
-
-import { Grid } from "@mui/material"
+import Grid from "@mui/material/Grid"
 import InfiniteScroll from 'react-infinite-scroller'
 
-import SEO from "../../../components/SEO"
+
 import { useLoaderData } from '@remix-run/react'
 import { fetchArtists } from '~/graphql/requests.server'
 import { json, LoaderFunction } from '@remix-run/node'
+import HeaderTitle from '~/components/HeaderTitle'
 
 export const loader: LoaderFunction = async () => {
 
@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async () => {
   return json(data)
 }
 
-export default function BrowseArtistsScreen() {
+export default function BrowseArtistsPage() {
   const { artists } = useLoaderData()
 
   return (

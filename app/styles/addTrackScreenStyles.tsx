@@ -1,7 +1,7 @@
 
 import colors from "../utils/colors"
 
-// export const addTrackScreenStyles = {
+// export const addTrackPageStyles = {
 //   uploadButton: {
 //     marginTop: 10,
 //     marginBottom: 5,

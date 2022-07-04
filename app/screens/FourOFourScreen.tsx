@@ -2,11 +2,11 @@ import React from 'react'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import { Link, useHistory } from "@remix-run/react"
 
-import HeaderTitle from '../components/HeaderTitle'
-import FourOrFour from '../components/FourOrFour'
-import SEO from '../components/SEO'
+import HeaderTitle from '~/components/HeaderTitle'
+import FourOrFour from '~/components/FourOrFour'
+import SEO from '~/components/SEO'
 
-export default function FourOrFourScreen() {
+export default function FourOrFourPage() {
   const history = useHistory()
 
   const goBack = () => history.goBack()
