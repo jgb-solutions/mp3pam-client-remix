@@ -18,6 +18,7 @@ import {
   fetchMyPlaylistsDocument,
   fetchMyTracksDocument,
   fetchMyArtistsDocument,
+  facebookLoginUrlDocument,
 } from './queries'
 
 import type {
@@ -90,6 +91,8 @@ import type {
   MyTracksDataQueryVariables,
   MyArtistDataQuery,
   MyArtistDataQueryVariables,
+  FacebookLoginUrlQuery,
+  FacebookLoginUrlQueryVariables,
 } from './generated-types'
 
 import {
@@ -279,7 +282,7 @@ export function fetchGenres() {
   return graphQLClient.request<AllGenresQuery>(GenresQueryDocument)
 }
 
-export function fetchLogin(loginInput: LoginInput) {
+export function doLogin(loginInput: LoginInput) {
   return graphQLClient.request<LogUserInQuery, LogUserInQueryVariables>(LogUserInDocument, {
     input: loginInput
   })
@@ -289,6 +292,10 @@ export function fetchManage({ first = MANAGE_PAGE_PER_PAGE_NUMBER, page = 1 }: M
   return graphQLClient.request<ManagePageDataQuery, ManagePageDataQueryVariables>(fetchManagementDocument, {
     first, page
   })
+}
+
+export function fetchFacebookLoginUrl() {
+  return graphQLClient.request<FacebookLoginUrlQuery>(facebookLoginUrlDocument)
 }
 
 export function updateUser(updateUserInput: UpdateUserInput) {

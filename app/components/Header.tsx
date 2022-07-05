@@ -1,3 +1,4 @@
+import type { FC } from 'react'
 import { useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -11,14 +12,12 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import Box from "@mui/material/Box"
 
 import Left from './Left'
-import colors from '../utils/colors'
-import SearchInput from './SearchInput'
-import { SMALL_SCREEN_SIZE } from '../utils/constants.server'
-import { useSelector } from 'react-redux'
 import Right from './Right'
-import type AppStateInterface from '~/interfaces/AppStateInterface'
+import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import { BoxStyles } from '~/interfaces/types'
+import SearchInput from './SearchInput'
+import { useAuth } from '~/hooks/useAuth'
+import type { BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   grow: {
@@ -37,7 +36,7 @@ const styles: BoxStyles = {
     flex: 1,
   },
   menuButton: {
-    marginRight: 2,
+    marginRight: "2px",
   },
   title: {
     display: 'none',
@@ -48,9 +47,9 @@ const styles: BoxStyles = {
   drawer: {
     backgroundColor: colors.black,
     height: '100vh',
-    padding: 24,
-    paddingTop: 10,
-    width: 230
+    padding: "24px",
+    paddingTop: "10px",
+    width: "230px",
   },
   leftMenuIcon: {
     paddingLeft: 0,
@@ -62,7 +61,7 @@ const styles: BoxStyles = {
     padding: 0,
   },
   accountIcon: {
-    fontSize: 35,
+    fontSize: "35px",
   },
   loginButton: {
     color: colors.white
@@ -79,11 +78,10 @@ const styles: BoxStyles = {
 
 type Props = {}
 
-const Header = (props: Props) => {
+const Header: FC<Props> = (props) => {
   const [drawerLeftOPen, setDrawerLeftOpen] = useState(false)
   const [drawerRightOPen, setDrawerRightOpen] = useState(false)
-  // const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
-  const currentUser = { loggedIn: false, data: {} }
+  const { currentUser } = useAuth()
 
   return (
     <Box sx={styles.grow}>
@@ -100,17 +98,17 @@ const Header = (props: Props) => {
           <Box sx={styles.grow} />
           <Box>
             {
-              currentUser.loggedIn && currentUser.data ? (
+              currentUser ? (
                 <Box sx={styles.avatarWrapper} onClick={() => setDrawerRightOpen(true)}>
-                  <Avatar alt={currentUser.data.name} src={currentUser.data.avatar_url} sx={styles.avatar} />
+                  <Avatar alt={currentUser.name} src={currentUser.avatar_url || ""} sx={styles.avatar} />
                   <KeyboardArrowDownIcon />
                 </Box>
               ) : (
-                <Link prefetch="intent" to={AppRoutes.pages.login} sx={styles.loginButton}>
+                <Box component={Link} prefetch="intent" to={AppRoutes.pages.login} sx={styles.loginButton}>
                   <IconButton aria-label="Login" color="inherit" sx={styles.accountButton}>
                     <AccountCircle sx={styles.accountIcon} />
                   </IconButton>
-                </Link>
+                </Box>
               )
             }
           </Box>
@@ -126,15 +124,15 @@ const Header = (props: Props) => {
           <Left closeDrawerLeft={setDrawerLeftOpen} />
         </Box>
       </SwipeableDrawer>
-      {currentUser.loggedIn && (
+      {currentUser && (
         <SwipeableDrawer
           onOpen={() => setDrawerRightOpen(true)}
           anchor='right' open={drawerRightOPen}
           onClose={() => setDrawerRightOpen(false)}
         >
           <Box sx={styles.drawer}>
-            {currentUser.data && (
-              <Right closeDrawerRight={setDrawerRightOpen} user={currentUser.data} />
+            {currentUser && (
+              <Right closeDrawerRight={setDrawerRightOpen} currentUser={currentUser} />
             )}
           </Box>
         </SwipeableDrawer>

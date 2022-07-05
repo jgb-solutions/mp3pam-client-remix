@@ -475,7 +475,7 @@ export const LogUserInDocument = gql`
   }
 `
 
-export const facebookLoginUrl = gql`
+export const facebookLoginUrlDocument = gql`
   query facebookLoginUrl {
     facebookLoginUrl {
       url

@@ -1,18 +1,17 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import type { FC } from 'react'
+import { useCallback } from 'react'
+import Avatar from '@mui/material/Avatar'
 import { NavLink } from "@remix-run/react"
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import AlbumIcon from '@mui/icons-material/Album'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
+import Box from '@mui/material/Box'
 
-import Avatar from '@mui/material/Avatar'
-
-
-import { menuStyles } from '../styles/menuStyles'
-import AppStateInterface from '../interfaces/AppStateInterface'
-import { UserData } from '../interfaces/UserInterface'
 import AppRoutes from '~/app-routes'
+import type { UserData } from '~/interfaces/types'
+import { sidebarStyles as styles } from "~/styles/sidebar-styles"
+
 
 const CreateMenu = [
   { name: "Add Track", to: AppRoutes.user.create.track, icon: <MusicNoteIcon /> },
@@ -30,83 +29,82 @@ const libraryMenu = [
 
 type Props = {
   closeDrawerRight?: (bool: boolean) => void,
-  user: UserData
+  currentUser: UserData
 }
 
-const Right = (props: Props) => {
-  const styles: BoxStyles = menuStyles()
-  const user = props.user
-  const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
-  const userData = get(currentUser, 'data')
-
-  const closeDrawer = () => {
-    if (props.closeDrawerRight) {
-      props.closeDrawerRight(false)
+const Right: FC<Props> = ({ closeDrawerRight, currentUser }) => {
+  const closeDrawer = useCallback(() => {
+    if (closeDrawerRight) {
+      closeDrawerRight(false)
     }
-  }
+  }, [closeDrawerRight])
 
   return (
-    <>
-      {userData ? (
-        <div sx={styles.container}>
-          <div sx={styles.menuList}>
-            <div sx={styles.mainMenu}>
-              <NavLink prefetch="intent"
-                activesx={styles.activeClassName}
-                exact
-                to={AppRoutes.user.account}
-                sx={`${styles.link} ${styles.mainMenuLink}`}
-                onClick={closeDrawer}>
-                <span sx={styles.linkIcon}>
-                  <Avatar style={{ width: 20, height: 20 }} alt={user.name} src={user.avatar_url} />
-                </span>
-                <span sx={styles.linkText}>Your Account</span>
-              </NavLink>
-            </div>
+    <Box sx={styles.container}>
+      <Box sx={styles.menuList}>
+        <Box sx={styles.mainMenu}>
+          <NavLink
+            to={AppRoutes.user.account}
+            prefetch="intent"
+            style={({ isActive }) => ({
+              ...styles.link,
+              ...styles.mainMenuLink,
+              ...(isActive ? styles.activeClassName : {})
+            })}
+            onClick={closeDrawer}>
+            <Box component="span" sx={styles.linkIcon}>
+              <Avatar style={{ width: 20, height: 20 }} alt={currentUser.name} src={currentUser.avatar_url || ""} />
+            </Box>
+            <Box component="span" sx={styles.linkText}>Your Account</Box>
+          </NavLink>
+        </Box>
 
-            <div>
-              <p>
-                <NavLink prefetch="intent"
-                  activesx={styles.activeClassName}
-                  exact
-                  to={AppRoutes.user.manage.home}
-                  sx={styles.yourLibraryLink}
-                  onClick={closeDrawer}>
-                  Manage Your Library
-                </NavLink>
-              </p>
-              {libraryMenu.map((menuItem, index) => (
-                <NavLink prefetch="intent"
-                  activesx={styles.activeClassName}
-                  exact
-                  key={index}
-                  to={menuItem.to}
-                  sx={`${styles.link} ${styles.libraryLink}`}
-                  onClick={closeDrawer}>
-                  <span sx={styles.linkIcon}>{menuItem.icon}</span>
-                  <span sx={styles.linkText}>{menuItem.name}</span>
-                </NavLink>
-              ))}
+        <Box>
+          <p>
+            <NavLink prefetch="intent"
+              to={AppRoutes.user.manage.home}
+              style={({ isActive }) => ({
+                ...styles.yourLibraryLink,
+                ...(isActive ? styles.activeClassName : {})
+              })}
+              onClick={closeDrawer}>
+              Manage Your Library
+            </NavLink>
+          </p>
+          {libraryMenu.map((menuItem, index) => (
+            <NavLink prefetch="intent"
+              key={index}
+              to={menuItem.to}
+              style={({ isActive }) => ({
+                ...styles.link,
+                ...styles.libraryLink,
+                ...(isActive ? styles.activeClassName : {})
+              })}
+              onClick={closeDrawer}>
+              <Box component="span" sx={styles.linkIcon}>{menuItem.icon}</Box>
+              <Box component="span" sx={styles.linkText}>{menuItem.name}</Box>
+            </NavLink>
+          ))}
 
-              <br />
+          <br />
 
-              {CreateMenu.map((menuItem, index) => (
-                <NavLink prefetch="intent"
-                  activesx={styles.activeClassName}
-                  exact
-                  key={index}
-                  to={menuItem.to}
-                  sx={`${styles.link} ${styles.libraryLink}`}
-                  onClick={closeDrawer}>
-                  <span sx={styles.linkIcon}>{menuItem.icon}</span>
-                  <span sx={styles.linkText}>{menuItem.name}</span>
-                </NavLink>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </>
+          {CreateMenu.map((menuItem, index) => (
+            <NavLink prefetch="intent"
+              style={({ isActive }) => ({
+                ...styles.link,
+                ...styles.libraryLink,
+                ...(isActive ? styles.activeClassName : {})
+              })}
+              key={index}
+              to={menuItem.to}
+              onClick={closeDrawer}>
+              <Box component="span" sx={styles.linkIcon}>{menuItem.icon}</Box>
+              <Box component="span" sx={styles.linkText}>{menuItem.name}</Box>
+            </NavLink>
+          ))}
+        </Box>
+      </Box>
+    </Box>
   )
 }
 

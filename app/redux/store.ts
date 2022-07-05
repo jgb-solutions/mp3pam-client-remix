@@ -6,7 +6,6 @@ import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2"
 import { combineReducers } from "redux"
 import searchReducer from "./reducers/searchReducer"
 import playerReducer from "./reducers/playerReducer"
-import userReducer from "./reducers/userReducer"
 
 const createNoopStorage = () => {
 	return {
@@ -29,7 +28,6 @@ const storage =
 const rootReducer = combineReducers({
 	search: searchReducer,
 	player: playerReducer,
-	currentUser: userReducer,
 })
 
 

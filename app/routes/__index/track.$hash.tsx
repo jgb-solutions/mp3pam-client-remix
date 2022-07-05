@@ -158,7 +158,6 @@ export const loader: LoaderFunction = async ({ params }) => {
   const { hash } = params as { hash: string }
 
   const data = await fetchTrackDetail(hash)
-  console.log('hash', hash)
 
   return json(data)
 }

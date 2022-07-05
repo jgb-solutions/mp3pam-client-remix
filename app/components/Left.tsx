@@ -10,7 +10,7 @@ import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 
 import Logo from "./Logo"
 import AppRoutes from "~/app-routes"
-import { menuStyles as styles } from "../styles/menuStyles"
+import { sidebarStyles as styles } from "~/styles/sidebar-styles"
 
 const mainMenu = [
 	{ name: "Home", to: AppRoutes.pages.home, icon: <HomeIcon /> },

@@ -1,160 +1,238 @@
-import { useState } from "react"
+import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
-import { Box, Button, Grid, TextField } from "@mui/material"
-
+import { Box, Button, Grid, TextField } from '@mui/material'
+import type {
+  ActionFunction,
+  HtmlMetaDescriptor,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
+import { json, redirect } from '@remix-run/node'
 import ErrorIcon from '@mui/icons-material/Error'
 
-import colors from "../utils/colors"
-import Logo from "~/components/Logo"
-import { emailRegex } from "../utils/validators"
-import TextIcon from "~/components/TextIcon"
-import { LOG_USER_IN, FACEBOOK_LOGIN_URL } from "../graphql/queries"
-
-import { BoxStyles } from "~/interfaces/types"
-import { graphQLClient } from "~/graphql/client.server"
-import PlainLayout from "~/components/layouts/Plain"
-import Divider, { HR } from "~/components/Divider"
+import colors from '../utils/colors'
+import Logo from '~/components/Logo'
+import { HR } from '~/components/Divider'
+import TextIcon from '~/components/TextIcon'
+import { emailRegex } from '../utils/validators'
+import type { BoxStyles } from '~/interfaces/types'
+import PlainLayout from '~/components/layouts/Plain'
+import { Link, useActionData, useSubmit } from '@remix-run/react'
+import type { LoginInput } from '~/graphql/generated-types'
+import { doLogin } from '~/graphql/requests.server'
+import {
+  getCookieSession,
+  redirectToFacebookLogin,
+  shouldLoginWithFacebook,
+  updateCookieSessionHeader,
+  USER_SESSION_ID,
+} from '~/auth/sessions.server'
 
 const styles: BoxStyles = {
   facebookSignupButton: {
-    marginTop: "15px",
-    marginBottom: "15px",
+    marginTop: '15px',
+    marginBottom: '15px',
     backgroundColor: colors.contentGrey,
-    border: `1px solid ${colors.primary}`
+    border: `1px solid ${colors.primary}`,
   },
-  facebookLoginButton: { backgroundColor: '#3b5998', marginTop: "15px", marginBottom: "15px" },
+  facebookLoginButton: {
+    backgroundColor: '#3b5998',
+    marginTop: '15px',
+    marginBottom: '15px',
+  },
   errorTitle: {
-    color: colors.error
+    color: colors.error,
+  },
+}
+
+type ActionData = {
+  error?: string
+}
+
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = 'Log into your account'
+
+  return {
+    title,
+    'og:title': title,
   }
 }
 
-export interface Credentials {
-  email: string
-  password: string
+export const loader: LoaderFunction = async ({ request }) => {
+  const session = await getCookieSession(request)
+
+  if (session.has(USER_SESSION_ID)) {
+    return redirect('/')
+  }
+
+  const data = { error: session.get('error') }
+
+  if (shouldLoginWithFacebook(request)) {
+    return await redirectToFacebookLogin()
+  }
+
+  return json(data, {
+    headers: {
+      ...(await updateCookieSessionHeader(session))
+    },
+  })
+}
+
+export const action: ActionFunction = async ({ request }) => {
+  try {
+    const form = await request.formData()
+
+    const email = form.get('email') as string
+    const password = form.get('password') as string
+
+    const data = await doLogin({ email, password })
+
+    const session = await getCookieSession(request)
+
+    session.set(USER_SESSION_ID, data.login)
+
+    return redirect('/', {
+      headers: {
+        ...(await updateCookieSessionHeader(session))
+      },
+    })
+  } catch (e) {
+    console.error(e)
+    return json({ error: 'The email or password is incorrect.' }, 401)
+  }
 }
 
 export default function LoginPage() {
-  const { register, formState: { errors }, handleSubmit } = useForm<Credentials>({
-    mode: 'onBlur'
+  const submit = useSubmit()
+  const actionData = useActionData<ActionData>()
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<LoginInput>({
+    mode: 'onBlur',
   })
-  const [loginError, setLoginError] = useState("")
-  // let { from } = location.state || { from: { pathname: "/" } }
-  // const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
 
-  const login = async (credentials: Credentials) => {
-    try {
-      // const { data: { login: payload }, errors } = await graphQLClient.request(LOG_USER_IN, {
-      //   input: credentials
-      // },
-      // )
+  const handleLogin = useCallback(
+    async ({ email, password }: LoginInput) => {
+      const formData = new FormData()
 
-      // if (errors) {
-      //   setLoginError("Your email or password is not valid.")
-      // }
+      formData.append('email', email)
+      formData.append('password', password)
 
-      // if (payload) {
-      //   client.resetStore()
-      //   dispatch({ type: LOG_IN, payload })
-      //   history.push(AppRoutes.pages.home)
-      // }
-    } catch (error) {
-      // setLoginError(error.graphQLErrors[0].message)
-    }
-  }
-
-  const loginWithFacebook = async () => {
-    // const fbMessage = "An error occurred with the Facebook login."
-    // try {
-    //   const { data: { facebookLoginUrl }, errors } = await client.query({
-    //     query: FACEBOOK_LOGIN_URL,
-    //   })
-    //   if (errors) {
-    //     setLoginError(fbMessage)
-    //   }
-    //   window.location = facebookLoginUrl.url
-    // } catch (error) {
-    //   setLoginError(fbMessage)
-    // }
-  }
-
-  // if (currentUser.loggedIn) return <Redirect to={from} />
+      submit(formData, { method: 'post' })
+    },
+    [submit]
+  )
 
   return (
-    <PlainLayout sx={{ display: 'flex', alignItems: 'center', justifyContent: "center" }}>
-      <Box sx={{ maxWidth: "450px", textAlign: 'center' }} >
-        <SEO title={`Login To Your Account`} />
-
+    <PlainLayout
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+    >
+      <Box sx={{ width: '450px', textAlign: 'center' }}>
         <Logo size={300} />
-        {/* <h1 style={{ fontSize: 12 }}>To continue, log in to MP3 Pam.</h1> */}
-        <Button variant="contained" sx={styles.facebookLoginButton} size='large' onClick={loginWithFacebook}>Log In With Facebook</Button>
+
+        <Box>
+          <Link to=".?facebook">
+            <Button
+              variant="contained"
+              sx={styles.facebookLoginButton}
+              size="large"
+            >
+              Log In With Facebook
+            </Button>
+          </Link>
+        </Box>
 
         <HR>or</HR>
 
-
-        <Box component="form" onSubmit={handleSubmit(login)} noValidate>
-          {loginError && <Box component="h3" sx={styles.errorTitle} dangerouslySetInnerHTML={{ __html: loginError }} />}
+        <Box component="form" onSubmit={handleSubmit(handleLogin)} noValidate>
+          {actionData?.error && (
+            <Box
+              component="h3"
+              sx={styles.errorTitle}
+              dangerouslySetInnerHTML={{ __html: actionData?.error }}
+            />
+          )}
           <Grid>
             <Grid item>
               <TextField
                 fullWidth
                 variant="standard"
-                {...register("email", {
-                  required: "The email is required.",
+                {...register('email', {
+                  required: 'The email is required.',
                   pattern: {
                     value: emailRegex,
-                    message: "This email is not valid."
-                  }
+                    message: 'This email is not valid.',
+                  },
                 })}
                 id="email"
                 label="Email"
                 type="email"
                 margin="normal"
                 error={!!errors.email}
-                helperText={errors.email && (
-                  <TextIcon
-                    icon={<ErrorIcon />}
-                    text={errors.email.message}
-                  />
-                )}
+                helperText={
+                  errors.email && (
+                    <TextIcon
+                      icon={<ErrorIcon />}
+                      text={errors.email.message}
+                    />
+                  )
+                }
               />
             </Grid>
             <Grid item>
               <TextField
                 fullWidth
                 variant="standard"
-                {...register("password", {
-                  required: "Your password Required.",
+                {...register('password', {
+                  required: 'Your password Required.',
                   minLength: {
                     value: 6,
-                    message: "The password must be at least 6 characters."
-                  }
+                    message: 'The password must be at least 6 characters.',
+                  },
                 })}
                 id="password"
                 label="Password"
                 type="password"
                 margin="normal"
                 error={!!errors.password}
-                helperText={errors.password && (
-                  <TextIcon
-                    icon={<ErrorIcon />}
-                    text={errors.password.message}
-                  />)}
+                helperText={
+                  errors.password && (
+                    <TextIcon
+                      icon={<ErrorIcon />}
+                      text={errors.password.message}
+                    />
+                  )
+                }
               />
             </Grid>
           </Grid>
-          <Button variant="contained" type="submit" size='large' color="secondary" style={{ marginTop: "15px", marginBottom: "15px" }}>Log In With Email</Button>
+          <Button
+            variant="contained"
+            type="submit"
+            size="large"
+            color="secondary"
+            style={{ marginTop: '15px', marginBottom: '15px' }}
+          >
+            Log In With Email
+          </Button>
         </Box>
 
         <HR />
 
         <Box>Don't have an account?</Box>
 
-        <Button
-          variant="outlined"
-          size='large'
-          onClick={loginWithFacebook}
-          sx={styles.facebookSignupButton}>Sign Up With Facebook</Button>
+        <Link to=".?facebook">
+          <Button
+            variant="outlined"
+            size="large"
+            sx={styles.facebookSignupButton}
+          >
+            Sign Up With Facebook
+          </Button>
+        </Link>
       </Box>
-    </PlainLayout >
+    </PlainLayout>
   )
 }

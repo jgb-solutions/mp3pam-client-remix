@@ -1,8 +1,7 @@
-
-import colors from "../utils/colors"
 import type { BoxStyles } from "~/interfaces/types"
+import colors from "~/utils/colors"
 
-export const menuStyles: BoxStyles = {
+export const sidebarStyles: BoxStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',

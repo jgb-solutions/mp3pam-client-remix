@@ -4,7 +4,8 @@ import { Box } from '@mui/material'
 import type { BoxProps } from '@mui/material'
 import type { CSSProperties } from 'react'
 
-const PHOTON_HOSTS = ['i0.wp.com', 'i1.wp.com', 'i2.wp.com', 'i3.wp.com']
+// const PHOTON_HOSTS = ['i0.wp.com', 'i1.wp.com', 'i2.wp.com', 'i3.wp.com']
+const PHOTON_HOSTS = ['i0.wp.com']
 
 interface Props {
   src: string

@@ -24,40 +24,10 @@ import MainLayout from './components/layouts/Main'
 import ClientStyleContext from './mui/ClientStyleContext'
 import { PersistGate } from "redux-persist/integration/react"
 import { APP_NAME, DOMAIN, FB_APP_ID, TWITTER_HANDLE } from './utils/constants.server'
+import { getCookieSession, USER_SESSION_ID } from './auth/sessions.server'
+import type { LoggedInUserData, UserData } from './interfaces/types'
 
 const { store, persistor } = persistedStore()
-
-export const meta: MetaFunction = (): HtmlMetaDescriptor => {
-  const title = `${APP_NAME} | Listen, Download and Share Unlimited Sounds!`
-  const description = `${APP_NAME} is a free entertainment platform for sharing all kinds of sounds.
-      Music, and even Ad. You name it. Brought to you by JGB Solutions.
-  `
-  const image = `${DOMAIN}/assets/images/social-media-share.png`
-
-  return {
-    title,
-    "og:title": title,
-    "og:site_name": APP_NAME,
-    "og:url": DOMAIN,
-    "og:description": description,
-    "og:type": "website",
-    "og:image": image,
-    "fb:app_id": FB_APP_ID,
-    "twitter:card": "summary",
-    "twitter:site": `@${TWITTER_HANDLE}`,
-    "twitter:title": title,
-    "twitter:description": { description },
-    "twitter:image": { image },
-  }
-}
-
-export const loader: LoaderFunction = async () => {
-  return json({
-    ENV: {
-      STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-    },
-  })
-}
 
 interface DocumentProps {
   children: React.ReactNode
@@ -120,18 +90,61 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 })
 
 
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = `${APP_NAME} | Listen, Download and Share Unlimited Sounds!`
+  const description = `${APP_NAME} is a free entertainment platform for sharing all kinds of sounds.
+      Music, and even Ad. You name it. Brought to you by JGB Solutions.
+  `
+  const image = `${DOMAIN}/assets/images/social-media-share.png`
 
+  return {
+    title,
+    "og:title": title,
+    "og:site_name": APP_NAME,
+    "og:url": DOMAIN,
+    "og:description": description,
+    "og:type": "website",
+    "og:image": image,
+    "fb:app_id": FB_APP_ID,
+    "twitter:card": "summary",
+    "twitter:site": `@${TWITTER_HANDLE}`,
+    "twitter:title": title,
+    "twitter:description": { description },
+    "twitter:image": { image },
+  }
+}
+
+export type RootContextType = {
+  userData: UserData | null
+}
+
+type LoaderData = {
+  userData: RootContextType['userData'],
+  ENV: { [key: string]: string }
+}
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const session = await getCookieSession(request)
+
+  const userSessionData = session.get(USER_SESSION_ID) as LoggedInUserData | undefined
+
+  const userData = userSessionData?.data || null
+
+  return json({
+    ENV: {
+      STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+    },
+    userData,
+  })
+}
 
 export default function App() {
-  const { ENV } = useLoaderData()
+  const { ENV, userData } = useLoaderData<LoaderData>()
+  const context: RootContextType = { userData }
 
   return (
     <Document>
-      {/* <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}> */}
-      <Outlet />
-      {/* </PersistGate>
-      </Provider> */}
+      <Outlet context={context} />
 
       <script
         dangerouslySetInnerHTML={{

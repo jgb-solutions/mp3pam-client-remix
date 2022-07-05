@@ -3,18 +3,17 @@ import { useLocation, useHistory, Redirect } from 'react-router'
 import queryString from 'query-string'
 import { useDispatch, useSelector } from 'react-redux'
 
-import Spinner from '../~/components/Spinner'
+import Spinner from '~/components/Spinner'
 import { LOG_IN } from '../../redux/actions/user_action_types'
 import { FACEOOK_LOGIN } from '../../graphql/mutations'
-import AppStateInterface from '../../interfaces/AppStateInterface'
+import AppRoutes from '~/app-routes'
 
 export default function FacebookAuth() {
   const client = useApolloClient()
-  const dispatch = useDispatch()
   const location = useLocation()
   const history = useHistory()
   const { code } = queryString.parse(location.search)
-  const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
+  const currentUser = {}
 
   useEffect(() => {
     if (code) {
