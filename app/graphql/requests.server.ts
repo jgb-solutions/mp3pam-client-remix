@@ -121,7 +121,7 @@ import {
   FETCH_PLAYLISTS_NUMBER,
   HOMEPAGE_PER_PAGE_NUMBER,
   MANAGE_PAGE_PER_PAGE_NUMBER,
-} from '~/utils/constants.server'
+} from '~/utils/constants'
 import { SortOrder } from './generated-types'
 import { graphQLClient } from '~/graphql/client.server'
 

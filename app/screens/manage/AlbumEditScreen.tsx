@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { Link, useParams, useNavigate } from "@remix-run/react"
+import { useEffect, useState } from 'react'
+import { Link, useParams, useNavigate } from '@remix-run/react'
 
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
@@ -8,31 +8,30 @@ import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
-import DialogActions from "@mui/material/DialogActions"
+import DialogActions from '@mui/material/DialogActions'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import ErrorIcon from '@mui/icons-material/Error'
-import { useForm } from "react-hook-form"
+import { useForm } from 'react-hook-form'
 
-import TextField from "@mui/material/TextField"
-import AppRoutes from "~/app-routes"
-import colors from "../../utils/colors"
+import TextField from '@mui/material/TextField'
+import AppRoutes from '~/app-routes'
+import colors from '~/utils/colors'
 import useAlbumDetail from '../../hooks/useAlbumDetail'
-import Button from "@mui/material/Button"
-import { AlbumTrackInterface } from "../../interfaces/AlbumInterface"
-import { SMALL_SCREEN_SIZE, } from "../../utils/constants.server"
-import Spinner from "~/components/Spinner"
-import useAddTrackToAlbum from "../../hooks/useAddTrackToAlbum"
-import FourOrFour from "~/components/FourOrFour"
-import HeaderTitle from "~/components/HeaderTitle"
-import useMyTracks from "../../hooks/useMyTracks"
-import AlertDialog from "~/components/AlertDialog"
+import Button from '@mui/material/Button'
+import { AlbumTrackInterface } from '~/interfaces/AlbumInterface'
+import { SMALL_SCREEN_SIZE } from '~/utils/constants'
+import Spinner from '~/components/Spinner'
+import useAddTrackToAlbum from '../../hooks/useAddTrackToAlbum'
+import FourOrFour from '~/components/FourOrFour'
+import HeaderTitle from '~/components/HeaderTitle'
+import useMyTracks from '../../hooks/useMyTracks'
+import AlertDialog from '~/components/AlertDialog'
 
-import AlbumInterface from "../../interfaces/AlbumInterface"
-import { StyledTableCell } from "~/components/AlbumTracksTable"
-import useDeleteAlbumTrack from "../../hooks/useDeleteAlbumTrack"
+import AlbumInterface from '~/interfaces/AlbumInterface'
+import { StyledTableCell } from '~/components/AlbumTracksTable'
+import useDeleteAlbumTrack from '../../hooks/useDeleteAlbumTrack'
 
-import Grid from "@mui/material/Grid"
-
+import Grid from '@mui/material/Grid'
 
 // const styles: BoxStyles = {
 //   row: {
@@ -114,42 +113,56 @@ import Grid from "@mui/material/Grid"
 //   },
 // }))
 
-export const AskTrackNumberForm = ({ onNumberChange, tracks }: {
-  onNumberChange: (value: { track_number: number }) => void,
+export const AskTrackNumberForm = ({
+  onNumberChange,
+  tracks,
+}: {
+  onNumberChange: (value: { track_number: number }) => void
   tracks: AlbumTrackInterface[]
 }) => {
-
   const {
     register,
     handleSubmit,
-    formState: { errors }
-  } = useForm<{ track_number: number }>({ mode: 'onBlur', defaultValues: { track_number: tracks.length + 1 } })
+    formState: { errors },
+  } = useForm<{ track_number: number }>({
+    mode: 'onBlur',
+    defaultValues: { track_number: tracks.length + 1 },
+  })
 
   return (
     <>
       <form onSubmit={handleSubmit(onNumberChange)} noValidate>
-        <Grid container direction='row' spacing={2}>
+        <Grid container direction="row" spacing={2}>
           <Grid item xs={8}>
             <TextField
-              {...register("track_number", {
-                required: "The track number is required.",
+              {...register('track_number', {
+                required: 'The track number is required.',
                 validate: {
-                  positive_number: value => value > 0 || `The value can't be a negative number.`,
-                  should_not_already_exists: value =>
-                    !tracks.map(track => track.number).find(number => number === parseInt(value)) ||
-                    `The track number already exists.`
-                }
+                  positive_number: (value) =>
+                    value > 0 || `The value can't be a negative number.`,
+                  should_not_already_exists: (value) =>
+                    !tracks
+                      .map((track) => track.number)
+                      .find((number) => number === parseInt(value)) ||
+                    `The track number already exists.`,
+                },
               })}
               id="track_number"
               type="number"
               error={!!errors.track_number}
-              helperText={errors.track_number && (
-                <span sx={styles.errorColor}>{errors.track_number.message}</span>
-              )}
+              helperText={
+                errors.track_number && (
+                  <span sx={styles.errorColor}>
+                    {errors.track_number.message}
+                  </span>
+                )
+              }
             />
           </Grid>
           <Grid item xs={4}>
-            <Button size='small' type="submit">Set</Button>
+            <Button size="small" type="submit">
+              Set
+            </Button>
           </Grid>
         </Grid>
       </form>
@@ -157,17 +170,20 @@ export const AskTrackNumberForm = ({ onNumberChange, tracks }: {
   )
 }
 
-const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
-  album: AlbumInterface,
-  onRequestClose: () => void,
+const AddTrackToAlbum = ({
+  album,
+  onRequestClose,
+  trackNumber,
+}: {
+  album: AlbumInterface
+  onRequestClose: () => void
   trackNumber: number
 }) => {
-
   const {
     addTrackToAlbum,
     data: addTrackToAlbumResponse,
     loading: addingTrackToAlbum,
-    error: errorAddingTrackToAlbum
+    error: errorAddingTrackToAlbum,
   } = useAddTrackToAlbum()
   const { loading, error, data } = useMyTracks()
   const tracks = get(data, 'me.tracks.data')
@@ -183,7 +199,7 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
     addTrackToAlbum({
       album_id: album.id,
       track_hash: trackHash,
-      track_number: trackNumber
+      track_number: trackNumber,
     })
   }
 
@@ -192,11 +208,11 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
   if (addingTrackToAlbum) return <Spinner.Full />
 
   if (error) {
-    return (<h3>Error loading your tracks. Please reload page.</h3>)
+    return <h3>Error loading your tracks. Please reload page.</h3>
   }
 
   if (errorAddingTrackToAlbum) {
-    return (<h3>Error adding the track to the album.</h3>)
+    return <h3>Error adding the track to the album.</h3>
   }
 
   return (
@@ -213,12 +229,17 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
               </TableRow>
             </TableHead>
             <TableBody>
-              {tracks.map((track: { hash: string, title: string }, index: number) => {
-                return (
-                  <TableRow key={index} style={{
-                    borderBottom: tracks.length - 1 === index ? '' : '1px solid white',
-                  }}>
-                    {/* <StyledTableCell style={{ width: '80%' }}>
+              {tracks.map(
+                (track: { hash: string; title: string }, index: number) => {
+                  return (
+                    <TableRow
+                      key={index}
+                      style={{
+                        borderBottom:
+                          tracks.length - 1 === index ? '' : '1px solid white',
+                      }}
+                    >
+                      {/* <StyledTableCell style={{ width: '80%' }}>
                       {track.title}
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
@@ -231,34 +252,39 @@ const AddTrackToAlbum = ({ album, onRequestClose, trackNumber }: {
                         sx={styles.link}
                         style={{ cursor: 'pointer' }}>Add</span>
                     </StyledTableCell> */}
-                  </TableRow>
-                )
-              })}
+                    </TableRow>
+                  )
+                }
+              )}
             </TableBody>
           </Table>
         </>
       ) : (
-        <HeaderTitle icon={<MusicNoteIcon />} text="This album has no tracks yet" />
+        <HeaderTitle
+          icon={<MusicNoteIcon />}
+          text="This album has no tracks yet"
+        />
       )}
     </>
   )
 }
 
 export default function AlbumEditPage() {
-
   const params = useParams()
   const navigate = useNavigate()
   const hash = get(params, 'hash')
   const [trackHashToDelete, setTrackHashToDelete] = useState('')
   const [openAskTrackNumberPopup, setOpenAskTrackNumberPopup] = useState(false)
-  const [openChooseOptionsToAddPopup, setOpenChooseOptionsToAddPopup] = useState(false)
-  const [openChooseExistingTracksPopup, setOpenChooseExistingTracksPopup] = useState(false)
+  const [openChooseOptionsToAddPopup, setOpenChooseOptionsToAddPopup] =
+    useState(false)
+  const [openChooseExistingTracksPopup, setOpenChooseExistingTracksPopup] =
+    useState(false)
   const [trackNumber, setTrackNumber] = useState(0)
   const {
     deleteAlbumTrack,
     deleteAlbumTrackResponse,
     deletingAlbumTrack,
-    errorDeletingAlbumTrack
+    errorDeletingAlbumTrack,
   } = useDeleteAlbumTrack()
 
   const { data, loading, error, refetch } = useAlbumDetail(hash)
@@ -297,7 +323,7 @@ export default function AlbumEditPage() {
   if (loading) return <Spinner.Full />
 
   if (error) {
-    return (<h1>Error loading album detail. Please reload page.</h1>)
+    return <h1>Error loading album detail. Please reload page.</h1>
   }
 
   return (
@@ -308,9 +334,13 @@ export default function AlbumEditPage() {
         <>
           <HeaderTitle
             onClick={() => navigate(AppRoutes.album.detailPage(album.hash))}
-            icon={(
-              <Avatar style={{ width: 75, height: 75 }} alt={album.title} src={album.cover_url} />
-            )}
+            icon={
+              <Avatar
+                style={{ width: 75, height: 75 }}
+                alt={album.title}
+                src={album.cover_url}
+              />
+            }
             textStyle={{ paddingLeft: 10 }}
             text={album.title}
           />
@@ -324,9 +354,7 @@ export default function AlbumEditPage() {
           </p>
 
           <p>
-            <Button
-              size='large'
-              onClick={addTrackToAlbum}>
+            <Button size="large" onClick={addTrackToAlbum}>
               Add a New Track to This Album
             </Button>
           </p>
@@ -347,12 +375,19 @@ export default function AlbumEditPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {album.tracks.map((track: AlbumTrackInterface, index: number) => {
-                    return (
-                      <TableRow key={index} style={{
-                        borderBottom: album.tracks.length - 1 === index ? '' : '1px solid white',
-                      }}>
-                        {/* <StyledTableCell style={{ width: '5%' }}>
+                  {album.tracks.map(
+                    (track: AlbumTrackInterface, index: number) => {
+                      return (
+                        <TableRow
+                          key={index}
+                          style={{
+                            borderBottom:
+                              album.tracks.length - 1 === index
+                                ? ''
+                                : '1px solid white',
+                          }}
+                        >
+                          {/* <StyledTableCell style={{ width: '5%' }}>
                           {track.number}
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '80%' }}>
@@ -364,27 +399,47 @@ export default function AlbumEditPage() {
                             sx={styles.link}
                             style={{ cursor: 'pointer' }}>Delete</span>
                         </StyledTableCell> */}
-                      </TableRow>
-                    )
-                  })}
+                        </TableRow>
+                      )
+                    }
+                  )}
                 </TableBody>
               </Table>
             </>
           ) : (
-            <HeaderTitle icon={<MusicNoteIcon />} text="This album has no tracks yet" />
+            <HeaderTitle
+              icon={<MusicNoteIcon />}
+              text="This album has no tracks yet"
+            />
           )}
         </>
       ) : (
         <>
-          <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Album was not found." />
+          <HeaderTitle
+            icon={<FindReplaceIcon />}
+            text="OOPS! The Album was not found."
+          />
           <h3>
-            Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
-            or
-            {' '}
+            Go to the{' '}
             <Link
-              style={{ cursor: 'pointer', textDecoration: 'underline', color: colors.white }}
-              to={AppRoutes.browse.albums}>browse other albums.
-            </Link>.
+              prefetch="intent"
+              style={{ color: 'white' }}
+              to={AppRoutes.pages.home}
+            >
+              home page
+            </Link>{' '}
+            or{' '}
+            <Link
+              style={{
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                color: colors.white,
+              }}
+              to={AppRoutes.browse.albums}
+            >
+              browse other albums.
+            </Link>
+            .
           </h3>
           <FourOrFour />
         </>
@@ -392,20 +447,23 @@ export default function AlbumEditPage() {
       {/* Deletion confirmation */}
       <AlertDialog
         open={!!trackHashToDelete}
-        handleClose={() => setTrackHashToDelete('')}>
+        handleClose={() => setTrackHashToDelete('')}
+      >
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
           icon={<ErrorIcon sx={styles.errorColor} />}
-          text={`Are you sure you want to delete this track?`} />
+          text={`Are you sure you want to delete this track?`}
+        />
         <DialogActions>
-          <Button size='small' onClick={() => setTrackHashToDelete('')}>
+          <Button size="small" onClick={() => setTrackHashToDelete('')}>
             Cancel
           </Button>
           <Button
-            size='small'
+            size="small"
             onClick={() => handleDeleteAlbum(trackHashToDelete)}
             sx={styles.noBgButton}
-            disabled={deletingAlbumTrack}>
+            disabled={deletingAlbumTrack}
+          >
             Delete
           </Button>
         </DialogActions>
@@ -414,20 +472,25 @@ export default function AlbumEditPage() {
       {/* Ask Track number */}
       <AlertDialog
         open={openAskTrackNumberPopup}
-        handleClose={() => setOpenAskTrackNumberPopup(false)}>
+        handleClose={() => setOpenAskTrackNumberPopup(false)}
+      >
         <HeaderTitle
           textStyle={{ fontSize: 15 }}
           icon={<FormatListNumberedIcon />}
           text={`Set the track number on the album`}
         />
 
-        <AskTrackNumberForm onNumberChange={handleNumberChange} tracks={album.tracks} />
+        <AskTrackNumberForm
+          onNumberChange={handleNumberChange}
+          tracks={album.tracks}
+        />
 
         <DialogActions>
           <Button
-            size='small'
+            size="small"
             onClick={() => setOpenAskTrackNumberPopup(false)}
-            sx={styles.noBgButton}>
+            sx={styles.noBgButton}
+          >
             Cancel
           </Button>
         </DialogActions>
@@ -436,15 +499,15 @@ export default function AlbumEditPage() {
       {/* Choose from existing tracks or add a new one */}
       <AlertDialog
         open={openChooseOptionsToAddPopup}
-        handleClose={() => setOpenChooseOptionsToAddPopup(false)}>
+        handleClose={() => setOpenChooseOptionsToAddPopup(false)}
+      >
         <HeaderTitle
           textStyle={{ fontSize: 15 }}
           icon={<FormatListNumberedIcon />}
           text={`Choose from your tracks or add a new one`}
         />
-
         <Button
-          size='small'
+          size="small"
           onClick={() => {
             setOpenChooseOptionsToAddPopup(false)
             setOpenChooseExistingTracksPopup(true)
@@ -452,22 +515,24 @@ export default function AlbumEditPage() {
         >
           Choose Track
         </Button>
-        &nbsp;
-        &nbsp;
+        &nbsp; &nbsp;
         <Button
-          size='small'
-          onClick={() => navigate(
-            AppAppRoutes.user.create.track,
-            { album_id: album.id, track_number: trackNumber }
-          )}>
+          size="small"
+          onClick={() =>
+            navigate(AppAppRoutes.user.create.track, {
+              album_id: album.id,
+              track_number: trackNumber,
+            })
+          }
+        >
           Add a new Track
         </Button>
-
         <DialogActions>
           <Button
-            size='small'
+            size="small"
             onClick={() => setOpenChooseOptionsToAddPopup(false)}
-            sx={styles.noBgButton}>
+            sx={styles.noBgButton}
+          >
             Cancel
           </Button>
         </DialogActions>
@@ -476,23 +541,29 @@ export default function AlbumEditPage() {
       {/* Choose from existing tracks form */}
       <AlertDialog
         open={openChooseExistingTracksPopup}
-        handleClose={() => setOpenChooseExistingTracksPopup(false)}>
+        handleClose={() => setOpenChooseExistingTracksPopup(false)}
+      >
         <HeaderTitle
           textStyle={{ fontSize: 15 }}
           icon={<FormatListNumberedIcon />}
           text={`Choose from your tracks or add a new one`}
         />
 
-        <AddTrackToAlbum trackNumber={trackNumber} album={album} onRequestClose={() => {
-          setOpenChooseExistingTracksPopup(false)
-          refetch()
-        }} />
+        <AddTrackToAlbum
+          trackNumber={trackNumber}
+          album={album}
+          onRequestClose={() => {
+            setOpenChooseExistingTracksPopup(false)
+            refetch()
+          }}
+        />
 
         <DialogActions>
           <Button
-            size='small'
+            size="small"
             onClick={() => setOpenChooseExistingTracksPopup(false)}
-            sx={styles.noBgButton}>
+            sx={styles.noBgButton}
+          >
             Cancel
           </Button>
         </DialogActions>

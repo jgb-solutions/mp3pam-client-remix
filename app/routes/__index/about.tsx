@@ -10,7 +10,7 @@ import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 
 import Logo from '~/components/Logo'
-import colors from '../../utils/colors'
+import colors from '~/utils/colors'
 import LogoJGB from '~/components/LogoJGB'
 
 // export const meta: MetaFunction = (): HtmlMetaDescriptor => {
@@ -24,17 +24,19 @@ import LogoJGB from '~/components/LogoJGB'
 //   }
 // }
 
-
 const AboutPage: FC = () => {
   return (
-    <Box style={{
-      paddingTop: "100px",
-      textAlign: 'center',
-    }}>
+    <Box
+      style={{
+        paddingTop: '100px',
+        textAlign: 'center',
+      }}
+    >
       <Logo />
 
       <Box component="p">
-        MP3Pam is a free entertainment platform for sharing all kinds of audios. <br />
+        MP3Pam is a free entertainment platform for sharing all kinds of audios.{' '}
+        <br />
         Music, and even Ad. You name it.
       </Box>
 
@@ -42,7 +44,13 @@ const AboutPage: FC = () => {
         <Grid container spacing={2}>
           <Grid item>
             <Link to="https://www.facebook.com/MP3PamOfficial/" target="_blank">
-              <FacebookIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.facebook }} />
+              <FacebookIcon
+                style={{
+                  fontSize: 48,
+                  cursor: 'pointer',
+                  color: colors.facebook,
+                }}
+              />
             </Link>
           </Grid>
           <Grid item>
@@ -69,11 +77,23 @@ const AboutPage: FC = () => {
       </Box>
 
       <Box component="p">
-        <small>Licensed under <a style={{ color: 'white' }} href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer">MIT</a>.
+        <small>
+          Licensed under{' '}
+          <a
+            style={{ color: 'white' }}
+            href="https://opensource.org/licenses/MIT"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            MIT
+          </a>
+          .
         </small>
       </Box>
 
-      <Box component="p"><small>Version 2.0.0</small></Box>
+      <Box component="p">
+        <small>Version 2.0.0</small>
+      </Box>
 
       <Box component="p">&copy; 2022</Box>
 

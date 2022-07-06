@@ -1,8 +1,19 @@
-import { useCallback, useState } from "react"
-import type { FC } from "react"
-import { HeadersFunction, HtmlMetaDescriptor, json, MetaFunction } from "@remix-run/node"
-import { useSelector } from "react-redux"
-import { Link, useCatch, useLoaderData, useNavigate, useParams } from "@remix-run/react"
+import { useCallback, useState } from 'react'
+import type { FC } from 'react'
+import {
+  HeadersFunction,
+  HtmlMetaDescriptor,
+  json,
+  MetaFunction,
+} from '@remix-run/node'
+import { useSelector } from 'react-redux'
+import {
+  Link,
+  useCatch,
+  useLoaderData,
+  useNavigate,
+  useParams,
+} from '@remix-run/react'
 import InfoIcon from '@mui/icons-material/Info'
 import LineWeightIcon from '@mui/icons-material/LineWeight'
 import GetAppIcon from '@mui/icons-material/GetApp'
@@ -23,35 +34,41 @@ import {
   EmailShareButton,
 } from 'react-share'
 
-import AppRoutes from "~/app-routes"
-import colors from "~/utils/colors"
-import More from "~/components/More"
-import Tabs from "~/components/Tabs"
-import type { TabItem } from "~/components/Tabs"
-import type ListInterface from "~/interfaces/ListInterface"
-import * as playerActions from "~/redux/actions/playerActions"
-import type AppStateInterface from "~/interfaces/AppStateInterface"
-import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_TRACK_TYPE, TWITTER_HANDLE } from "~/utils/constants.server"
-import Spinner from "~/components/Spinner"
-import { TrackScrollingList } from "~/components/TrackScrollingList"
+import AppRoutes from '~/app-routes'
+import colors from '~/utils/colors'
+import More from '~/components/More'
+import Tabs from '~/components/Tabs'
+import type { TabItem } from '~/components/Tabs'
+import type ListInterface from '~/interfaces/ListInterface'
+import * as playerActions from '~/redux/actions/playerActions'
+import type AppStateInterface from '~/interfaces/AppStateInterface'
+import {
+  SMALL_SCREEN_SIZE,
+  APP_NAME,
+  DOMAIN,
+  SEO_TRACK_TYPE,
+  TWITTER_HANDLE,
+} from '~/utils/constants'
+import Spinner from '~/components/Spinner'
+import { TrackScrollingList } from '~/components/TrackScrollingList'
 
-import FourOrFour from "~/components/FourOrFour"
-import HeaderTitle from "~/components/HeaderTitle"
+import FourOrFour from '~/components/FourOrFour'
+import HeaderTitle from '~/components/HeaderTitle'
 // import { AddTrackToPlaylist } from "~/screens/manage/PlaylistEditPage"
-import Image from "~/components/Image"
-import { Box, Button, darken, Grid } from "@mui/material"
-import PlainLayout from "~/components/layouts/Plain"
-import type { LoaderFunction } from "@remix-run/node"
-import { fetchTrackDetail } from "~/graphql/requests.server"
-import type { BoxStyles } from "~/interfaces/types"
-import theme from "~/mui/theme"
-import Heart from "~/components/Heart"
-import { TrackDetailQuery } from "~/graphql/generated-types"
+import Image from '~/components/Image'
+import { Box, Button, darken, Grid } from '@mui/material'
+import PlainLayout from '~/components/layouts/Plain'
+import type { LoaderFunction } from '@remix-run/node'
+import { fetchTrackDetail } from '~/graphql/requests.server'
+import type { BoxStyles } from '~/interfaces/types'
+import theme from '~/mui/theme'
+import Heart from '~/components/Heart'
+import { TrackDetailQuery } from '~/graphql/generated-types'
 
 const styles: BoxStyles = {
   row: {
-    display: "flex",
-    flexDirection: "row"
+    display: 'flex',
+    flexDirection: 'row',
   },
   imageContainer: {
     textAlign: 'center',
@@ -59,7 +76,7 @@ const styles: BoxStyles = {
   image: {
     width: 250,
     height: 'auto',
-    maxWidth: "100%",
+    maxWidth: '100%',
   },
   listByAuthor: {
     fontSize: 14,
@@ -67,18 +84,18 @@ const styles: BoxStyles = {
   },
   listBy: {
     color: darken(colors.white, 0.5),
-    fontSize: 12
+    fontSize: 12,
   },
   listAuthor: {
-    textDecoration: "none",
+    textDecoration: 'none',
     color: colors.white,
-    "&:hover": {
-      textDecoration: "underline"
+    '&:hover': {
+      textDecoration: 'underline',
     },
-    "&:link": {
-      textDecoration: "none",
-      color: "white"
-    }
+    '&:link': {
+      textDecoration: 'none',
+      color: 'white',
+    },
   },
   detailsWrapper: {
     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
@@ -93,9 +110,9 @@ const styles: BoxStyles = {
       position: 'absolute',
       bottom: 4,
     },
-    "& > *": {
+    '& > *': {
       padding: 0,
-      margin: 0
+      margin: 0,
     },
     [theme.breakpoints.down('xs')]: {
       textAlign: 'center',
@@ -104,11 +121,11 @@ const styles: BoxStyles = {
   listType: {
     fontSize: 12,
     fontWeight: 400,
-    textTransform: "uppercase"
+    textTransform: 'uppercase',
   },
   listName: {
     fontSize: 36,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     [theme.breakpoints.down('xs')]: {
       fontSize: 32,
     },
@@ -120,8 +137,8 @@ const styles: BoxStyles = {
 
 export const headers: HeadersFunction = () => {
   return {
-    "Cache-Control": "public, s-maxage=5, stale-while-revalidate=3595",
-    "Vary": "Authorization, Cookie",
+    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3595',
+    Vary: 'Authorization, Cookie',
   }
 }
 
@@ -153,7 +170,6 @@ export const headers: HeadersFunction = () => {
 //   }
 // }
 
-
 export const loader: LoaderFunction = async ({ params }) => {
   const { hash } = params as { hash: string }
 
@@ -162,8 +178,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(data)
 }
 
-type Props = {
-}
+type Props = {}
 
 const TrackDetailPage: FC<Props> = (props) => {
   const {
@@ -174,7 +189,7 @@ const TrackDetailPage: FC<Props> = (props) => {
     addToQueue,
     playingListHash,
     isPlaying,
-    currentTime
+    currentTime,
   } = useSelector(({ player }: AppStateInterface) => ({
     playingListHash: player?.list?.hash,
     isPlaying: player.isPlaying,
@@ -188,7 +203,8 @@ const TrackDetailPage: FC<Props> = (props) => {
   const currentUser = { loggedIn: false }
 
   const navigate = useNavigate()
-  const [openAddTrackToPlaylistPopup, setOpenAddTrackToPlaylistPopup] = useState(false)
+  const [openAddTrackToPlaylistPopup, setOpenAddTrackToPlaylistPopup] =
+    useState(false)
 
   const { track, relatedTracks } = useLoaderData()
 
@@ -197,7 +213,7 @@ const TrackDetailPage: FC<Props> = (props) => {
 
     const list: ListInterface = {
       hash,
-      sounds: makeSoundList()
+      sounds: makeSoundList(),
     }
 
     return list
@@ -206,15 +222,17 @@ const TrackDetailPage: FC<Props> = (props) => {
   const makeSoundList = () => {
     const { hash, title, poster_url, artist, audio_url } = track
 
-    return [{
-      hash,
-      title,
-      image: poster_url,
-      author_name: artist.stage_name,
-      author_hash: artist.hash,
-      play_url: audio_url,
-      type: 'track',
-    }]
+    return [
+      {
+        hash,
+        title,
+        image: poster_url,
+        author_name: artist.stage_name,
+        author_hash: artist.hash,
+        play_url: audio_url,
+        type: 'track',
+      },
+    ]
   }
 
   const togglePlay = useCallback(() => {
@@ -230,7 +248,15 @@ const TrackDetailPage: FC<Props> = (props) => {
     if (playingListHash !== track.hash) {
       playList(makeList())
     }
-  }, [isPlaying, playingListHash, track.hash, pauseList, resumeList, playList, makeList])
+  }, [
+    isPlaying,
+    playingListHash,
+    track.hash,
+    pauseList,
+    resumeList,
+    playList,
+    makeList,
+  ])
 
   const getTabs = () => {
     const url = window.location.href
@@ -239,7 +265,7 @@ const TrackDetailPage: FC<Props> = (props) => {
     const tabs: TabItem[] = [
       {
         icon: <ShareIcon />,
-        label: "Share",
+        label: 'Share',
         value: (
           <>
             <br />
@@ -248,8 +274,15 @@ const TrackDetailPage: FC<Props> = (props) => {
                 <FacebookShareButton
                   url={url}
                   quote={title}
-                  hashtag={hashtags.split(' ').join(' #')}>
-                  <FacebookIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.facebook }} />
+                  hashtag={hashtags.split(' ').join(' #')}
+                >
+                  <FacebookIcon
+                    style={{
+                      fontSize: 48,
+                      cursor: 'pointer',
+                      color: colors.facebook,
+                    }}
+                  />
                 </FacebookShareButton>
               </Grid>
               <Grid item>
@@ -257,18 +290,37 @@ const TrackDetailPage: FC<Props> = (props) => {
                   url={url}
                   title={title}
                   via={TWITTER_HANDLE}
-                  hashtags={hashtags.split(' ')}>
-                  <TwitterIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.twitter }} />
+                  hashtags={hashtags.split(' ')}
+                >
+                  <TwitterIcon
+                    style={{
+                      fontSize: 48,
+                      cursor: 'pointer',
+                      color: colors.twitter,
+                    }}
+                  />
                 </TwitterShareButton>
               </Grid>
               <Grid item>
                 <WhatsappShareButton url={url} title={title}>
-                  <WhatsappIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.whatsapp }} />
+                  <WhatsappIcon
+                    style={{
+                      fontSize: 48,
+                      cursor: 'pointer',
+                      color: colors.whatsapp,
+                    }}
+                  />
                 </WhatsappShareButton>
               </Grid>
               <Grid item>
                 <TelegramShareButton url={url} title={title}>
-                  <TelegramIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.telegram }} />
+                  <TelegramIcon
+                    style={{
+                      fontSize: 48,
+                      cursor: 'pointer',
+                      color: colors.telegram,
+                    }}
+                  />
                 </TelegramShareButton>
               </Grid>
               <Grid item>
@@ -278,44 +330,53 @@ const TrackDetailPage: FC<Props> = (props) => {
               </Grid>
             </Grid>
           </>
-        )
-      }
+        ),
+      },
     ]
 
     if (track.allowDownload) {
       tabs.push({
         icon: <GetAppIcon />,
-        label: "Download",
+        label: 'Download',
         value: (
           <>
-            <Box component="p">
-              File Size: {track.audio_file_size}
-            </Box>
+            <Box component="p">File Size: {track.audio_file_size}</Box>
             <Button
               variant="contained"
               size="large"
-              style={{ minWidth: "150px`" }}
-              onClick={() => navigate(AppRoutes.download.trackPage(track.hash))}>
+              style={{ minWidth: '150px`' }}
+              onClick={() => navigate(AppRoutes.download.trackPage(track.hash))}
+            >
               Download
             </Button>
           </>
-        )
+        ),
       })
     }
 
     if (track.detail) {
       tabs.push({
         icon: <InfoIcon />,
-        label: "Detail",
-        value: <p dangerouslySetInnerHTML={{ __html: track.detail }} style={{ wordWrap: 'normal' }} />
+        label: 'Detail',
+        value: (
+          <p
+            dangerouslySetInnerHTML={{ __html: track.detail }}
+            style={{ wordWrap: 'normal' }}
+          />
+        ),
       })
     }
 
     if (track.lyrics) {
       tabs.push({
         icon: <LineWeightIcon />,
-        label: "Lyrics",
-        value: <p dangerouslySetInnerHTML={{ __html: track.lyrics }} style={{ wordWrap: 'normal' }} />
+        label: 'Lyrics',
+        value: (
+          <p
+            dangerouslySetInnerHTML={{ __html: track.lyrics }}
+            style={{ wordWrap: 'normal' }}
+          />
+        ),
       })
     }
 
@@ -330,14 +391,16 @@ const TrackDetailPage: FC<Props> = (props) => {
     let options = [
       {
         name: 'Play Next',
-        method: () => { playNext(makeSoundList()) }
-      }
+        method: () => {
+          playNext(makeSoundList())
+        },
+      },
     ]
 
     if (currentUser.loggedIn) {
       options.push({
         name: 'Add To Playlist',
-        method: () => handleAddTrackToPlaylist()
+        method: () => handleAddTrackToPlaylist(),
       })
     }
 
@@ -345,7 +408,7 @@ const TrackDetailPage: FC<Props> = (props) => {
       name: 'Go To Artist',
       method: () => {
         navigate(AppRoutes.artist.detailPage(track.artist.hash))
-      }
+      },
     })
 
     if (track.album) {
@@ -353,13 +416,13 @@ const TrackDetailPage: FC<Props> = (props) => {
         name: 'Go To Album',
         method: () => {
           navigate(AppRoutes.album.detailPage(track.album.hash))
-        }
+        },
       })
     }
 
     options.push({
       name: 'Add To Queue',
-      method: () => addToQueue(makeSoundList())
+      method: () => addToQueue(makeSoundList()),
     })
 
     return options
@@ -377,26 +440,41 @@ const TrackDetailPage: FC<Props> = (props) => {
               ulb: true,
               lb: {
                 width: 250,
-                height: 250
-              }
-            }} />
+                height: 250,
+              },
+            }}
+          />
         </Grid>
         <Grid item sm={8} xs={12} sx={styles.detailsWrapper}>
           <Box sx={styles.listDetails}>
-            <Box component="h5" sx={styles.listType}>Track</Box>
-            <Box component={"h1"} sx={styles.listName}>{track.title}</Box>
-            <Box component={"p"} sx={styles.listByAuthor} style={{ marginBottom: 5 }}>
-              <Box component={"span"} sx={styles.listBy}>By </Box>
-              <Box component={Link}
+            <Box component="h5" sx={styles.listType}>
+              Track
+            </Box>
+            <Box component={'h1'} sx={styles.listName}>
+              {track.title}
+            </Box>
+            <Box
+              component={'p'}
+              sx={styles.listByAuthor}
+              style={{ marginBottom: 5 }}
+            >
+              <Box component={'span'} sx={styles.listBy}>
+                By{' '}
+              </Box>
+              <Box
+                component={Link}
                 to={AppRoutes.artist.detailPage(track.artist.hash)}
                 sx={styles.listAuthor}
               >
                 {track.artist.stage_name}
               </Box>
 
-              <Box component="span" sx={styles.listBy}>, In </Box>
+              <Box component="span" sx={styles.listBy}>
+                , In{' '}
+              </Box>
 
-              <Box component={Link}
+              <Box
+                component={Link}
                 to={AppRoutes.genre.detailPage(track.genre.slug)}
                 sx={styles.listAuthor}
               >
@@ -404,29 +482,36 @@ const TrackDetailPage: FC<Props> = (props) => {
               </Box>
             </Box>
             <Box component="p" sx={styles.listByAuthor}>
-              <HeadsetIcon sx={styles.listBy} /> {' '}
+              <HeadsetIcon sx={styles.listBy} />{' '}
               <Box component="span" sx={styles.listAuthor}>
                 {track.play_count}
               </Box>
               &nbsp;&nbsp;_&nbsp;&nbsp;
-              <GetAppIcon sx={styles.listBy} /> {' '}
+              <GetAppIcon sx={styles.listBy} />{' '}
               <Box component="span" sx={styles.listAuthor}>
                 {track.download_count}
               </Box>
             </Box>
 
             <Grid sx={styles.ctaButtons} container spacing={2}>
-              <Grid item xs={2} sx={{
-                sm: {
-                  display: 'none'
-                }
-              }} />
+              <Grid
+                item
+                xs={2}
+                sx={{
+                  sm: {
+                    display: 'none',
+                  },
+                }}
+              />
               <Grid item>
                 <Button
-                  variant="contained" style={{ width: "100px" }} onClick={togglePlay}>
-                  {(playingListHash !== track.hash) && "Play"}
-                  {(isPlaying && playingListHash === track.hash) && "Pause"}
-                  {(!isPlaying && playingListHash === track.hash) && "Resume"}
+                  variant="contained"
+                  style={{ width: '100px' }}
+                  onClick={togglePlay}
+                >
+                  {playingListHash !== track.hash && 'Play'}
+                  {isPlaying && playingListHash === track.hash && 'Pause'}
+                  {!isPlaying && playingListHash === track.hash && 'Resume'}
                   {/* todo // using currentTime > 0  to display rsesume or replay */}
                 </Button>
               </Grid>
@@ -442,12 +527,7 @@ const TrackDetailPage: FC<Props> = (props) => {
 
       <br />
 
-      {getTabs().length ? (
-        <Tabs
-          title="Detail Tabs"
-          tabs={getTabs()}
-        />
-      ) : null}
+      {getTabs().length ? <Tabs title="Detail Tabs" tabs={getTabs()} /> : null}
 
       <br />
       <br />
@@ -478,10 +558,11 @@ export function CatchBoundary() {
   let message
   switch (caught.status) {
     case 401:
-      message = "Oops! Looks like you tried to visit a page that you do not have access to."
+      message =
+        'Oops! Looks like you tried to visit a page that you do not have access to.'
       break
     case 404:
-      message = "OOPS! The Track was not found."
+      message = 'OOPS! The Track was not found.'
       break
 
     default:
@@ -492,13 +573,26 @@ export function CatchBoundary() {
     <Box>
       <HeaderTitle icon={<FindReplaceIcon />} text={message} />
       <h3>
-        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
-        or
-        {' '}
+        Go to the{' '}
         <Link
-          style={{ cursor: 'pointer', textDecoration: 'underline', color: colors.white }}
-          to={AppRoutes.browse.tracks}>browse other tracks.
-        </Link>.
+          prefetch="intent"
+          style={{ color: 'white' }}
+          to={AppRoutes.pages.home}
+        >
+          home page
+        </Link>{' '}
+        or{' '}
+        <Link
+          style={{
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            color: colors.white,
+          }}
+          to={AppRoutes.browse.tracks}
+        >
+          browse other tracks.
+        </Link>
+        .
       </h3>
       <FourOrFour />
     </Box>

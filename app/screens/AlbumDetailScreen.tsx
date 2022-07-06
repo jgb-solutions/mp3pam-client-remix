@@ -1,6 +1,6 @@
-import { useEffect } from "react"
-import { connect } from "react-redux"
-import { Link, useParams, useNavigate } from "@remix-run/react"
+import { useEffect } from 'react'
+import { connect } from 'react-redux'
+import { Link, useParams, useNavigate } from '@remix-run/react'
 import InfoIcon from '@mui/icons-material/Info'
 import ShareIcon from '@mui/icons-material/Share'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
@@ -19,25 +19,31 @@ import {
   EmailShareButton,
 } from 'react-share'
 
-import AppRoutes from "~/app-routes"
-import colors from "../utils/colors"
-import More from "~/components/More"
-import Tabs, { TabItem } from "~/components/Tabs"
-import AlbumTracksTable from "~/components/AlbumTracksTable"
+import AppRoutes from '~/app-routes'
+import colors from '../utils/colors'
+import More from '~/components/More'
+import Tabs, { TabItem } from '~/components/Tabs'
+import AlbumTracksTable from '~/components/AlbumTracksTable'
 import useAlbumDetail from '../hooks/useAlbumDetail'
-import Button from "@mui/material/Button"
-import ListInterface, { SoundInterface } from "../interfaces/ListInterface"
-import * as playerActions from "../redux/actions/playerActions"
-import AppStateInterface from "../interfaces/AppStateInterface"
-import { SMALL_SCREEN_SIZE, APP_NAME, DOMAIN, SEO_ALBUM_TYPE, TWITTER_HANDLE } from "../utils/constants.server"
-import Spinner from "~/components/Spinner"
-import { AlbumScrollingList } from "~/components/AlbumScrollingList"
-import useRandomAlbums from "../hooks/useRandomAlbums"
+import Button from '@mui/material/Button'
+import ListInterface, { SoundInterface } from '../interfaces/ListInterface'
+import * as playerActions from '../redux/actions/playerActions'
+import AppStateInterface from '../interfaces/AppStateInterface'
+import {
+  SMALL_SCREEN_SIZE,
+  APP_NAME,
+  DOMAIN,
+  SEO_ALBUM_TYPE,
+  TWITTER_HANDLE,
+} from '../utils/constants'
+import Spinner from '~/components/Spinner'
+import { AlbumScrollingList } from '~/components/AlbumScrollingList'
+import useRandomAlbums from '../hooks/useRandomAlbums'
 
-import FourOrFour from "~/components/FourOrFour"
-import HeaderTitle from "~/components/HeaderTitle"
-import Image from "~/components/Image"
-import Grid from "@mui/material/Grid"
+import FourOrFour from '~/components/FourOrFour'
+import HeaderTitle from '~/components/HeaderTitle'
+import Image from '~/components/Image'
+import Grid from '@mui/material/Grid'
 
 // const styles: BoxStyles = {
 //   row: {
@@ -121,11 +127,14 @@ type Props = {
 }
 
 const AlbumDetailPage = (props: Props) => {
-
   const params = useParams()
   const navigate = useNavigate()
   const hash = get(params, 'hash')
-  const { loading: randomLoading, data: randomAlbumsData, fetchRandomAlbums } = useRandomAlbums(hash)
+  const {
+    loading: randomLoading,
+    data: randomAlbumsData,
+    fetchRandomAlbums,
+  } = useRandomAlbums(hash)
   const randomAlbums = get(randomAlbumsData, 'randomAlbums')
 
   const { data, loading, error } = useAlbumDetail(hash)
@@ -136,7 +145,7 @@ const AlbumDetailPage = (props: Props) => {
 
     const list: ListInterface = {
       hash,
-      sounds: makeSoundList()
+      sounds: makeSoundList(),
     }
 
     return list
@@ -175,12 +184,10 @@ const AlbumDetailPage = (props: Props) => {
     }
   }
 
-
   if (loading) return <Spinner.Full />
 
-
   if (error) {
-    return (<h1>Error loading album detail. Please reload page.</h1>)
+    return <h1>Error loading album detail. Please reload page.</h1>
   }
 
   const getTabs = () => {
@@ -190,7 +197,7 @@ const AlbumDetailPage = (props: Props) => {
     const tabs: TabItem[] = [
       {
         icon: <ShareIcon />,
-        label: "Share",
+        label: 'Share',
         value: (
           <>
             <br />
@@ -199,8 +206,15 @@ const AlbumDetailPage = (props: Props) => {
                 <FacebookShareButton
                   url={url}
                   quote={title}
-                  hashtag={hashtags.split(' ').join(' #')}>
-                  <FacebookIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.facebook }} />
+                  hashtag={hashtags.split(' ').join(' #')}
+                >
+                  <FacebookIcon
+                    style={{
+                      fontSize: 48,
+                      cursor: 'pointer',
+                      color: colors.facebook,
+                    }}
+                  />
                 </FacebookShareButton>
               </Grid>
               <Grid item>
@@ -208,18 +222,37 @@ const AlbumDetailPage = (props: Props) => {
                   url={url}
                   title={title}
                   via={TWITTER_HANDLE}
-                  hashtags={hashtags.split(' ')}>
-                  <TwitterIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.twitter }} />
+                  hashtags={hashtags.split(' ')}
+                >
+                  <TwitterIcon
+                    style={{
+                      fontSize: 48,
+                      cursor: 'pointer',
+                      color: colors.twitter,
+                    }}
+                  />
                 </TwitterShareButton>
               </Grid>
               <Grid item>
                 <WhatsappShareButton url={url} title={title}>
-                  <WhatsappIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.whatsapp }} />
+                  <WhatsappIcon
+                    style={{
+                      fontSize: 48,
+                      cursor: 'pointer',
+                      color: colors.whatsapp,
+                    }}
+                  />
                 </WhatsappShareButton>
               </Grid>
               <Grid item>
                 <TelegramShareButton url={url} title={title}>
-                  <TelegramIcon style={{ fontSize: 48, cursor: 'pointer', color: colors.telegram }} />
+                  <TelegramIcon
+                    style={{
+                      fontSize: 48,
+                      cursor: 'pointer',
+                      color: colors.telegram,
+                    }}
+                  />
                 </TelegramShareButton>
               </Grid>
               <Grid item>
@@ -229,23 +262,28 @@ const AlbumDetailPage = (props: Props) => {
               </Grid>
             </Grid>
           </>
-        )
-      }
+        ),
+      },
     ]
 
     if (album.detail) {
       tabs.push({
         icon: <InfoIcon />,
-        label: "Detail",
-        value: <p dangerouslySetInnerHTML={{ __html: album.detail }} style={{ wordWrap: 'normal' }} />
+        label: 'Detail',
+        value: (
+          <p
+            dangerouslySetInnerHTML={{ __html: album.detail }}
+            style={{ wordWrap: 'normal' }}
+          />
+        ),
       })
     }
 
     if (album.tracks.length) {
       tabs.push({
         icon: <MusicNoteIcon />,
-        label: "Tracks",
-        value: <AlbumTracksTable album={album} list={makeList()} />
+        label: 'Tracks',
+        value: <AlbumTracksTable album={album} list={makeList()} />,
       })
     }
 
@@ -256,13 +294,13 @@ const AlbumDetailPage = (props: Props) => {
     let options = [
       {
         name: 'Play Next',
-        method: () => props.playNext(makeSoundList())
+        method: () => props.playNext(makeSoundList()),
       },
       {
         name: 'Go To Artist',
         method: () => {
           navigate(AppRoutes.artist.detailPage(album.artist.hash))
-        }
+        },
       },
       // { name: 'Remove from your Liked Albums', method: () => { } },
       // { name: 'Add To Playlist', method: () => { } },
@@ -270,7 +308,7 @@ const AlbumDetailPage = (props: Props) => {
 
     options.push({
       name: 'Add To Queue',
-      method: () => props.addToQueue(makeSoundList())
+      method: () => props.addToQueue(makeSoundList()),
     })
 
     return options
@@ -288,8 +326,8 @@ const AlbumDetailPage = (props: Props) => {
               ulb: true,
               lb: {
                 width: 250,
-                height: 250
-              }
+                height: 250,
+              },
             }}
           />
         </Grid>
@@ -313,11 +351,15 @@ const AlbumDetailPage = (props: Props) => {
             </p>
             <Grid sx={styles.ctaButtons} container spacing={2}>
               <Grid item xs={2} implementation="css" smUp component={Hidden} />
-              <Grid item >
+              <Grid item>
                 <Button fullWidth style={{ width: 100 }} onClick={togglePlay}>
-                  {(props.playingListHash !== album.hash) && "Play"}
-                  {(props.isPlaying && props.playingListHash === album.hash) && "Pause"}
-                  {(!props.isPlaying && props.playingListHash === album.hash) && "Resume"}
+                  {props.playingListHash !== album.hash && 'Play'}
+                  {props.isPlaying &&
+                    props.playingListHash === album.hash &&
+                    'Pause'}
+                  {!props.isPlaying &&
+                    props.playingListHash === album.hash &&
+                    'Resume'}
                   {/* todo // using props.currentTime > 0  to display rsesume or replay */}
                 </Button>
               </Grid>
@@ -333,12 +375,7 @@ const AlbumDetailPage = (props: Props) => {
 
       <br />
 
-      {getTabs().length ? (
-        <Tabs
-          title="Detail Tabs"
-          tabs={getTabs()}
-        />
-      ) : null}
+      {getTabs().length ? <Tabs title="Detail Tabs" tabs={getTabs()} /> : null}
 
       <br />
       <br />
@@ -363,15 +400,31 @@ const AlbumDetailPage = (props: Props) => {
     </div>
   ) : (
     <>
-      <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! The Album was not found." />
+      <HeaderTitle
+        icon={<FindReplaceIcon />}
+        text="OOPS! The Album was not found."
+      />
       <h3>
-        Go to the <Link prefetch="intent" style={{ color: 'white' }} to={AppRoutes.pages.home}>home page</Link>{' '}
-        or
-        {' '}
+        Go to the{' '}
         <Link
-          style={{ cursor: 'pointer', textDecoration: 'underline', color: colors.white }}
-          to={AppRoutes.browse.albums}>browse other albums.
-        </Link>.
+          prefetch="intent"
+          style={{ color: 'white' }}
+          to={AppRoutes.pages.home}
+        >
+          home page
+        </Link>{' '}
+        or{' '}
+        <Link
+          style={{
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            color: colors.white,
+          }}
+          to={AppRoutes.browse.albums}
+        >
+          browse other albums.
+        </Link>
+        .
       </h3>
       <FourOrFour />
     </>
@@ -382,7 +435,7 @@ export default connect(
   ({ player }: AppStateInterface) => ({
     playingListHash: get(player, 'list.hash'),
     isPlaying: player.isPlaying,
-    currentTime: player.currentTime
+    currentTime: player.currentTime,
   }),
   {
     playList: playerActions.playList,

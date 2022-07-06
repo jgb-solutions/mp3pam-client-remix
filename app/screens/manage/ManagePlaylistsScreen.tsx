@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 
 import { makeStyles } from '@mui/material/styles'
@@ -7,19 +7,18 @@ import TableBody from '@mui/material/TableBody'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import ErrorIcon from '@mui/icons-material/Error'
-import DialogActions from "@mui/material/DialogActions"
+import DialogActions from '@mui/material/DialogActions'
 
-import AlertDialog from "~/components/AlertDialog"
-import Spinner from "~/components/Spinner"
-import HeaderTitle from "~/components/HeaderTitle"
-import useMyPlaylists from "../../hooks/useMyPlaylists"
+import AlertDialog from '~/components/AlertDialog'
+import Spinner from '~/components/Spinner'
+import HeaderTitle from '~/components/HeaderTitle'
+import useMyPlaylists from '../../hooks/useMyPlaylists'
 // import { StyledTableCell } from "~/components/PlaylistTracksTable"
-import { Link } from "@remix-run/react"
-import AppRoutes from "~/app-routes"
-import Button from "@mui/material/Button"
-import colors from "../../utils/colors"
-import useDeletePlaylist from "../../hooks/useDeletePlaylist"
-
+import { Link } from '@remix-run/react'
+import AppRoutes from '~/app-routes'
+import Button from '@mui/material/Button'
+import colors from '~/utils/colors'
+import useDeletePlaylist from '../../hooks/useDeletePlaylist'
 
 // const styles: BoxStyles = {
 //   table: {
@@ -38,9 +37,13 @@ import useDeletePlaylist from "../../hooks/useDeletePlaylist"
 // }))
 
 export default function ManagePlaylistsPage() {
-
   const [playlistHashToDelete, setPlaylistHashToDelete] = useState('')
-  const { deletePlaylist, deletePlaylistResponse, deletingPlaylist, errorDeletingPlaylist } = useDeletePlaylist()
+  const {
+    deletePlaylist,
+    deletePlaylistResponse,
+    deletingPlaylist,
+    errorDeletingPlaylist,
+  } = useDeletePlaylist()
   const { loading, error, data, refetch } = useMyPlaylists()
   const playlists = get(data, 'me.playlists')
 
@@ -83,12 +86,19 @@ export default function ManagePlaylistsPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {playlists.data.map((playlist: { hash: string, title: string }, index: number) => {
-                return (
-                  <TableRow key={index} style={{
-                    borderBottom: playlists.data.length - 1 === index ? '' : '1px solid white',
-                  }}>
-                    {/* <StyledTableCell style={{ width: '80%' }}>
+              {playlists.data.map(
+                (playlist: { hash: string; title: string }, index: number) => {
+                  return (
+                    <TableRow
+                      key={index}
+                      style={{
+                        borderBottom:
+                          playlists.data.length - 1 === index
+                            ? ''
+                            : '1px solid white',
+                      }}
+                    >
+                      {/* <StyledTableCell style={{ width: '80%' }}>
                       <Link prefetch="intent" to={AppRoutes.playlist.detailPage(playlist.hash)} sx={styles.link}>{playlist.title}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
@@ -100,33 +110,40 @@ export default function ManagePlaylistsPage() {
                         sx={styles.link}
                         style={{ cursor: 'pointer' }}>Delete</span>
                     </StyledTableCell> */}
-                  </TableRow>
-                )
-              })}
+                    </TableRow>
+                  )
+                }
+              )}
             </TableBody>
           </Table>
         </>
       ) : (
-        <HeaderTitle icon={<PlaylistAddIcon />} text="You have no playlists yet" />
+        <HeaderTitle
+          icon={<PlaylistAddIcon />}
+          text="You have no playlists yet"
+        />
       )}
 
       {/* Deletion confirmation */}
       <AlertDialog
         open={!!playlistHashToDelete}
-        handleClose={() => setPlaylistHashToDelete('')}>
+        handleClose={() => setPlaylistHashToDelete('')}
+      >
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
           icon={<ErrorIcon sx={styles.errorColor} />}
-          text={`Are you sure you want to delete this playlist?`} />
+          text={`Are you sure you want to delete this playlist?`}
+        />
         <DialogActions>
-          <Button size='small' onClick={() => setPlaylistHashToDelete('')}>
+          <Button size="small" onClick={() => setPlaylistHashToDelete('')}>
             Cancel
           </Button>
           <Button
-            size='small'
+            size="small"
             onClick={() => handleDeletePlaylist(playlistHashToDelete)}
             sx={styles.noBgButton}
-            disabled={deletingPlaylist}>
+            disabled={deletingPlaylist}
+          >
             Delete
           </Button>
         </DialogActions>

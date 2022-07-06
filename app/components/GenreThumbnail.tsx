@@ -1,14 +1,12 @@
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline"
+import IconButton from '@mui/material/IconButton'
 
-import IconButton from "@mui/material/IconButton"
-
-
-import colors from "../utils/colors"
-import AppRoutes from "~/app-routes"
-import { SMALL_SCREEN_SIZE } from "../utils/constants.server"
-import { useNavigate } from "@remix-run/react"
-import AppRoutes from "~/app-routes"
+import colors from '../utils/colors'
+import AppRoutes from '~/app-routes'
+import { SMALL_SCREEN_SIZE } from '../utils/constants'
+import { useNavigate } from '@remix-run/react'
+import AppRoutes from '~/app-routes'
 
 export interface GenreInterface {
   name: string
@@ -83,11 +81,10 @@ export interface GenreInterface {
 type Props = {
   genre: GenreInterface
   className?: string
-  style?: object,
+  style?: object
 }
 
 export default function GenreThumbnail(props: Props) {
-
   const navigate = useNavigate()
 
   const { genre } = props
@@ -102,10 +99,7 @@ export default function GenreThumbnail(props: Props) {
         sx={styles.imgContainer}
         style={{ backgroundImage: `url(/assets/images/genres.jpg)` }}
       >
-        <div
-          sx={styles.transparentBackground}
-          onClick={goToGenrePage}
-        >
+        <div sx={styles.transparentBackground} onClick={goToGenrePage}>
           <IconButton>
             <PlayCircleOutlineIcon sx={styles.icon} />
           </IconButton>

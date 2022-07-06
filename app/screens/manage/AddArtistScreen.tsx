@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from "react"
+import { useState, useEffect, ReactNode } from 'react'
 import useForm from 'react-hook-form'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -10,32 +10,36 @@ import TwitterIcon from '@mui/icons-material/Twitter'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 
-import ProgressBar from "~/components/ProgressBar"
-import TextField from "@mui/material/TextField"
+import ProgressBar from '~/components/ProgressBar'
+import TextField from '@mui/material/TextField'
 import Button from '../~/components/Button'
 import UploadButton from '../~/components/UploadButton'
 
-import HeaderTitle from "~/components/HeaderTitle"
-import useFileUpload from "../../hooks/useFileUpload"
-import TextIcon from "~/components/TextIcon"
-import { addArtistPageStyles } from "../../styles/addArtistPageStyles"
+import HeaderTitle from '~/components/HeaderTitle'
+import useFileUpload from '../../hooks/useFileUpload'
+import TextIcon from '~/components/TextIcon'
+import { addArtistPageStyles } from '../../styles/addArtistPageStyles'
 import useAddArtist from '../../hooks/useAddArtist'
-import AppRoutes from "~/app-routes"
-import AlertDialog from "~/components/AlertDialog"
-import { getFile } from "../../utils/helpers"
-import { IMG_BUCKET, MAX_IMG_FILE_SIZE, MIN_SOCIAL_MEDIA_USERNAME_LENGTH, MIN_ARTIST_BIO_LENGTH } from "../../utils/constants.server"
+import AppRoutes from '~/app-routes'
+import AlertDialog from '~/components/AlertDialog'
+import { getFile } from '~/utils/helpers'
+import {
+  IMG_BUCKET,
+  MAX_IMG_FILE_SIZE,
+  MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
+  MIN_ARTIST_BIO_LENGTH,
+} from '~/utils/constants'
 
-import Grid from "@mui/material/Grid"
-
+import Grid from '@mui/material/Grid'
 
 type IconFieldProps = {
-  icon: ReactNode,
-  field: ReactNode,
-  hasError: boolean,
+  icon: ReactNode
+  field: ReactNode
+  hasError: boolean
 }
 export function IconField({ icon, field, hasError }: IconFieldProps) {
   return (
-    <Grid container spacing={3} alignItems={hasError ? "center" : "flex-end"}>
+    <Grid container spacing={3} alignItems={hasError ? 'center' : 'flex-end'}>
       <Grid item xs={1}>
         {icon}
       </Grid>
@@ -54,7 +58,7 @@ export interface FormData {
   twitter?: string
   isntagram?: string
   youtube?: string
-};
+}
 
 export interface ArtistData extends FormData {
   poster?: string
@@ -63,8 +67,14 @@ export interface ArtistData extends FormData {
 
 export default function AddArtistPage() {
   const history = useHistory()
-  const { register, handleSubmit, errors, formState } = useForm<FormData>({ mode: 'onBlur' })
-  const { addArtist, loading: formWorking, data: uploadedArtist } = useAddArtist()
+  const { register, handleSubmit, errors, formState } = useForm<FormData>({
+    mode: 'onBlur',
+  })
+  const {
+    addArtist,
+    loading: formWorking,
+    data: uploadedArtist,
+  } = useAddArtist()
   const {
     upload: uploadImg,
     uploading: imgUploading,
@@ -72,8 +82,12 @@ export default function AddArtistPage() {
     percentUploaded: imgPercentUploaded,
     isValid: imgValid,
     errorMessage: imgErrorMessage,
-    filename: poster
-  } = useFileUpload({ bucket: IMG_BUCKET, message: "You must choose a poster.", headers: { public: true } })
+    filename: poster,
+  } = useFileUpload({
+    bucket: IMG_BUCKET,
+    message: 'You must choose a poster.',
+    headers: { public: true },
+  })
 
   const [openArtistSuccessDialog, setOpenArtistSuccessDialog] = useState(false)
   const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
@@ -84,10 +98,9 @@ export default function AddArtistPage() {
 
   const handleOpenInvalidFileSizeClose = () => setOpenInvalidFileSize('')
 
-
-  const handleImageUpload = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => { uploadImg(getFile(event)) }
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    uploadImg(getFile(event))
+  }
 
   const handleInvalidImageSize = (filesize: number) => {
     setOpenInvalidFileSize(`
@@ -102,7 +115,7 @@ export default function AddArtistPage() {
     const artist = {
       ...values,
       poster: poster || '',
-      img_bucket: IMG_BUCKET
+      img_bucket: IMG_BUCKET,
     }
 
     // console.table(artist)
@@ -118,16 +131,16 @@ export default function AddArtistPage() {
   const styles: BoxStyles = addArtistPageStyles()
 
   return (
-    <CheckAuth sx='react-transition scale-in'>
+    <CheckAuth sx="react-transition scale-in">
       <HeaderTitle icon={<PersonPinCircleIcon />} text={`Add a new artist`} />
       <SEO title={`Add a new artist`} />
 
       <form onSubmit={handleSubmit(handleAddArtist)} noValidate>
-        <Grid container direction='row' spacing={2}>
+        <Grid container direction="row" spacing={2}>
           <Grid item xs={12} sm>
             <TextField
               inputRef={register({
-                required: "The name of the artist is required.",
+                required: 'The name of the artist is required.',
               })}
               name="name"
               id="name"
@@ -135,18 +148,22 @@ export default function AddArtistPage() {
               type="text"
               margin="normal"
               error={!!errors.name}
-              helperText={errors.name && (
-                <TextIcon
-                  icon={<ErrorIcon sx={styles.errorColor} />}
-                  text={<span sx={styles.errorColor}>{errors.name.message}</span>}
-                />
-              )}
+              helperText={
+                errors.name && (
+                  <TextIcon
+                    icon={<ErrorIcon sx={styles.errorColor} />}
+                    text={
+                      <span sx={styles.errorColor}>{errors.name.message}</span>
+                    }
+                  />
+                )
+              }
             />
           </Grid>
           <Grid item xs={12} sm>
             <TextField
               inputRef={register({
-                required: "The Stage Name of the artist is required.",
+                required: 'The Stage Name of the artist is required.',
               })}
               name="stage_name"
               id="stage_name"
@@ -154,23 +171,35 @@ export default function AddArtistPage() {
               type="text"
               margin="normal"
               error={!!errors.stage_name}
-              helperText={errors.stage_name && (
-                <TextIcon
-                  icon={<ErrorIcon sx={styles.errorColor} />}
-                  text={<span sx={styles.errorColor}>{errors.stage_name.message}</span>}
-                />
-              )}
+              helperText={
+                errors.stage_name && (
+                  <TextIcon
+                    icon={<ErrorIcon sx={styles.errorColor} />}
+                    text={
+                      <span sx={styles.errorColor}>
+                        {errors.stage_name.message}
+                      </span>
+                    }
+                  />
+                )
+              }
               style={{ marginBottom: 15 }}
             />
           </Grid>
         </Grid>
 
-        <Grid container direction='row' alignItems='center' spacing={1} sx={styles.uploadButton}>
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          sx={styles.uploadButton}
+        >
           <Grid item>
             <UploadButton
               allowedFileSize={MAX_IMG_FILE_SIZE()}
               onFileSizeInvalid={handleInvalidImageSize}
-              buttonSize='large'
+              buttonSize="large"
               accept="image/*"
               onChange={handleImageUpload}
               title="Choose a Poster *"
@@ -196,17 +225,19 @@ export default function AddArtistPage() {
             value={imgPercentUploaded}
           />
         )}
-        <Grid container direction='row' spacing={2}>
+        <Grid container direction="row" spacing={2}>
           <Grid item xs={12} sm={6}>
             <IconField
-              icon={<FacebookIcon sx={!!errors.facebook ? styles.errorColor : ''} />}
-              field={(
+              icon={
+                <FacebookIcon sx={!!errors.facebook ? styles.errorColor : ''} />
+              }
+              field={
                 <TextField
-                  onChange={e => e.target.value = e.target.value.trim()}
+                  onChange={(e) => (e.target.value = e.target.value.trim())}
                   inputRef={register({
                     minLength: {
                       value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-                      message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters."`
+                      message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters."`,
                     },
                   })}
                   name="facebook"
@@ -214,27 +245,35 @@ export default function AddArtistPage() {
                   label="Facebook Username or Link"
                   margin="normal"
                   error={!!errors.facebook}
-                  helperText={!!errors.facebook && (
-                    <TextIcon
-                      icon={<ErrorIcon sx={styles.errorColor} />}
-                      text={<span sx={styles.errorColor}>{errors.facebook.message}</span>}
-                    />
-                  )}
+                  helperText={
+                    !!errors.facebook && (
+                      <TextIcon
+                        icon={<ErrorIcon sx={styles.errorColor} />}
+                        text={
+                          <span sx={styles.errorColor}>
+                            {errors.facebook.message}
+                          </span>
+                        }
+                      />
+                    )
+                  }
                 />
-              )}
+              }
               hasError={!!errors.facebook}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <IconField
-              icon={<TwitterIcon sx={!!errors.twitter ? styles.errorColor : ''} />}
-              field={(
+              icon={
+                <TwitterIcon sx={!!errors.twitter ? styles.errorColor : ''} />
+              }
+              field={
                 <TextField
-                  onChange={e => e.target.value = e.target.value.trim()}
+                  onChange={(e) => (e.target.value = e.target.value.trim())}
                   inputRef={register({
                     minLength: {
                       value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-                      message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`
+                      message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                     },
                   })}
                   name="twitter"
@@ -242,27 +281,37 @@ export default function AddArtistPage() {
                   label="Twitter Username or Link"
                   margin="normal"
                   error={!!errors.twitter}
-                  helperText={!!errors.twitter && (
-                    <TextIcon
-                      icon={<ErrorIcon sx={styles.errorColor} />}
-                      text={<span sx={styles.errorColor}>{errors.twitter.message}</span>}
-                    />
-                  )}
+                  helperText={
+                    !!errors.twitter && (
+                      <TextIcon
+                        icon={<ErrorIcon sx={styles.errorColor} />}
+                        text={
+                          <span sx={styles.errorColor}>
+                            {errors.twitter.message}
+                          </span>
+                        }
+                      />
+                    )
+                  }
                 />
-              )}
+              }
               hasError={!!errors.twitter}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <IconField
-              icon={<InstagramIcon sx={!!errors.instagram ? styles.errorColor : ''} />}
-              field={(
+              icon={
+                <InstagramIcon
+                  sx={!!errors.instagram ? styles.errorColor : ''}
+                />
+              }
+              field={
                 <TextField
-                  onChange={e => e.target.value = e.target.value.trim()}
+                  onChange={(e) => (e.target.value = e.target.value.trim())}
                   inputRef={register({
                     minLength: {
                       value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-                      message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`
+                      message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                     },
                   })}
                   name="instagram"
@@ -270,27 +319,35 @@ export default function AddArtistPage() {
                   label="Instagram Username or Link"
                   margin="normal"
                   error={!!errors.instagram}
-                  helperText={!!errors.instagram && (
-                    <TextIcon
-                      icon={<ErrorIcon sx={styles.errorColor} />}
-                      text={<span sx={styles.errorColor}>{errors.instagram.message}</span>}
-                    />
-                  )}
+                  helperText={
+                    !!errors.instagram && (
+                      <TextIcon
+                        icon={<ErrorIcon sx={styles.errorColor} />}
+                        text={
+                          <span sx={styles.errorColor}>
+                            {errors.instagram.message}
+                          </span>
+                        }
+                      />
+                    )
+                  }
                 />
-              )}
+              }
               hasError={!!errors.instagram}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <IconField
-              icon={<YouTubeIcon sx={!!errors.youtube ? styles.errorColor : ''} />}
-              field={(
+              icon={
+                <YouTubeIcon sx={!!errors.youtube ? styles.errorColor : ''} />
+              }
+              field={
                 <TextField
-                  onChange={e => e.target.value = e.target.value.trim()}
+                  onChange={(e) => (e.target.value = e.target.value.trim())}
                   inputRef={register({
                     minLength: {
                       value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-                      message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`
+                      message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                     },
                   })}
                   name="youtube"
@@ -298,14 +355,20 @@ export default function AddArtistPage() {
                   label="YouTube Username or Link"
                   margin="normal"
                   error={!!errors.youtube}
-                  helperText={!!errors.youtube && (
-                    <TextIcon
-                      icon={<ErrorIcon sx={styles.errorColor} />}
-                      text={<span sx={styles.errorColor}>{errors.youtube.message}</span>}
-                    />
-                  )}
+                  helperText={
+                    !!errors.youtube && (
+                      <TextIcon
+                        icon={<ErrorIcon sx={styles.errorColor} />}
+                        text={
+                          <span sx={styles.errorColor}>
+                            {errors.youtube.message}
+                          </span>
+                        }
+                      />
+                    )
+                  }
                 />
-              )}
+              }
               hasError={!!errors.youtube}
             />
           </Grid>
@@ -315,8 +378,8 @@ export default function AddArtistPage() {
           inputRef={register({
             minLength: {
               value: MIN_ARTIST_BIO_LENGTH,
-              message: `The bio must be at least ${MIN_ARTIST_BIO_LENGTH} characters.`
-            }
+              message: `The bio must be at least ${MIN_ARTIST_BIO_LENGTH} characters.`,
+            },
           })}
           name="bio"
           id="bio"
@@ -325,43 +388,55 @@ export default function AddArtistPage() {
           rowsMax="50"
           margin="normal"
           error={!!errors.bio}
-          helperText={errors.bio && (
-            <TextIcon
-              icon={<ErrorIcon sx={styles.errorColor} />}
-              text={<span sx={styles.errorColor}>{errors.bio.message}</span>}
-            />
-          )}
+          helperText={
+            errors.bio && (
+              <TextIcon
+                icon={<ErrorIcon sx={styles.errorColor} />}
+                text={<span sx={styles.errorColor}>{errors.bio.message}</span>}
+              />
+            )
+          }
         />
 
         <Button
           type="submit"
-          size='large'
+          size="large"
           style={{ marginTop: 15 }}
-          disabled={imgUploading || formWorking}>Add Artist</Button>
+          disabled={imgUploading || formWorking}
+        >
+          Add Artist
+        </Button>
       </form>
 
       {/* Success Dialog */}
       <AlertDialog
         open={openArtistSuccessDialog}
         handleClose={handleArtistSucessDialogClose}
-        disableBackdropClick >
-        <DialogContentText id="alert-dialog-description" align='center'>
-          <span><CheckCircleIcon style={{ fontSize: 64 }} sx={styles.successColor} /></span>
+        disableBackdropClick
+      >
+        <DialogContentText id="alert-dialog-description" align="center">
+          <span>
+            <CheckCircleIcon
+              style={{ fontSize: 64 }}
+              sx={styles.successColor}
+            />
+          </span>
           <br />
           <span>Artist successfully added!</span>
           <br />
           <br />
-          <Button size='small' onClick={goToArtistsLibrary} color="primary">
+          <Button size="small" onClick={goToArtistsLibrary} color="primary">
             Go To Your Artists
           </Button>
         </DialogContentText>
-      </AlertDialog >
+      </AlertDialog>
 
       {/* Handling invalid file sizes */}
       <AlertDialog
         open={!!openInvalidFileSize}
-        handleClose={handleOpenInvalidFileSizeClose}>
-        <DialogContentText id="alert-dialog-description" align='center'>
+        handleClose={handleOpenInvalidFileSizeClose}
+      >
+        <DialogContentText id="alert-dialog-description" align="center">
           <span>
             <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
           </span>
@@ -369,11 +444,15 @@ export default function AddArtistPage() {
           <span dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />
           <br />
           <br />
-          <Button size='small' onClick={handleOpenInvalidFileSizeClose} color="primary">
+          <Button
+            size="small"
+            onClick={handleOpenInvalidFileSizeClose}
+            color="primary"
+          >
             OK
           </Button>
         </DialogContentText>
       </AlertDialog>
-    </CheckAuth >
+    </CheckAuth>
   )
 }

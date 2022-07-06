@@ -23,12 +23,7 @@ import RootLayout from './components/layouts/Root'
 import MainLayout from './components/layouts/Main'
 import ClientStyleContext from './mui/ClientStyleContext'
 import { PersistGate } from 'redux-persist/integration/react'
-import {
-  APP_NAME,
-  DOMAIN,
-  FB_APP_ID,
-  TWITTER_HANDLE,
-} from './utils/constants.server'
+import { APP_NAME, DOMAIN, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
 import {
   getCookieSession,
   updateCookieSessionHeader,
