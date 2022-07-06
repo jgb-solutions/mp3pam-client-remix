@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useState } from 'react'
-import Box from "@mui/material/Box"
+import Box from '@mui/material/Box'
 import { Link } from '@remix-run/react'
 import AppBar from '@mui/material/AppBar'
 import Avatar from '@mui/material/Avatar'
@@ -17,6 +17,7 @@ import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import SearchInput from './SearchInput'
 import type { BoxStyles } from '~/interfaces/types'
+import { useAuth } from '~/hooks/useAuth'
 
 const styles: BoxStyles = {
   grow: {
@@ -24,46 +25,46 @@ const styles: BoxStyles = {
     backgroundColor: colors.black,
     sm: {
       position: 'relative',
-    }
+    },
   },
   appBar: {
     width: '100%',
     backgroundColor: colors.black,
-    position: "absolute",
+    position: 'absolute',
   },
   toolbar: {
     flex: 1,
   },
   menuButton: {
-    marginRight: "2px",
+    marginRight: '2px',
   },
   title: {
     display: 'none',
     md: {
-      display: 'block'
-    }
+      display: 'block',
+    },
   },
   drawer: {
     backgroundColor: colors.black,
     height: '100vh',
-    padding: "24px",
-    paddingTop: "10px",
-    width: "230px",
+    padding: '24px',
+    paddingTop: '10px',
+    width: '230px',
   },
   leftMenuIcon: {
     paddingLeft: 0,
     md: {
-      display: 'none'
-    }
+      display: 'none',
+    },
   },
   accountButton: {
     padding: 0,
   },
   accountIcon: {
-    fontSize: "35px",
+    fontSize: '35px',
   },
   loginButton: {
-    color: colors.white
+    color: colors.white,
   },
   avatarWrapper: {
     cursor: 'pointer',
@@ -71,8 +72,8 @@ const styles: BoxStyles = {
     alignItems: 'center',
   },
   avatar: {
-    marginRight: 5,
-  }
+    marginRight: 1,
+  },
 }
 
 type Props = {}
@@ -80,7 +81,7 @@ type Props = {}
 const Header: FC<Props> = (props) => {
   const [drawerLeftOPen, setDrawerLeftOpen] = useState(false)
   const [drawerRightOPen, setDrawerRightOpen] = useState(false)
-  const { currentUser } = {}
+  const { currentUser } = useAuth()
 
   return (
     <Box sx={styles.grow}>
@@ -90,24 +91,40 @@ const Header: FC<Props> = (props) => {
             aria-label="Open left menu"
             onClick={() => setDrawerLeftOpen(true)}
             color="inherit"
-            sx={styles.leftMenuIcon}>
+            sx={styles.leftMenuIcon}
+          >
             <MenuIcon />
           </IconButton>
           <SearchInput />
           <Box sx={styles.grow} />
           {currentUser ? (
-            <Box sx={styles.avatarWrapper} onClick={() => setDrawerRightOpen(true)}>
-              <Avatar alt={currentUser.name} src={currentUser.avatar_url || ""} sx={styles.avatar} />
+            <Box
+              sx={styles.avatarWrapper}
+              onClick={() => setDrawerRightOpen(true)}
+            >
+              <Avatar
+                alt={currentUser.name}
+                src={currentUser.avatar_url || ''}
+                sx={styles.avatar}
+              />
               <KeyboardArrowDownIcon />
             </Box>
           ) : (
-            <Box component={Link} prefetch="intent" to={AppRoutes.pages.login} sx={styles.loginButton}>
-              <IconButton aria-label="Login" color="inherit" sx={styles.accountButton}>
+            <Box
+              component={Link}
+              prefetch="intent"
+              to={AppRoutes.pages.login}
+              sx={styles.loginButton}
+            >
+              <IconButton
+                aria-label="Login"
+                color="inherit"
+                sx={styles.accountButton}
+              >
                 <AccountCircle sx={styles.accountIcon} />
               </IconButton>
             </Box>
-          )
-          }
+          )}
         </Toolbar>
       </AppBar>
       {/* Left Drawer */}
@@ -123,17 +140,21 @@ const Header: FC<Props> = (props) => {
       {currentUser && (
         <SwipeableDrawer
           onOpen={() => setDrawerRightOpen(true)}
-          anchor='right' open={drawerRightOPen}
+          anchor="right"
+          open={drawerRightOPen}
           onClose={() => setDrawerRightOpen(false)}
         >
           <Box sx={styles.drawer}>
             {currentUser && (
-              <Right closeDrawerRight={setDrawerRightOpen} currentUser={currentUser} />
+              <Right
+                closeDrawerRight={setDrawerRightOpen}
+                currentUser={currentUser}
+              />
             )}
           </Box>
         </SwipeableDrawer>
       )}
-    </Box >
+    </Box>
   )
 }
 

@@ -1,12 +1,16 @@
-import Box from "@mui/material/Box"
-import Grid from "@mui/material/Grid"
-import TextField from "@mui/material/TextField"
-import type { HtmlMetaDescriptor, LoaderFunction, MetaFunction } from "@remix-run/node"
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import TextField from '@mui/material/TextField'
+import type {
+  HtmlMetaDescriptor,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 import EditIcon from '@mui/icons-material/Edit'
 import ErrorIcon from '@mui/icons-material/Error'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import DialogContentText from '@mui/material/DialogContentText'
-import Button from "@mui/material/Button"
+import Button from '@mui/material/Button'
 
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -16,17 +20,17 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Typography from '@mui/material/Typography'
 
-import HeaderTitle from "~/components/HeaderTitle"
-import { useForm } from "react-hook-form"
-import { accountStyles } from "../account"
-import UploadButton from "~/components/UploadButton"
-import { IMG_BUCKET, MAX_IMG_FILE_SIZE } from "~/utils/constants.server"
-import useFileUpload from "~/hooks/useFileUpload"
-import AlertDialog from "~/components/AlertDialog"
-import { useState } from "react"
-import { Link } from "@remix-run/react"
-import TextIcon from "~/components/TextIcon"
-import LinearProgress from "@mui/material/LinearProgress"
+import HeaderTitle from '~/components/HeaderTitle'
+import { useForm } from 'react-hook-form'
+import { accountStyles } from '../account'
+import UploadButton from '~/components/UploadButton'
+import { IMG_BUCKET, MAX_IMG_FILE_SIZE } from '~/utils/constants.server'
+import useFileUpload from '~/hooks/useFileUpload'
+import AlertDialog from '~/components/AlertDialog'
+import { useState } from 'react'
+import { Link } from '@remix-run/react'
+import TextIcon from '~/components/TextIcon'
+import LinearProgress from '@mui/material/LinearProgress'
 
 // export const meta: MetaFunction = (): HtmlMetaDescriptor => {
 //   const title = "Edit Account"
@@ -46,7 +50,7 @@ export interface FormData {
   email: string
   telephone: string
   password: string
-};
+}
 
 export default function EditAccount() {
   const {
@@ -56,8 +60,12 @@ export default function EditAccount() {
     percentUploaded: imgPercentUploaded,
     // isValid: imgValid,
     // errorMessage: imgErrorMessage,
-    filename: avatar
-  } = useFileUpload({ bucket: IMG_BUCKET, message: "You must choose an avatar.", headers: { public: true } })
+    filename: avatar,
+  } = useFileUpload({
+    bucket: IMG_BUCKET,
+    message: 'You must choose an avatar.',
+    headers: { public: true },
+  })
   const { updateUser, loading, data: updatedcurrentUser } = {}
   const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
   const { currentUser } = {}
@@ -87,8 +95,6 @@ export default function EditAccount() {
 
   // }, [updatedcurrentUser])
 
-
-
   const handleInvalidImageSize = (filesize: number) => {
     setOpenInvalidFileSize(`
 		The file size exceeds 1 MB. <br />
@@ -96,10 +102,9 @@ export default function EditAccount() {
 	`)
   }
 
-  const handleImageUpload = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => { uploadImg(getFile(event)) }
-
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    uploadImg(getFile(event))
+  }
 
   const {
     register,
@@ -130,7 +135,6 @@ export default function EditAccount() {
     updateUser(user)
   }
 
-
   return (
     <Dialog
       onClose={handleClose}
@@ -142,57 +146,68 @@ export default function EditAccount() {
       </DialogTitle>
       <DialogContent dividers>
         <form onSubmit={handleSubmit(handleUpdateUser)} noValidate>
-          <input type="hidden" {...register("id", { required: true })} />
-
-          <Grid container direction='row' spacing={2}>
+          <input type="hidden" {...register('id', { required: true })} />
+          <Grid container direction="row" spacing={2}>
             <Grid item xs={12} sm>
               <TextField
-                {...register("name", {
-                  required: "Your name is required.",
+                {...register('name', {
+                  required: 'Your name is required.',
                 })}
                 id="name"
                 label="Name"
                 type="text"
                 margin="normal"
                 error={!!errors.name}
-                helperText={errors.name && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={accountStyles.errorColor} />}
-                    text={<Box component="span" sx={accountStyles.errorColor}>{errors.name.message}</Box>}
-                  />
-                )}
+                helperText={
+                  errors.name && (
+                    <TextIcon
+                      icon={<ErrorIcon sx={accountStyles.errorColor} />}
+                      text={
+                        <Box component="span" sx={accountStyles.errorColor}>
+                          {errors.name.message}
+                        </Box>
+                      }
+                    />
+                  )
+                }
                 style={{ marginBottom: 15 }}
               />
             </Grid>
             <Grid item xs={12} sm>
               <TextField
-                {...register("email", {
-                  required: "Your email is required.",
+                {...register('email', {
+                  required: 'Your email is required.',
                 })}
                 id="email"
                 label="Email"
                 type="email"
                 margin="normal"
                 error={!!errors.email}
-                helperText={errors.email && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={accountStyles.errorColor} />}
-                    text={<Box component="span" sx={accountStyles.errorColor}>{errors.email.message}</Box>}
-                  />
-                )}
+                helperText={
+                  errors.email && (
+                    <TextIcon
+                      icon={<ErrorIcon sx={accountStyles.errorColor} />}
+                      text={
+                        <Box component="span" sx={accountStyles.errorColor}>
+                          {errors.email.message}
+                        </Box>
+                      }
+                    />
+                  )
+                }
                 style={{ marginBottom: 15 }}
               />
             </Grid>
           </Grid>
-          <Grid container direction='row' spacing={2}>
+          <Grid container direction="row" spacing={2}>
             <Grid item xs={12} sm>
               <TextField
-                {...register("telephone", {
-                  required: "Your phone number is required.",
+                {...register('telephone', {
+                  required: 'Your phone number is required.',
                   minLength: {
                     value: 8,
-                    message: "The phone number must be at least 8 characters."
-                  }
+                    message: 'The phone number must be at least 8 characters.',
+                  },
                 })}
                 name="telephone"
                 id="telephone"
@@ -200,43 +215,60 @@ export default function EditAccount() {
                 type="text"
                 margin="normal"
                 error={!!errors.telephone}
-                helperText={errors.telephone && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={accountStyles.errorColor} />}
-                    text={<Box component="span" sx={accountStyles.errorColor}>{errors.telephone.message}</Box>}
-                  />
-                )}
+                helperText={
+                  errors.telephone && (
+                    <TextIcon
+                      icon={<ErrorIcon sx={accountStyles.errorColor} />}
+                      text={
+                        <Box component="span" sx={accountStyles.errorColor}>
+                          {errors.telephone.message}
+                        </Box>
+                      }
+                    />
+                  )
+                }
                 style={{ marginBottom: 15 }}
               />
             </Grid>
 
             <Grid item xs={12} sm>
               <TextField
-                {...register("password", {
+                {...register('password', {
                   minLength: {
                     value: 6,
-                    message: "The password must be at least 6 characters."
-                  }
+                    message: 'The password must be at least 6 characters.',
+                  },
                 })}
                 id="password"
                 label="New Password"
                 type="password"
                 margin="normal"
                 error={!!errors.password}
-                helperText={errors.password && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={accountStyles.errorColor} />}
-                    text={<Box component="span" sx={accountStyles.errorColor}>{errors.password.message}</Box>}
-                  />
-                )}
+                helperText={
+                  errors.password && (
+                    <TextIcon
+                      icon={<ErrorIcon sx={accountStyles.errorColor} />}
+                      text={
+                        <Box component="span" sx={accountStyles.errorColor}>
+                          {errors.password.message}
+                        </Box>
+                      }
+                    />
+                  )
+                }
                 style={{ marginBottom: 15 }}
               />
             </Grid>
           </Grid>
-
-          <Grid container direction='row' spacing={2}>
+          <Grid container direction="row" spacing={2}>
             <Grid item xs={12} sm={6}>
-              <Grid container direction='row' alignItems='center' spacing={1} sx={accountStyles.uploadButton}>
+              <Grid
+                container
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                sx={accountStyles.uploadButton}
+              >
                 <Grid item xs={9}>
                   {/* <UploadButton
                   allowedFileSize={MAX_IMG_FILE_SIZE()}
@@ -250,7 +282,9 @@ export default function EditAccount() {
                 /> */}
                 </Grid>
                 <Grid item xs={3}>
-                  {imgUploaded && <CheckCircleIcon sx={accountStyles.successColor} />}
+                  {imgUploaded && (
+                    <CheckCircleIcon sx={accountStyles.successColor} />
+                  )}
                 </Grid>
               </Grid>
 
@@ -263,18 +297,18 @@ export default function EditAccount() {
               )}
             </Grid>
           </Grid>
-
           <Button
             type="submit"
-            size='large'
+            size="large"
             style={{ marginTop: 15 }}
-            disabled={imgUploading || loading}>Update Profile</Button>
-          {' '}
-          &nbsp;
-          {' '}
+            disabled={imgUploading || loading}
+          >
+            Update Profile
+          </Button>{' '}
+          &nbsp;{' '}
           <Link to="..">
             <Button
-              size='large'
+              size="large"
               style={{ marginTop: 15 }}
               sx={accountStyles.noBgButton}
             >
@@ -285,19 +319,24 @@ export default function EditAccount() {
 
         <AlertDialog
           open={false}
-          handleClose={() => setOpenInvalidFileSize('')}>
-          <DialogContentText id="alert-dialog-description" align='center'>
+          handleClose={() => setOpenInvalidFileSize('')}
+        >
+          <DialogContentText id="alert-dialog-description" align="center">
             <Box>
-              <ErrorIcon style={{ fontSize: 64 }} sx={accountStyles.errorColor} />
+              <ErrorIcon
+                style={{ fontSize: 64 }}
+                sx={accountStyles.errorColor}
+              />
             </Box>
             <br />
-            <Box dangerouslySetInnerHTML={{ __html: "error" }} />
+            <Box dangerouslySetInnerHTML={{ __html: 'error' }} />
             <br />
             <br />
             <Button
-              size='small'
+              size="small"
               onClick={() => setOpenInvalidFileSize('')}
-              color="primary">
+              color="primary"
+            >
               OK
             </Button>
           </DialogContentText>

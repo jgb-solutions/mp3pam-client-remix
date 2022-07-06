@@ -4,23 +4,22 @@ import { Outlet, useLoaderData } from '@remix-run/react'
 import type { HeadersFunction, LoaderFunction } from '@remix-run/node'
 import Box from '@mui/material/Box'
 
-import HeaderTitle from "~/components/HeaderTitle"
-import { fetchHomepage } from "~/graphql/requests.server"
-import { TrackScrollingList } from "~/components/TrackScrollingList"
-import { ArtistScrollingList } from "~/components/ArtistScrollingList"
-import { PlaylistScrollingList } from "~/components/PlaylistScrollingList"
-import { AlbumScrollingList } from "~/components/AlbumScrollingList"
+import HeaderTitle from '~/components/HeaderTitle'
+import { fetchHomepage } from '~/graphql/requests.server'
+import { TrackScrollingList } from '~/components/TrackScrollingList'
+import { ArtistScrollingList } from '~/components/ArtistScrollingList'
+import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
+import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 
-import AppRoutes from "~/app-routes"
+import AppRoutes from '~/app-routes'
 import type { HomepageQuery } from '~/graphql/generated-types'
 
 export const headers: HeadersFunction = () => {
   return {
-    "Cache-Control": "public, s-maxage=5, stale-while-revalidate=3595",
-    "Vary": "Authorization, Cookie",
+    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3595',
+    Vary: 'Authorization, Cookie',
   }
 }
-
 
 export const loader: LoaderFunction = async () => {
   const data = await fetchHomepage()
@@ -28,19 +27,13 @@ export const loader: LoaderFunction = async () => {
   return json(data)
 }
 
-
 export default function Index() {
-  const {
-    latestTracks,
-    latestPlaylists,
-    latestArtists,
-    latestAlbums
-  } = useLoaderData<HomepageQuery>()
+  const { latestTracks, latestPlaylists, latestArtists, latestAlbums } =
+    useLoaderData<HomepageQuery>()
 
   return (
     <Box>
-      <HeaderTitle icon={
-        <HomeIcon />} text="Home" />
+      <HeaderTitle icon={<HomeIcon />} text="Home" />
 
       {latestTracks?.data.length ? (
         <TrackScrollingList
@@ -49,7 +42,6 @@ export default function Index() {
           browse={AppRoutes.browse.tracks}
         />
       ) : null}
-
 
       {latestArtists?.data.length ? (
         <ArtistScrollingList
@@ -77,4 +69,3 @@ export default function Index() {
     </Box>
   )
 }
-

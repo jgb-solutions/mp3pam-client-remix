@@ -1,13 +1,12 @@
-import { useState } from "react"
-import { hydrate } from "react-dom"
-import { RemixBrowser } from "@remix-run/react"
+import { useState } from 'react'
+import { hydrate } from 'react-dom'
+import { RemixBrowser } from '@remix-run/react'
 import CssBaseline from '@mui/material/CssBaseline'
 import { CacheProvider, ThemeProvider } from '@emotion/react'
 
 import theme from './mui/theme'
 import createEmotionCache from './mui/createEmotionCache'
-import ClientStyleContext from "./mui/ClientStyleContext"
-
+import ClientStyleContext from './mui/ClientStyleContext'
 
 interface ClientCacheProviderProps {
   children: React.ReactNode
@@ -27,13 +26,12 @@ function ClientCacheProvider({ children }: ClientCacheProviderProps) {
   )
 }
 
-
 hydrate(
   <ClientCacheProvider>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <RemixBrowser />
     </ThemeProvider>
-  </ClientCacheProvider >,
-  document,
+  </ClientCacheProvider>,
+  document
 )

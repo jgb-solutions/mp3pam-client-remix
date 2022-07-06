@@ -3,7 +3,7 @@ import { createCookieSessionStorage, redirect } from '@remix-run/node'
 
 import { DOMAIN } from '~/utils/constants.server'
 import { fetchFacebookLoginUrl } from '~/graphql/requests.server'
-import { LoggedInUserData } from '~/interfaces/types'
+import type { LoggedInUserData } from '~/interfaces/types'
 
 const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
@@ -56,7 +56,18 @@ export const withAuth =
     const session = await getCookieSession(request)
 
     if (!session.has(USER_SESSION_ID)) {
-      return redirect(options.redirectTo || '/login')
+      session.flash(
+        'flashError',
+        'You need to be logged in to access this resource'
+      )
+
+      const updatedHeaders = {
+        ...(await updateCookieSessionHeader(session)),
+      }
+
+      return redirect(options.redirectTo || '/login', {
+        headers: updatedHeaders,
+      })
     }
 
     return contextCallback(context)
@@ -84,7 +95,9 @@ export const withUser = (
 
     const session = await getCookieSession(request)
 
-    const userSessionData = await session.get(USER_SESSION_ID)
+    const userSessionData = (await session.get(
+      USER_SESSION_ID
+    )) as LoggedInUserData
 
-    return contextCallback({ userSessionData }, context)
+    return contextCallback({ userSessionData: { ...userSessionData } }, context)
   }, options)
