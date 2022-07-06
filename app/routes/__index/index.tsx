@@ -14,13 +14,6 @@ import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 import AppRoutes from '~/app-routes'
 import type { HomepageQuery } from '~/graphql/generated-types'
 
-export const headers: HeadersFunction = () => {
-  return {
-    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3595',
-    Vary: 'Authorization, Cookie',
-  }
-}
-
 export const loader: LoaderFunction = async () => {
   const data = await fetchHomepage()
 

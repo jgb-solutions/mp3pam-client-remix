@@ -10,7 +10,7 @@ import {
 } from '@remix-run/react'
 import { useCallback, useContext, useEffect } from 'react'
 import Box from '@mui/material/Box'
-import { json } from '@remix-run/node'
+import { HeadersFunction, json } from '@remix-run/node'
 import { Provider } from 'react-redux'
 import { withEmotionCache } from '@emotion/react'
 import type { LoaderFunction } from '@remix-run/node'
@@ -118,6 +118,13 @@ const Document = withEmotionCache(
     )
   }
 )
+
+export const headers: HeadersFunction = () => {
+  return {
+    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3595',
+    Vary: 'Authorization, Cookie',
+  }
+}
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = `${APP_NAME} | Listen, Download and Share Unlimited Sounds!`
