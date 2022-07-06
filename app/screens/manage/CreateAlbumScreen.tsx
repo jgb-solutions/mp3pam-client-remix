@@ -14,7 +14,7 @@ import ProgressBar from "~/components/ProgressBar"
 import TextField from "@mui/material/TextField"
 import Button from '../~/components/Button'
 import UploadButton from '../~/components/UploadButton'
-import CheckAuth from "~/components/CheckAuth"
+
 import HeaderTitle from "~/components/HeaderTitle"
 import { TRACK_UPLOAD_DATA_QUERY } from "../../graphql/queries"
 import useFileUpload from "../../hooks/useFileUpload"
@@ -26,7 +26,7 @@ import AlertDialog from "~/components/AlertDialog"
 import { IMG_BUCKET, MAX_IMG_FILE_SIZE, CURRENT_YEAR } from "../../utils/constants.server"
 import { AddArtistForm } from "./AddTrackPage"
 import { getFile } from "../../utils/helpers"
-import SEO from "~/components/SEO"
+
 
 export interface FormData {
   title: string

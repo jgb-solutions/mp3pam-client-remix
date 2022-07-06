@@ -38,15 +38,7 @@ export const ADD_GENRE_MUTATION = gql`
   }
 `
 
-export const LOG_OUT_MUTATION = gql`
-  mutation LogOut{
-    logout {
-      success
-    }
-  }
-`
-
-export const UPDATE_DOWNLOAD_COUNT = gql`
+export const UpdateDownloadCountDocument = gql`
   mutation UpdateDownloadCount($input: DownloadInput!) {
     updateDownloadCount(input: $input)
   }
@@ -143,7 +135,7 @@ export const UpdateUserDocument = gql`
   }
 `
 
-export const FACEOOK_LOGIN = gql`
+export const facebookLoginDocument = gql`
   mutation facebookLogin($code: String!) {
     handleFacebookConnect(code: $code) {
       data {

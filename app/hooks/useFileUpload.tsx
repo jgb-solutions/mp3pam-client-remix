@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import axios from "axios"
-import { useApolloClient } from 'graphql-request'
 
-import { UPLOAD_URL_QUERY } from '../graphql/queries'
+import { uploadUrlDocument } from '../graphql/queries'
+import { graphQLClient } from '~/graphql/client.server'
 
 type UploadFileType = {
   upload: (file: File) => void,
@@ -27,8 +27,6 @@ type Params = {
 }
 
 export default function useFileUpload({ bucket, message, headers }: Params): UploadFileType {
-  const client = useApolloClient()
-
   const [isValid, setIsValid] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
   const [uploading, setUploading] = useState(false)
@@ -76,16 +74,12 @@ export default function useFileUpload({ bucket, message, headers }: Params): Upl
     setSize(file.size)
 
     try {
-      const { data: { uploadUrl: { signedUrl, fileUrl, filename } } } = await client.query({
-        query: UPLOAD_URL_QUERY,
-        variables: {
-          input: {
-            name: file.name,
-            bucket,
-            ...headers
-          }
-        },
-        fetchPolicy: 'network-only'
+      const { data: { uploadUrl: { signedUrl, fileUrl, filename } } } = await graphQLClient.request(uploadUrlDocument, {
+        input: {
+          name: file.name,
+          bucket,
+          ...headers
+        }
       })
 
       setFileUrl(fileUrl)

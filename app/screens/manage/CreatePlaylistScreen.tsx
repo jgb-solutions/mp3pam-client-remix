@@ -13,7 +13,7 @@ import ProgressBar from "~/components/ProgressBar"
 import TextField from "@mui/material/TextField"
 import Button from '../~/components/Button'
 import UploadButton from '../~/components/UploadButton'
-import CheckAuth from "~/components/CheckAuth"
+
 
 export default function CreatePlaylistPage() {
   const client = useApolloClient()

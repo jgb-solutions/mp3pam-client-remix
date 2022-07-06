@@ -125,33 +125,33 @@ export const headers: HeadersFunction = () => {
   }
 }
 
-export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
-  const { track } = data as TrackDetailQuery
+// export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
+//   const { track } = data as TrackDetailQuery
 
-  if (!track) {
-    return {
-      title: "Track not found",
-    }
-  }
+//   if (!track) {
+//     return {
+//       title: "Track not found",
+//     }
+//   }
 
-  const title = `${track.title} by ${track.artist.stage_name}`
-  const url = `${DOMAIN}/track/${track.hash}`
-  const description = `Listen to ${track.title} by ${track.artist.stage_name} on ${APP_NAME}`
-  const type = SEO_TRACK_TYPE
-  const image = track.poster_url
+//   const title = `${track.title} by ${track.artist.stage_name}`
+//   const url = `${DOMAIN}/track/${track.hash}`
+//   const description = `Listen to ${track.title} by ${track.artist.stage_name} on ${APP_NAME}`
+//   const type = SEO_TRACK_TYPE
+//   const image = track.poster_url
 
-  return {
-    title,
-    "og:title": title,
-    "og:url": url,
-    "og:description": description,
-    "og:type": type,
-    "og:image": image,
-    "twitter:title": title,
-    "twitter:description": description,
-    "twitter:image": image,
-  }
-}
+//   return {
+//     title,
+//     "og:title": title,
+//     "og:url": url,
+//     "og:description": description,
+//     "og:type": type,
+//     "og:image": image,
+//     "twitter:title": title,
+//     "twitter:description": description,
+//     "twitter:image": image,
+//   }
+// }
 
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -185,11 +185,10 @@ const TrackDetailPage: FC<Props> = (props) => {
     playNext: playerActions.playNext,
     addToQueue: playerActions.addToQueue,
   }))
+  const currentUser = { loggedIn: false }
 
-  const params = useParams()
   const navigate = useNavigate()
   const [openAddTrackToPlaylistPopup, setOpenAddTrackToPlaylistPopup] = useState(false)
-  const currentUser = useSelector(({ currentUser }: AppStateInterface) => currentUser)
 
   const { track, relatedTracks } = useLoaderData()
 

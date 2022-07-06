@@ -19,7 +19,7 @@ import AppRoutes from "~/app-routes"
 import Button from "@mui/material/Button"
 import colors from "../../utils/colors"
 import useDeletePlaylist from "../../hooks/useDeletePlaylist"
-import SEO from "~/components/SEO"
+
 
 // const styles: BoxStyles = {
 //   table: {

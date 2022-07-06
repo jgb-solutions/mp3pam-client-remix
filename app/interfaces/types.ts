@@ -1,6 +1,6 @@
-import type { BoxProps, GridProps } from "@mui/material"
+import type { BoxProps, GridProps } from '@mui/material'
 
-import type { LogUserInQuery } from "~/graphql/generated-types"
+import type { LogUserInQuery } from '~/graphql/generated-types'
 
 export type BoxStyles = { [key: string]: BoxProps['sx'] }
 

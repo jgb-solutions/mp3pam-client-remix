@@ -1,12 +1,12 @@
-import { useOutletContext } from "@remix-run/react"
+import { useOutletContext } from '@remix-run/react'
 
-import type { RootContextType } from "~/root"
+import type { RootContextType } from '~/root'
 
-export function useAuth() {
-  const { userData } = useOutletContext<RootContextType>()
+// export function useAuth() {
+//   const { currentUser } = useOutletContext<RootContextType>()
 
-  return {
-    isLoggedIn: !!userData,
-    currentUser: userData,
-  }
-}
+//   return {
+//     isLoggedIn: !!currentUser,
+//     currentUser,
+//   }
+// }

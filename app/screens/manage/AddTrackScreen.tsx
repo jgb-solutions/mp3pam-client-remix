@@ -15,7 +15,7 @@ import ProgressBar from "~/components/ProgressBar"
 import TextField from "@mui/material/TextField"
 import Button from '../~/components/Button'
 import UploadButton from '../~/components/UploadButton'
-import CheckAuth from "~/components/CheckAuth"
+
 import HeaderTitle from "~/components/HeaderTitle"
 import { TRACK_UPLOAD_DATA_QUERY } from "../../graphql/queries"
 import useFileUpload from "../../hooks/useFileUpload"
@@ -28,7 +28,7 @@ import { ADD_GENRE_MUTATION } from "../../graphql/mutations"
 import { IMG_BUCKET, AUDIO_BUCKET, MAX_AUDIO_FILE_SIZE, MAX_IMG_FILE_SIZE, MIN_TRACK_LYRICS_LENGTH, MIN_TRACK_DETAIL_LENGTH } from "../../utils/constants.server"
 import { getFile } from "../../utils/helpers"
 import useAddArtist from "../../hooks/useAddArtist"
-import SEO from "~/components/SEO"
+
 
 export interface FormData {
 	title: string

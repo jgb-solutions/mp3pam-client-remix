@@ -10,19 +10,21 @@ import AppStateInterface from '../interfaces/AppStateInterface'
 import AlbumInterface, { AlbumTrackInterface } from '../interfaces/AlbumInterface'
 import { makeSoundFromTrack } from '../utils/helpers'
 import ListInterface from '../interfaces/ListInterface'
+import { BoxStyles } from '~/interfaces/types'
+import theme from '~/mui/theme'
 
-// const styles: BoxStyles = {
-//   table: {
-//     width: '100%',
-//     marginTop: theme.spacing(3),
-//     overflowX: 'auto',
-//   },
-//   link: {
-//     color: 'white',
-//     textDecoration: 'none',
-//     fontWeight: 'bold'
-//   }
-// }))
+const styles: BoxStyles = {
+  table: {
+    width: '100%',
+    marginTop: theme.spacing(3),
+    overflowX: 'auto',
+  },
+  link: {
+    color: 'white',
+    textDecoration: 'none',
+    fontWeight: 'bold'
+  }
+}
 
 export const StyledTableCell = ({
   head: {

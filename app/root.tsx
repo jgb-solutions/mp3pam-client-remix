@@ -81,6 +81,7 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
             </RootLayout>
           </PersistGate>
         </Provider>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
@@ -90,74 +91,74 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 })
 
 
-export const meta: MetaFunction = (): HtmlMetaDescriptor => {
-  const title = `${APP_NAME} | Listen, Download and Share Unlimited Sounds!`
-  const description = `${APP_NAME} is a free entertainment platform for sharing all kinds of sounds.
-      Music, and even Ad. You name it. Brought to you by JGB Solutions.
-  `
-  const image = `${DOMAIN}/assets/images/social-media-share.png`
+// export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+//   const title = `${APP_NAME} | Listen, Download and Share Unlimited Sounds!`
+//   const description = `${APP_NAME} is a free entertainment platform for sharing all kinds of sounds.
+//       Music, and even Ad. You name it. Brought to you by JGB Solutions.
+//   `
+//   const image = `${DOMAIN}/assets/images/social-media-share.png`
 
-  return {
-    title,
-    "og:title": title,
-    "og:site_name": APP_NAME,
-    "og:url": DOMAIN,
-    "og:description": description,
-    "og:type": "website",
-    "og:image": image,
-    "fb:app_id": FB_APP_ID,
-    "twitter:card": "summary",
-    "twitter:site": `@${TWITTER_HANDLE}`,
-    "twitter:title": title,
-    "twitter:description": { description },
-    "twitter:image": { image },
-  }
-}
+//   return {
+//     title,
+//     "og:title": title,
+//     "og:site_name": APP_NAME,
+//     "og:url": DOMAIN,
+//     "og:description": description,
+//     "og:type": "website",
+//     "og:image": image,
+//     "fb:app_id": FB_APP_ID,
+//     "twitter:card": "summary",
+//     "twitter:site": `@${TWITTER_HANDLE}`,
+//     "twitter:title": title,
+//     "twitter:description": { description },
+//     "twitter:image": { image },
+//   }
+// }
 
 export type RootContextType = {
-  userData: UserData | null
+  currentUser: UserData | null
 }
 
 type LoaderData = {
-  userData: RootContextType['userData'],
+  currentUser: RootContextType['currentUser'],
   ENV: { [key: string]: string }
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getCookieSession(request)
+// export const loader: LoaderFunction = async ({ request }) => {
+//   const session = await getCookieSession(request)
 
-  const userSessionData = session.get(USER_SESSION_ID) as LoggedInUserData | undefined
+//   const userSessionData = session.get(USER_SESSION_ID) as LoggedInUserData | undefined
 
-  const userData = userSessionData?.data || null
+//   const currentUser = userSessionData?.data || null
 
-  return json({
-    ENV: {
-      STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-    },
-    userData,
-  })
-}
+//   return json({
+//     ENV: {
+//       STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+//     },
+//     currentUser,
+//   })
+// }
 
 export default function App() {
-  const { ENV, userData } = useLoaderData<LoaderData>()
-  const context: RootContextType = { userData }
+  // const { ENV, currentUser } = useLoaderData<LoaderData>()
+  // const context: RootContextType = { currentUser }
 
   return (
     <Document>
-      <Outlet context={context} />
+      <Outlet />
 
-      <script
+      {/* <script
         dangerouslySetInnerHTML={{
           __html: `window.ENV = ${JSON.stringify(ENV)}`,
         }}
-      />
+      /> */}
 
     </Document>
   )
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error)
+  console.log(error)
 
   return (
     <Document title="Error!">

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Box, Button, Grid, TextField } from '@mui/material'
 import type {
@@ -9,6 +9,7 @@ import type {
 } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import ErrorIcon from '@mui/icons-material/Error'
+import Alert from '@mui/material/Alert'
 
 import colors from '../utils/colors'
 import Logo from '~/components/Logo'
@@ -17,7 +18,7 @@ import TextIcon from '~/components/TextIcon'
 import { emailRegex } from '../utils/validators'
 import type { BoxStyles } from '~/interfaces/types'
 import PlainLayout from '~/components/layouts/Plain'
-import { Link, useActionData, useSubmit } from '@remix-run/react'
+import { Link, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
 import type { LoginInput } from '~/graphql/generated-types'
 import { doLogin } from '~/graphql/requests.server'
 import {
@@ -58,6 +59,10 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
+type LoaderData = {
+  flashError?: string
+}
+
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getCookieSession(request)
 
@@ -65,15 +70,17 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect('/')
   }
 
-  const data = { error: session.get('error') }
-
   if (shouldLoginWithFacebook(request)) {
     return await redirectToFacebookLogin()
   }
 
+  const data = { flashError: session.get('flashError') }
+
+  session.unset('flashError')
+
   return json(data, {
     headers: {
-      ...(await updateCookieSessionHeader(session))
+      ...(await updateCookieSessionHeader(session)),
     },
   })
 }
@@ -93,7 +100,7 @@ export const action: ActionFunction = async ({ request }) => {
 
     return redirect('/', {
       headers: {
-        ...(await updateCookieSessionHeader(session))
+        ...(await updateCookieSessionHeader(session)),
       },
     })
   } catch (e) {
@@ -104,6 +111,8 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function LoginPage() {
   const submit = useSubmit()
+  const { flashError } = useLoaderData<LoaderData>()
+  const [errorMessage, setErrorMessage] = useState(flashError)
   const actionData = useActionData<ActionData>()
   const {
     register,
@@ -129,6 +138,19 @@ export default function LoginPage() {
     <PlainLayout
       sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
+      {errorMessage && (
+        <Alert
+          onClose={() => {
+            setErrorMessage(undefined)
+          }}
+          variant="outlined"
+          severity="error"
+          sx={{ mb: '4rem' }}
+        >
+          {errorMessage}
+        </Alert>
+      )}
+
       <Box sx={{ width: '450px', textAlign: 'center' }}>
         <Logo size={300} />
 

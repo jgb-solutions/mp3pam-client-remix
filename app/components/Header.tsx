@@ -1,22 +1,21 @@
 import type { FC } from 'react'
 import { useState } from 'react'
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
-import AccountCircle from '@mui/icons-material/AccountCircle'
-import MenuIcon from '@mui/icons-material/Menu'
-import SwipeableDrawer from '@mui/material/SwipeableDrawer'
-import { Link } from '@remix-run/react'
-import Avatar from '@mui/material/Avatar'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import Box from "@mui/material/Box"
+import { Link } from '@remix-run/react'
+import AppBar from '@mui/material/AppBar'
+import Avatar from '@mui/material/Avatar'
+import Toolbar from '@mui/material/Toolbar'
+import MenuIcon from '@mui/icons-material/Menu'
+import IconButton from '@mui/material/IconButton'
+import SwipeableDrawer from '@mui/material/SwipeableDrawer'
+import AccountCircle from '@mui/icons-material/AccountCircle'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 import Left from './Left'
 import Right from './Right'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import SearchInput from './SearchInput'
-import { useAuth } from '~/hooks/useAuth'
 import type { BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
@@ -81,7 +80,7 @@ type Props = {}
 const Header: FC<Props> = (props) => {
   const [drawerLeftOPen, setDrawerLeftOpen] = useState(false)
   const [drawerRightOPen, setDrawerRightOpen] = useState(false)
-  const { currentUser } = useAuth()
+  const { currentUser } = {}
 
   return (
     <Box sx={styles.grow}>
@@ -96,22 +95,19 @@ const Header: FC<Props> = (props) => {
           </IconButton>
           <SearchInput />
           <Box sx={styles.grow} />
-          <Box>
-            {
-              currentUser ? (
-                <Box sx={styles.avatarWrapper} onClick={() => setDrawerRightOpen(true)}>
-                  <Avatar alt={currentUser.name} src={currentUser.avatar_url || ""} sx={styles.avatar} />
-                  <KeyboardArrowDownIcon />
-                </Box>
-              ) : (
-                <Box component={Link} prefetch="intent" to={AppRoutes.pages.login} sx={styles.loginButton}>
-                  <IconButton aria-label="Login" color="inherit" sx={styles.accountButton}>
-                    <AccountCircle sx={styles.accountIcon} />
-                  </IconButton>
-                </Box>
-              )
-            }
-          </Box>
+          {currentUser ? (
+            <Box sx={styles.avatarWrapper} onClick={() => setDrawerRightOpen(true)}>
+              <Avatar alt={currentUser.name} src={currentUser.avatar_url || ""} sx={styles.avatar} />
+              <KeyboardArrowDownIcon />
+            </Box>
+          ) : (
+            <Box component={Link} prefetch="intent" to={AppRoutes.pages.login} sx={styles.loginButton}>
+              <IconButton aria-label="Login" color="inherit" sx={styles.accountButton}>
+                <AccountCircle sx={styles.accountIcon} />
+              </IconButton>
+            </Box>
+          )
+          }
         </Toolbar>
       </AppBar>
       {/* Left Drawer */}

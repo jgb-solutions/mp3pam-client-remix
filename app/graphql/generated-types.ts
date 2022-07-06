@@ -779,11 +779,6 @@ export type AddGenreMutationVariables = Exact<{
 
 export type AddGenreMutation = { __typename?: 'Mutation', addGenre: { __typename?: 'Genre', id: string, name: string } };
 
-export type LogOutMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type LogOutMutation = { __typename?: 'Mutation', logout: { __typename?: 'LogOutSuccess', success: boolean } };
-
 export type UpdateDownloadCountMutationVariables = Exact<{
   input: DownloadInput;
 }>;

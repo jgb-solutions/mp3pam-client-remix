@@ -120,34 +120,34 @@ const styles: BoxStyles = {
 
 type ArtistParams = { hash: string }
 
-export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
-  if (!data) {
-    return {
-      title: `Artist not found!`,
-    }
-  }
+// export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
+//   if (!data) {
+//     return {
+//       title: `Artist not found!`,
+//     }
+//   }
 
-  const { artist } = data as ArtistDetailQuery
+//   const { artist } = data as ArtistDetailQuery
 
 
-  const title = `${artist.stage_name} on ${APP_NAME}`
-  const url = `${DOMAIN}/artist/${artist.hash}`
-  const description = `Listen to ${artist.stage_name} on ${APP_NAME}`
-  const type = SEO_ARTIST_TYPE
-  const image = artist.poster_url
+//   const title = `${artist.stage_name} on ${APP_NAME}`
+//   const url = `${DOMAIN}/artist/${artist.hash}`
+//   const description = `Listen to ${artist.stage_name} on ${APP_NAME}`
+//   const type = SEO_ARTIST_TYPE
+//   const image = artist.poster_url
 
-  return {
-    title,
-    "og:title": title,
-    "og:url": url,
-    "og:description": description,
-    "og:type": type,
-    "og:image": image,
-    "twitter:title": title,
-    "twitter:description": description,
-    "twitter:image": image,
-  }
-}
+//   return {
+//     title,
+//     "og:title": title,
+//     "og:url": url,
+//     "og:description": description,
+//     "og:type": type,
+//     "og:image": image,
+//     "twitter:title": title,
+//     "twitter:description": description,
+//     "twitter:image": image,
+//   }
+// }
 
 
 export const loader: LoaderFunction = async ({ params }) => {

@@ -9,24 +9,26 @@ import TableRow from '@mui/material/TableRow'
 import colors from '../utils/colors'
 import PlayPause from './PlayPause'
 import { useSelector } from 'react-redux'
-import AppStateInterface from '../interfaces/AppStateInterface'
+import type AppStateInterface from '../interfaces/AppStateInterface'
 import { SoundInterface } from '../interfaces/ListInterface'
 import { Link } from '@remix-run/react'
 
 import AppRoutes from '~/app-routes'
+import type { BoxStyles } from '~/interfaces/types'
+import theme from '~/mui/theme'
 
-// const styles: BoxStyles = {
-//   table: {
-//     width: '100%',
-//     marginTop: theme.spacing(3),
-//     overflowX: 'auto',
-//   },
-//   link: {
-//     color: 'white',
-//     textDecoration: 'none',
-//     fontWeight: 'bold'
-//   }
-// }))
+const styles: BoxStyles = {
+  table: {
+    width: '100%',
+    marginTop: theme.spacing(3),
+    overflowX: 'auto',
+  },
+  link: {
+    color: 'white',
+    textDecoration: 'none',
+    fontWeight: 'bold'
+  }
+}
 
 // const StyledTableCell = withStyles({
 //   head: {

@@ -7,13 +7,13 @@ import QueueTable from '~/components/QueueTable'
 import HeaderTitle from "~/components/HeaderTitle"
 import type AppStateInterface from "../../../interfaces/AppStateInterface"
 
-export const meta: MetaFunction = (): HtmlMetaDescriptor => {
-  const title = `Your Current Queue`
+// export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+//   const title = `Your Current Queue`
 
-  return {
-    title,
-  }
-}
+//   return {
+//     title,
+//   }
+// }
 
 function QueuePage() {
   const list = useSelector(

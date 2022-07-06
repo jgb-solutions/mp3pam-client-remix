@@ -26,11 +26,11 @@ import FourOrFour from "~/components/FourOrFour"
 import HeaderTitle from "~/components/HeaderTitle"
 import useMyTracks from "../../hooks/useMyTracks"
 import AlertDialog from "~/components/AlertDialog"
-import CheckAuth from "~/components/CheckAuth"
+
 import AlbumInterface from "../../interfaces/AlbumInterface"
 import { StyledTableCell } from "~/components/AlbumTracksTable"
 import useDeleteAlbumTrack from "../../hooks/useDeleteAlbumTrack"
-import SEO from "~/components/SEO"
+
 import Grid from "@mui/material/Grid"
 
 

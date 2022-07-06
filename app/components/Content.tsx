@@ -1,8 +1,8 @@
-import { type FC, useRef } from 'react'
 import { useEffect } from 'react'
+import Box from '@mui/material/Box'
+import { type FC, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import type { BoxProps } from '@mui/material'
-import Box from '@mui/material/Box'
 import { useLocation } from '@remix-run/react'
 
 import type AppStateInterface from '~/interfaces/AppStateInterface'
@@ -10,7 +10,7 @@ import type AppStateInterface from '~/interfaces/AppStateInterface'
 type Props = {
 } & BoxProps
 
-const Content: FC<Props> = (props: Props) => {
+const Content: FC<Props> = (props) => {
   // const currentTrack = useSelector(({ player }: AppStateInterface) => player.currentSound)
   const { pathname } = useLocation()
 
@@ -25,7 +25,7 @@ const Content: FC<Props> = (props: Props) => {
   return (
     <Box component="main"
       ref={mainRef}
-      sx={props.className}
+      sx={props.sx}
       style={{
         paddingTop: 70,
         paddingLeft: 15,

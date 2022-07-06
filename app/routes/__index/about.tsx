@@ -13,16 +13,16 @@ import Logo from '~/components/Logo'
 import colors from '../../utils/colors'
 import LogoJGB from '~/components/LogoJGB'
 
-export const meta: MetaFunction = (): HtmlMetaDescriptor => {
-  const title = "About us"
-  const description = `Contact us for any questions or inquiries.`
+// export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+//   const title = "About us"
+//   const description = `Contact us for any questions or inquiries.`
 
-  return {
-    title,
-    "og:title": title,
-    "og:description": description,
-  }
-}
+//   return {
+//     title,
+//     "og:title": title,
+//     "og:description": description,
+//   }
+// }
 
 
 const AboutPage: FC = () => {
