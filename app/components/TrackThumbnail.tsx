@@ -1,47 +1,41 @@
-import Box, { BoxProps } from "@mui/material/Box"
-import {
-  PlayCircleOutline,
-  PauseCircleOutline
-} from "@mui/icons-material"
+import { Link } from '@remix-run/react'
+import Box from '@mui/material/Box'
+import type { BoxProps } from '@mui/material/Box'
+import type { BoxStyles } from '~/interfaces/types'
+import { PlayCircleOutline, PauseCircleOutline } from '@mui/icons-material'
 
-import { useSelector } from "react-redux"
-import IconButton from "@mui/material/IconButton"
+import { useSelector } from 'react-redux'
+import IconButton from '@mui/material/IconButton'
 
-import colors from "../utils/colors"
-import AppRoutes from "~/app-routes"
-
-import type { TrackWithArtistThumbnailData } from "./TrackScrollingList"
-import AppStateInterface from "../interfaces/AppStateInterface"
-import Image from "./Image"
-import { Link } from "@remix-run/react"
-import type { BoxStyles } from "~/interfaces/types"
-import { FC } from "react"
+import Image from './Image'
+import colors from '../utils/colors'
+import AppRoutes from '~/app-routes'
+import type { FC } from 'react'
 
 const styles: BoxStyles = {
-  imgContainer: {
-  },
+  imgContainer: {},
   transparentBackground: {
     opacity: 0,
-    position: "absolute",
-    backgroundColor: "#000",
+    position: 'absolute',
+    backgroundColor: '#000',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    "&:hover": {
-      opacity: 0.7
-    }
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '&:hover': {
+      opacity: 0.7,
+    },
   },
   icon: {
     fontSize: 75,
     color: colors.white,
-    "&:hover": {
+    '&:hover': {
       fontSize: 80,
-      opacity: 1
-    }
+      opacity: 1,
+    },
   },
   title: {
     margin: 0,
@@ -56,7 +50,7 @@ const styles: BoxStyles = {
   },
   details: {
     fontSize: 13,
-    color: "#9d9d9d",
+    color: '#9d9d9d',
     sm: {
       fontSize: 11,
       overflow: 'hidden',
@@ -68,11 +62,11 @@ const styles: BoxStyles = {
     color: colors.white,
     textDecoration: 'none',
     cursor: 'pointer',
-  }
+  },
 }
 
 type Props = {
-  track: TrackWithArtistThumbnailData
+  track: {}
   sx?: BoxProps['sx']
 }
 
@@ -80,7 +74,7 @@ const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
   // const { listId, isPlaying } = useSelector(({ player }: AppStateInterface) => ({
   //   listId: get(player, 'list.id'),
   //   isPlaying: player.isPlaying
-  // }))
+  // }
 
   return (
     <Box {...props}>
@@ -93,8 +87,8 @@ const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
               ulb: true,
               lb: {
                 width: 200,
-                height: 200
-              }
+                height: 200,
+              },
             })}
           />
 
@@ -110,8 +104,13 @@ const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
           </Box>
         </Link>
       </Box>
-      <Box component="h3" sx={styles.title}>{track.title}</Box>
-      <Link prefetch="intent" to={AppRoutes.artist.detailPage(track.artist.hash)}>
+      <Box component="h3" sx={styles.title}>
+        {track.title}
+      </Box>
+      <Link
+        prefetch="intent"
+        to={AppRoutes.artist.detailPage(track.artist.hash)}
+      >
         <Box component="p" sx={styles.details}>
           <Box component="span" sx={styles.link}>
             {track.artist.stage_name}

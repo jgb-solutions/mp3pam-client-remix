@@ -26,8 +26,8 @@ const styles: BoxStyles = {
   link: {
     color: 'white',
     textDecoration: 'none',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 }
 
 // const StyledTableCell = withStyles({
@@ -45,11 +45,9 @@ const styles: BoxStyles = {
 //     paddingRight: 1,
 //     textOverflow: 'ellipsis'
 //   },
-// }))(TableCell)
+// //}(TableCell)
 
 export default function QueueTable() {
-
-
   const { currentSound, currentPlayingIndex, queueList, list } = useSelector(
     (appState: AppStateInterface) => appState.player
   )
@@ -57,26 +55,33 @@ export default function QueueTable() {
   return (
     <Table sx={styles.table} size="small">
       <TableHead>
-        <TableRow>
-          {/* App */}
-        </TableRow>
+        <TableRow>{/* App */}</TableRow>
       </TableHead>
       <TableBody>
-        {!!list && queueList.map((sound: SoundInterface, index: number) => {
-          const color = currentSound &&
-            sound.hash === currentSound.hash &&
-            index === currentPlayingIndex ? colors.primary
-            : undefined
-          const soundPage = get(AppRoutes, `${sound.type}`).detailPage(sound.hash)
-          // const authorPage = sound.type === 'track' ?
-          //   AppRoutes.artist.detailPage(sound.author_hash) :
-          //   AppRoutes.podcast.goToAuthorDetail(sound.author_hash)
+        {!!list &&
+          queueList.map((sound: SoundInterface, index: number) => {
+            const color =
+              currentSound &&
+              sound.hash === currentSound.hash &&
+              index === currentPlayingIndex
+                ? colors.primary
+                : undefined
+            const soundPage = get(AppRoutes, `${sound.type}`).detailPage(
+              sound.hash
+            )
+            // const authorPage = sound.type === 'track' ?
+            //   AppRoutes.artist.detailPage(sound.author_hash) :
+            //   AppRoutes.podcast.goToAuthorDetail(sound.author_hash)
 
-          return (
-            <TableRow key={index} style={{
-              borderBottom: queueList.length - 1 === index ? '' : '1px solid white',
-            }}>
-              {/* <StyledTableCell style={{ width: '10%', minWidth: '60px' }}>
+            return (
+              <TableRow
+                key={index}
+                style={{
+                  borderBottom:
+                    queueList.length - 1 === index ? '' : '1px solid white',
+                }}
+              >
+                {/* <StyledTableCell style={{ width: '10%', minWidth: '60px' }}>
                 <PlayPause sound={sound} list={list} />
               </StyledTableCell>
               <StyledTableCell style={{ width: '30%', color }}>
@@ -87,12 +92,12 @@ export default function QueueTable() {
               </StyledTableCell>
               <StyledTableCell style={{ width: '20%', color }}>{sound.type.toUpperCase()}</StyledTableCell> */}
 
-              {/* <StyledTableCell>
+                {/* <StyledTableCell>
                 <More />
               </StyledTableCell> */}
-            </TableRow>
-          )
-        })}
+              </TableRow>
+            )
+          })}
       </TableBody>
     </Table>
   )

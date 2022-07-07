@@ -1,5 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react'
-import useForm from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
@@ -12,19 +12,17 @@ import YouTubeIcon from '@mui/icons-material/YouTube'
 
 import ProgressBar from '~/components/ProgressBar'
 import TextField from '@mui/material/TextField'
-import Button from '../~/components/Button'
-import UploadButton from '../~/components/UploadButton'
+import Button from '@mui/material/Button'
+import UploadButton from '~/components/UploadButton'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import useFileUpload from '../../hooks/useFileUpload'
+import useFileUpload from '../../../hooks/useFileUpload'
 import TextIcon from '~/components/TextIcon'
-import { addArtistPageStyles } from '../../styles/addArtistPageStyles'
-import useAddArtist from '../../hooks/useAddArtist'
 import AppRoutes from '~/app-routes'
 import AlertDialog from '~/components/AlertDialog'
 import { getFile } from '~/utils/helpers'
+import { IMG_BUCKET } from '~/utils/constants.server'
 import {
-  IMG_BUCKET,
   MAX_IMG_FILE_SIZE,
   MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
   MIN_ARTIST_BIO_LENGTH,

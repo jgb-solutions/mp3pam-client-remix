@@ -1,9 +1,7 @@
+import { gql } from 'graphql-request'
 
-import { gql } from "graphql-request"
-
-import { useQuery } from 'graphql-request'
-import { UserData } from "../interfaces/UserInterface"
-import Spinner from "~/components/Spinner"
+import { UserData } from '../interfaces/UserInterface'
+import Spinner from '~/components/Spinner'
 
 export const FETCH_USERS = gql`
   query allUsers {
@@ -34,9 +32,10 @@ export default function UsersPage() {
     <>
       <h1>GraphQL Users</h1>
       <ul>
-        {data && data.users.data.map((user: UserData, index: number) => (
-          <li key={index}>{user.name}</li>
-        ))}
+        {data &&
+          data.users.data.map((user: UserData, index: number) => (
+            <li key={index}>{user.name}</li>
+          ))}
       </ul>
     </>
   )

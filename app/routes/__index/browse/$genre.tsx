@@ -1,34 +1,39 @@
-import Grid from "@mui/material/Grid"
+import Grid from '@mui/material/Grid'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import { useLoaderData, useParams } from "@remix-run/react"
-
+import { useLoaderData, useParams } from '@remix-run/react'
 
 import type { TracksWithArtist } from '~/components/TrackScrollingList'
-import { json, LoaderFunction } from "@remix-run/node"
-import { fetchTracksByGenre } from "~/graphql/requests.server"
+import { json, LoaderFunction } from '@remix-run/node'
+import { fetchTracksByGenre } from '~/graphql/requests.server'
+import HeaderTitle from '~/components/HeaderTitle'
+import Spinner from '~/components/Spinner'
+import TrackThumbnail from '~/components/TrackThumbnail'
 
-export const loader: LoaderFunction = async ({ params }) => {
-  const { genre } = params as { genre: string }
+// export const loader: LoaderFunction = async ({ params }) => {
+//   const { genre } = params as { genre: string }
 
-  const data = await fetchTracksByGenre(genre)
+//   const data = await fetchTracksByGenre(genre)
 
-  return json(data)
-}
+//   return json(data)
+// }
 
 export default function BrowseTracksByGenrePage() {
   const { tracksByGenre } = useLoaderData()
 
   return (
     <>
-      <HeaderTitle icon={<MusicNoteIcon />} text={`Browse ${genre ? genre.name : ''}  Tracks`} />
-      <SEO title={`Browse ${genre ? genre.name : ''}  Tracks`} />
+      <HeaderTitle
+        icon={<MusicNoteIcon />}
+        text={`Browse ${genre ? genre.name : ''}  Tracks`}
+      />
+      {/* <SEO title={`Browse ${genre ? genre.name : ''}  Tracks`} /> */}
 
       <InfiniteScroll
         pageStart={1}
-        loadMore={loadMoreTracks}
-        hasMore={hasMore}
+        loadMore={() => {}}
+        hasMore={false}
         loader={<Spinner key={1} />}
         useWindow={false}
       >

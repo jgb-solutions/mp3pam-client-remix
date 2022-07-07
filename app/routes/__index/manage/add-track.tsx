@@ -1,40 +1,42 @@
 import { useState, useEffect } from 'react'
-import { useQuery } from 'graphql-request'
 
-import useForm from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
-import { useHistory, useLocation } from '@remix-run/react'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import { Grid, FormControlLabel, Checkbox } from '@mui/material'
-import { useMutation } from 'graphql-request'
 
 import ProgressBar from '~/components/ProgressBar'
 import TextField from '@mui/material/TextField'
-import Button from '../~/components/Button'
-import UploadButton from '../~/components/UploadButton'
+import UploadButton from '~/components/UploadButton'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import { TRACK_UPLOAD_DATA_QUERY } from '../../graphql/queries'
-import useFileUpload from '../../hooks/useFileUpload'
+import useFileUpload from '../../../hooks/useFileUpload'
 import TextIcon from '~/components/TextIcon'
-import { addTrackPageStyles } from '../../styles/addTrackPageStyles'
-import useAddTrack from '../../hooks/useAddTrack'
 import AppRoutes from '~/app-routes'
 import AlertDialog from '~/components/AlertDialog'
-import { ADD_GENRE_MUTATION } from '../../graphql/mutations'
+import { ADD_GENRE_MUTATION } from '../../../graphql/mutations'
 import {
-  IMG_BUCKET,
-  AUDIO_BUCKET,
   MAX_AUDIO_FILE_SIZE,
   MAX_IMG_FILE_SIZE,
   MIN_TRACK_LYRICS_LENGTH,
   MIN_TRACK_DETAIL_LENGTH,
 } from '~/utils/constants'
+import { IMG_BUCKET, AUDIO_BUCKET } from '~/utils/constants.server'
 import { getFile } from '~/utils/helpers'
-import useAddArtist from '../../hooks/useAddArtist'
+import type { BoxStyles } from '~/interfaces/types'
+import colors from '~/utils/colors'
+
+export const addTrackPageStyles: BoxStyles = {
+  uploadButton: {
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  successColor: { color: colors.success },
+  errorColor: { color: colors.error },
+}
 
 export interface FormData {
   title: string
@@ -83,7 +85,6 @@ export function AddArtistForm({
   const { register, handleSubmit, errors, formState } =
     useForm<AddArtistFormData>({ mode: 'onBlur' })
   const { addArtist, data: artistData } = useAddArtist()
-  const styles: BoxStyles = addTrackPageStyles()
 
   const handleAddArtist = (artist: AddArtistFormData) => {
     addArtist({ ...artist, img_bucket: IMG_BUCKET })
@@ -700,12 +701,12 @@ export default function AddTrackPage() {
           }
         />
 
-        <div style={{ marginTop: 15, marginBottom: 15 }}>
+        <Box style={{ marginTop: 15, marginBottom: 15 }}>
           <FormControlLabel
             control={<Checkbox onChange={handleAllowDownload} />}
             label="Allow Download"
           />
-        </div>
+        </Box>
 
         <Button
           type="submit"

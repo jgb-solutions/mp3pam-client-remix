@@ -1,27 +1,26 @@
-import axios from "axios"
-import { useState, useEffect } from "react"
-import { gql } from "graphql-request"
+import axios from 'axios'
+import { useState, useEffect } from 'react'
 
-import { useApolloClient } from 'graphql-request'
-
-import useForm from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled'
 
-import ProgressBar from "~/components/ProgressBar"
-import TextField from "@mui/material/TextField"
-import Button from '../~/components/Button'
-import UploadButton from '../~/components/UploadButton'
-
+import ProgressBar from '~/components/ProgressBar'
+import TextField from '@mui/material/TextField'
+import UploadButton from '~/components/UploadButton'
+import { Box } from '@mui/material'
 
 export default function CreatePlaylistPage() {
-  const client = useApolloClient()
   const [completed, setCompleted] = useState(0)
   const [isUploaded, setIsUploaded] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [fileUrl, setFileUrl] = useState("")
-  const { register, handleSubmit, errors } = useForm<Values>()
+  const [fileUrl, setFileUrl] = useState('')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Values>()
   useEffect(() => {
     if (completed === 100) setCompleted(0)
   }, [completed])
@@ -35,30 +34,37 @@ export default function CreatePlaylistPage() {
     setCompleted(percentCompleted)
   }
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: string) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: string
+  ) => {
     setIsLoading(true)
     console.log(event)
     const file = get(event.target, 'files[0]')
     if (!file) return
 
-    console.log("file", file)
+    console.log('file', file)
 
     try {
-      const { data: { uploadUrl: { signedUrl, fileUrl } } } = await client.query({
+      const {
+        data: {
+          uploadUrl: { signedUrl, fileUrl },
+        },
+      } = await client.query({
         query: UPLOAD_URL,
         variables: { name: file.name, type },
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'network-only',
       })
 
       setFileUrl(fileUrl)
 
       const options = {
         headers: {
-          "Content-Type": file.type,
-          "x-amz-acl": 'public-read'
+          'Content-Type': file.type,
+          'x-amz-acl': 'public-read',
           // 'Content-Disposition': 'attachment'
         },
-        onUploadProgress: handleProgressEvent
+        onUploadProgress: handleProgressEvent,
       }
 
       try {
@@ -78,19 +84,15 @@ export default function CreatePlaylistPage() {
     }
   }
 
-  const handleImageUpload = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     handleFileUpload(event, 'img')
   }
 
-  const handleAudioUpload = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     handleFileUpload(event, 'sound')
   }
 
-  type Stooge = "larry" | "moe" | "curly"
+  type Stooge = 'larry' | 'moe' | 'curly'
 
   type Values = {
     firstName?: string
@@ -103,19 +105,21 @@ export default function CreatePlaylistPage() {
     notes?: string
   }
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms))
 
   const onSubmit = async (values: Values) => {
     await sleep(300)
     window.alert(JSON.stringify(values, undefined, 2))
   }
 
-
   return (
-    <CheckAuth>
-      <h1>< CloudUploadIcon /> Upload Page {completed}%</h1>
+    <Box>
+      <h1>
+        <CloudUploadIcon /> Upload Page {completed}%
+      </h1>
 
-      <div>
+      <Box>
         {/* <UploadButton accept="image/*" onChange={handleImageUpload}>
           <PhotoCameraIcon style={{ fontSize: 36 }} />
         </UploadButton> */}
@@ -127,7 +131,7 @@ export default function CreatePlaylistPage() {
             value={completed}
           />
         )}
-      </div>
+      </Box>
 
       <p>
         {/* <UploadButton accept=".mp3, audio/mp3" onChange={handleAudioUpload}>
@@ -143,10 +147,9 @@ export default function CreatePlaylistPage() {
         )}
       </p>
 
-
       {!isLoading && isUploaded && (
         <p>
-          The file link is{" "}
+          The file link is{' '}
           <a target="_blank" rel="noopener noreferrer" href={fileUrl}>
             {fileUrl}
           </a>
@@ -154,12 +157,12 @@ export default function CreatePlaylistPage() {
       )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <h2>Render Function as Children</h2>
-        <div>
+        <Box>
           <label>Phone</label>
           <TextField name="phone" inputRef={register({})} placeholder="Phone" />
-        </div>
+        </Box>
         <Button type="submit">Submit</Button>
       </form>
-    </CheckAuth>
+    </Box>
   )
 }

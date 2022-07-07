@@ -30,14 +30,14 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const url = new URL(request.url)
-  const page = Number(url.searchParams.get('page')) || 1
+// export const loader: LoaderFunction = async ({ request }) => {
+//   const url = new URL(request.url)
+//   const page = Number(url.searchParams.get('page')) || 1
 
-  const data = await fetchTracks({ page })
+//   const data = await fetchTracks({ page })
 
-  return json(data)
-}
+//   return json(data)
+// }
 
 type TrackType = NonNullable<TracksDataQuery['tracks']>['data'][0]
 

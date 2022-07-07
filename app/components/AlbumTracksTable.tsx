@@ -7,7 +7,9 @@ import TableRow from '@mui/material/TableRow'
 import colors from '../utils/colors'
 import { useSelector } from 'react-redux'
 import AppStateInterface from '../interfaces/AppStateInterface'
-import AlbumInterface, { AlbumTrackInterface } from '../interfaces/AlbumInterface'
+import AlbumInterface, {
+  AlbumTrackInterface,
+} from '../interfaces/AlbumInterface'
 import { makeSoundFromTrack } from '../utils/helpers'
 import ListInterface from '../interfaces/ListInterface'
 import { BoxStyles } from '~/interfaces/types'
@@ -22,32 +24,30 @@ const styles: BoxStyles = {
   link: {
     color: 'white',
     textDecoration: 'none',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 }
 
-export const StyledTableCell = ({
-  head: {
-    color: colors.grey,
-    textTransform: 'uppercase',
-    textAlign: 'left',
-    paddingLeft: 0
-  },
-  body: {
-    fontSize: 14,
-    color: colors.white,
-    border: 'none',
-    paddingLeft: 1,
-    paddingRight: 1,
-    textOverflow: 'ellipsis'
-  },
-}))(TableCell)
+// export const StyledTableCell = ({
+//   head: {
+//     color: colors.grey,
+//     textTransform: 'uppercase',
+//     textAlign: 'left',
+//     paddingLeft: 0
+//   },
+//   body: {
+//     fontSize: 14,
+//     color: colors.white,
+//     border: 'none',
+//     paddingLeft: 1,
+//     paddingRight: 1,
+//     textOverflow: 'ellipsis'
+//   },
+//}(TableCell)
 
-type Props = { album: AlbumInterface, list: ListInterface }
+type Props = { album: AlbumInterface; list: ListInterface }
 
 export default function AlbumTracksTable({ album, list }: Props) {
-
-
   const { currentSound } = useSelector(
     (appState: AppStateInterface) => appState.player
   )
@@ -67,14 +67,19 @@ export default function AlbumTracksTable({ album, list }: Props) {
       </TableHead>
       <TableBody>
         {album.tracks.map((track: AlbumTrackInterface, index: number) => {
-          const color = currentSound &&
-            track.hash === currentSound.hash ? colors.primary
-            : undefined
+          const color =
+            currentSound && track.hash === currentSound.hash
+              ? colors.primary
+              : undefined
 
           return (
-            <TableRow key={index} style={{
-              borderBottom: album.tracks.length - 1 === index ? '' : '1px solid white',
-            }}>
+            <TableRow
+              key={index}
+              style={{
+                borderBottom:
+                  album.tracks.length - 1 === index ? '' : '1px solid white',
+              }}
+            >
               {/* <StyledTableCell style={{ width: '4%' }}>
                 {track.number}
               </StyledTableCell>

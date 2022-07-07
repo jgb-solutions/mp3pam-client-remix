@@ -1,36 +1,42 @@
 import { useState, useEffect } from 'react'
-import { useQuery } from 'graphql-request'
 
-import useForm from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import AlbumIcon from '@mui/icons-material/Album'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
-
 import Grid from '@mui/material/Grid'
 
 import ProgressBar from '~/components/ProgressBar'
 import TextField from '@mui/material/TextField'
-import Button from '../~/components/Button'
-import UploadButton from '../~/components/UploadButton'
+import Button from '@mui/material/Button'
+import UploadButton from '~/components/UploadButton'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import { TRACK_UPLOAD_DATA_QUERY } from '../../graphql/queries'
-import useFileUpload from '../../hooks/useFileUpload'
+import useFileUpload from '../../../hooks/useFileUpload'
 import TextIcon from '~/components/TextIcon'
-import { createAlbumPageStyles } from '../../styles/createAlbumPageStyles'
-import useCreateAlbum from '../../hooks/useCreateAlbum'
 import AppRoutes from '~/app-routes'
 import AlertDialog from '~/components/AlertDialog'
-import { IMG_BUCKET, MAX_IMG_FILE_SIZE, CURRENT_YEAR } from '~/utils/constants'
-import { AddArtistForm } from './AddTrackPage'
+import { MAX_IMG_FILE_SIZE, CURRENT_YEAR } from '~/utils/constants'
+import { IMG_BUCKET } from '~/utils/constants.server'
 import { getFile } from '~/utils/helpers'
+import colors from '~/utils/colors'
+import type { BoxStyles } from '~/interfaces/types'
 
 export interface FormData {
   title: string
   release_year: string
   artist_id: string
   detail: string
+}
+
+const styles: BoxStyles = {
+  uploadButton: {
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  successColor: { color: colors.success },
+  errorColor: { color: colors.error },
 }
 
 export interface ArtistData {

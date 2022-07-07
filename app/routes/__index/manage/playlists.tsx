@@ -12,29 +12,27 @@ import DialogActions from '@mui/material/DialogActions'
 import AlertDialog from '~/components/AlertDialog'
 import Spinner from '~/components/Spinner'
 import HeaderTitle from '~/components/HeaderTitle'
-import useMyPlaylists from '../../hooks/useMyPlaylists'
 // import { StyledTableCell } from "~/components/PlaylistTracksTable"
 import { Link } from '@remix-run/react'
 import AppRoutes from '~/app-routes'
 import Button from '@mui/material/Button'
 import colors from '~/utils/colors'
-import useDeletePlaylist from '../../hooks/useDeletePlaylist'
 
-// const styles: BoxStyles = {
-//   table: {
-//     width: '100%',
-//     overflowX: 'auto',
-//   },
-//   link: {
-//     color: 'white',
-//     fontWeight: 'bold'
-//   },
-//   errorColor: { color: colors.error },
-//   noBgButton: {
-//     backgroundColor: colors.contentGrey,
-//     border: `1px solid ${colors.primary}`
-//   },
-// }))
+const styles: BoxStyles = {
+  //   table: {
+  //     width: '100%',
+  //     overflowX: 'auto',
+  //   },
+  //   link: {
+  //     color: 'white',
+  //     fontWeight: 'bold'
+  //   },
+  //   errorColor: { color: colors.error },
+  //   noBgButton: {
+  //     backgroundColor: colors.contentGrey,
+  //     border: `1px solid ${colors.primary}`
+  //   },
+}
 
 export default function ManagePlaylistsPage() {
   const [playlistHashToDelete, setPlaylistHashToDelete] = useState('')

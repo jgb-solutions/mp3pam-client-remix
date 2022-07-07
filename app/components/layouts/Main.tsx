@@ -17,9 +17,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
       <Grid item md={8} sm={9} xs={12} sx={styles.mainGrid}>
         <Header />
-        <Content sx={styles.col}>
-          {children}
-        </Content>
+        <Content sx={styles.col}>{children}</Content>
       </Grid>
 
       <Grid item md={2} sm={2} xs={12} sx={styles.rightGrid}>

@@ -7,63 +7,60 @@ import {
   LiveReload,
   useLoaderData,
   ScrollRestoration,
+  Link,
 } from '@remix-run/react'
-import { useCallback, useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import Box from '@mui/material/Box'
-import { HeadersFunction, json } from '@remix-run/node'
+import { json } from '@remix-run/node'
 import { Provider } from 'react-redux'
 import { withEmotionCache } from '@emotion/react'
-import type { LoaderFunction } from '@remix-run/node'
-import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
-import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
+import type {
+  LoaderFunction,
+  HeadersFunction,
+  HtmlMetaDescriptor,
+  MetaFunction,
+} from '@remix-run/node'
+import {
+  Typography,
+  unstable_useEnhancedEffect as useEnhancedEffect,
+} from '@mui/material'
+import FindReplaceIcon from '@mui/icons-material/FindReplace'
 
 import theme from './mui/theme'
 import { persistedStore } from './redux/store'
 import RootLayout from './components/layouts/Root'
-import MainLayout from './components/layouts/Main'
 import ClientStyleContext from './mui/ClientStyleContext'
 import { PersistGate } from 'redux-persist/integration/react'
-import { APP_NAME, DOMAIN, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
+import { DOMAIN } from './utils/constants.server'
+import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
 import {
+  USER_SESSION_ID,
   getCookieSession,
   updateCookieSessionHeader,
-  USER_SESSION_ID,
 } from './auth/sessions.server'
 import type { LoggedInUserData, UserData } from './interfaces/types'
-import PlainLayout from './components/layouts/Plain'
+import HeaderTitle from './components/HeaderTitle'
+import FourOrFour from './components/FourOrFour'
+import AppRoutes from './app-routes'
 
 const { store, persistor } = persistedStore()
 
 interface DocumentProps {
   children: React.ReactNode
   title?: string
-  notificationMessage?: string
 }
 
 const Document = withEmotionCache(
-  ({ children, title, notificationMessage }: DocumentProps, emotionCache) => {
+  ({ children, title }: DocumentProps, emotionCache) => {
     const clientStyleData = useContext(ClientStyleContext)
 
-    const showNotification = useCallback((message) => {}, [])
-
-    useEffect(() => {
-      if (notificationMessage) {
-        showNotification(notificationMessage)
-      }
-    }, [notificationMessage])
-
-    // Only executed on client
     useEnhancedEffect(() => {
-      // re-link sheet container
       emotionCache.sheet.container = document.head
-      // re-inject tags
       const tags = emotionCache.sheet.tags
       emotionCache.sheet.flush()
       tags.forEach((tag) => {
-        // eslint-disable-next-line no-underscore-dangle
         ;(emotionCache.sheet as any)._insertTag(tag)
       })
-      // reset cache to reapply global styles
       clientStyleData.reset()
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -99,11 +96,7 @@ const Document = withEmotionCache(
         </head>
 
         <Box component="body" sx={{ bgcolor: 'black' }}>
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-              <RootLayout>{children}</RootLayout>
-            </PersistGate>
-          </Provider>
+          {children}
 
           <ScrollRestoration />
           <Scripts />
@@ -190,8 +183,14 @@ export default function App() {
   const context: RootContextType = { currentUser }
 
   return (
-    <Document notificationMessage={flashError}>
-      <Outlet context={context} />
+    <Document>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <RootLayout>
+            <Outlet />
+          </RootLayout>
+        </PersistGate>
+      </Provider>
 
       {/* <script
         dangerouslySetInnerHTML={{
@@ -207,17 +206,24 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
   return (
     <Document title="Error!">
-      <PlainLayout>
-        <div>
-          <h1>There was an error</h1>
-          <p>{error.message}</p>
-          <hr />
-          <p>
-            Hey, developer, you should replace this with what you want your
-            users to see.
-          </p>
-        </div>
-      </PlainLayout>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+        }}
+      >
+        <Box>
+          <Typography variant="h3" color={'red'} sx={{ mb: '1rem' }}>
+            Oop! Global Error here.
+          </Typography>
+          <Typography variant="h5" color={theme.palette.error.light}>
+            {error.message}
+          </Typography>
+        </Box>
+      </Box>
     </Document>
   )
 }
@@ -247,12 +253,27 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <MainLayout>
-        <h1>
-          {caught.status}: {caught.statusText}
-        </h1>
-        {message}
-      </MainLayout>
+      <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! Are You Lost?" />
+
+      <h3>
+        Go to the{' '}
+        <Link
+          prefetch="intent"
+          style={{ color: 'white' }}
+          to={AppRoutes.pages.home}
+        >
+          home page
+        </Link>{' '}
+        or{' '}
+        <Link
+          style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          to=".."
+        >
+          go back
+        </Link>
+        .
+      </h3>
+      <FourOrFour />
     </Document>
   )
 }

@@ -1,19 +1,18 @@
 import { useCallback, useState } from 'react'
-import type { FC } from 'react'
-import {
+import type {
+  MetaFunction,
   HeadersFunction,
   HtmlMetaDescriptor,
-  json,
-  MetaFunction,
 } from '@remix-run/node'
-import { useSelector } from 'react-redux'
 import {
-  Link,
-  useCatch,
-  useLoaderData,
-  useNavigate,
-  useParams,
-} from '@remix-run/react'
+  EmailShareButton,
+  TwitterShareButton,
+  TelegramShareButton,
+  FacebookShareButton,
+  WhatsappShareButton,
+} from 'react-share'
+import { json } from '@remix-run/node'
+import { useSelector } from 'react-redux'
 import InfoIcon from '@mui/icons-material/Info'
 import LineWeightIcon from '@mui/icons-material/LineWeight'
 import GetAppIcon from '@mui/icons-material/GetApp'
@@ -25,14 +24,7 @@ import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsappIcon from '@mui/icons-material/WhatsApp'
 import EmailIcon from '@mui/icons-material/Email'
 import HeadsetIcon from '@mui/icons-material/Headset'
-
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  TelegramShareButton,
-  WhatsappShareButton,
-  EmailShareButton,
-} from 'react-share'
+import { Link, useCatch, useLoaderData, useNavigate } from '@remix-run/react'
 
 import AppRoutes from '~/app-routes'
 import colors from '~/utils/colors'
@@ -45,25 +37,23 @@ import type AppStateInterface from '~/interfaces/AppStateInterface'
 import {
   SMALL_SCREEN_SIZE,
   APP_NAME,
-  DOMAIN,
   SEO_TRACK_TYPE,
   TWITTER_HANDLE,
 } from '~/utils/constants'
-import Spinner from '~/components/Spinner'
 import { TrackScrollingList } from '~/components/TrackScrollingList'
 
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
-// import { AddTrackToPlaylist } from "~/screens/manage/PlaylistEditPage"
 import Image from '~/components/Image'
 import { Box, Button, darken, Grid } from '@mui/material'
-import PlainLayout from '~/components/layouts/Plain'
 import type { LoaderFunction } from '@remix-run/node'
 import { fetchTrackDetail } from '~/graphql/requests.server'
 import type { BoxStyles } from '~/interfaces/types'
 import theme from '~/mui/theme'
 import Heart from '~/components/Heart'
-import { TrackDetailQuery } from '~/graphql/generated-types'
+import type { TrackDetailQuery } from '~/graphql/generated-types'
+import { AddTrackToPlaylist } from '~/routes/__index/manage/edit-playlist'
+import { DOMAIN } from '~/utils/constants.server'
 
 const styles: BoxStyles = {
   row: {
@@ -142,33 +132,33 @@ export const headers: HeadersFunction = () => {
   }
 }
 
-// export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
-//   const { track } = data as TrackDetailQuery
+export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
+  const { track } = data as TrackDetailQuery
 
-//   if (!track) {
-//     return {
-//       title: "Track not found",
-//     }
-//   }
+  if (!track) {
+    return {
+      title: 'Track not found',
+    }
+  }
 
-//   const title = `${track.title} by ${track.artist.stage_name}`
-//   const url = `${DOMAIN}/track/${track.hash}`
-//   const description = `Listen to ${track.title} by ${track.artist.stage_name} on ${APP_NAME}`
-//   const type = SEO_TRACK_TYPE
-//   const image = track.poster_url
+  const title = `${track.title} by ${track.artist.stage_name}`
+  const url = `${DOMAIN}/track/${track.hash}`
+  const description = `Listen to ${track.title} by ${track.artist.stage_name} on ${APP_NAME}`
+  const type = SEO_TRACK_TYPE
+  const image = track.poster_url
 
-//   return {
-//     title,
-//     "og:title": title,
-//     "og:url": url,
-//     "og:description": description,
-//     "og:type": type,
-//     "og:image": image,
-//     "twitter:title": title,
-//     "twitter:description": description,
-//     "twitter:image": image,
-//   }
-// }
+  return {
+    title,
+    'og:title': title,
+    'og:url': url,
+    'og:description': description,
+    'og:type': type,
+    'og:image': image,
+    'twitter:title': title,
+    'twitter:description': description,
+    'twitter:image': image,
+  }
+}
 
 export const loader: LoaderFunction = async ({ params }) => {
   const { hash } = params as { hash: string }
@@ -178,9 +168,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(data)
 }
 
-type Props = {}
-
-const TrackDetailPage: FC<Props> = (props) => {
+export default function TrackDetailPage() {
   const {
     playList,
     pauseList,
@@ -208,18 +196,7 @@ const TrackDetailPage: FC<Props> = (props) => {
 
   const { track, relatedTracks } = useLoaderData()
 
-  const makeList = () => {
-    const { hash } = track
-
-    const list: ListInterface = {
-      hash,
-      sounds: makeSoundList(),
-    }
-
-    return list
-  }
-
-  const makeSoundList = () => {
+  const makeSoundList = useCallback(() => {
     const { hash, title, poster_url, artist, audio_url } = track
 
     return [
@@ -233,7 +210,18 @@ const TrackDetailPage: FC<Props> = (props) => {
         type: 'track',
       },
     ]
-  }
+  }, [track])
+
+  const makeList = useCallback(() => {
+    const { hash } = track
+
+    const list: ListInterface = {
+      hash,
+      sounds: makeSoundList(),
+    }
+
+    return list
+  }, [makeSoundList, track])
 
   const togglePlay = useCallback(() => {
     console.log('togglePlay')
@@ -540,14 +528,14 @@ const TrackDetailPage: FC<Props> = (props) => {
         />
       ) : null}
 
-      {/* {openAddTrackToPlaylistPopup && (
+      {openAddTrackToPlaylistPopup && (
         <AddTrackToPlaylist
           trackHash={track.hash}
           onRequestClose={() => {
             setOpenAddTrackToPlaylistPopup(false)
           }}
         />
-      )} */}
+      )}
     </Box>
   )
 }
@@ -598,5 +586,3 @@ export function CatchBoundary() {
     </Box>
   )
 }
-
-export default TrackDetailPage

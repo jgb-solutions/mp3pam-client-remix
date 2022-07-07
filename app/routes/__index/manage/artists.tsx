@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import AlbumIcon from '@mui/icons-material/Album'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
 
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -11,59 +11,58 @@ import DialogActions from '@mui/material/DialogActions'
 import AlertDialog from '~/components/AlertDialog'
 import Spinner from '~/components/Spinner'
 import HeaderTitle from '~/components/HeaderTitle'
-import useMyAlbums from '../../hooks/useMyAlbums'
 import { StyledTableCell } from '~/components/AlbumTracksTable'
 import { Link } from '@remix-run/react'
 import AppRoutes from '~/app-routes'
 import Button from '@mui/material/Button'
 import colors from '~/utils/colors'
-import useDeleteAlbum from '../../hooks/useDeleteAlbum'
+import type { BoxStyles } from '~/interfaces/types'
 
-// const styles: BoxStyles = {
-//   table: {
-//     width: '100%',
-//     overflowX: 'auto',
-//   },
-//   link: {
-//     color: 'white',
-//     fontWeight: 'bold'
-//   },
-//   errorColor: { color: colors.error },
-//   noBgButton: {
-//     backgroundColor: colors.contentGrey,
-//     border: `1px solid ${colors.primary}`
-//   },
-// }))
+const styles: BoxStyles = {
+  table: {
+    width: '100%',
+    overflowX: 'auto',
+  },
+  link: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  errorColor: { color: colors.error },
+  noBgButton: {
+    backgroundColor: colors.contentGrey,
+    border: `1px solid ${colors.primary}`,
+  },
+}
 
-export default function ManageAlbumsPage() {
-  const [albumHashToDelete, setAlbumHashToDelete] = useState('')
+export default function ManageArtistsPage() {
+  const [artistHashToDelete, setArtistHashToDelete] = useState('')
   const {
-    deleteAlbum,
-    deleteAlbumResponse,
-    deletingAlbum,
-    errorDeletingAlbum,
-  } = useDeleteAlbum()
-  const { loading, error, data, refetch } = useMyAlbums()
-  const albums = get(data, 'me.albums')
+    deleteArtist,
+    deleteArtistResponse,
+    deletingArtist,
+    errorDeletingArtist,
+  } = useDeleteArtist()
+  const { loading, error, data, refetch } = useMyArtists()
+  const artists = get(data, 'me.artists')
 
   const confirmDelete = (hash: string) => {
-    setAlbumHashToDelete(hash)
+    setArtistHashToDelete(hash)
   }
 
-  const handleDeleteAlbum = (hash: string) => {
-    deleteAlbum(hash)
+  const handleDeleteArtist = (hash: string) => {
+    deleteArtist(hash)
   }
 
   useEffect(() => {
-    if (deleteAlbumResponse || errorDeletingAlbum) {
-      setAlbumHashToDelete('')
+    if (deleteArtistResponse || errorDeletingArtist) {
+      setArtistHashToDelete('')
 
-      if (deleteAlbumResponse) {
+      if (deleteArtistResponse) {
         refetch()
       }
     }
     // eslint-disable-next-line
-  }, [deleteAlbumResponse, errorDeletingAlbum])
+  }, [deleteArtistResponse, errorDeletingArtist])
 
   if (loading) return <Spinner.Full />
 
@@ -71,41 +70,40 @@ export default function ManageAlbumsPage() {
 
   return (
     <>
-      {albums.data.length ? (
+      {artists.data.length ? (
         <>
-          <HeaderTitle icon={<AlbumIcon />} text="Your Albums" />
-          <SEO title={`Your Albums`} />
+          <HeaderTitle icon={<MusicNoteIcon />} text="Your Artists" />
+          <SEO title={`Your Artists`} />
 
           <Table sx={styles.table} size="small">
             <TableHead>
               <TableRow>
-                {/* <StyledTableCell>Title</StyledTableCell>
-                <StyledTableCell>&nbsp;</StyledTableCell>
+                {/* <StyledTableCell>Stage Name</StyledTableCell>
                 <StyledTableCell>&nbsp;</StyledTableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
-              {albums.data.map(
-                (album: { hash: string; title: string }, index: number) => {
+              {artists.data.map(
+                (
+                  artist: { hash: string; stage_name: string },
+                  index: number
+                ) => {
                   return (
                     <TableRow
                       key={index}
                       style={{
                         borderBottom:
-                          albums.data.length - 1 === index
+                          artists.data.length - 1 === index
                             ? ''
                             : '1px solid white',
                       }}
                     >
-                      {/* <StyledTableCell style={{ width: '80%' }}>
-                      <Link prefetch="intent" to={AppRoutes.album.detailPage(album.hash)} sx={styles.link}>{album.title}</Link>
-                    </StyledTableCell>
-                    <StyledTableCell style={{ width: '10%' }}>
-                      <Link prefetch="intent" to={AppRoutes.album.editPage(album.hash)} sx={styles.link}>Edit</Link>
+                      {/* <StyledTableCell style={{ width: '90%' }}>
+                      <Link prefetch="intent" to={AppRoutes.artist.detailPage(artist.hash)} sx={styles.link}>{artist.stage_name}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <span
-                        onClick={() => confirmDelete(album.hash)}
+                        onClick={() => confirmDelete(artist.hash)}
                         sx={styles.link}
                         style={{ cursor: 'pointer' }}>Delete</span>
                     </StyledTableCell> */}
@@ -117,28 +115,31 @@ export default function ManageAlbumsPage() {
           </Table>
         </>
       ) : (
-        <HeaderTitle icon={<AlbumIcon />} text="You have no albums yet" />
+        <HeaderTitle icon={<MusicNoteIcon />} text="You have no artists yet" />
       )}
 
       {/* Deletion confirmation */}
       <AlertDialog
-        open={!!albumHashToDelete}
-        handleClose={() => setAlbumHashToDelete('')}
+        open={!!artistHashToDelete}
+        handleClose={() => setArtistHashToDelete('')}
       >
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
           icon={<ErrorIcon sx={styles.errorColor} />}
-          text={`Are you sure you want to delete this album?`}
+          text={`
+          Are you sure you want to delete this artist? <br />
+          <small>Their tracks and albums will also be deleted.</small>
+        `}
         />
         <DialogActions>
-          <Button size="small" onClick={() => setAlbumHashToDelete('')}>
+          <Button size="small" onClick={() => setArtistHashToDelete('')}>
             Cancel
           </Button>
           <Button
             size="small"
-            onClick={() => handleDeleteAlbum(albumHashToDelete)}
+            onClick={() => handleDeleteArtist(artistHashToDelete)}
             sx={styles.noBgButton}
-            disabled={deletingAlbum}
+            disabled={deletingArtist}
           >
             Delete
           </Button>

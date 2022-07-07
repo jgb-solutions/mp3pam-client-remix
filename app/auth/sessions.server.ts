@@ -1,7 +1,7 @@
 import type { DataFunctionArgs, LoaderFunction, Session } from '@remix-run/node'
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 
-import { DOMAIN } from '~/utils/constants'
+import { DOMAIN } from '~/utils/constants.server'
 import { fetchFacebookLoginUrl } from '~/graphql/requests.server'
 import type { LoggedInUserData } from '~/interfaces/types'
 

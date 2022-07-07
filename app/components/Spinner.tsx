@@ -1,15 +1,13 @@
-
-
 type Props = {
-  size?: number,
-  className?: string,
+  size?: number
+  className?: string
 }
 
 function Spinner({ size = 100, className }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      style={{ background: "none" }}
+      style={{ background: 'none' }}
       width={size}
       height={size}
       sx={className}
@@ -35,10 +33,23 @@ function Spinner({ size = 100, className }: Props) {
   )
 }
 
-export const SpinnerFull = ({ size, className }: { size?: number, className?: string }) => (
-  <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', paddingTop: 70 }}>
+export const SpinnerFull = ({
+  size,
+  className,
+}: {
+  size?: number
+  className?: string
+}) => (
+  <Box
+    style={{
+      display: 'flex',
+      height: '100vh',
+      justifyContent: 'center',
+      paddingTop: 70,
+    }}
+  >
     <Spinner size={size} sx={className} />
-  </div>
+  </Box>
 )
 
 Spinner.Full = SpinnerFull

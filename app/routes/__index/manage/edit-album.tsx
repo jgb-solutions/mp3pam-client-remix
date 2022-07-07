@@ -16,102 +16,101 @@ import { useForm } from 'react-hook-form'
 import TextField from '@mui/material/TextField'
 import AppRoutes from '~/app-routes'
 import colors from '~/utils/colors'
-import useAlbumDetail from '../../hooks/useAlbumDetail'
 import Button from '@mui/material/Button'
 import { AlbumTrackInterface } from '~/interfaces/AlbumInterface'
 import { SMALL_SCREEN_SIZE } from '~/utils/constants'
 import Spinner from '~/components/Spinner'
-import useAddTrackToAlbum from '../../hooks/useAddTrackToAlbum'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
-import useMyTracks from '../../hooks/useMyTracks'
 import AlertDialog from '~/components/AlertDialog'
 
-import AlbumInterface from '~/interfaces/AlbumInterface'
+import type AlbumInterface from '~/interfaces/AlbumInterface'
 import { StyledTableCell } from '~/components/AlbumTracksTable'
-import useDeleteAlbumTrack from '../../hooks/useDeleteAlbumTrack'
 
 import Grid from '@mui/material/Grid'
+import type { BoxStyles } from '~/interfaces/types'
+import theme from '~/mui/theme'
+import { darken } from '@mui/material'
 
-// const styles: BoxStyles = {
-//   row: {
-//     display: "flex",
-//     flexDirection: "row"
-//   },
-//   table: {
-//     width: '100%',
-//     overflowX: 'auto',
-//   },
-//   imageContainer: {
-//     textAlign: 'center',
-//   },
-//   image: {
-//     width: 250,
-//     height: 'auto',
-//     maxWidth: "100%",
-//   },
-//   listByAuthor: {
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//   },
-//   link: {
-//     color: 'white',
-//     fontWeight: 'bold'
-//   },
-//   listBy: {
-//     color: darken(colors.white, 0.5),
-//     fontSize: 12
-//   },
-//   listAuthor: {
-//     textDecoration: "none",
-//     color: colors.white,
-//     "&:hover": {
-//       textDecoration: "underline"
-//     },
-//     "&:link": {
-//       textDecoration: "none",
-//       color: "white"
-//     }
-//   },
-//   detailsWrapper: {
-//     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-//       position: 'relative',
-//     },
-//   },
-//   listDetails: {
-//     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-//       position: 'absolute',
-//       bottom: 4,
-//     },
-//     "& > *": {
-//       padding: 0,
-//       margin: 0
-//     },
-//     [theme.breakpoints.down('xs')]: {
-//       textAlign: 'center',
-//     },
-//   },
-//   listType: {
-//     fontSize: 12,
-//     fontWeight: 400,
-//     textTransform: "uppercase"
-//   },
-//   listName: {
-//     fontSize: 36,
-//     fontWeight: "bold",
-//     [theme.breakpoints.down('xs')]: {
-//       fontSize: 32,
-//     },
-//   },
-//   ctaButtons: {
-//     marginTop: 10,
-//   },
-//   errorColor: { color: colors.error },
-//   noBgButton: {
-//     backgroundColor: colors.contentGrey,
-//     border: `1px solid ${colors.primary}`
-//   },
-// }))
+const styles: BoxStyles = {
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  table: {
+    width: '100%',
+    overflowX: 'auto',
+  },
+  imageContainer: {
+    textAlign: 'center',
+  },
+  image: {
+    width: 250,
+    height: 'auto',
+    maxWidth: '100%',
+  },
+  listByAuthor: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  link: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  listBy: {
+    color: darken(colors.white, 0.5),
+    fontSize: 12,
+  },
+  listAuthor: {
+    textDecoration: 'none',
+    color: colors.white,
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+    '&:link': {
+      textDecoration: 'none',
+      color: 'white',
+    },
+  },
+  detailsWrapper: {
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+      position: 'relative',
+    },
+  },
+  listDetails: {
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+      position: 'absolute',
+      bottom: 4,
+    },
+    '& > *': {
+      padding: 0,
+      margin: 0,
+    },
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+    },
+  },
+  listType: {
+    fontSize: 12,
+    fontWeight: 400,
+    textTransform: 'uppercase',
+  },
+  listName: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 32,
+    },
+  },
+  ctaButtons: {
+    marginTop: 10,
+  },
+  errorColor: { color: colors.error },
+  noBgButton: {
+    backgroundColor: colors.contentGrey,
+    border: `1px solid ${colors.primary}`,
+  },
+}
 
 export const AskTrackNumberForm = ({
   onNumberChange,

@@ -8,10 +8,10 @@ import {
   PLAY_SOUND,
   PLAY_NEXT,
   ADD_TO_QUEUE,
+  PAUSE,
 } from '../actions/player_action_types'
-import type PlayerInterface from '~/interfaces/PlayerInterface'
 import { NONE } from '~/utils/constants'
-import { PAUSE } from 'redux-persist'
+import type PlayerInterface from '~/interfaces/PlayerInterface'
 
 const INITIAL_PLAYER_STATE = {
   volume: 80,

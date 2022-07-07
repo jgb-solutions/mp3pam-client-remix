@@ -1,7 +1,7 @@
 import { json } from '@remix-run/node'
 import HomeIcon from '@mui/icons-material/Home'
 import { Outlet, useLoaderData } from '@remix-run/react'
-import type { HeadersFunction, LoaderFunction } from '@remix-run/node'
+import type { LoaderFunction } from '@remix-run/node'
 import Box from '@mui/material/Box'
 
 import HeaderTitle from '~/components/HeaderTitle'

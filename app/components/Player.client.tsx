@@ -26,7 +26,7 @@ import {
   NONE,
   SECONDS_TO_UPDATE_PLAY_COUNT,
   SMALL_SCREEN_SIZE,
-} from '../utils/constants'
+} from '../utils/constants.server'
 import { SoundInterface } from '../interfaces/ListInterface'
 import PlayerInterface from '../interfaces/PlayerInterface'
 import * as playerActions from '../redux/actions/playerActions'

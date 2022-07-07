@@ -24,7 +24,7 @@ import {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node'
-import { withAuth, withUser } from '~/auth/sessions.server'
+// import { withAuth, withUser } from '~/auth/sessions.server'
 import { getFormattedDate } from '~/utils/helpers'
 
 export const accountStyles: BoxStyles = {

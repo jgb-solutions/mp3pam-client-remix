@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { json } from '@remix-run/node'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 
 import Table from '@mui/material/Table'
@@ -11,70 +12,64 @@ import DialogActions from '@mui/material/DialogActions'
 import AlertDialog from '~/components/AlertDialog'
 import Spinner from '~/components/Spinner'
 import HeaderTitle from '~/components/HeaderTitle'
-import useMyTracks from '../../hooks/useMyTracks'
 import { StyledTableCell } from '~/components/AlbumTracksTable'
-import { Link } from '@remix-run/react'
+import { useFetcher, useLoaderData } from '@remix-run/react'
 import AppRoutes from '~/app-routes'
 import Button from '@mui/material/Button'
-import colors from '~/utils/colors'
-import useDeleteTrack from '../../hooks/useDeleteTrack'
+import type { ActionFunction } from '@remix-run/node'
 
-// const styles: BoxStyles = {
-//   table: {
-//     width: '100%',
-//     overflowX: 'auto',
-//   },
-//   link: {
-//     color: 'white',
-//     fontWeight: 'bold'
-//   },
-//   errorColor: { color: colors.error },
-//   noBgButton: {
-//     backgroundColor: colors.contentGrey,
-//     border: `1px solid ${colors.primary}`
-//   },
-// }))
+import colors from '~/utils/colors'
+import { deleteTrack } from '~/graphql/requests.server'
+import type { BoxStyles } from '~/interfaces/types'
+
+const styles: BoxStyles = {
+  table: {
+    width: '100%',
+    overflowX: 'auto',
+  },
+  link: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  errorColor: { color: colors.error },
+  noBgButton: {
+    backgroundColor: colors.contentGrey,
+    border: `1px solid ${colors.primary}`,
+  },
+}
+
+export const action: ActionFunction = async ({ request, params }) => {
+  const { hash } = params as { hash: string }
+  switch (request.method) {
+    case 'DELETE':
+      const data = await deleteTrack(hash)
+
+      return json(data)
+      break
+
+    default:
+      break
+  }
+}
 
 export default function ManageTracksPage() {
   const [trackHashToDelete, setTrackHashToDelete] = useState('')
+  const myTracksFetcher = useFetcher()
+
   const {
-    deleteTrack,
-    deleteTrackResponse,
-    deletingTrack,
-    errorDeletingTrack,
-  } = useDeleteTrack()
-  const { loading, error, data, refetch } = useMyTracks()
-  const tracks = get(data, 'me.tracks')
+    me: { tracks },
+  } = useLoaderData()
 
   const confirmDelete = (hash: string) => {
     setTrackHashToDelete(hash)
   }
-
-  const handleDeleteTrack = (hash: string) => {
-    deleteTrack(hash)
-  }
-
-  useEffect(() => {
-    if (deleteTrackResponse || errorDeletingTrack) {
-      setTrackHashToDelete('')
-
-      if (deleteTrackResponse) {
-        refetch()
-      }
-    }
-    // eslint-disable-next-line
-  }, [deleteTrackResponse, errorDeletingTrack])
-
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
 
   return (
     <>
       {tracks.data.length ? (
         <>
           <HeaderTitle icon={<MusicNoteIcon />} text="Your Tracks" />
-          <SEO title={`Your Tracks`} />
+          {/* <SEO title={`Your Tracks`} /> */}
 
           <Table sx={styles.table} size="small">
             <TableHead>
@@ -130,14 +125,19 @@ export default function ManageTracksPage() {
           <Button size="small" onClick={() => setTrackHashToDelete('')}>
             Cancel
           </Button>
-          <Button
-            size="small"
-            onClick={() => handleDeleteTrack(trackHashToDelete)}
-            sx={styles.noBgButton}
-            disabled={deletingTrack}
-          >
-            Delete
-          </Button>
+          {
+            <myTracksFetcher.Form method="delete">
+              <input type="hidden" name="hash" value={trackHashToDelete} />
+              <Button
+                size="small"
+                type="submit"
+                sx={styles.noBgButton}
+                disabled={myTracksFetcher.state === 'loading'}
+              >
+                Delete
+              </Button>
+            </myTracksFetcher.Form>
+          }
         </DialogActions>
       </AlertDialog>
     </>

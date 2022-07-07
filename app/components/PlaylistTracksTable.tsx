@@ -8,24 +8,28 @@ import TableRow from '@mui/material/TableRow'
 import colors from '../utils/colors'
 import { useSelector } from 'react-redux'
 import AppStateInterface from '../interfaces/AppStateInterface'
-import PlaylistInterface, { PlaylistTrackInterface } from '../interfaces/PlaylistInterface'
+import PlaylistInterface, {
+  PlaylistTrackInterface,
+} from '../interfaces/PlaylistInterface'
 import PlayPause from './PlayPause'
 import { makeSoundFromTrack } from '../utils/helpers'
-import ListInterface from '../interfaces/ListInterface'
+import type ListInterface from '~/interfaces/ListInterface'
 import { Link } from '@remix-run/react'
+import type { BoxStyles } from '~/interfaces/types'
+import theme from '~/mui/theme'
 
-// const styles: BoxStyles = {
-//   table: {
-//     width: '100%',
-//     marginTop: theme.spacing(3),
-//     overflowX: 'auto',
-//   },
-//   link: {
-//     color: 'white',
-//     textDecoration: 'none',
-//     fontWeight: 'bold'
-//   }
-// }))
+const styles: BoxStyles = {
+  table: {
+    width: '100%',
+    marginTop: theme.spacing(3),
+    overflowX: 'auto',
+  },
+  link: {
+    color: 'white',
+    textDecoration: 'none',
+    fontWeight: 'bold',
+  },
+}
 
 // export const StyledTableCell = withStyles({
 //   head: {
@@ -42,13 +46,11 @@ import { Link } from '@remix-run/react'
 //     paddingRight: 1,
 //     textOverflow: 'ellipsis'
 //   },
-// }))(TableCell)
+//}(TableCell)
 
-type Props = { playlist: PlaylistInterface, list: ListInterface }
+type Props = { playlist: PlaylistInterface; list: ListInterface }
 
 export default function PlaylistTracksTable({ playlist, list }: Props) {
-
-
   const { currentSound } = useSelector(
     (appState: AppStateInterface) => appState.player
   )
@@ -68,14 +70,19 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
       </TableHead>
       <TableBody>
         {playlist.tracks.map((track: PlaylistTrackInterface, index: number) => {
-          const color = currentSound &&
-            track.hash === currentSound.hash ? colors.primary
-            : undefined
+          const color =
+            currentSound && track.hash === currentSound.hash
+              ? colors.primary
+              : undefined
 
           return (
-            <TableRow key={index} style={{
-              borderBottom: playlist.tracks.length - 1 === index ? '' : '1px solid white',
-            }}>
+            <TableRow
+              key={index}
+              style={{
+                borderBottom:
+                  playlist.tracks.length - 1 === index ? '' : '1px solid white',
+              }}
+            >
               <StyledTableCell style={{ width: '4%' }}>
                 {track.number}
               </StyledTableCell>
@@ -84,7 +91,14 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
                 {/* <Heart /> */}
               </StyledTableCell>
               <StyledTableCell style={{ width: '90%', color }}>
-                <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)} sx={styles.link} style={{ color }}>{track.title}</Link>
+                <Link
+                  prefetch="intent"
+                  to={AppRoutes.track.detailPage(track.hash)}
+                  sx={styles.link}
+                  style={{ color }}
+                >
+                  {track.title}
+                </Link>
               </StyledTableCell>
               {/* <StyledTableCell style={{ width: '1.5%', color }}>{track.play_count}</StyledTableCell> */}
               {/* <StyledTableCell style={{ width: '1.5%', color }}>{track.download_count}</StyledTableCell> */}

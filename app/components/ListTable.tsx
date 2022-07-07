@@ -15,13 +15,13 @@ import { useSelector } from 'react-redux'
 import AppStateInterface from '../interfaces/AppStateInterface'
 import ListInterface, { SoundInterface } from '../interfaces/ListInterface'
 
-// const styles: BoxStyles = {
-//   table: {
-//     width: '100%',
-//     marginTop: theme.spacing(3),
-//     overflowX: 'auto',
-//   },
-// }))
+const styles: BoxStyles = {
+  //   table: {
+  //     width: '100%',
+  //     marginTop: theme.spacing(3),
+  //     overflowX: 'auto',
+  //   },
+}
 
 // const StyledTableCell = withStyles({
 //   head: {
@@ -38,16 +38,17 @@ import ListInterface, { SoundInterface } from '../interfaces/ListInterface'
 //     paddingRight: 1,
 //     textOverflow: 'ellipsis'
 //   },
-// }))(TableCell)
+//}(TableCell)
 
 type Props = {
   list: ListInterface
 }
 
 export default function ListTable(props: Props) {
-
   const sounds = props.list.sounds
-  const currentSound = useSelector(({ player }: AppStateInterface) => player.currentSound)
+  const currentSound = useSelector(
+    ({ player }: AppStateInterface) => player.currentSound
+  )
 
   return (
     <Table sx={styles.table} size="small">
@@ -61,28 +62,40 @@ export default function ListTable(props: Props) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {sounds && sounds.map((sound: SoundInterface, index: number) => {
-          const color = currentSound
-            && sound.hash === currentSound.hash ? colors.primary
-            : undefined
+        {sounds &&
+          sounds.map((sound: SoundInterface, index: number) => {
+            const color =
+              currentSound && sound.hash === currentSound.hash
+                ? colors.primary
+                : undefined
 
-          return (
-            <TableRow key={index} style={{
-              borderBottom: sounds.length - 1 === index ? '' : '1px solid white',
-            }}>
-              <StyledTableCell style={{ width: '15%', minWidth: '80px' }}>
-                <PlayPause sound={sound} list={props.list} />
-                <Heart />
-              </StyledTableCell>
-              <StyledTableCell style={{ width: '30%', color }}>{sound.title}</StyledTableCell>
-              <StyledTableCell style={{ width: '30%', color }}>{sound.author_name}</StyledTableCell>
-              <StyledTableCell style={{ width: '20%', color }}>{sound.title}</StyledTableCell>
-              {/* <StyledTableCell>
+            return (
+              <TableRow
+                key={index}
+                style={{
+                  borderBottom:
+                    sounds.length - 1 === index ? '' : '1px solid white',
+                }}
+              >
+                <StyledTableCell style={{ width: '15%', minWidth: '80px' }}>
+                  <PlayPause sound={sound} list={props.list} />
+                  <Heart />
+                </StyledTableCell>
+                <StyledTableCell style={{ width: '30%', color }}>
+                  {sound.title}
+                </StyledTableCell>
+                <StyledTableCell style={{ width: '30%', color }}>
+                  {sound.author_name}
+                </StyledTableCell>
+                <StyledTableCell style={{ width: '20%', color }}>
+                  {sound.title}
+                </StyledTableCell>
+                {/* <StyledTableCell>
                 <More />
               </StyledTableCell> */}
-            </TableRow>
-          )
-        })}
+              </TableRow>
+            )
+          })}
       </TableBody>
     </Table>
   )

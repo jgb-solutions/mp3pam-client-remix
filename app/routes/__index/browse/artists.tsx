@@ -1,20 +1,19 @@
-
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
-import Grid from "@mui/material/Grid"
+import Grid from '@mui/material/Grid'
 import InfiniteScroll from 'react-infinite-scroller'
-
 
 import { useLoaderData } from '@remix-run/react'
 import { fetchArtists } from '~/graphql/requests.server'
 import { json, LoaderFunction } from '@remix-run/node'
 import HeaderTitle from '~/components/HeaderTitle'
+import Spinner from '~/components/Spinner'
+import ArtistThumbnail from '~/components/ArtistThumbnail'
 
-export const loader: LoaderFunction = async () => {
+// export const loader: LoaderFunction = async () => {
+//   const data = await fetchArtists()
 
-  const data = await fetchArtists()
-
-  return json(data)
-}
+//   return json(data)
+// }
 
 export default function BrowseArtistsPage() {
   const { artists } = useLoaderData()
@@ -22,12 +21,12 @@ export default function BrowseArtistsPage() {
   return (
     <>
       <HeaderTitle icon={<PersonPinCircleIcon />} text="Browse Artists" />
-      <SEO title={`Browse Artists`} />
+      {/* <SEO title={`Browse Artists`} /> */}
 
       <InfiniteScroll
         pageStart={1}
-        loadMore={loadMoreArtists}
-        hasMore={hasMore}
+        loadMore={() => {}}
+        hasMore={false}
         loader={<Spinner key={1} />}
         useWindow={false}
       >

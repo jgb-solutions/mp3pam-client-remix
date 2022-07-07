@@ -18,12 +18,14 @@ import AppRoutes from '~/app-routes'
 import SearchInput from './SearchInput'
 import type { BoxStyles } from '~/interfaces/types'
 import { useAuth } from '~/hooks/useAuth'
+import theme from '~/mui/theme'
+import { SMALL_SCREEN_SIZE } from '~/utils/constants'
 
 const styles: BoxStyles = {
   grow: {
     flex: 1,
     backgroundColor: colors.black,
-    sm: {
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
       position: 'relative',
     },
   },
@@ -36,11 +38,11 @@ const styles: BoxStyles = {
     flex: 1,
   },
   menuButton: {
-    marginRight: '2px',
+    marginRight: theme.spacing(2),
   },
   title: {
     display: 'none',
-    md: {
+    [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
   },
@@ -53,7 +55,7 @@ const styles: BoxStyles = {
   },
   leftMenuIcon: {
     paddingLeft: 0,
-    md: {
+    [theme.breakpoints.up('sm')]: {
       display: 'none',
     },
   },
@@ -72,13 +74,11 @@ const styles: BoxStyles = {
     alignItems: 'center',
   },
   avatar: {
-    marginRight: 1,
+    marginRight: '5px',
   },
 }
 
-type Props = {}
-
-const Header: FC<Props> = (props) => {
+const Header: FC = () => {
   const [drawerLeftOPen, setDrawerLeftOpen] = useState(false)
   const [drawerRightOPen, setDrawerRightOpen] = useState(false)
   const { currentUser } = useAuth()
