@@ -178,8 +178,6 @@ export default function App() {
   const { ENV, flashError } = useLoaderData<LoaderData>()
   const matches = useMatches()
 
-  console.log('matches', matches)
-
   return (
     <Document>
       <Provider store={store}>

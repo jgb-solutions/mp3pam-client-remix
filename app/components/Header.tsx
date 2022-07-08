@@ -81,7 +81,7 @@ const styles: BoxStyles = {
 const Header: FC = () => {
   const [drawerLeftOPen, setDrawerLeftOpen] = useState(false)
   const [drawerRightOPen, setDrawerRightOpen] = useState(false)
-  const { currentUser } = useAuth()
+  const { currentUser, isLoggedIn } = useAuth()
 
   return (
     <Box sx={styles.grow}>
@@ -97,7 +97,7 @@ const Header: FC = () => {
           </IconButton>
           <SearchInput />
           <Box sx={styles.grow} />
-          {currentUser ? (
+          {isLoggedIn ? (
             <Box
               sx={styles.avatarWrapper}
               onClick={() => setDrawerRightOpen(true)}

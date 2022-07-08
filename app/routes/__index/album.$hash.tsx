@@ -1,4 +1,4 @@
-import {  useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Link, useParams, useNavigate, useLoaderData } from '@remix-run/react'
 import InfoIcon from '@mui/icons-material/Info'
 import ShareIcon from '@mui/icons-material/Share'
@@ -142,7 +142,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 }
 
 export default function AlbumDetailPage(props: Props) {
-    const { }  = useSelector(({ player }: AppStateInterface) => ({
+  const {} = useSelector(({ player }: AppStateInterface) => ({
     playingListHash: player.list.hash,
     isPlaying: player.isPlaying,
     currentTime: player.currentTime,
@@ -151,8 +151,7 @@ export default function AlbumDetailPage(props: Props) {
     resumeList: playerActions.resumeList,
     playNext: playerActions.playNext,
     addToQueue: playerActions.addToQueue,
-    })
-  )
+  }))
 
   const navigate = useNavigate()
   const { randomAlbums, album: albumData } = useLoaderData<AlbumDetailQuery>()
@@ -276,7 +275,8 @@ export default function AlbumDetailPage(props: Props) {
         icon: <InfoIcon />,
         label: 'Detail',
         value: (
-          <Box component="p"
+          <Box
+            component="p"
             dangerouslySetInnerHTML={{ __html: album.detail }}
             style={{ wordWrap: 'normal' }}
           />
@@ -338,22 +338,39 @@ export default function AlbumDetailPage(props: Props) {
         </Grid>
         <Grid item sm={8} xs={12} sx={styles.detailsWrapper}>
           <Box sx={styles.listDetails}>
-            <Box component="h5" sx={styles.listType}>Album</Box>
-            <Box component="h1" sx={styles.listName}>{album.title}</Box>
-            <Box component="p" sx={styles.listByAuthor} style={{ marginBottom: 5 }}>
-              <Box component="span" sx={styles.listBy}>By </Box>
-              <Link
+            <Box component="h5" sx={styles.listType}>
+              Album
+            </Box>
+            <Box component="h1" sx={styles.listName}>
+              {album.title}
+            </Box>
+            <Box
+              component="p"
+              sx={styles.listByAuthor}
+              style={{ marginBottom: 5 }}
+            >
+              <Box component="span" sx={styles.listBy}>
+                By{' '}
+              </Box>
+              <Box
+                component={Link}
                 to={AppRoutes.artist.detailPage(album.artist.hash)}
                 sx={styles.listAuthor}
               >
                 {album.artist.stage_name}
-              </Link>
+              </Box>
               <br />
-              <Box component="span" sx={styles.listBy}>Released In </Box>
-              <Box component="span" sx={styles.listAuthor} style={{ textDecoration: 'none' }}>
+              <Box component="span" sx={styles.listBy}>
+                Released In{' '}
+              </Box>
+              <Box
+                component="span"
+                sx={styles.listAuthor}
+                style={{ textDecoration: 'none' }}
+              >
                 {album.release_year}
               </Box>
-            </p>
+            </Box>
             <Grid sx={styles.ctaButtons} container spacing={2}>
               <Grid item xs={2} implementation="css" smUp component={Hidden} />
               <Grid item>
@@ -410,15 +427,17 @@ export default function AlbumDetailPage(props: Props) {
       />
       <h3>
         Go to the{' '}
-        <Link
+        <Box
+          component={Link}
           prefetch="intent"
           style={{ color: 'white' }}
           to={AppRoutes.pages.home}
         >
           home page
-        </Link>{' '}
+        </Box>{' '}
         or{' '}
-        <Link
+        <Box
+          component={Link}
           style={{
             cursor: 'pointer',
             textDecoration: 'underline',
@@ -427,7 +446,7 @@ export default function AlbumDetailPage(props: Props) {
           to={AppRoutes.browse.albums}
         >
           browse other albums.
-        </Link>
+        </Box>
         .
       </h3>
       <FourOrFour />

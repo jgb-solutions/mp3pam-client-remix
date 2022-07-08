@@ -98,9 +98,6 @@ export const action: ActionFunction = async ({ request }) => {
 
     session.set(USER_SESSION_ID, data.login)
 
-    console.log('data', data)
-    console.log('session', session)
-
     return redirect('/', {
       headers: {
         ...(await updateCookieSessionHeader(session)),

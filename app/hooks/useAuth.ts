@@ -6,10 +6,10 @@ export function useAuth() {
 
   const [rootMatch] = matches
 
-  const currentUser = rootMatch?.data?.currentUser as UserData
+  const currentUser = (rootMatch?.data?.currentUser || {}) as UserData
 
   return {
-    isLoggedIn: !!currentUser,
+    isLoggedIn: !!Object.keys(currentUser).length,
     currentUser,
   }
 }
