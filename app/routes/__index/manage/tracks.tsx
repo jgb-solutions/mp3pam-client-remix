@@ -19,7 +19,7 @@ import Button from '@mui/material/Button'
 import type { ActionFunction } from '@remix-run/node'
 
 import colors from '~/utils/colors'
-import { deleteTrack } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import type { BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
@@ -42,7 +42,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { hash } = params as { hash: string }
   switch (request.method) {
     case 'DELETE':
-      const data = await deleteTrack(hash)
+      const data = await apiClient.deleteTrack(hash)
 
       return json(data)
       break

@@ -1,15 +1,19 @@
-import type { DataFunctionArgs, LoaderFunction, Session } from '@remix-run/node'
+import type {
+  AppData,
+  DataFunctionArgs,
+  LoaderFunction,
+  Session,
+} from '@remix-run/node'
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 
-import { DOMAIN } from '~/utils/constants.server'
-import { fetchFacebookLoginUrl } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import type { LoggedInUserData } from '~/interfaces/types'
 
 const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
     cookie: {
       name: '__session',
-      domain: DOMAIN,
+      // domain: DOMAIN,
       httpOnly: true,
       maxAge: 60 * 60,
       path: '/',
@@ -30,7 +34,7 @@ export const destroyCookieSessionHeader = async (session: Session) => ({
   'Set-Cookie': await destroySession(session),
 })
 
-export const USER_SESSION_ID = 'userId'
+export const USER_SESSION_ID = '_User_Session_'
 
 export const shouldLoginWithFacebook = (request: Request) => {
   const url = new URL(request.url)
@@ -39,7 +43,7 @@ export const shouldLoginWithFacebook = (request: Request) => {
 }
 
 export const redirectToFacebookLogin = async () => {
-  const { facebookLoginUrl } = await fetchFacebookLoginUrl()
+  const { facebookLoginUrl } = await apiClient.fetchFacebookLoginUrl()
 
   return redirect(facebookLoginUrl.url)
 }
@@ -48,30 +52,32 @@ type WithAuthOptions = {
   redirectTo?: string
 }
 
-export const withAuth =
-  (contextCallback: LoaderFunction, options: WithAuthOptions = {}) =>
-  async (context: DataFunctionArgs) => {
-    const { request } = context
+export const withAuth = async (
+  context: DataFunctionArgs,
+  contextCallback: LoaderFunction = () => Promise.resolve(null),
+  options: WithAuthOptions = {}
+) => {
+  const { request } = context
 
-    const session = await getCookieSession(request)
+  const session = await getCookieSession(request)
 
-    if (!session.has(USER_SESSION_ID)) {
-      session.flash(
-        'flashError',
-        'You need to be logged in to access this resource'
-      )
+  if (!session.has(USER_SESSION_ID)) {
+    session.flash(
+      'flashError',
+      'You need to be logged in to access this resource'
+    )
 
-      const updatedHeaders = {
-        ...(await updateCookieSessionHeader(session)),
-      }
-
-      return redirect(options.redirectTo || '/login', {
-        headers: updatedHeaders,
-      })
+    const updatedHeaders = {
+      ...(await updateCookieSessionHeader(session)),
     }
 
-    return contextCallback(context)
+    return redirect(options.redirectTo || '/login', {
+      headers: updatedHeaders,
+    })
   }
+
+  return contextCallback(context) || {}
+}
 
 type WithUserOptions = {
   redirectTo?: string
@@ -84,20 +90,28 @@ type WithUserData = {
 type WithUserCallback = (
   withUserData: WithUserData,
   context: DataFunctionArgs
-) => Response
+) => Promise<Response> | Response | Promise<AppData> | AppData
 
 export const withUser = (
-  contextCallback: WithUserCallback,
+  context: DataFunctionArgs,
+  contextCallback: WithUserCallback = () => {},
   options: WithUserOptions = {}
 ) =>
-  withAuth(async (context: DataFunctionArgs) => {
-    const { request } = context
+  withAuth(
+    context,
+    async (context: DataFunctionArgs) => {
+      const { request } = context
 
-    const session = await getCookieSession(request)
+      const session = await getCookieSession(request)
 
-    const userSessionData = (await session.get(
-      USER_SESSION_ID
-    )) as LoggedInUserData
+      const userSessionData = (await session.get(
+        USER_SESSION_ID
+      )) as LoggedInUserData
 
-    return contextCallback({ userSessionData: { ...userSessionData } }, context)
-  }, options)
+      return (
+        contextCallback({ userSessionData: { ...userSessionData } }, context) ||
+        {}
+      )
+    },
+    options
+  )

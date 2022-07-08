@@ -84,7 +84,7 @@ export function AddArtistForm({
 }: AddArtistFormProps) {
   const { register, handleSubmit, errors, formState } =
     useForm<AddArtistFormData>({ mode: 'onBlur' })
-  const { addArtist, data: artistData } = useAddArtist()
+  // const { addArtist, data: artistData } = useAddArtist()
 
   const handleAddArtist = (artist: AddArtistFormData) => {
     addArtist({ ...artist, img_bucket: IMG_BUCKET })
@@ -302,7 +302,7 @@ export default function AddTrackPage() {
   const watchGenreValue = watch('genreId')
 
   const goToTracksLibrary = () => {
-    history.push(AppRoutes.user.manage.tracks)
+    history.push(AppRoutes.manage.tracks)
   }
 
   const handleTrackSucessDialogClose = () => setOpenTrackSuccessDialog(false)

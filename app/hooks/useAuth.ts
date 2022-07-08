@@ -1,7 +1,15 @@
-import { useOutletContext } from '@remix-run/react'
-
-import type { RootContextType } from '~/root'
+import { useMatches } from '@remix-run/react'
+import type { UserData } from '~/interfaces/types'
 
 export function useAuth() {
-  return useOutletContext<RootContextType>() || {}
+  const matches = useMatches()
+
+  const [rootMatch] = matches
+
+  const currentUser = rootMatch?.data?.currentUser as UserData
+
+  return {
+    isLoggedIn: !!currentUser,
+    currentUser,
+  }
 }

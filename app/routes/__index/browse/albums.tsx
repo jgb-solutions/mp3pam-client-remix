@@ -3,7 +3,7 @@ import AlbumIcon from '@mui/icons-material/Album'
 import Grid from '@mui/material/Grid'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import { fetchAlbums } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import { AlbumsDataQuery } from '~/graphql/generated-types'
 import { useLoaderData } from '@remix-run/react'
 import { json, LoaderFunction } from '@remix-run/node'
@@ -11,11 +11,11 @@ import HeaderTitle from '~/components/HeaderTitle'
 import Spinner from '~/components/Spinner'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
 
-// export const loader: LoaderFunction = async () => {
-//   const data = await fetchAlbums()
+export const loader: LoaderFunction = async () => {
+  const data = await apiClient.fetchAlbums()
 
-//   return json(data)
-// }
+  return json(data)
+}
 
 export default function BrowseAlbumsPage() {
   const { albums } = useLoaderData()

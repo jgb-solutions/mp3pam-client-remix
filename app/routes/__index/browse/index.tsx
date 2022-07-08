@@ -4,13 +4,13 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import HeaderTitle from '~/components/HeaderTitle'
 
 import { json, LoaderFunction } from '@remix-run/node'
-import { fetchGenres } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import { useLoaderData } from '@remix-run/react'
 import type { AllGenresQuery } from '~/graphql/generated-types'
 import GenreThumbnail from '~/components/GenreThumbnail'
 
 export const loader: LoaderFunction = async () => {
-  const data = await fetchGenres()
+  const data = await apiClient.fetchGenres()
 
   return json(data)
 }

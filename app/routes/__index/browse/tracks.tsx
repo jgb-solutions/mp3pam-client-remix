@@ -11,7 +11,7 @@ import { useFetcher, useLoaderData } from '@remix-run/react'
 import InfiniteScroll from 'react-infinite-scroller'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 
-import { fetchTracks } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import HeaderTitle from '~/components/HeaderTitle'
 import Spinner from '~/components/Spinner'
 import TrackThumbnail from '~/components/TrackThumbnail'
@@ -30,14 +30,14 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-// export const loader: LoaderFunction = async ({ request }) => {
-//   const url = new URL(request.url)
-//   const page = Number(url.searchParams.get('page')) || 1
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url)
+  const page = Number(url.searchParams.get('page')) || 1
 
-//   const data = await fetchTracks({ page })
+  const data = await apiClient.fetchTracks({ page })
 
-//   return json(data)
-// }
+  return json(data)
+}
 
 type TrackType = NonNullable<TracksDataQuery['tracks']>['data'][0]
 

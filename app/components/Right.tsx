@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { useCallback } from 'react'
 import Avatar from '@mui/material/Avatar'
-import { NavLink } from "@remix-run/react"
+import { NavLink } from '@remix-run/react'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import AlbumIcon from '@mui/icons-material/Album'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
@@ -10,29 +10,50 @@ import Box from '@mui/material/Box'
 
 import AppRoutes from '~/app-routes'
 import type { UserData } from '~/interfaces/types'
-import { sidebarStyles as styles } from "~/styles/sidebar-styles"
-
+import { sidebarStyles as styles } from '~/styles/sidebar-styles'
+import { useAuth } from '~/hooks/useAuth'
 
 const CreateMenu = [
-  { name: "Add Track", to: AppRoutes.user.create.track, icon: <MusicNoteIcon /> },
-  // { name: "Create PlayList", to: AppRoutes.user.create.playlist, icon: <PlaylistAddIcon /> },
-  { name: "Add Artist", to: AppRoutes.user.create.artist, icon: <PersonPinCircleIcon /> },
-  { name: "Create Album", to: AppRoutes.user.create.album, icon: <AlbumIcon /> },
+  {
+    name: 'Add Track',
+    to: AppRoutes.manage.create.track,
+    icon: <MusicNoteIcon />,
+  },
+  // { name: "Create PlayList", to: AppRoutes.manage.create.playlist, icon: <PlaylistAddIcon /> },
+  {
+    name: 'Add Artist',
+    to: AppRoutes.manage.create.artist,
+    icon: <PersonPinCircleIcon />,
+  },
+  {
+    name: 'Create Album',
+    to: AppRoutes.manage.create.album,
+    icon: <AlbumIcon />,
+  },
 ]
 
 const libraryMenu = [
-  { name: "Tracks", to: AppRoutes.user.manage.tracks, icon: <MusicNoteIcon /> },
-  { name: "PlayLists", to: AppRoutes.user.manage.playlists, icon: <PlaylistAddIcon /> },
-  { name: "Artists", to: AppRoutes.user.manage.artists, icon: <PersonPinCircleIcon /> },
-  { name: "Albums", to: AppRoutes.user.manage.albums, icon: <AlbumIcon /> },
+  { name: 'Tracks', to: AppRoutes.manage.tracks, icon: <MusicNoteIcon /> },
+  {
+    name: 'PlayLists',
+    to: AppRoutes.manage.playlists,
+    icon: <PlaylistAddIcon />,
+  },
+  {
+    name: 'Artists',
+    to: AppRoutes.manage.artists,
+    icon: <PersonPinCircleIcon />,
+  },
+  { name: 'Albums', to: AppRoutes.manage.albums, icon: <AlbumIcon /> },
 ]
 
 type Props = {
-  closeDrawerRight?: (bool: boolean) => void,
-  currentUser: UserData
+  closeDrawerRight?: (bool: boolean) => void
 }
 
-const Right: FC<Props> = ({ closeDrawerRight, currentUser }) => {
+const Right: FC<Props> = ({ closeDrawerRight }) => {
+  const { currentUser } = useAuth()
+
   const closeDrawer = useCallback(() => {
     if (closeDrawerRight) {
       closeDrawerRight(false)
@@ -49,57 +70,78 @@ const Right: FC<Props> = ({ closeDrawerRight, currentUser }) => {
             style={({ isActive }) => ({
               ...styles.link,
               ...styles.mainMenuLink,
-              ...(isActive ? styles.activeClassName : {})
+              ...(isActive ? styles.activeClassName : {}),
             })}
-            onClick={closeDrawer}>
+            onClick={closeDrawer}
+          >
             <Box component="span" sx={styles.linkIcon}>
-              <Avatar style={{ width: 20, height: 20 }} alt={currentUser.name} src={currentUser.avatar_url || ""} />
+              <Avatar
+                style={{ width: 20, height: 20 }}
+                alt={currentUser.name}
+                src={currentUser.avatar_url || ''}
+              />
             </Box>
-            <Box component="span" sx={styles.linkText}>Your Account</Box>
+            <Box component="span" sx={styles.linkText}>
+              Your Account
+            </Box>
           </NavLink>
         </Box>
 
         <Box>
           <p>
-            <NavLink prefetch="intent"
-              to={AppRoutes.user.manage.home}
+            <NavLink
+              prefetch="intent"
+              to={AppRoutes.manage.home}
               style={({ isActive }) => ({
                 ...styles.yourLibraryLink,
-                ...(isActive ? styles.activeClassName : {})
+                ...(isActive ? styles.activeClassName : {}),
               })}
-              onClick={closeDrawer}>
+              onClick={closeDrawer}
+            >
               Manage Your Library
             </NavLink>
           </p>
           {libraryMenu.map((menuItem, index) => (
-            <NavLink prefetch="intent"
+            <NavLink
+              prefetch="intent"
               key={index}
               to={menuItem.to}
               style={({ isActive }) => ({
                 ...styles.link,
                 ...styles.libraryLink,
-                ...(isActive ? styles.activeClassName : {})
+                ...(isActive ? styles.activeClassName : {}),
               })}
-              onClick={closeDrawer}>
-              <Box component="span" sx={styles.linkIcon}>{menuItem.icon}</Box>
-              <Box component="span" sx={styles.linkText}>{menuItem.name}</Box>
+              onClick={closeDrawer}
+            >
+              <Box component="span" sx={styles.linkIcon}>
+                {menuItem.icon}
+              </Box>
+              <Box component="span" sx={styles.linkText}>
+                {menuItem.name}
+              </Box>
             </NavLink>
           ))}
 
           <br />
 
           {CreateMenu.map((menuItem, index) => (
-            <NavLink prefetch="intent"
+            <NavLink
+              prefetch="intent"
               style={({ isActive }) => ({
                 ...styles.link,
                 ...styles.libraryLink,
-                ...(isActive ? styles.activeClassName : {})
+                ...(isActive ? styles.activeClassName : {}),
               })}
               key={index}
               to={menuItem.to}
-              onClick={closeDrawer}>
-              <Box component="span" sx={styles.linkIcon}>{menuItem.icon}</Box>
-              <Box component="span" sx={styles.linkText}>{menuItem.name}</Box>
+              onClick={closeDrawer}
+            >
+              <Box component="span" sx={styles.linkIcon}>
+                {menuItem.icon}
+              </Box>
+              <Box component="span" sx={styles.linkText}>
+                {menuItem.name}
+              </Box>
             </NavLink>
           ))}
         </Box>

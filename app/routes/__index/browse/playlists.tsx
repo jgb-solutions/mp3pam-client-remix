@@ -6,15 +6,15 @@ import InfiniteScroll from 'react-infinite-scroller'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import { fetchPlaylists } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import Spinner from '~/components/Spinner'
 import PlaylistThumbnail from '~/components/PlaylistThumbnail'
 
-// export const loader: LoaderFunction = async () => {
-//   const data = await fetchPlaylists()
+export const loader: LoaderFunction = async () => {
+  const data = await apiClient.fetchPlaylists()
 
-//   return json(data)
-// }
+  return json(data)
+}
 
 export default function BrowsePlaylistsPage() {
   const { playlists } = useLoaderData()

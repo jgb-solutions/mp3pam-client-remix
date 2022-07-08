@@ -47,7 +47,7 @@ import HeaderTitle from '~/components/HeaderTitle'
 import Image from '~/components/Image'
 import { Box, Button, darken, Grid } from '@mui/material'
 import type { LoaderFunction } from '@remix-run/node'
-import { fetchTrackDetail } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import type { BoxStyles } from '~/interfaces/types'
 import theme from '~/mui/theme'
 import Heart from '~/components/Heart'
@@ -163,7 +163,7 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
 export const loader: LoaderFunction = async ({ params }) => {
   const { hash } = params as { hash: string }
 
-  const data = await fetchTrackDetail(hash)
+  const data = await apiClient.fetchTrackDetail(hash)
 
   return json(data)
 }

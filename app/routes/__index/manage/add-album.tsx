@@ -94,7 +94,7 @@ export default function AddAlbumPage() {
   const watchArtistValue = watch('artist_id')
 
   const goToAlbumsLibrary = () => {
-    history.push(AppRoutes.user.manage.albums)
+    history.push(AppRoutes.manage.albums)
   }
 
   const handleAlbumSucessDialogClose = () => setOpenAlbumSuccessDialog(false)

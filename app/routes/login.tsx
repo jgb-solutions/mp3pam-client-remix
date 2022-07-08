@@ -20,7 +20,7 @@ import type { BoxStyles } from '~/interfaces/types'
 import PlainLayout from '~/components/layouts/Plain'
 import { Link, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
 import type { LoginInput } from '~/graphql/generated-types'
-import { doLogin } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import {
   getCookieSession,
   redirectToFacebookLogin,
@@ -92,11 +92,14 @@ export const action: ActionFunction = async ({ request }) => {
     const email = form.get('email') as string
     const password = form.get('password') as string
 
-    const data = await doLogin({ email, password })
+    const data = await apiClient.doLogin({ email, password })
 
     const session = await getCookieSession(request)
 
     session.set(USER_SESSION_ID, data.login)
+
+    console.log('data', data)
+    console.log('session', session)
 
     return redirect('/', {
       headers: {

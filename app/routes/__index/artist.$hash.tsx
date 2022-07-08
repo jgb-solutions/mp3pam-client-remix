@@ -16,7 +16,7 @@ import type { BoxStyles } from '~/interfaces/types'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import type { LoaderFunction } from '@remix-run/node'
 import YouTubeIcon from '@mui/icons-material/YouTube'
-import { Form, Link, useLoaderData, useParams } from '@remix-run/react'
+import { Link, useLoaderData } from '@remix-run/react'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import FacebookIcon from '@mui/icons-material/Facebook'
@@ -42,7 +42,7 @@ import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import TrackThumbnail from '~/components/TrackThumbnail'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
-import { fetchArtistDetail } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import type { ArtistDetailQuery } from '~/graphql/generated-types'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
 import { DOMAIN } from '~/utils/constants.server'
@@ -151,7 +151,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   const { hash } = params as { hash: string }
 
   try {
-    const data = await fetchArtistDetail({
+    const data = await apiClient.fetchArtistDetail({
       hash,
       input: {
         hash,

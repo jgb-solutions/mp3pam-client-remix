@@ -8,6 +8,7 @@ import {
   useLoaderData,
   ScrollRestoration,
   Link,
+  useMatches,
 } from '@remix-run/react'
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
@@ -138,12 +139,7 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-export type RootContextType = {
-  currentUser: UserData | null
-}
-
 type LoaderData = {
-  currentUser: RootContextType['currentUser']
   ENV: { [key: string]: string }
   flashError?: string
 }
@@ -179,8 +175,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function App() {
-  const { ENV, currentUser, flashError } = useLoaderData<LoaderData>()
-  const context: RootContextType = { currentUser }
+  const { ENV, flashError } = useLoaderData<LoaderData>()
+  const matches = useMatches()
+
+  console.log('matches', matches)
 
   return (
     <Document>
@@ -253,27 +251,37 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! Are You Lost?" />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+        }}
+      >
+        <HeaderTitle icon={<FindReplaceIcon />} text="OOPS! Are You Lost?" />
 
-      <h3>
-        Go to the{' '}
-        <Link
-          prefetch="intent"
-          style={{ color: 'white' }}
-          to={AppRoutes.pages.home}
-        >
-          home page
-        </Link>{' '}
-        or{' '}
-        <Link
-          style={{ cursor: 'pointer', textDecoration: 'underline' }}
-          to=".."
-        >
-          go back
-        </Link>
-        .
-      </h3>
-      <FourOrFour />
+        <Typography variant="h5" component="h3">
+          Go to the{' '}
+          <Link
+            prefetch="intent"
+            style={{ color: 'white' }}
+            to={AppRoutes.pages.home}
+          >
+            home page
+          </Link>{' '}
+          or{' '}
+          <Link
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+            to=".."
+          >
+            go back
+          </Link>
+          .
+        </Typography>
+        <FourOrFour />
+      </Box>
     </Document>
   )
 }

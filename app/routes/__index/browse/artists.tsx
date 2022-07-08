@@ -3,17 +3,17 @@ import Grid from '@mui/material/Grid'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import { useLoaderData } from '@remix-run/react'
-import { fetchArtists } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import { json, LoaderFunction } from '@remix-run/node'
 import HeaderTitle from '~/components/HeaderTitle'
 import Spinner from '~/components/Spinner'
 import ArtistThumbnail from '~/components/ArtistThumbnail'
 
-// export const loader: LoaderFunction = async () => {
-//   const data = await fetchArtists()
+export const loader: LoaderFunction = async () => {
+  const data = await apiClient.fetchArtists()
 
-//   return json(data)
-// }
+  return json(data)
+}
 
 export default function BrowseArtistsPage() {
   const { artists } = useLoaderData()

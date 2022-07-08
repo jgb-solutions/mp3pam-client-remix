@@ -1,31 +1,20 @@
-import { useState, useEffect, useCallback } from 'react'
-import {
-  useParams,
-  useNavigate,
-  useSubmit,
-  useFetcher,
-  Link,
-  Outlet,
-  useLoaderData,
-} from '@remix-run/react'
-
+import type {
+  HtmlMetaDescriptor,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
+import { useFetcher, Link, Outlet } from '@remix-run/react'
 import HeaderTitle from '~/components/HeaderTitle'
 import Avatar from '@mui/material/Avatar'
-import { Box, Grid } from '@mui/material'
+import { Box } from '@mui/material'
 
 import colors from '~/utils/colors'
 import Button from '@mui/material/Button'
 import { HR } from '~/components/Divider'
-import type { UserData } from '~/interfaces/types'
 import type { BoxStyles } from '~/interfaces/types'
-import {
-  HtmlMetaDescriptor,
-  json,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
-// import { withAuth, withUser } from '~/auth/sessions.server'
+import { withAuth } from '~/auth/sessions.server'
 import { getFormattedDate } from '~/utils/helpers'
+import { useAuth } from '~/hooks/useAuth'
 
 export const accountStyles: BoxStyles = {
   noBgButton: {
@@ -48,26 +37,18 @@ export interface UserFormData extends FormData {
   img_bucket?: string
 }
 
-// export const meta: MetaFunction = (): HtmlMetaDescriptor => {
-//   const title = "Your Account"
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = 'Your Account'
 
-//   return {
-//     title,
-//   }
-// }
-
-type LoaderData = {
-  currentUser: UserData
+  return {
+    title,
+  }
 }
 
-// export const loader: LoaderFunction = withAuth(() => {
-//   return json({
-//     currentUser: {},
-//   })
-// })
+export const loader: LoaderFunction = (context) => withAuth(context)
 
 export default function AccountPage() {
-  const { currentUser } = {}
+  const { currentUser } = useAuth()
   const logoutFetcher = useFetcher()
 
   return (
@@ -77,7 +58,8 @@ export default function AccountPage() {
           <Avatar
             style={{ width: 75, height: 75 }}
             alt={currentUser?.name}
-            src={currentUser?.avatar_url}
+            // avatar or random avatar
+            src={currentUser?.avatar_url || 'https://picsum.photos/75'}
           />
         }
         textStyle={{ paddingLeft: 10 }}

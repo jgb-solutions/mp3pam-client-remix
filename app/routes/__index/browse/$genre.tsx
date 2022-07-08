@@ -1,23 +1,23 @@
 import Grid from '@mui/material/Grid'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import { useLoaderData } from '@remix-run/react'
 import InfiniteScroll from 'react-infinite-scroller'
+import type { LoaderFunction } from '@remix-run/node'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
 
-import { useLoaderData, useParams } from '@remix-run/react'
-
-import type { TracksWithArtist } from '~/components/TrackScrollingList'
-import { json, LoaderFunction } from '@remix-run/node'
-import { fetchTracksByGenre } from '~/graphql/requests.server'
-import HeaderTitle from '~/components/HeaderTitle'
+import { json } from '@remix-run/node'
 import Spinner from '~/components/Spinner'
+import { apiClient } from '~/graphql/requests.server'
+import HeaderTitle from '~/components/HeaderTitle'
 import TrackThumbnail from '~/components/TrackThumbnail'
+import type { TracksWithArtist } from '~/components/TrackScrollingList'
 
-// export const loader: LoaderFunction = async ({ params }) => {
-//   const { genre } = params as { genre: string }
+export const loader: LoaderFunction = async ({ params }) => {
+  const { genre } = params as { genre: string }
 
-//   const data = await fetchTracksByGenre(genre)
+  const data = await apiClient.fetchTracksByGenre(genre)
 
-//   return json(data)
-// }
+  return json(data)
+}
 
 export default function BrowseTracksByGenrePage() {
   const { tracksByGenre } = useLoaderData()

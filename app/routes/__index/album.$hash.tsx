@@ -1,6 +1,5 @@
-import { useEffect } from 'react'
-import { connect } from 'react-redux'
-import { Link, useParams, useNavigate } from '@remix-run/react'
+import {  useSelector } from 'react-redux'
+import { Link, useParams, useNavigate, useLoaderData } from '@remix-run/react'
 import InfoIcon from '@mui/icons-material/Info'
 import ShareIcon from '@mui/icons-material/Share'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
@@ -33,6 +32,7 @@ import {
   APP_NAME,
   SEO_ALBUM_TYPE,
   TWITTER_HANDLE,
+  FETCH_ALBUMS_NUMBER,
 } from '../../utils/constants'
 import { DOMAIN } from '../../utils/constants.server'
 import Spinner from '~/components/Spinner'
@@ -42,75 +42,81 @@ import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import Image from '~/components/Image'
 import Grid from '@mui/material/Grid'
+import type { BoxStyles } from '~/interfaces/types'
+import { Box, darken } from '@mui/material'
+import theme from '~/mui/theme'
+import { json, LoaderFunction } from '@remix-run/node'
+import { apiClient } from '~/graphql/requests.server'
+import { AlbumDetailQuery } from '~/graphql/generated-types'
 
 const styles: BoxStyles = {
-  //   row: {
-  //     display: "flex",
-  //     flexDirection: "row"
-  //   },
-  //   imageContainer: {
-  //     textAlign: 'center',
-  //   },
-  //   image: {
-  //     width: 250,
-  //     height: 'auto',
-  //     maxWidth: "100%",
-  //   },
-  //   listByAuthor: {
-  //     fontSize: 14,
-  //     fontWeight: 'bold',
-  //   },
-  //   listBy: {
-  //     color: darken(colors.white, 0.5),
-  //     fontSize: 12
-  //   },
-  //   listAuthor: {
-  //     textDecoration: "none",
-  //     color: colors.white,
-  //     "&:hover": {
-  //       textDecoration: "underline"
-  //     },
-  //     "&:link": {
-  //       textDecoration: "none",
-  //       color: "white"
-  //     }
-  //   },
-  //   detailsWrapper: {
-  //     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-  //       position: 'relative',
-  //     },
-  //   },
-  //   listDetails: {
-  //     // display: "flex",
-  //     // flexDirection: "column",
-  //     // justifyContent: "flex-end",
-  //     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
-  //       position: 'absolute',
-  //       bottom: 4,
-  //     },
-  //     "& > *": {
-  //       padding: 0,
-  //       margin: 0
-  //     },
-  //     [theme.breakpoints.down('xs')]: {
-  //       textAlign: 'center',
-  //     },
-  //   },
-  //   listType: {
-  //     fontSize: 12,
-  //     fontWeight: 400,
-  //     textTransform: "uppercase"
-  //   },
-  //   listName: {
-  //     fontSize: 36,
-  //     fontWeight: "bold",
-  //     [theme.breakpoints.down('xs')]: {
-  //       fontSize: 32,
-  //     },
-  //   },
-  //   ctaButtons: {
-  //     marginTop: 10,
-  //   },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  imageContainer: {
+    textAlign: 'center',
+  },
+  image: {
+    width: 250,
+    height: 'auto',
+    maxWidth: '100%',
+  },
+  listByAuthor: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  listBy: {
+    color: darken(colors.white, 0.5),
+    fontSize: 12,
+  },
+  listAuthor: {
+    textDecoration: 'none',
+    color: colors.white,
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+    '&:link': {
+      textDecoration: 'none',
+      color: 'white',
+    },
+  },
+  detailsWrapper: {
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+      position: 'relative',
+    },
+  },
+  listDetails: {
+    // display: "flex",
+    // flexDirection: "column",
+    // justifyContent: "flex-end",
+    [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
+      position: 'absolute',
+      bottom: 4,
+    },
+    '& > *': {
+      padding: 0,
+      margin: 0,
+    },
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+    },
+  },
+  listType: {
+    fontSize: 12,
+    fontWeight: 400,
+    textTransform: 'uppercase',
+  },
+  listName: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 32,
+    },
+  },
+  ctaButtons: {
+    marginTop: 10,
+  },
 }
 
 type Props = {
@@ -124,19 +130,33 @@ type Props = {
   currentTime: number
 }
 
-const AlbumDetailPage = (props: Props) => {
-  const params = useParams()
-  const navigate = useNavigate()
-  const hash = get(params, 'hash')
-  const {
-    loading: randomLoading,
-    data: randomAlbumsData,
-    fetchRandomAlbums,
-  } = useRandomAlbums(hash)
-  const randomAlbums = get(randomAlbumsData, 'randomAlbums')
+export const loader: LoaderFunction = async ({ params }) => {
+  const { hash } = params as { hash: string }
 
-  const { data, loading, error } = useAlbumDetail(hash)
-  const album = get(data, 'album')
+  const data = await apiClient.fetchAlbumDetail({
+    hash,
+    input: { first: FETCH_ALBUMS_NUMBER, hash },
+  })
+
+  return json(data)
+}
+
+export default function AlbumDetailPage(props: Props) {
+    const { }  = useSelector(({ player }: AppStateInterface) => ({
+    playingListHash: player.list.hash,
+    isPlaying: player.isPlaying,
+    currentTime: player.currentTime,
+    playList: playerActions.playList,
+    pauseList: playerActions.pauseList,
+    resumeList: playerActions.resumeList,
+    playNext: playerActions.playNext,
+    addToQueue: playerActions.addToQueue,
+    })
+  )
+
+  const navigate = useNavigate()
+  const { randomAlbums, album: albumData } = useLoaderData<AlbumDetailQuery>()
+  const album = albumData as NonNullable<AlbumDetailQuery['album']>
 
   const makeList = () => {
     const { hash } = album
@@ -161,13 +181,6 @@ const AlbumDetailPage = (props: Props) => {
     }))
   }
 
-  useEffect(() => {
-    if (data) {
-      fetchRandomAlbums()
-    }
-    // eslint-disable-next-line
-  }, [data])
-
   const togglePlay = () => {
     if (props.isPlaying && props.playingListHash === album.hash) {
       props.pauseList()
@@ -180,12 +193,6 @@ const AlbumDetailPage = (props: Props) => {
     if (props.playingListHash !== album.hash) {
       props.playList(makeList())
     }
-  }
-
-  if (loading) return <Spinner.Full />
-
-  if (error) {
-    return <h1>Error loading album detail. Please reload page.</h1>
   }
 
   const getTabs = () => {
@@ -269,7 +276,7 @@ const AlbumDetailPage = (props: Props) => {
         icon: <InfoIcon />,
         label: 'Detail',
         value: (
-          <p
+          <Box component="p"
             dangerouslySetInnerHTML={{ __html: album.detail }}
             style={{ wordWrap: 'normal' }}
           />
@@ -313,7 +320,7 @@ const AlbumDetailPage = (props: Props) => {
   }
 
   return album ? (
-    <Box sx="react-transition flip-in-x-reverse">
+    <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
           <Image
@@ -331,10 +338,10 @@ const AlbumDetailPage = (props: Props) => {
         </Grid>
         <Grid item sm={8} xs={12} sx={styles.detailsWrapper}>
           <Box sx={styles.listDetails}>
-            <h5 sx={styles.listType}>Album</h5>
-            <h1 sx={styles.listName}>{album.title}</h1>
-            <p sx={styles.listByAuthor} style={{ marginBottom: 5 }}>
-              <span sx={styles.listBy}>By </span>
+            <Box component="h5" sx={styles.listType}>Album</Box>
+            <Box component="h1" sx={styles.listName}>{album.title}</Box>
+            <Box component="p" sx={styles.listByAuthor} style={{ marginBottom: 5 }}>
+              <Box component="span" sx={styles.listBy}>By </Box>
               <Link
                 to={AppRoutes.artist.detailPage(album.artist.hash)}
                 sx={styles.listAuthor}
@@ -342,10 +349,10 @@ const AlbumDetailPage = (props: Props) => {
                 {album.artist.stage_name}
               </Link>
               <br />
-              <span sx={styles.listBy}>Released In </span>
-              <span sx={styles.listAuthor} style={{ textDecoration: 'none' }}>
+              <Box component="span" sx={styles.listBy}>Released In </Box>
+              <Box component="span" sx={styles.listAuthor} style={{ textDecoration: 'none' }}>
                 {album.release_year}
-              </span>
+              </Box>
             </p>
             <Grid sx={styles.ctaButtons} container spacing={2}>
               <Grid item xs={2} implementation="css" smUp component={Hidden} />
@@ -378,7 +385,6 @@ const AlbumDetailPage = (props: Props) => {
       <br />
       <br />
 
-      {randomLoading && <Spinner.Full />}
       {randomAlbums ? (
         <AlbumScrollingList
           category="Other Albums Your Might Like"
@@ -387,14 +393,14 @@ const AlbumDetailPage = (props: Props) => {
         />
       ) : null}
       {/* handling SEO */}
-      <SEO
+      {/* <SEO
         title={`${album.title} (album) by ${album.artist.stage_name}`}
         url={`${DOMAIN}/album/${album.hash}`}
         description={`Listen to ${album.title} by ${album.artist.stage_name} on ${APP_NAME}`}
         type={SEO_ALBUM_TYPE}
         image={album.cover_url}
         artist={`${DOMAIN}/artist/${album.artist.hash}`}
-      />
+      /> */}
     </Box>
   ) : (
     <>
@@ -428,18 +434,3 @@ const AlbumDetailPage = (props: Props) => {
     </>
   )
 }
-
-export default connect(
-  ({ player }: AppStateInterface) => ({
-    playingListHash: get(player, 'list.hash'),
-    isPlaying: player.isPlaying,
-    currentTime: player.currentTime,
-  }),
-  {
-    playList: playerActions.playList,
-    pauseList: playerActions.pauseList,
-    resumeList: playerActions.resumeList,
-    playNext: playerActions.playNext,
-    addToQueue: playerActions.addToQueue,
-  }
-)(AlbumDetailPage)

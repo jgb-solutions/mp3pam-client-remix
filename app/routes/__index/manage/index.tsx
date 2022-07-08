@@ -3,11 +3,13 @@ import { Box, Typography } from '@mui/material'
 import type { LoaderFunction } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
 import GroupWorkIcon from '@mui/icons-material/GroupWork'
+import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
 
 import AppRoutes from '~/app-routes'
+import { withUser } from '~/auth/sessions.server'
 import HeaderTitle from '~/components/HeaderTitle'
 import type { BoxStyles } from '~/interfaces/types'
-import { fetchManage } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 import { TrackScrollingList } from '~/components/TrackScrollingList'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
@@ -17,11 +19,16 @@ const styles: BoxStyles = {
   link: { color: '#fff', fontWeight: 'bold' },
 }
 
-export const loader: LoaderFunction = async () => {
-  const data = await fetchManage()
+export const meta: MetaFunction = (): HtmlMetaDescriptor => ({
+  title: 'Your Library',
+})
 
-  return json(data)
-}
+export const loader: LoaderFunction = (context) =>
+  withUser(context, async ({ userSessionData }) => {
+    const data = await apiClient.setToken(userSessionData.token).fetchManage()
+
+    return json(data)
+  })
 
 export default function ManagePage() {
   const {
@@ -31,13 +38,12 @@ export default function ManagePage() {
   return (
     <>
       <HeaderTitle icon={<GroupWorkIcon />} text="Your Library" />
-      {/* <SEO title={`Your Library`} /> */}
 
       {latestTracks.length ? (
         <TrackScrollingList
           category="Your Latest Tracks"
           tracks={latestTracks}
-          browse={AppRoutes.user.manage.tracks}
+          browse={AppRoutes.manage.tracks}
         />
       ) : (
         <Typography variant="h3">
@@ -46,7 +52,7 @@ export default function ManagePage() {
             component={Link}
             prefetch="intent"
             sx={styles.link}
-            to={AppRoutes.user.create.track}
+            to={AppRoutes.manage.create.track}
           >
             Add a new track
           </Box>
@@ -58,7 +64,7 @@ export default function ManagePage() {
         <PlaylistScrollingList
           category="Your Latest Playlists"
           playlists={latestPlaylists}
-          browse={AppRoutes.user.manage.playlists}
+          browse={AppRoutes.manage.playlists}
         />
       ) : (
         <Typography variant="h3">
@@ -67,7 +73,7 @@ export default function ManagePage() {
             component={Link}
             prefetch="intent"
             sx={styles.link}
-            to={AppRoutes.user.create.playlist}
+            to={AppRoutes.manage.create.playlist}
           >
             Create a new playlist
           </Box>
@@ -79,7 +85,7 @@ export default function ManagePage() {
         <ArtistScrollingList
           category="Your Latest Artists"
           artists={latestArtists}
-          browse={AppRoutes.user.manage.artists}
+          browse={AppRoutes.manage.artists}
         />
       ) : (
         <Typography variant="h3">
@@ -88,7 +94,7 @@ export default function ManagePage() {
             component={Link}
             prefetch="intent"
             sx={styles.link}
-            to={AppRoutes.user.create.artist}
+            to={AppRoutes.manage.create.artist}
           >
             Add a new artist
           </Box>
@@ -100,7 +106,7 @@ export default function ManagePage() {
         <AlbumScrollingList
           category="Your Latest Albums"
           albums={latestAlbums}
-          browse={AppRoutes.user.manage.albums}
+          browse={AppRoutes.manage.albums}
         />
       ) : (
         <Typography variant="h3">
@@ -109,7 +115,7 @@ export default function ManagePage() {
             component={Link}
             prefetch="intent"
             sx={styles.link}
-            to={AppRoutes.user.create.album}
+            to={AppRoutes.manage.create.album}
           >
             Create a new album
           </Box>

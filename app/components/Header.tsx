@@ -145,12 +145,7 @@ const Header: FC = () => {
           onClose={() => setDrawerRightOpen(false)}
         >
           <Box sx={styles.drawer}>
-            {currentUser && (
-              <Right
-                closeDrawerRight={setDrawerRightOpen}
-                currentUser={currentUser}
-              />
-            )}
+            {currentUser && <Right closeDrawerRight={setDrawerRightOpen} />}
           </Box>
         </SwipeableDrawer>
       )}

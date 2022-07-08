@@ -1,11 +1,7 @@
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField'
-import type {
-  HtmlMetaDescriptor,
-  LoaderFunction,
-  MetaFunction,
-} from '@remix-run/node'
+import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
 import EditIcon from '@mui/icons-material/Edit'
 import ErrorIcon from '@mui/icons-material/Error'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -24,25 +20,18 @@ import HeaderTitle from '~/components/HeaderTitle'
 import { useForm } from 'react-hook-form'
 import { accountStyles } from '../account'
 import UploadButton from '~/components/UploadButton'
-import { IMG_BUCKET, MAX_IMG_FILE_SIZE } from '~/utils/constants.server'
+import { IMG_BUCKET } from '~/utils/constants.server'
 import useFileUpload from '~/hooks/useFileUpload'
 import AlertDialog from '~/components/AlertDialog'
 import { useState } from 'react'
-import { Link } from '@remix-run/react'
+import { Link, useFetcher } from '@remix-run/react'
 import TextIcon from '~/components/TextIcon'
 import LinearProgress from '@mui/material/LinearProgress'
+import { useAuth } from '~/hooks/useAuth'
 
-// export const meta: MetaFunction = (): HtmlMetaDescriptor => {
-//   const title = "Edit Account"
-
-//   return {
-//     title,
-//   }
-// }
-
-// export const loader: LoaderFunction = () => {
-//   return null
-// }
+export const meta: MetaFunction = (): HtmlMetaDescriptor => ({
+  title: 'Edit Account',
+})
 
 export interface FormData {
   id: string
@@ -53,6 +42,8 @@ export interface FormData {
 }
 
 export default function EditAccount() {
+  const accountFetcher = useFetcher()
+
   const {
     upload: uploadImg,
     uploading: imgUploading,
@@ -66,9 +57,8 @@ export default function EditAccount() {
     message: 'You must choose an avatar.',
     headers: { public: true },
   })
-  const { updateUser, loading, data: updatedcurrentUser } = {}
   const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
-  const { currentUser } = {}
+  const { currentUser } = useAuth()
 
   const [open, setOpen] = useState(false)
 
@@ -113,12 +103,12 @@ export default function EditAccount() {
     reset,
   } = useForm<FormData>({
     mode: 'onBlur',
-    // defaultValues: {
-    //   id: currentUser.id,
-    //   name: currentUser.name,
-    //   email: currentUser.email,
-    //   telephone: currentUser.telephone,
-    // }
+    defaultValues: {
+      id: currentUser.id,
+      name: currentUser.name,
+      email: currentUser.email || '',
+      telephone: currentUser.telephone || '',
+    },
   })
 
   const handleUpdateUser = (values: FormData) => {
@@ -301,7 +291,7 @@ export default function EditAccount() {
             type="submit"
             size="large"
             style={{ marginTop: 15 }}
-            disabled={imgUploading || loading}
+            disabled={imgUploading || accountFetcher.state === 'loading'}
           >
             Update Profile
           </Button>{' '}

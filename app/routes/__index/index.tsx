@@ -1,21 +1,20 @@
+import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import HomeIcon from '@mui/icons-material/Home'
-import { Outlet, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import type { LoaderFunction } from '@remix-run/node'
-import Box from '@mui/material/Box'
 
+import AppRoutes from '~/app-routes'
 import HeaderTitle from '~/components/HeaderTitle'
-import { fetchHomepage } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
+import type { HomepageQuery } from '~/graphql/generated-types'
+import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 import { TrackScrollingList } from '~/components/TrackScrollingList'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
 import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
-import { AlbumScrollingList } from '~/components/AlbumScrollingList'
-
-import AppRoutes from '~/app-routes'
-import type { HomepageQuery } from '~/graphql/generated-types'
 
 export const loader: LoaderFunction = async () => {
-  const data = await fetchHomepage()
+  const data = await apiClient.fetchHomepage()
 
   return json(data)
 }

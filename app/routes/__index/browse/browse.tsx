@@ -5,16 +5,16 @@ import type { LoaderFunction } from '@remix-run/node'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import { fetchGenres } from '~/graphql/requests.server'
+import { apiClient } from '~/graphql/requests.server'
 import GenreThumbnail from '~/components/GenreThumbnail'
 import type { AllGenresQuery } from '~/graphql/generated-types'
 import type { GenreInterface } from '~/components/GenreThumbnail'
 
-// export const loader: LoaderFunction = async () => {
-//   const data = await fetchGenres()
+export const loader: LoaderFunction = async () => {
+  const data = await apiClient.fetchGenres()
 
-//   return json(data)
-// }
+  return json(data)
+}
 
 export default function BrowsePage() {
   const { genres } = useLoaderData<AllGenresQuery>()
