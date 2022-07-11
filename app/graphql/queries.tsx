@@ -109,9 +109,9 @@ export const fetchTracksDocument = gql`
         }
       }
       paginatorInfo {
+        total
         hasMorePages
         currentPage
-        total
       }
     }
   }
@@ -139,9 +139,9 @@ export const FetchTracksByGenreDocument = gql`
         }
       }
       paginatorInfo {
+        total
         hasMorePages
         currentPage
-        total
       }
     }
   }
@@ -165,9 +165,9 @@ export const fetchArtistsDocument = gql`
         poster_url
       }
       paginatorInfo {
+        total
         hasMorePages
         currentPage
-        total
       }
     }
   }
@@ -182,9 +182,9 @@ export const fetchPlaylistsDocument = gql`
         cover_url
       }
       paginatorInfo {
+        total
         hasMorePages
         currentPage
-        total
       }
     }
   }
@@ -204,9 +204,9 @@ export const fetchAlbumsDocument = gql`
         }
       }
       paginatorInfo {
+        total
         hasMorePages
         currentPage
-        total
       }
     }
   }

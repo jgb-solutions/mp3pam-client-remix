@@ -12,6 +12,9 @@ import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 import { TrackScrollingList } from '~/components/TrackScrollingList'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
 import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
+import MainLayout from '~/components/layouts/Main'
+import { Typography } from '@mui/material'
+import theme from '~/mui/theme'
 
 export const loader: LoaderFunction = async () => {
   const data = await apiClient.fetchHomepage()
@@ -58,6 +61,31 @@ export default function Index() {
           browse={AppRoutes.browse.playlists}
         />
       ) : null}
+    </Box>
+  )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.log(error)
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+      }}
+    >
+      <Box>
+        <Typography variant="h3" color={'red'} sx={{ mb: '1rem' }}>
+          Oop! Global Error here.
+        </Typography>
+        <Typography variant="h5" color={theme.palette.error.light}>
+          {error.message}
+        </Typography>
+      </Box>
     </Box>
   )
 }

@@ -896,7 +896,7 @@ export type TracksDataQueryVariables = Exact<{
 }>;
 
 
-export type TracksDataQuery = { __typename?: 'Query', tracks?: { __typename?: 'TrackPaginator', data: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, artist: { __typename?: 'Artist', stage_name: string, hash: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', hasMorePages: boolean, currentPage: number, total: number } } | null };
+export type TracksDataQuery = { __typename?: 'Query', tracks?: { __typename?: 'TrackPaginator', data: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, artist: { __typename?: 'Artist', stage_name: string, hash: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', total: number, hasMorePages: boolean, currentPage: number } } | null };
 
 export type TracksDataByGenreQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
@@ -906,7 +906,7 @@ export type TracksDataByGenreQueryVariables = Exact<{
 }>;
 
 
-export type TracksDataByGenreQuery = { __typename?: 'Query', genre?: { __typename?: 'Genre', name: string } | null, tracksByGenre?: { __typename?: 'TrackPaginator', data: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, artist: { __typename?: 'Artist', stage_name: string, hash: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', hasMorePages: boolean, currentPage: number, total: number } } | null };
+export type TracksDataByGenreQuery = { __typename?: 'Query', genre?: { __typename?: 'Genre', name: string } | null, tracksByGenre?: { __typename?: 'TrackPaginator', data: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, artist: { __typename?: 'Artist', stage_name: string, hash: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', total: number, hasMorePages: boolean, currentPage: number } } | null };
 
 export type AllGenresQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -920,7 +920,7 @@ export type ArtistsDataQueryVariables = Exact<{
 }>;
 
 
-export type ArtistsDataQuery = { __typename?: 'Query', artists?: { __typename?: 'ArtistPaginator', data: Array<{ __typename?: 'Artist', hash: string, stage_name: string, poster_url: string }>, paginatorInfo: { __typename?: 'PaginatorInfo', hasMorePages: boolean, currentPage: number, total: number } } | null };
+export type ArtistsDataQuery = { __typename?: 'Query', artists?: { __typename?: 'ArtistPaginator', data: Array<{ __typename?: 'Artist', hash: string, stage_name: string, poster_url: string }>, paginatorInfo: { __typename?: 'PaginatorInfo', total: number, hasMorePages: boolean, currentPage: number } } | null };
 
 export type PlaylistsDataQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
@@ -929,7 +929,7 @@ export type PlaylistsDataQueryVariables = Exact<{
 }>;
 
 
-export type PlaylistsDataQuery = { __typename?: 'Query', playlists?: { __typename?: 'PlaylistPaginator', data: Array<{ __typename?: 'Playlist', hash: string, title: string, cover_url?: string | null }>, paginatorInfo: { __typename?: 'PaginatorInfo', hasMorePages: boolean, currentPage: number, total: number } } | null };
+export type PlaylistsDataQuery = { __typename?: 'Query', playlists?: { __typename?: 'PlaylistPaginator', data: Array<{ __typename?: 'Playlist', hash: string, title: string, cover_url?: string | null }>, paginatorInfo: { __typename?: 'PaginatorInfo', total: number, hasMorePages: boolean, currentPage: number } } | null };
 
 export type AlbumsDataQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
@@ -938,7 +938,7 @@ export type AlbumsDataQueryVariables = Exact<{
 }>;
 
 
-export type AlbumsDataQuery = { __typename?: 'Query', albums?: { __typename?: 'AlbumPaginator', data: Array<{ __typename?: 'Album', hash: string, title: string, cover_url: string, artist: { __typename?: 'Artist', hash: string, stage_name: string, poster_url: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', hasMorePages: boolean, currentPage: number, total: number } } | null };
+export type AlbumsDataQuery = { __typename?: 'Query', albums?: { __typename?: 'AlbumPaginator', data: Array<{ __typename?: 'Album', hash: string, title: string, cover_url: string, artist: { __typename?: 'Artist', hash: string, stage_name: string, poster_url: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', total: number, hasMorePages: boolean, currentPage: number } } | null };
 
 export type MyAlbumsDataQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
