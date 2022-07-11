@@ -190,77 +190,85 @@ export default function AlbumDetailPage() {
     const url = window.location.href
     const title = `Listen to ${album.title} by ${album.artist.stage_name}`
     const hashtags = `${APP_NAME} music album share`
-    const tabs: TabItem[] = [
-      {
-        icon: <ShareIcon />,
-        label: 'Share',
-        value: (
-          <>
-            <br />
-            <Grid container spacing={2}>
-              <Grid item>
-                <FacebookShareButton
-                  url={url}
-                  quote={title}
-                  hashtag={hashtags.split(' ').join(' #')}
-                >
-                  <FacebookIcon
-                    style={{
-                      fontSize: '48px',
-                      cursor: 'pointer',
-                      color: colors.facebook,
-                    }}
-                  />
-                </FacebookShareButton>
-              </Grid>
-              <Grid item>
-                <TwitterShareButton
-                  url={url}
-                  title={title}
-                  via={TWITTER_HANDLE}
-                  hashtags={hashtags.split(' ')}
-                >
-                  <TwitterIcon
-                    style={{
-                      fontSize: '48px',
-                      cursor: 'pointer',
-                      color: colors.twitter,
-                    }}
-                  />
-                </TwitterShareButton>
-              </Grid>
-              <Grid item>
-                <WhatsappShareButton url={url} title={title}>
-                  <WhatsappIcon
-                    style={{
-                      fontSize: '48px',
-                      cursor: 'pointer',
-                      color: colors.whatsapp,
-                    }}
-                  />
-                </WhatsappShareButton>
-              </Grid>
-              <Grid item>
-                <TelegramShareButton url={url} title={title}>
-                  <TelegramIcon
-                    style={{
-                      fontSize: '48px',
-                      cursor: 'pointer',
-                      color: colors.telegram,
-                    }}
-                  />
-                </TelegramShareButton>
-              </Grid>
-              <Grid item>
-                <EmailShareButton url={url} subject={title} body={title}>
-                  <EmailIcon style={{ fontSize: '48px', cursor: 'pointer' }} />
-                </EmailShareButton>
-              </Grid>
+    const tabs: TabItem[] = []
+
+    if (album.tracks.length) {
+      tabs.push({
+        icon: <MusicNoteIcon />,
+        label: 'Tracks',
+        value: <AlbumTracksTable album={album} list={makeList()} />,
+      })
+    }
+
+    tabs.push({
+      icon: <ShareIcon />,
+      label: 'Share',
+      value: (
+        <>
+          <br />
+          <Grid container spacing={2}>
+            <Grid item>
+              <FacebookShareButton
+                url={url}
+                quote={title}
+                hashtag={hashtags.split(' ').join(' #')}
+              >
+                <FacebookIcon
+                  style={{
+                    fontSize: '48px',
+                    cursor: 'pointer',
+                    color: colors.facebook,
+                  }}
+                />
+              </FacebookShareButton>
             </Grid>
-          </>
-        ),
-      },
-    ]
+            <Grid item>
+              <TwitterShareButton
+                url={url}
+                title={title}
+                via={TWITTER_HANDLE}
+                hashtags={hashtags.split(' ')}
+              >
+                <TwitterIcon
+                  style={{
+                    fontSize: '48px',
+                    cursor: 'pointer',
+                    color: colors.twitter,
+                  }}
+                />
+              </TwitterShareButton>
+            </Grid>
+            <Grid item>
+              <WhatsappShareButton url={url} title={title}>
+                <WhatsappIcon
+                  style={{
+                    fontSize: '48px',
+                    cursor: 'pointer',
+                    color: colors.whatsapp,
+                  }}
+                />
+              </WhatsappShareButton>
+            </Grid>
+            <Grid item>
+              <TelegramShareButton url={url} title={title}>
+                <TelegramIcon
+                  style={{
+                    fontSize: '48px',
+                    cursor: 'pointer',
+                    color: colors.telegram,
+                  }}
+                />
+              </TelegramShareButton>
+            </Grid>
+            <Grid item>
+              <EmailShareButton url={url} subject={title} body={title}>
+                <EmailIcon style={{ fontSize: '48px', cursor: 'pointer' }} />
+              </EmailShareButton>
+            </Grid>
+          </Grid>
+        </>
+      ),
+    })
 
     if (album.detail) {
       tabs.push({
@@ -273,14 +281,6 @@ export default function AlbumDetailPage() {
             style={{ wordWrap: 'normal' }}
           />
         ),
-      })
-    }
-
-    if (album.tracks.length) {
-      tabs.push({
-        icon: <MusicNoteIcon />,
-        label: 'Tracks',
-        value: <AlbumTracksTable album={album} list={makeList()} />,
       })
     }
 
