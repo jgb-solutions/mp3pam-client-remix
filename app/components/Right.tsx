@@ -9,7 +9,6 @@ import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import Box from '@mui/material/Box'
 
 import AppRoutes from '~/app-routes'
-import type { UserData } from '~/interfaces/types'
 import { sidebarStyles as styles } from '~/styles/sidebar-styles'
 import { useAuth } from '~/hooks/useAuth'
 
@@ -26,7 +25,7 @@ const CreateMenu = [
     icon: <PersonPinCircleIcon />,
   },
   {
-    name: 'Create Album',
+    name: 'Add Album',
     to: AppRoutes.manage.create.album,
     icon: <AlbumIcon />,
   },

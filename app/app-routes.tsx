@@ -64,9 +64,9 @@ const AppRoutes = {
     playlists: `/manage/playlists`,
     create: {
       track: `/manage/add-track`,
-      album: `/manage/create-album`,
+      album: `/manage/add-album`,
       artist: `/manage/add-artist`,
-      playlist: `/manage/create-playlist`,
+      playlist: `/manage/add-playlist`,
       shows: `/manage/add-show`,
     },
   },
