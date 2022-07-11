@@ -22,6 +22,7 @@ import { IMG_BUCKET } from '~/utils/constants.server'
 import { getFile } from '~/utils/helpers'
 import colors from '~/utils/colors'
 import type { BoxStyles } from '~/interfaces/types'
+import { Box } from '@mui/material'
 
 export interface FormData {
   title: string
@@ -121,14 +122,14 @@ export default function AddAlbumPage() {
   }
 
   useEffect(() => {
-    const artists = get(trackUploadInfo, 'me.artists_by_stage_name_asc.data')
+    const artists = trackUploadInfo?.me.artists_by_stage_name_asc.data
     if (artists) {
       setArtistList(
         artists.map(({ id, stage_name }: ArtistData) => ({ id, stage_name }))
       )
     }
     // eslint-disable-next-line
-  }, [get(trackUploadInfo, 'me.artists_by_stage_name_asc.data')])
+  }, [trackUploadInfo?.me.artists_by_stage_name_asc.data])
 
   useEffect(() => {
     if (chosenArtistId) {
@@ -177,18 +178,17 @@ export default function AddAlbumPage() {
   const styles: BoxStyles = createAlbumPageStyles()
 
   return (
-    <CheckAuth sx="react-transition scale-in">
+    <Box sx="react-transition scale-in">
       <HeaderTitle icon={<AlbumIcon />} text={`Create a new Album`} />
-      <SEO title={`Create a new album`} />
+      {/* <SEO title={`Create a new album`} /> */}
 
       <form onSubmit={handleSubmit(handleCreateAlbum)} noValidate>
         <Grid container direction="row" spacing={2}>
           <Grid item xs={12} sm>
             <TextField
-              inputRef={register({
+              {...register('title', {
                 required: 'The title of the album is required.',
               })}
-              name="title"
               id="title"
               label="Title *"
               type="text"
@@ -199,7 +199,7 @@ export default function AddAlbumPage() {
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
-                      <span sx={styles.errorColor}>{errors.title.message}</span>
+                      <Box sx={styles.errorColor}>{errors.title.message}</Box>
                     }
                   />
                 )
@@ -209,18 +209,17 @@ export default function AddAlbumPage() {
           </Grid>
           <Grid item xs={12} sm>
             <TextField
-              inputRef={register({
+              {...register('release_year', {
                 required: 'The release year of the album is required.',
                 validate: {
                   length: (value) =>
                     value.length === 4 ||
                     'The release year must be exactly 4 characters long.',
                   release_year: (value) =>
-                    value <= CURRENT_YEAR ||
+                    Number(value) <= CURRENT_YEAR ||
                     `The release year must be ${CURRENT_YEAR} or less.`,
                 },
               })}
-              name="release_year"
               id="release_year"
               label="Release Year *"
               type="number"
@@ -231,9 +230,9 @@ export default function AddAlbumPage() {
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
-                      <span sx={styles.errorColor}>
+                      <Box sx={styles.errorColor}>
                         {errors.release_year.message}
-                      </span>
+                      </Box>
                     }
                   />
                 )
@@ -247,8 +246,7 @@ export default function AddAlbumPage() {
             <TextField
               id="artist"
               select
-              name="artist_id"
-              inputRef={register({
+              {...register('artist_id', {
                 required: 'You must choose an artist.',
               })}
               SelectProps={{ native: true }}
@@ -258,9 +256,9 @@ export default function AddAlbumPage() {
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
-                      <span sx={styles.errorColor}>
+                      <Box sx={styles.errorColor}>
                         {errors.artist_id.message}
-                      </span>
+                      </Box>
                     }
                   />
                 )
@@ -313,7 +311,7 @@ export default function AddAlbumPage() {
             {formState.isSubmitted && !imgValid && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<span sx={styles.errorColor}>{imgErrorMessage}</span>}
+                text={<Box sx={styles.errorColor}>{imgErrorMessage}</Box>}
               />
             )}
 
@@ -328,26 +326,23 @@ export default function AddAlbumPage() {
         </Grid>
 
         <TextField
-          inputRef={register({
+          {...register('detail', {
             minLength: {
               value: 20,
               message: 'The detail must be at least 20 characters.',
             },
           })}
-          name="detail"
           id="detail"
           label="Detail"
           multiline
-          rowsMax="4"
+          rows={4}
           margin="normal"
           error={!!errors.detail}
           helperText={
             errors.detail && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={
-                  <span sx={styles.errorColor}>{errors.detail.message}</span>
-                }
+                text={<Box sx={styles.errorColor}>{errors.detail.message}</Box>}
               />
             )
           }
@@ -370,14 +365,14 @@ export default function AddAlbumPage() {
         disableBackdropClick
       >
         <DialogContentText id="alert-dialog-description" align="center">
-          <span>
+          <Box>
             <CheckCircleIcon
               style={{ fontSize: 64 }}
               sx={styles.successColor}
             />
-          </span>
+          </Box>
           <br />
-          <span>Album successfully createed!</span>
+          <Box>Album successfully createed!</Box>
           <br />
           <br />
           <Button size="small" onClick={goToAlbumsLibrary} color="primary">
@@ -400,11 +395,11 @@ export default function AddAlbumPage() {
         handleClose={handleOpenInvalidFileSizeClose}
       >
         <DialogContentText id="alert-dialog-description" align="center">
-          <span>
+          <Box>
             <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
-          </span>
+          </Box>
           <br />
-          <span dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />
+          <Box dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />
           <br />
           <br />
           <Button
@@ -416,6 +411,6 @@ export default function AddAlbumPage() {
           </Button>
         </DialogContentText>
       </AlertDialog>
-    </CheckAuth>
+    </Box>
   )
 }

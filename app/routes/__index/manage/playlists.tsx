@@ -17,21 +17,22 @@ import { Link } from '@remix-run/react'
 import AppRoutes from '~/app-routes'
 import Button from '@mui/material/Button'
 import colors from '~/utils/colors'
+import { BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
-  //   table: {
-  //     width: '100%',
-  //     overflowX: 'auto',
-  //   },
-  //   link: {
-  //     color: 'white',
-  //     fontWeight: 'bold'
-  //   },
-  //   errorColor: { color: colors.error },
-  //   noBgButton: {
-  //     backgroundColor: colors.contentGrey,
-  //     border: `1px solid ${colors.primary}`
-  //   },
+  table: {
+    width: '100%',
+    overflowX: 'auto',
+  },
+  link: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  errorColor: { color: colors.error },
+  noBgButton: {
+    backgroundColor: colors.contentGrey,
+    border: `1px solid ${colors.primary}`,
+  },
 }
 
 export default function ManagePlaylistsPage() {
@@ -43,7 +44,7 @@ export default function ManagePlaylistsPage() {
     errorDeletingPlaylist,
   } = useDeletePlaylist()
   const { loading, error, data, refetch } = useMyPlaylists()
-  const playlists = get(data, 'me.playlists')
+  const playlists = data?.me.playlists
 
   const confirmDelete = (hash: string) => {
     setPlaylistHashToDelete(hash)
@@ -64,13 +65,9 @@ export default function ManagePlaylistsPage() {
     // eslint-disable-next-line
   }, [deletePlaylistResponse, errorDeletingPlaylist])
 
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
-
   return (
     <>
-      <SEO title={`Your Playlists`} />
+      {/* <SEO title={`Your Playlists`} /> */}
       {playlists.data.length ? (
         <>
           <HeaderTitle icon={<PlaylistAddIcon />} text="Your Playlists" />
@@ -103,10 +100,10 @@ export default function ManagePlaylistsPage() {
                       <Link prefetch="intent" to={AppRoutes.playlist.editPage(playlist.hash)} sx={styles.link}>Edit</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <span
+                      <Box
                         onClick={() => confirmDelete(playlist.hash)}
                         sx={styles.link}
-                        style={{ cursor: 'pointer' }}>Delete</span>
+                        style={{ cursor: 'pointer' }}>Delete</Box>
                     </StyledTableCell> */}
                     </TableRow>
                   )

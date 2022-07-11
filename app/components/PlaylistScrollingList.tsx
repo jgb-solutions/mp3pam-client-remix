@@ -1,53 +1,53 @@
-import { useRef } from "react"
-import type { FC } from "react"
-import Box from "@mui/material/Box"
-import { Link } from "@remix-run/react"
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft"
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"
+import { useRef } from 'react'
+import type { FC } from 'react'
+import Box from '@mui/material/Box'
+import { Link } from '@remix-run/react'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 
-import type { BoxStyles } from "~/interfaces/types"
-import PlaylistThumbnail from "./PlaylistThumbnail"
-import type { HomePageDataQuery } from "~/graphql/generated-types"
+import type { BoxStyles } from '~/interfaces/types'
+import PlaylistThumbnail from './PlaylistThumbnail'
+import type { HomepageQuery } from '~/graphql/generated-types'
 
 const styles: BoxStyles = {
   container: {
-    marginBottom: 30
+    marginBottom: '30px',
   },
   list: {
-    display: "flex",
-    flexWrap: "nowrap",
-    overflowX: "auto"
+    display: 'flex',
+    flexWrap: 'nowrap',
+    overflowX: 'auto',
   },
   thumbnail: {
-    width: 175,
-    marginRight: 21,
+    width: '175px',
+    marginRight: '21px',
     sm: {
-      width: 100,
-      marginRight: 10,
+      width: '100px',
+      marginRight: '10px',
     },
   },
   link: {},
   listHeader: {
-    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-    paddingBottom: 3,
+    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    paddingBottom: '3px',
     paddingHorizontal: 0,
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 15
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: '15px',
   },
   category: {
     margin: 0,
-    fontSize: 16,
-    color: "#fff",
-    textDecoration: "none"
-  }
+    fontSize: '16px',
+    color: '#fff',
+    textDecoration: 'none',
+  },
 }
 
-type Playlists = NonNullable<HomePageDataQuery["latestPlaylists"]>["data"]
+type Playlists = NonNullable<HomepageQuery['latestPlaylists']>['data']
 
 type Props = {
-  playlists: Playlists,
-  category: string,
+  playlists: Playlists
+  category: string
   browse: string
 }
 
@@ -60,7 +60,7 @@ export const PlaylistScrollingList: FC<Props> = (props) => {
 
     const distance = 400
 
-    if (dir === "left") {
+    if (dir === 'left') {
       divRef.current.scrollLeft -= distance
     } else {
       divRef.current.scrollLeft += distance
@@ -71,20 +71,23 @@ export const PlaylistScrollingList: FC<Props> = (props) => {
     <Box sx={styles.container}>
       <Box sx={styles.listHeader}>
         <Link prefetch="intent" to={browse}>
-          <Box component="h2" sx={styles.category}>{category}</Box>
+          <Box component="h2" sx={styles.category}>
+            {category}
+          </Box>
         </Link>
         <Box>
-          <KeyboardArrowLeftIcon onClick={() => scroll("left")} />
+          <KeyboardArrowLeftIcon onClick={() => scroll('left')} />
           &nbsp;
-          <KeyboardArrowRightIcon onClick={() => scroll("right")} />
+          <KeyboardArrowRightIcon onClick={() => scroll('right')} />
         </Box>
       </Box>
-      <Box
-        sx={styles.list}
-        ref={divRef}
-      >
-        {playlists.map(playlist => (
-          <PlaylistThumbnail key={playlist.hash} sx={styles.thumbnail} playlist={playlist} />
+      <Box sx={styles.list} ref={divRef}>
+        {playlists.map((playlist) => (
+          <PlaylistThumbnail
+            key={playlist.hash}
+            sx={styles.thumbnail}
+            playlist={playlist}
+          />
         ))}
       </Box>
     </Box>

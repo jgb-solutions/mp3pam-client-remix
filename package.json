@@ -6,7 +6,8 @@
     "dev": "remix dev",
     "deploy": "fly deploy --remote-only",
     "start": "remix-serve build",
-    "graphql:types": "graphql-codegen"
+    "graphql:types": "graphql-codegen",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@emotion/cache": "^11.9.3",
@@ -15,6 +16,7 @@
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.8.5",
+    "@mui/styles": "^5.8.7",
     "@remix-run/node": "^1.6.3",
     "@remix-run/react": "^1.6.3",
     "@remix-run/serve": "^1.6.3",

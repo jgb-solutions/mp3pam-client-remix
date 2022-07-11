@@ -7,11 +7,12 @@ import { useLocation } from '@remix-run/react'
 
 import type AppStateInterface from '~/interfaces/AppStateInterface'
 
-type Props = {
-} & BoxProps
+type Props = {} & BoxProps
 
 const Content: FC<Props> = (props) => {
-  // const currentTrack = useSelector(({ player }: AppStateInterface) => player.currentSound)
+  const currentTrack = useSelector(
+    ({ player }: AppStateInterface) => player.currentSound
+  )
   const { pathname } = useLocation()
 
   const mainRef = useRef<HTMLDivElement>(null)
@@ -23,14 +24,17 @@ const Content: FC<Props> = (props) => {
   }, [pathname])
 
   return (
-    <Box component="main"
+    <Box
+      id="main-content"
+      component="main"
       ref={mainRef}
       sx={props.sx}
       style={{
-        paddingTop: 70,
-        paddingLeft: 15,
-        paddingRight: 15,
-        // paddingBottom: currentTrack ? 100 : 50,
+        paddingTop: '70px',
+        paddingLeft: '15px',
+        paddingRight: '15px',
+        overflow: 'auto',
+        paddingBottom: currentTrack ? '100px' : '50px',
       }}
     >
       {props.children}

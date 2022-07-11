@@ -42,7 +42,7 @@ export default function ManageAlbumsPage() {
     errorDeletingAlbum,
   } = useDeleteAlbum()
   const { loading, error, data, refetch } = useMyAlbums()
-  const albums = get(data, 'me.albums')
+  const albums = data?.me.albums
 
   const confirmDelete = (hash: string) => {
     setAlbumHashToDelete(hash)
@@ -63,16 +63,12 @@ export default function ManageAlbumsPage() {
     // eslint-disable-next-line
   }, [deleteAlbumResponse, errorDeletingAlbum])
 
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
-
   return (
     <>
       {albums.data.length ? (
         <>
           <HeaderTitle icon={<AlbumIcon />} text="Your Albums" />
-          <SEO title={`Your Albums`} />
+          {/* <SEO title={`Your Albums`} /> */}
 
           <Table sx={styles.table} size="small">
             <TableHead>
@@ -102,10 +98,10 @@ export default function ManageAlbumsPage() {
                       <Link prefetch="intent" to={AppRoutes.album.editPage(album.hash)} sx={styles.link}>Edit</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <span
+                      <Box
                         onClick={() => confirmDelete(album.hash)}
                         sx={styles.link}
-                        style={{ cursor: 'pointer' }}>Delete</span>
+                        style={{ cursor: 'pointer' }}>Delete</Box>
                     </StyledTableCell> */}
                     </TableRow>
                   )

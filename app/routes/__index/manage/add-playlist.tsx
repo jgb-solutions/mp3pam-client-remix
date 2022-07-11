@@ -9,7 +9,7 @@ import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled'
 import ProgressBar from '~/components/ProgressBar'
 import TextField from '@mui/material/TextField'
 import UploadButton from '~/components/UploadButton'
-import { Box } from '@mui/material'
+import { Box, Button } from '@mui/material'
 
 export default function CreatePlaylistPage() {
   const [completed, setCompleted] = useState(0)
@@ -40,7 +40,7 @@ export default function CreatePlaylistPage() {
   ) => {
     setIsLoading(true)
     console.log(event)
-    const file = get(event.target, 'files[0]')
+    const file = event.target?.files?.[0]
     if (!file) return
 
     console.log('file', file)
@@ -159,7 +159,7 @@ export default function CreatePlaylistPage() {
         <h2>Render Function as Children</h2>
         <Box>
           <label>Phone</label>
-          <TextField name="phone" inputRef={register({})} placeholder="Phone" />
+          <TextField {...register('phone', {})} placeholder="Phone" />
         </Box>
         <Button type="submit">Submit</Button>
       </form>

@@ -10,17 +10,18 @@ import { apiClient } from '~/graphql/requests.server'
 import HeaderTitle from '~/components/HeaderTitle'
 import TrackThumbnail from '~/components/TrackThumbnail'
 import type { TracksWithArtist } from '~/components/TrackScrollingList'
+import { TracksDataByGenreQuery } from '~/graphql/generated-types'
 
 export const loader: LoaderFunction = async ({ params }) => {
   const { genre } = params as { genre: string }
 
-  const data = await apiClient.fetchTracksByGenre(genre)
+  const data = await apiClient.fetchTracksByGenre({ slug: genre })
 
   return json(data)
 }
 
 export default function BrowseTracksByGenrePage() {
-  const { tracksByGenre } = useLoaderData()
+  const { tracksByGenre, genre } = useLoaderData<TracksDataByGenreQuery>()
 
   return (
     <>
@@ -38,7 +39,7 @@ export default function BrowseTracksByGenrePage() {
         useWindow={false}
       >
         <Grid container spacing={2}>
-          {tracksByGenre.data.map((track: TracksWithArtist[0]) => (
+          {tracksByGenre?.data.map((track: TracksWithArtist[0]) => (
             <Grid item xs={4} md={3} sm={4} key={track!.hash}>
               <TrackThumbnail track={track} />
             </Grid>

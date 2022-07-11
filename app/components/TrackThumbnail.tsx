@@ -11,6 +11,7 @@ import Image from './Image'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import type { FC } from 'react'
+import type AppStateInterface from '~/interfaces/AppStateInterface'
 
 const styles: BoxStyles = {
   imgContainer: {},
@@ -71,10 +72,12 @@ type Props = {
 }
 
 const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
-  // const { listId, isPlaying } = useSelector(({ player }: AppStateInterface) => ({
-  //   listId: get(player, 'list.id'),
-  //   isPlaying: player.isPlaying
-  // }
+  const { listId, isPlaying } = useSelector(
+    ({ player }: AppStateInterface) => ({
+      listId: player?.list?.id,
+      isPlaying: player.isPlaying,
+    })
+  )
 
   return (
     <Box {...props}>

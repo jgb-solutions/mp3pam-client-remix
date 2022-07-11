@@ -193,7 +193,7 @@ export const AddTrackToPlaylist = ({
   //   error: errorAddingTrackToPlaylist
   // } = useAddTrackToPlaylist()
   // const { loading, error, data } = useMyPlaylists()
-  // const playlists = get(data, 'me.playlists.data')
+  // const playlists = data?.me.playlists.data
 
   // useEffect(() => {
   //   if (addTrackToPlaylistResponse) {
@@ -250,14 +250,14 @@ export const AddTrackToPlaylist = ({
                       {playlist.title}
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <span
+                      <Box
                         onClick={() => {
                           if (addingTrackToPlaylist) return
 
                           handleAddTrackToPlaylist(playlist.hash)
                         }}
                         sx={styles.link}
-                        style={{ cursor: 'pointer' }}>Add</span>
+                        style={{ cursor: 'pointer' }}>Add</Box>
                     </StyledTableCell>
                   </TableRow>
                 )
@@ -281,7 +281,7 @@ export const AddTrackToPlaylist = ({
 export default function PlaylistEditPage() {
   const params = useParams()
   const navigate = useNavigate()
-  const hash = get(params, 'hash')
+  const hash = params?.hash
   const [trackHashToDelete, setTrackHashToDelete] = useState('')
   // const {
   //   deletePlaylistTrack,
@@ -312,8 +312,8 @@ export default function PlaylistEditPage() {
   // }, [deletePlaylistTrackResponse, errorDeletingPlaylistTrack])
 
   return (
-    <CheckAuth sx="react-transition flip-in-x-reverse">
-      <SEO title={`Edit Playlist`} />
+    <Box sx="react-transition flip-in-x-reverse">
+      {/* <SEO title={`Edit Playlist`} /> */}
 
       {/* {playlist ? (
         <>
@@ -354,10 +354,10 @@ export default function PlaylistEditPage() {
                           <Link prefetch="intent" to={AppRoutes.artist.detailPage(track.artist.hash)} sx={styles.link}>{track.artist.stage_name}</Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '10%' }}>
-                          <span
+                          <Box
                             onClick={() => confirmDelete(track.hash)}
                             sx={styles.link}
-                            style={{ cursor: 'pointer' }}>Delete</span>
+                            style={{ cursor: 'pointer' }}>Delete</Box>
                         </StyledTableCell>
                       </TableRow>
                     )
@@ -408,6 +408,6 @@ export default function PlaylistEditPage() {
           </Button> */}
       {/* </DialogActions>
       </AlertDialog> */}
-    </CheckAuth>
+    </Box>
   )
 }

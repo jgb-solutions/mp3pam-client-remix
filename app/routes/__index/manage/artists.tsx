@@ -43,7 +43,7 @@ export default function ManageArtistsPage() {
     errorDeletingArtist,
   } = useDeleteArtist()
   const { loading, error, data, refetch } = useMyArtists()
-  const artists = get(data, 'me.artists')
+  const artists = data?.me.artists
 
   const confirmDelete = (hash: string) => {
     setArtistHashToDelete(hash)
@@ -64,16 +64,12 @@ export default function ManageArtistsPage() {
     // eslint-disable-next-line
   }, [deleteArtistResponse, errorDeletingArtist])
 
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
-
   return (
     <>
       {artists.data.length ? (
         <>
           <HeaderTitle icon={<MusicNoteIcon />} text="Your Artists" />
-          <SEO title={`Your Artists`} />
+          {/* <SEO title={`Your Artists`} /> */}
 
           <Table sx={styles.table} size="small">
             <TableHead>
@@ -102,10 +98,10 @@ export default function ManageArtistsPage() {
                       <Link prefetch="intent" to={AppRoutes.artist.detailPage(artist.hash)} sx={styles.link}>{artist.stage_name}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <span
+                      <Box
                         onClick={() => confirmDelete(artist.hash)}
                         sx={styles.link}
-                        style={{ cursor: 'pointer' }}>Delete</span>
+                        style={{ cursor: 'pointer' }}>Delete</Box>
                     </StyledTableCell> */}
                     </TableRow>
                   )

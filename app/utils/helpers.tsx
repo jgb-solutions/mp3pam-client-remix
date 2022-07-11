@@ -1,15 +1,18 @@
+import type { SoundInterface } from '../interfaces/ListInterface'
 
-import { SoundInterface } from "../interfaces/ListInterface"
-
-export function debounce(fn: () => void, delay: number, timeoutId: number): void {
+export function debounce(
+  fn: () => void,
+  delay: number,
+  timeoutId: number
+): void {
   clearTimeout(timeoutId)
   setTimeout(() => {
     fn()
   }, delay)
-};
+}
 
 export function getFile(event: React.ChangeEvent<HTMLInputElement>) {
-  return get(event, 'target.files[0]')
+  return event?.target.files?.[0]
 }
 
 export function getFormattedDate(dateString: string) {
@@ -25,7 +28,13 @@ export function getFormattedDate(dateString: string) {
   return month + '/' + day + '/' + year
 }
 
-export const makeSoundFromTrack = (({ hash, title, poster_url, audio_url, artist }: any): SoundInterface => ({
+export const makeSoundFromTrack = ({
+  hash,
+  title,
+  poster_url,
+  audio_url,
+  artist,
+}: any): SoundInterface => ({
   hash,
   title,
   image: poster_url,
@@ -33,4 +42,4 @@ export const makeSoundFromTrack = (({ hash, title, poster_url, audio_url, artist
   author_hash: artist.hash,
   play_url: audio_url,
   type: 'track',
-}))
+})

@@ -15,7 +15,6 @@ import { Link } from '@remix-run/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect, useRef } from 'react'
 import IconButton from '@mui/material/IconButton'
-
 import LoopIcon from '@mui/icons-material/Loop'
 
 import Slider from './Slider'
@@ -24,12 +23,9 @@ import {
   ALL,
   ONE,
   NONE,
-  SECONDS_TO_UPDATE_PLAY_COUNT,
   SMALL_SCREEN_SIZE,
-} from '../utils/constants.server'
-import { SoundInterface } from '../interfaces/ListInterface'
-import PlayerInterface from '../interfaces/PlayerInterface'
-import * as playerActions from '../redux/actions/playerActions'
+  SECONDS_TO_UPDATE_PLAY_COUNT,
+} from '../utils/constants'
 import {
   RESUME,
   PAUSE,
@@ -40,15 +36,17 @@ import {
   PLAY_NEXT,
   ADD_TO_QUEUE,
 } from '../redux/actions/player_action_types'
-import AppStateInterface from '../interfaces/AppStateInterface'
-// import PlayerStyle from "../styles/PlayerStyle"
+import type { SoundInterface } from '../interfaces/ListInterface'
+import type PlayerInterface from '../interfaces/PlayerInterface'
+import type AppStateInterface from '../interfaces/AppStateInterface'
 import colors from '../utils/colors'
 import Image from './Image'
 import { useNavigate } from '@remix-run/react'
-import { Box, Slide } from '@mui/material'
+import { Box, Container, Slide } from '@mui/material'
 import type { BoxStyles } from '~/interfaces/types'
 import AppRoutes from '~/app-routes'
 import theme from '~/mui/theme'
+import { syncStateAction } from '~/redux/actions/playerActions'
 
 let syncStateTimeoutId: number
 
@@ -59,16 +57,14 @@ const styles: BoxStyles = {
     bottom: 0,
     left: 0,
     right: 0,
-    height: 86,
+    height: '86px',
     backgroundColor: colors.darkGrey,
     color: 'white',
-    paddingLeft: 24,
-    paddingRight: 24,
+    px: '24px',
     zIndex: 999,
   },
   player: {
     flex: 1,
-    maxWidth: 1216,
     marginLeft: 'auto',
     marginRight: 'auto',
     display: 'flex',
@@ -84,20 +80,20 @@ const styles: BoxStyles = {
     cursor: 'pointer',
   },
   image: {
-    width: 55,
-    height: 55,
+    width: '55px',
+    height: '55px',
   },
   titleArtist: {
-    paddingLeft: 10,
+    paddingLeft: '10px',
   },
   title: {
-    fontSize: 11,
+    fontSize: '11px',
     fontWeight: 'bold',
     display: 'block',
-    marginBottom: -10,
+    marginBottom: '-10px',
   },
   artist: {
-    fontSize: 9,
+    fontSize: '9px',
     display: 'block',
   },
   playlistVolume: {
@@ -132,37 +128,36 @@ const styles: BoxStyles = {
   },
   slider: {
     flex: 1,
-    marginLeft: 40,
-    marginRight: 40,
-    marginTop: -9,
+    mx: '40px',
+    marginTop: '-9px',
   },
   startTime: {
-    fontSize: 10,
+    fontSize: '10px',
     position: 'absolute',
-    top: -4,
+    top: '-4px',
   },
   endTime: {
-    fontSize: 10,
+    fontSize: '10px',
     position: 'absolute',
-    top: -4,
+    top: '-4px',
     right: 0,
   },
   icon: {
-    fontSize: 18,
+    fontSize: '18px',
     color: colors.grey,
   },
   playIcon: {
-    fontSize: 48,
+    fontSize: '48px',
   },
   volumeSliderContainer: {
-    width: 70,
-    marginLeft: 7,
+    width: '70px',
+    marginLeft: '7px',
   },
   volumeIcons: {
-    marginLeft: 15,
+    marginLeft: '15px',
   },
   bottomDrawer: {
-    height: 100,
+    height: '100px',
     backgroundColor: colors.darkGrey,
   },
   bottomMenuIcon: {
@@ -177,15 +172,15 @@ const styles: BoxStyles = {
 
 export default function Player() {
   const audio = useRef<HTMLAudioElement>(new Audio()).current
-
-  const history = useNavigate()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const [soundLoading, setSoundLoading] = useState(false)
   const [loggedHash, setLoggedHash] = useState('')
   const storePlayerData = useSelector(
     (appState: AppStateInterface) => appState.player
   )
-  const syncState = (state: any) => dispatch(playerActions.syncState(state))
+  const syncState = (state: Partial<PlayerInterface>) =>
+    dispatch(syncStateAction(state))
   const [state, setState] = useState<PlayerInterface>({
     ...storePlayerData,
     isPlaying: false,
@@ -281,10 +276,7 @@ export default function Player() {
 
     setLoggedHash('')
 
-    const currentPlayingIndex = findIndex(
-      get(state, 'currentSound'),
-      state.queueList
-    )
+    const currentPlayingIndex = findIndex(state?.currentSound, state.queueList)
 
     syncState({ currentPlayingIndex })
 
@@ -348,7 +340,7 @@ export default function Player() {
     } else {
       if (sounds.length > 1) {
         let indexToPlay: number
-        let totalSoundsIndexes = state.queueList.length - 1
+        let totalSoundsIndexes = state.queueList?.length - 1
 
         if (!state.currentSound) return
         let currentIndex = findIndex(state.currentSound, sounds)
@@ -398,7 +390,7 @@ export default function Player() {
   }
 
   const findIndex = (sound: any, soundList: any[]): number => {
-    return soundList.findIndex(
+    return soundList?.findIndex(
       (item: SoundInterface) => item.hash === sound.hash
     )
   }
@@ -469,17 +461,16 @@ export default function Player() {
   useEffect(() => {
     // play new list
     if (
-      get(storePlayerData, 'list.hash') !== get(state, 'list.hash') &&
+      storePlayerData?.list?.hash !== state?.list?.hash &&
       storePlayerData.action === PLAY
     ) {
       setState((prevState) => ({
         ...prevState,
         action: PLAY,
         list: storePlayerData.list,
-        queueList: get(storePlayerData, 'list.sounds'),
+        queueList: storePlayerData?.list?.sounds || [],
         currentSound:
-          get(storePlayerData, 'sound') ||
-          get(storePlayerData, 'list.sounds')[0],
+          storePlayerData?.sound || storePlayerData?.list?.sounds[0],
       }))
     }
 
@@ -494,7 +485,7 @@ export default function Player() {
 
     // Resume player
     if (
-      get(storePlayerData, 'list.hash') === get(state, 'list.hash') &&
+      storePlayerData?.list?.hash === state?.list?.hash &&
       storePlayerData.action === RESUME
     ) {
       audio.play()
@@ -505,15 +496,15 @@ export default function Player() {
     }
 
     if (storePlayerData.action === PLAY_NEXT) {
-      const currentSound = get(state, 'currentSound')
-      const stateSoundList: any[] = get(state, 'list.sounds')
+      const currentSound = state?.currentSound
+      const stateSoundList: any[] = state?.list?.sounds || []
 
       if (currentSound) {
         const index = findIndex(currentSound, stateSoundList)
 
         let newSoundList: any[] = [...stateSoundList]
 
-        newSoundList.splice(index + 1, 0, ...storePlayerData.soundList)
+        newSoundList?.splice(index + 1, 0, ...storePlayerData.soundList)
 
         setState((prevState) => ({
           ...prevState,
@@ -542,7 +533,7 @@ export default function Player() {
         setState((prevState) => ({
           ...prevState,
           action: PLAY_SOUND,
-          currentSound: get(storePlayerData, 'sound'),
+          currentSound: storePlayerData?.sound,
         }))
         break
       case PAUSE_SOUND:
@@ -594,10 +585,7 @@ export default function Player() {
 
   // play current sound after it has been updated
   useEffect(() => {
-    if (
-      get(storePlayerData, 'currentSound.hash') !==
-      get(state, 'currentSound.hash')
-    ) {
+    if (storePlayerData?.currentSound?.hash !== state?.currentSound?.hash) {
       syncState({ currentSound: state.currentSound })
       play()
     }
@@ -656,22 +644,19 @@ export default function Player() {
       unmountOnExit
     >
       <Box sx={styles.container}>
-        <Box sx={styles.player}>
+        <Container sx={styles.player} maxWidth="lg">
           <Box
             sx={styles.posterTitle}
             onClick={() => {
-              const type = get(state, 'currentSound.type')
-              const hash = get(state, 'currentSound.hash')
-              let route: string
+              const type = state?.currentSound?.type
+              const hash = state?.currentSound?.hash as string
 
               switch (type) {
                 case 'track':
-                  route = AppRoutes.track.detailPage(hash)
-                  history.push(route)
+                  navigate(AppRoutes.track.detailPage(hash))
                   break
                 case 'episode':
-                  route = AppRoutes.episode.detailPage(hash)
-                  history.push(route)
+                  navigate(AppRoutes.episode.detailPage(hash))
                   break
               }
             }}
@@ -726,7 +711,7 @@ export default function Player() {
                   <LoopIcon
                     sx={styles.icon}
                     style={{
-                      fontSize: 42,
+                      fontSize: '42px',
                       color: colors.primary,
                       animation: 'spin 0.5s linear infinite',
                     }}
@@ -801,7 +786,7 @@ export default function Player() {
               />
             </Box>
           </Box>
-        </Box>
+        </Container>
       </Box>
     </Slide>
   )

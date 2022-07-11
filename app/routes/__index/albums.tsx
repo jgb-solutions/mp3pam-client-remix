@@ -1,14 +1,13 @@
-import AlbumIcon from '@mui/icons-material/Album'
-
 import Grid from '@mui/material/Grid'
-import InfiniteScroll from 'react-infinite-scroller'
-
-import { apiClient } from '~/graphql/requests.server'
-import { AlbumsDataQuery } from '~/graphql/generated-types'
+import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { json, LoaderFunction } from '@remix-run/node'
-import HeaderTitle from '~/components/HeaderTitle'
+import AlbumIcon from '@mui/icons-material/Album'
+import InfiniteScroll from 'react-infinite-scroller'
+import type { LoaderFunction } from '@remix-run/node'
+
 import Spinner from '~/components/Spinner'
+import HeaderTitle from '~/components/HeaderTitle'
+import { apiClient } from '~/graphql/requests.server'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
 
 export const loader: LoaderFunction = async () => {

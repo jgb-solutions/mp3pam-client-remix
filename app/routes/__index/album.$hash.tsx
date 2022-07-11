@@ -1,15 +1,3 @@
-import { useSelector } from 'react-redux'
-import { Link, useParams, useNavigate, useLoaderData } from '@remix-run/react'
-import InfoIcon from '@mui/icons-material/Info'
-import ShareIcon from '@mui/icons-material/Share'
-import FindReplaceIcon from '@mui/icons-material/FindReplace'
-import FacebookIcon from '@mui/icons-material/Facebook'
-import TwitterIcon from '@mui/icons-material/Twitter'
-import TelegramIcon from '@mui/icons-material/Telegram'
-import WhatsappIcon from '@mui/icons-material/WhatsApp'
-import EmailIcon from '@mui/icons-material/Email'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
-
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -17,16 +5,30 @@ import {
   WhatsappShareButton,
   EmailShareButton,
 } from 'react-share'
-
-import AppRoutes from '~/app-routes'
-import colors from '../../utils/colors'
-import More from '~/components/More'
-import Tabs, { TabItem } from '~/components/Tabs'
-import AlbumTracksTable from '~/components/AlbumTracksTable'
+import { json } from '@remix-run/node'
+import { useDispatch, useSelector } from 'react-redux'
+import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
-import ListInterface, { SoundInterface } from '../../interfaces/ListInterface'
-import * as playerActions from '../../redux/actions/playerActions'
-import AppStateInterface from '../../interfaces/AppStateInterface'
+import InfoIcon from '@mui/icons-material/Info'
+import ShareIcon from '@mui/icons-material/Share'
+import EmailIcon from '@mui/icons-material/Email'
+import { Box, darken, Hidden } from '@mui/material'
+import TwitterIcon from '@mui/icons-material/Twitter'
+import type { LoaderFunction } from '@remix-run/node'
+import FacebookIcon from '@mui/icons-material/Facebook'
+import TelegramIcon from '@mui/icons-material/Telegram'
+import WhatsappIcon from '@mui/icons-material/WhatsApp'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import FindReplaceIcon from '@mui/icons-material/FindReplace'
+import { Link, useNavigate, useLoaderData } from '@remix-run/react'
+
+import {
+  playListAction,
+  pauseListAction,
+  resumeListAction,
+  playNextAction,
+  addToQueueAction,
+} from '../../redux/actions/playerActions'
 import {
   SMALL_SCREEN_SIZE,
   APP_NAME,
@@ -34,20 +36,23 @@ import {
   TWITTER_HANDLE,
   FETCH_ALBUMS_NUMBER,
 } from '../../utils/constants'
-import { DOMAIN } from '../../utils/constants.server'
-import Spinner from '~/components/Spinner'
-import { AlbumScrollingList } from '~/components/AlbumScrollingList'
-
+import theme from '~/mui/theme'
+import AppRoutes from '~/app-routes'
+import More from '~/components/More'
+import Tabs from '~/components/Tabs'
+import Image from '~/components/Image'
+import Heart from '~/components/Heart'
+import colors from '../../utils/colors'
+import type { TabItem } from '~/components/Tabs'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
-import Image from '~/components/Image'
-import Grid from '@mui/material/Grid'
 import type { BoxStyles } from '~/interfaces/types'
-import { Box, darken } from '@mui/material'
-import theme from '~/mui/theme'
-import { json, LoaderFunction } from '@remix-run/node'
 import { apiClient } from '~/graphql/requests.server'
-import { AlbumDetailQuery } from '~/graphql/generated-types'
+import AlbumTracksTable from '~/components/AlbumTracksTable'
+import type ListInterface from '../../interfaces/ListInterface'
+import type { AlbumDetailQuery } from '~/graphql/generated-types'
+import { AlbumScrollingList } from '~/components/AlbumScrollingList'
+import type AppStateInterface from '../../interfaces/AppStateInterface'
 
 const styles: BoxStyles = {
   row: {
@@ -103,31 +108,20 @@ const styles: BoxStyles = {
     },
   },
   listType: {
-    fontSize: 12,
+    fontSize: '12px',
     fontWeight: 400,
     textTransform: 'uppercase',
   },
   listName: {
-    fontSize: 36,
+    fontSize: '36px',
     fontWeight: 'bold',
     [theme.breakpoints.down('xs')]: {
-      fontSize: 32,
+      fontSize: '32px',
     },
   },
   ctaButtons: {
-    marginTop: 10,
+    marginTop: '10px',
   },
-}
-
-type Props = {
-  playList(list: ListInterface, sound?: SoundInterface): void
-  pauseList(): void
-  resumeList(): void
-  playNext(soundList: SoundInterface[]): void
-  addToQueue(soundList: SoundInterface[]): void
-  isPlaying: boolean
-  playingListHash: string
-  currentTime: number
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -141,17 +135,15 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(data)
 }
 
-export default function AlbumDetailPage(props: Props) {
-  const {} = useSelector(({ player }: AppStateInterface) => ({
-    playingListHash: player.list.hash,
-    isPlaying: player.isPlaying,
-    currentTime: player.currentTime,
-    playList: playerActions.playList,
-    pauseList: playerActions.pauseList,
-    resumeList: playerActions.resumeList,
-    playNext: playerActions.playNext,
-    addToQueue: playerActions.addToQueue,
-  }))
+export default function AlbumDetailPage() {
+  const dispatch = useDispatch()
+  const { isPlaying, currentTime, playingListHash } = useSelector(
+    ({ player }: AppStateInterface) => ({
+      playingListHash: player?.list?.hash,
+      isPlaying: player.isPlaying,
+      currentTime: player.currentTime,
+    })
+  )
 
   const navigate = useNavigate()
   const { randomAlbums, album: albumData } = useLoaderData<AlbumDetailQuery>()
@@ -181,16 +173,16 @@ export default function AlbumDetailPage(props: Props) {
   }
 
   const togglePlay = () => {
-    if (props.isPlaying && props.playingListHash === album.hash) {
-      props.pauseList()
+    if (isPlaying && playingListHash === album.hash) {
+      dispatch(pauseListAction())
     }
 
-    if (!props.isPlaying && props.playingListHash === album.hash) {
-      props.resumeList()
+    if (!isPlaying && playingListHash === album.hash) {
+      dispatch(resumeListAction())
     }
 
-    if (props.playingListHash !== album.hash) {
-      props.playList(makeList())
+    if (playingListHash !== album.hash) {
+      dispatch(playListAction(makeList()))
     }
   }
 
@@ -214,7 +206,7 @@ export default function AlbumDetailPage(props: Props) {
                 >
                   <FacebookIcon
                     style={{
-                      fontSize: 48,
+                      fontSize: '48px',
                       cursor: 'pointer',
                       color: colors.facebook,
                     }}
@@ -230,7 +222,7 @@ export default function AlbumDetailPage(props: Props) {
                 >
                   <TwitterIcon
                     style={{
-                      fontSize: 48,
+                      fontSize: '48px',
                       cursor: 'pointer',
                       color: colors.twitter,
                     }}
@@ -241,7 +233,7 @@ export default function AlbumDetailPage(props: Props) {
                 <WhatsappShareButton url={url} title={title}>
                   <WhatsappIcon
                     style={{
-                      fontSize: 48,
+                      fontSize: '48px',
                       cursor: 'pointer',
                       color: colors.whatsapp,
                     }}
@@ -252,7 +244,7 @@ export default function AlbumDetailPage(props: Props) {
                 <TelegramShareButton url={url} title={title}>
                   <TelegramIcon
                     style={{
-                      fontSize: 48,
+                      fontSize: '48px',
                       cursor: 'pointer',
                       color: colors.telegram,
                     }}
@@ -261,7 +253,7 @@ export default function AlbumDetailPage(props: Props) {
               </Grid>
               <Grid item>
                 <EmailShareButton url={url} subject={title} body={title}>
-                  <EmailIcon style={{ fontSize: 48, cursor: 'pointer' }} />
+                  <EmailIcon style={{ fontSize: '48px', cursor: 'pointer' }} />
                 </EmailShareButton>
               </Grid>
             </Grid>
@@ -299,7 +291,7 @@ export default function AlbumDetailPage(props: Props) {
     let options = [
       {
         name: 'Play Next',
-        method: () => props.playNext(makeSoundList()),
+        method: () => playNextAction(makeSoundList()),
       },
       {
         name: 'Go To Artist',
@@ -308,12 +300,12 @@ export default function AlbumDetailPage(props: Props) {
         },
       },
       // { name: 'Remove from your Liked Albums', method: () => { } },
-      // { name: 'Add To Playlist', method: () => { } },
+      // { name: 'Add To PlaylistAction', method: () => { } },
     ]
 
     options.push({
       name: 'Add To Queue',
-      method: () => props.addToQueue(makeSoundList()),
+      method: () => addToQueueAction(makeSoundList()),
     })
 
     return options
@@ -374,20 +366,20 @@ export default function AlbumDetailPage(props: Props) {
             <Grid sx={styles.ctaButtons} container spacing={2}>
               <Grid item xs={2} implementation="css" smUp component={Hidden} />
               <Grid item>
-                <Button fullWidth style={{ width: 100 }} onClick={togglePlay}>
-                  {props.playingListHash !== album.hash && 'Play'}
-                  {props.isPlaying &&
-                    props.playingListHash === album.hash &&
-                    'Pause'}
-                  {!props.isPlaying &&
-                    props.playingListHash === album.hash &&
-                    'Resume'}
-                  {/* todo // using props.currentTime > 0  to display rsesume or replay */}
+                <Button
+                  style={{ width: '100px' }}
+                  onClick={togglePlay}
+                  variant="contained"
+                >
+                  {playingListHash !== album.hash && 'Play'}
+                  {isPlaying && playingListHash === album.hash && 'Pause'}
+                  {!isPlaying && playingListHash === album.hash && 'Resume'}
+                  {/* todo // using currentTime > 0  to display rsesume or replay */}
                 </Button>
               </Grid>
               <Grid item>
-                {/* <Heart border />
-                &nbsp; &nbsp; */}
+                <Heart border />
+                &nbsp; &nbsp;
                 <More border options={getMoreOptions()} />
               </Grid>
             </Grid>
@@ -425,7 +417,7 @@ export default function AlbumDetailPage(props: Props) {
         icon={<FindReplaceIcon />}
         text="OOPS! The Album was not found."
       />
-      <h3>
+      <Box component="h3">
         Go to the{' '}
         <Box
           component={Link}
@@ -448,7 +440,7 @@ export default function AlbumDetailPage(props: Props) {
           browse other albums.
         </Box>
         .
-      </h3>
+      </Box>
       <FourOrFour />
     </>
   )

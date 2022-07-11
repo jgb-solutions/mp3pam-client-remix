@@ -12,7 +12,7 @@ import {
 } from '@remix-run/react'
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
-import { json } from '@remix-run/node'
+import { json, LinksFunction } from '@remix-run/node'
 import { Provider } from 'react-redux'
 import { withEmotionCache } from '@emotion/react'
 import type {
@@ -39,10 +39,18 @@ import {
   getCookieSession,
   updateCookieSessionHeader,
 } from './auth/sessions.server'
-import type { LoggedInUserData, UserData } from './interfaces/types'
+import type { LoggedInUserData } from './interfaces/types'
 import HeaderTitle from './components/HeaderTitle'
 import FourOrFour from './components/FourOrFour'
 import AppRoutes from './app-routes'
+import appStyles from '~/styles/app.css'
+
+export const links: LinksFunction = () => [
+  {
+    rel: 'stylesheet',
+    href: appStyles,
+  },
+]
 
 const { store, persistor } = persistedStore()
 

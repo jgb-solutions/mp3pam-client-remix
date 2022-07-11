@@ -1,73 +1,72 @@
-import Box from "@mui/material/Box"
-import { useNavigate } from "@remix-run/react"
-import type { BoxProps } from "@mui/material/Box"
-import IconButton from "@mui/material/IconButton"
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline"
+import Box from '@mui/material/Box'
+import { useNavigate } from '@remix-run/react'
+import type { BoxProps } from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 
-
-import Image from "./Image"
-import colors from "../utils/colors"
-import AppRoutes from "~/app-routes"
-import type { BoxStyles } from "~/interfaces/types"
-import type { PlaylistThumbnailData } from "./PlaylistScrollingList"
+import Image from './Image'
+import colors from '../utils/colors'
+import AppRoutes from '~/app-routes'
+import type { BoxStyles } from '~/interfaces/types'
+import type { PlaylistThumbnailData } from './PlaylistScrollingList'
 
 const styles: BoxStyles = {
   imgContainer: {
-    backgroundSize: "contain",
+    backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat',
-    cursor: "pointer",
-    width: 175,
-    height: 175,
+    cursor: 'pointer',
+    width: '175px',
+    height: '175px',
     maxWidth: '100%',
     maxHeight: '100%',
-    position: "relative",
-    marginBottom: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    position: 'relative',
+    marginBottom: '10px',
+    alignItems: 'center',
+    justifyContent: 'center',
     sm: {
-      width: 100,
-      height: 100,
+      width: '100px',
+      height: '100px',
     },
   },
   transparentBackground: {
     opacity: 0,
-    position: "absolute",
-    backgroundColor: "#000",
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    "&:hover": {
-      opacity: 0.7
-    }
+    position: 'absolute',
+    backgroundColor: '#000',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '&:hover': {
+      opacity: 0.7,
+    },
   },
   icon: {
-    fontSize: 75,
+    fontSize: '75px',
     color: colors.white,
-    "&:hover": {
-      fontSize: 80,
-      opacity: 1
-    }
+    '&:hover': {
+      fontSize: '80px',
+      opacity: 1,
+    },
   },
   title: {
     margin: 0,
-    fontSize: 14,
+    fontSize: '14px',
     color: colors.white,
     sm: {
-      fontSize: 12,
+      fontSize: '12px',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
     },
   },
   details: {
-    fontSize: 13,
-    color: "#9d9d9d",
-    marginTop: 5,
+    fontSize: '13px',
+    color: '#9d9d9d',
+    marginTop: '5px',
     marginBottom: 0,
     sm: {
-      fontSize: 11,
+      fontSize: '11px',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
@@ -77,14 +76,14 @@ const styles: BoxStyles = {
     color: colors.white,
     textDecoration: 'none',
     cursor: 'pointer',
-  }
+  },
 }
 
 type Props = {
   playlist: PlaylistThumbnailData
   className?: string
-  style?: object,
-  sx?: BoxProps['sx'],
+  style?: object
+  sx?: BoxProps['sx']
 }
 
 export default function PlaylistThumbnail(props: Props) {
@@ -106,21 +105,20 @@ export default function PlaylistThumbnail(props: Props) {
             ulb: true,
             lb: {
               width: 250,
-              height: 250
-            }
-          })})`
+              height: 250,
+            },
+          })})`,
         }}
       >
-        <Box
-          sx={styles.transparentBackground}
-          onClick={goToPlaylistPage}
-        >
+        <Box sx={styles.transparentBackground} onClick={goToPlaylistPage}>
           <IconButton>
             <PlayCircleOutlineIcon sx={styles.icon} />
           </IconButton>
         </Box>
       </Box>
-      <Box component="h3" sx={styles.title}>{playlist.title}</Box>
+      <Box component="h3" sx={styles.title}>
+        {playlist.title}
+      </Box>
     </Box>
   )
 }

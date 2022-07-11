@@ -85,15 +85,15 @@ export default function Download(input: Props) {
         {count <= 0 && (
           <h3 style={{ cursor: 'pointer' }}>
             Done! Go to the{' '}
-            <span
+            <Box
               style={{ textDecoration: 'underline' }}
               onClick={() => navigate(AppRoutes.pages.home)}
             >
               home page.
-            </span>
+            </Box>
             <br />
             Or just{' '}
-            <span
+            <Box
               style={{ textDecoration: 'underline' }}
               onClick={() => {
                 let route: string
@@ -112,7 +112,7 @@ export default function Download(input: Props) {
               }}
             >
               listen{' '}
-            </span>
+            </Box>
             to the {input.type} again.
           </h3>
         )}
@@ -121,7 +121,7 @@ export default function Download(input: Props) {
           style={{ backgroundImage: `url(/assets/images/loader.svg)` }}
         >
           <Box sx={styles.transparentBackground}>
-            <span sx={styles.count}>
+            <Box sx={styles.count}>
               {count > 0 ? (
                 count
               ) : (
@@ -130,7 +130,7 @@ export default function Download(input: Props) {
                   sx={styles.successColor}
                 />
               )}
-            </span>
+            </Box>
           </Box>
         </Box>
       </Box>

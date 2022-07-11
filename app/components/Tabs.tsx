@@ -1,7 +1,8 @@
-import { ReactNode } from 'react'
+import { useState } from 'react'
+import type { ReactNode } from 'react'
+import Tab from '@mui/material/Tab'
 import AppBar from '@mui/material/AppBar'
 import BaseTabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
 
 interface TabPanelProps {
   children: any
@@ -29,13 +30,13 @@ export interface TabItem {
 }
 
 type TabsProps = {
-  tabs: TabItem[],
-  title: string,
+  tabs: TabItem[]
+  title: string
 }
 
 export default function Tabs(props: TabsProps) {
   const { tabs, title } = props
-  const [selected, setSelected] = React.useState(tabs.length > 2 ? 2 : 0)
+  const [selected, setSelected] = useState(0)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setSelected(newValue)
@@ -59,10 +60,7 @@ export default function Tabs(props: TabsProps) {
         </BaseTabs>
       </AppBar>
       {tabs.map(({ value }, index) => (
-        <TabPanel
-          selected={selected}
-          index={index}
-          key={index}>
+        <TabPanel selected={selected} index={index} key={index}>
           {value}
         </TabPanel>
       ))}

@@ -31,7 +31,7 @@ const AppRoutes = {
   },
   genre: {
     show: `/browse/:slug/tracks`,
-    detailPage: (slug: string) => `/browse/${slug}/tracks`,
+    detailPage: (slug: string) => `/browse/${slug}`,
   },
   playlist: {
     show: `/playlist/:hash`,
@@ -71,13 +71,11 @@ const AppRoutes = {
     },
   },
   browse: {
-    detailPage: (userHash: string) => `/user/${userHash}`,
     users: `/users`,
-    tracks: `/browse/tracks`,
-    albums: `/browse/albums`,
-    artists: `/browse/artists`,
-    playlists: `/browse/playlists`,
-    shows: `/browse/shows`,
+    tracks: `/tracks`,
+    albums: `/albums`,
+    artists: `/artists`,
+    playlists: `/playlists`,
   },
   auth: {
     facebook: `/auth/facebook`,

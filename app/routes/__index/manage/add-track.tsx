@@ -6,7 +6,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
-import { Grid, FormControlLabel, Checkbox } from '@mui/material'
+import { Grid, FormControlLabel, Checkbox, Box, Button } from '@mui/material'
 
 import ProgressBar from '~/components/ProgressBar'
 import TextField from '@mui/material/TextField'
@@ -110,11 +110,10 @@ export function AddArtistForm({
       <form onSubmit={handleSubmit(handleAddArtist)} noValidate>
         <TextField
           style={{ marginTop: 0 }}
-          inputRef={register({
+          {...register('name', {
             required: 'The name is required.',
           })}
           autoFocus
-          name="name"
           id="name"
           label="Name *"
           type="text"
@@ -124,17 +123,16 @@ export function AddArtistForm({
             errors.name && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<span sx={styles.errorColor}>{errors.name.message}</span>}
+                text={<Box sx={styles.errorColor}>{errors.name.message}</Box>}
               />
             )
           }
         />
 
         <TextField
-          inputRef={register({
+          {...register('stage_name', {
             required: 'The stage name is required.',
           })}
-          name="stage_name"
           id="stage_name"
           label="Stage Name *"
           type="text"
@@ -145,9 +143,7 @@ export function AddArtistForm({
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
                 text={
-                  <span sx={styles.errorColor}>
-                    {errors.stage_name.message}
-                  </span>
+                  <Box sx={styles.errorColor}>{errors.stage_name.message}</Box>
                 }
               />
             )
@@ -208,11 +204,10 @@ export function AddGenreForm({
       <form onSubmit={handleSubmit(handleAddGenre)} noValidate>
         <TextField
           style={{ marginTop: 0 }}
-          inputRef={register({
+          {...register('name', {
             required: 'The name is required.',
           })}
           autoFocus
-          name="name"
           id="name"
           label="Name *"
           type="text"
@@ -222,7 +217,7 @@ export function AddGenreForm({
             errors.name && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<span sx={styles.errorColor}>{errors.name.message}</span>}
+                text={<Box sx={styles.errorColor}>{errors.name.message}</Box>}
               />
             )
           }
@@ -245,17 +240,17 @@ export default function AddTrackPage() {
   const history = useHistory()
   const location = useLocation()
 
-  const album_id = get(location, 'state.album_id')
-  const track_number = get(location, 'state.track_number')
+  const album_id = location.state.album_id
+  const track_number = location.state.track_number
 
   const {
     register,
     handleSubmit,
-    errors,
+    formState: { errors },
     formState,
     watch,
     setError,
-    clearError,
+    clearErrors,
     setValue,
   } = useForm<FormData>({ mode: 'onBlur' })
   register({ name: 'allowDownload' })
@@ -348,27 +343,27 @@ export default function AddTrackPage() {
   }
 
   useEffect(() => {
-    const artists = get(trackUploadInfo, 'me.artists_by_stage_name_asc.data')
+    const artists = trackUploadInfo?.me.artists_by_stage_name_asc.data
     if (artists) {
       setArtistList(
         artists.map(({ id, stage_name }: ArtistData) => ({ id, stage_name }))
       )
     }
     // eslint-disable-next-line
-  }, [get(trackUploadInfo, 'me.artists_by_stage_name_asc.data')])
+  }, [trackUploadInfo?.me.artists_by_stage_name_asc.data])
 
   useEffect(() => {
-    const genres = get(trackUploadInfo, 'genres')
+    const genres = trackUploadInfo?.genres
     if (genres) {
       setGenreList(genres.map(({ id, name }: GenreData) => ({ id, name })))
     }
     // eslint-disable-next-line
-  }, [get(trackUploadInfo, 'genres')])
+  }, [trackUploadInfo?.genres])
 
   useEffect(() => {
     if (chosenArtistId) {
       setValue('artistId', chosenArtistId)
-      clearError('artistId')
+      clearErrors('artistId')
     }
     // eslint-disable-next-line
   }, [chosenArtistId])
@@ -376,7 +371,7 @@ export default function AddTrackPage() {
   useEffect(() => {
     if (chosenGenreId) {
       setValue('genreId', chosenGenreId)
-      clearError('genreId')
+      clearErrors('genreId')
     }
     // eslint-disable-next-line
   }, [chosenGenreId])
@@ -449,19 +444,25 @@ export default function AddTrackPage() {
     }
   }, [uploadedTrack])
 
-  const styles: BoxStyles = addTrackPageStyles()
+  const styles: BoxStyles = {
+    uploadButton: {
+      marginTop: 10,
+      marginBottom: 5,
+    },
+    successColor: { color: colors.success },
+    errorColor: { color: colors.error },
+  }
 
   return (
-    <CheckAuth sx="react-transition scale-in">
+    <Box>
       <HeaderTitle icon={<MusicNoteIcon />} text={`Add a new track`} />
-      <SEO title={`Add a new track`} />
+      {/* <SEO title={`Add a new track`} /> */}
 
       <form onSubmit={handleSubmit(handleAddTrack)} noValidate>
         <TextField
-          inputRef={register({
+          {...register('title', {
             required: 'The title of the track is required.',
           })}
-          name="title"
           id="title"
           label="Title *"
           type="text"
@@ -471,9 +472,7 @@ export default function AddTrackPage() {
             errors.title && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={
-                  <span sx={styles.errorColor}>{errors.title.message}</span>
-                }
+                text={<Box sx={styles.errorColor}>{errors.title.message}</Box>}
               />
             )
           }
@@ -484,8 +483,7 @@ export default function AddTrackPage() {
             <TextField
               id="artist"
               select
-              name="artistId"
-              inputRef={register({
+              {...register('artistId', {
                 required: 'You must choose an artist.',
               })}
               SelectProps={{ native: true }}
@@ -495,9 +493,9 @@ export default function AddTrackPage() {
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
-                      <span sx={styles.errorColor}>
+                      <Box sx={styles.errorColor}>
                         {errors.artistId.message}
-                      </span>
+                      </Box>
                     }
                   />
                 )
@@ -526,8 +524,9 @@ export default function AddTrackPage() {
             <TextField
               id="genre"
               select
-              name="genreId"
-              inputRef={register({ required: 'You must choose an genre.' })}
+              {...register('genreId', {
+                required: 'You must choose an genre.',
+              })}
               SelectProps={{ native: true }}
               error={!!errors.genreId}
               helperText={
@@ -535,9 +534,7 @@ export default function AddTrackPage() {
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
-                      <span sx={styles.errorColor}>
-                        {errors.genreId.message}
-                      </span>
+                      <Box sx={styles.errorColor}>{errors.genreId.message}</Box>
                     }
                   />
                 )
@@ -595,7 +592,7 @@ export default function AddTrackPage() {
             {formState.isSubmitted && !audioValid && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<span sx={styles.errorColor}>{audioErrorMessage}</span>}
+                text={<Box sx={styles.errorColor}>{audioErrorMessage}</Box>}
               />
             )}
 
@@ -635,7 +632,7 @@ export default function AddTrackPage() {
             {formState.isSubmitted && !imgValid && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<span sx={styles.errorColor}>{imgErrorMessage}</span>}
+                text={<Box sx={styles.errorColor}>{imgErrorMessage}</Box>}
               />
             )}
 
@@ -650,52 +647,46 @@ export default function AddTrackPage() {
         </Grid>
 
         <TextField
-          inputRef={register({
+          {...register('detail', {
             minLength: {
               value: MIN_TRACK_DETAIL_LENGTH,
               message: `The detail must be at least ${MIN_TRACK_DETAIL_LENGTH} characters.`,
             },
           })}
-          name="detail"
           id="detail"
           label="Detail"
           multiline
-          rowsMax="4"
+          rows="4"
           margin="normal"
           error={!!errors.detail}
           helperText={
             errors.detail && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={
-                  <span sx={styles.errorColor}>{errors.detail.message}</span>
-                }
+                text={<Box sx={styles.errorColor}>{errors.detail.message}</Box>}
               />
             )
           }
         />
 
         <TextField
-          inputRef={register({
+          {...register('lyrics', {
             minLength: {
               value: MIN_TRACK_LYRICS_LENGTH,
               message: `The lyrics must be at least ${MIN_TRACK_LYRICS_LENGTH} characters.`,
             },
           })}
-          name="lyrics"
           id="lyrics"
           label="Lyrics"
           multiline
-          rowsMax="50"
+          rows="50"
           margin="normal"
           error={!!errors.lyrics}
           helperText={
             errors.lyrics && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={
-                  <span sx={styles.errorColor}>{errors.lyrics.message}</span>
-                }
+                text={<Box sx={styles.errorColor}>{errors.lyrics.message}</Box>}
               />
             )
           }
@@ -725,14 +716,14 @@ export default function AddTrackPage() {
         disableBackdropClick
       >
         <DialogContentText id="alert-dialog-description" align="center">
-          <span>
+          <Box>
             <CheckCircleIcon
               style={{ fontSize: 64 }}
               sx={styles.successColor}
             />
-          </span>
+          </Box>
           <br />
-          <span>Track successfully added!</span>
+          <Box>Track successfully added!</Box>
           <br />
           <br />
           {album_id ? (
@@ -771,11 +762,11 @@ export default function AddTrackPage() {
         handleClose={handleOpenInvalidFileSizeClose}
       >
         <DialogContentText id="alert-dialog-description" align="center">
-          <span>
+          <Box>
             <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
-          </span>
+          </Box>
           <br />
-          <span dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />
+          <Box dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />
           <br />
           <br />
           <Button
@@ -787,6 +778,6 @@ export default function AddTrackPage() {
           </Button>
         </DialogContentText>
       </AlertDialog>
-    </CheckAuth>
+    </Box>
   )
 }

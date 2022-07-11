@@ -151,9 +151,9 @@ export const AskTrackNumberForm = ({
               error={!!errors.track_number}
               helperText={
                 errors.track_number && (
-                  <span sx={styles.errorColor}>
+                  <Box sx={styles.errorColor}>
                     {errors.track_number.message}
-                  </span>
+                  </Box>
                 )
               }
             />
@@ -185,7 +185,7 @@ const AddTrackToAlbum = ({
     error: errorAddingTrackToAlbum,
   } = useAddTrackToAlbum()
   const { loading, error, data } = useMyTracks()
-  const tracks = get(data, 'me.tracks.data')
+  const tracks = data?.me.tracks.data
 
   useEffect(() => {
     if (addTrackToAlbumResponse) {
@@ -242,14 +242,14 @@ const AddTrackToAlbum = ({
                       {track.title}
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <span
+                      <Box
                         onClick={() => {
                           if (addingTrackToAlbum) return
 
                           handleAddTrackToAlbum(track.hash)
                         }}
                         sx={styles.link}
-                        style={{ cursor: 'pointer' }}>Add</span>
+                        style={{ cursor: 'pointer' }}>Add</Box>
                     </StyledTableCell> */}
                     </TableRow>
                   )
@@ -271,7 +271,7 @@ const AddTrackToAlbum = ({
 export default function AlbumEditPage() {
   const params = useParams()
   const navigate = useNavigate()
-  const hash = get(params, 'hash')
+  const hash = params?.hash
   const [trackHashToDelete, setTrackHashToDelete] = useState('')
   const [openAskTrackNumberPopup, setOpenAskTrackNumberPopup] = useState(false)
   const [openChooseOptionsToAddPopup, setOpenChooseOptionsToAddPopup] =
@@ -287,7 +287,7 @@ export default function AlbumEditPage() {
   } = useDeleteAlbumTrack()
 
   const { data, loading, error, refetch } = useAlbumDetail(hash)
-  const album = get(data, 'album')
+  const album = data?.album
 
   const confirmDelete = (hash: string) => {
     setTrackHashToDelete(hash)
@@ -326,8 +326,8 @@ export default function AlbumEditPage() {
   }
 
   return (
-    <CheckAuth sx="react-transition flip-in-x-reverse">
-      <SEO title={`Edit Album`} />
+    <Box sx="react-transition flip-in-x-reverse">
+      {/* <SEO title={`Edit Album`} /> */}
 
       {album ? (
         <>
@@ -393,10 +393,10 @@ export default function AlbumEditPage() {
                           <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '10%' }}>
-                          <span
+                          <Box
                             onClick={() => confirmDelete(track.hash)}
                             sx={styles.link}
-                            style={{ cursor: 'pointer' }}>Delete</span>
+                            style={{ cursor: 'pointer' }}>Delete</Box>
                         </StyledTableCell> */}
                         </TableRow>
                       )
@@ -567,6 +567,6 @@ export default function AlbumEditPage() {
           </Button>
         </DialogActions>
       </AlertDialog>
-    </CheckAuth>
+    </Box>
   )
 }

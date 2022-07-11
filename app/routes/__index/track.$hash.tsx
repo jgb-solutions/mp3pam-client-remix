@@ -12,7 +12,7 @@ import {
   WhatsappShareButton,
 } from 'react-share'
 import { json } from '@remix-run/node'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import InfoIcon from '@mui/icons-material/Info'
 import LineWeightIcon from '@mui/icons-material/LineWeight'
 import GetAppIcon from '@mui/icons-material/GetApp'
@@ -32,7 +32,6 @@ import More from '~/components/More'
 import Tabs from '~/components/Tabs'
 import type { TabItem } from '~/components/Tabs'
 import type ListInterface from '~/interfaces/ListInterface'
-import * as playerActions from '~/redux/actions/playerActions'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
 import {
   SMALL_SCREEN_SIZE,
@@ -54,6 +53,14 @@ import Heart from '~/components/Heart'
 import type { TrackDetailQuery } from '~/graphql/generated-types'
 import { AddTrackToPlaylist } from '~/routes/__index/manage/edit-playlist'
 import { DOMAIN } from '~/utils/constants.server'
+import { useAuth } from '~/hooks/useAuth'
+import {
+  addToQueueAction,
+  pauseListAction,
+  playListAction,
+  playNextAction,
+  resumeListAction,
+} from '~/redux/actions/playerActions'
 
 const styles: BoxStyles = {
   row: {
@@ -133,19 +140,19 @@ export const headers: HeadersFunction = () => {
 }
 
 export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
-  const { track } = data as TrackDetailQuery
-
-  if (!track) {
+  if (!data?.track) {
     return {
       title: 'Track not found',
     }
   }
 
-  const title = `${track.title} by ${track.artist.stage_name}`
-  const url = `${DOMAIN}/track/${track.hash}`
-  const description = `Listen to ${track.title} by ${track.artist.stage_name} on ${APP_NAME}`
+  const { track } = data as TrackDetailQuery
+
+  const title = `${track?.title} by ${track?.artist.stage_name}`
+  const url = `${DOMAIN}/track/${track?.hash}`
+  const description = `Listen to ${track?.title} by ${track?.artist.stage_name} on ${APP_NAME}`
   const type = SEO_TRACK_TYPE
-  const image = track.poster_url
+  const image = track?.poster_url
 
   return {
     title,
@@ -165,30 +172,23 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   const data = await apiClient.fetchTrackDetail(hash)
 
+  if (!data.track) {
+    throw new Response('Track not found', { status: 404 })
+  }
+
   return json(data)
 }
 
 export default function TrackDetailPage() {
-  const {
-    playList,
-    pauseList,
-    resumeList,
-    playNext,
-    addToQueue,
-    playingListHash,
-    isPlaying,
-    currentTime,
-  } = useSelector(({ player }: AppStateInterface) => ({
-    playingListHash: player?.list?.hash,
-    isPlaying: player.isPlaying,
-    currentTime: player.currentTime,
-    playList: playerActions.playList,
-    pauseList: playerActions.pauseList,
-    resumeList: playerActions.resumeList,
-    playNext: playerActions.playNext,
-    addToQueue: playerActions.addToQueue,
-  }))
-  const currentUser = { loggedIn: false }
+  const dispatch = useDispatch()
+  const { playingListHash, isPlaying } = useSelector(
+    ({ player }: AppStateInterface) => ({
+      playingListHash: player?.list?.hash,
+      isPlaying: player.isPlaying,
+      currentTime: player.currentTime,
+    })
+  )
+  const { isLoggedIn } = useAuth()
 
   const navigate = useNavigate()
   const [openAddTrackToPlaylistPopup, setOpenAddTrackToPlaylistPopup] =
@@ -224,27 +224,18 @@ export default function TrackDetailPage() {
   }, [makeSoundList, track])
 
   const togglePlay = useCallback(() => {
-    console.log('togglePlay')
     if (isPlaying && playingListHash === track.hash) {
-      pauseList()
+      dispatch(pauseListAction())
     }
 
     if (!isPlaying && playingListHash === track.hash) {
-      resumeList()
+      dispatch(resumeListAction())
     }
 
     if (playingListHash !== track.hash) {
-      playList(makeList())
+      dispatch(playListAction(makeList()))
     }
-  }, [
-    isPlaying,
-    playingListHash,
-    track.hash,
-    pauseList,
-    resumeList,
-    playList,
-    makeList,
-  ])
+  }, [dispatch, isPlaying, makeList, playingListHash, track.hash])
 
   const getTabs = () => {
     const url = window.location.href
@@ -330,10 +321,11 @@ export default function TrackDetailPage() {
           <>
             <Box component="p">File Size: {track.audio_file_size}</Box>
             <Button
+              component={Link}
               variant="contained"
               size="large"
               style={{ minWidth: '150px`' }}
-              onClick={() => navigate(AppRoutes.download.trackPage(track.hash))}
+              to={AppRoutes.download.trackPage(track.hash)}
             >
               Download
             </Button>
@@ -380,12 +372,12 @@ export default function TrackDetailPage() {
       {
         name: 'Play Next',
         method: () => {
-          playNext(makeSoundList())
+          dispatch(playNextAction(makeSoundList()))
         },
       },
     ]
 
-    if (currentUser.loggedIn) {
+    if (isLoggedIn) {
       options.push({
         name: 'Add To Playlist',
         method: () => handleAddTrackToPlaylist(),
@@ -410,7 +402,7 @@ export default function TrackDetailPage() {
 
     options.push({
       name: 'Add To Queue',
-      method: () => addToQueue(makeSoundList()),
+      method: () => dispatch(addToQueueAction(makeSoundList())),
     })
 
     return options
@@ -515,9 +507,8 @@ export default function TrackDetailPage() {
 
       <br />
 
-      {getTabs().length ? <Tabs title="Detail Tabs" tabs={getTabs()} /> : null}
+      <Tabs title="Detail Tabs" tabs={getTabs()} />
 
-      <br />
       <br />
 
       {relatedTracks ? (

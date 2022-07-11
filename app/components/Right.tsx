@@ -82,7 +82,7 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
               />
             </Box>
             <Box component="span" sx={styles.linkText}>
-              Your Account
+              Account
             </Box>
           </NavLink>
         </Box>
@@ -98,7 +98,7 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
               })}
               onClick={closeDrawer}
             >
-              Manage Your Library
+              Your Library
             </NavLink>
           </p>
           {libraryMenu.map((menuItem, index) => (

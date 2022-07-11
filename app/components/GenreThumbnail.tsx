@@ -1,13 +1,13 @@
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
+import type { FC } from 'react'
 import Box from '@mui/material/Box'
+import { Link } from '@remix-run/react'
+import { Typography } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import { SMALL_SCREEN_SIZE } from '../utils/constants'
-import { useNavigate } from '@remix-run/react'
-import { BoxStyles } from '~/interfaces/types'
-import { Typography } from '@mui/material'
+import type { BoxStyles } from '~/interfaces/types'
 
 export interface GenreInterface {
   name: string
@@ -85,22 +85,18 @@ type Props = {
   style?: object
 }
 
-export default function GenreThumbnail(props: Props) {
-  const navigate = useNavigate()
-
-  const { genre } = props
-
-  const goToGenrePage = () => {
-    navigate(AppRoutes.genre.detailPage(genre.slug))
-  }
-
+const GenreThumbnail: FC<Props> = ({ genre, style }) => {
   return (
-    <Box style={props.style}>
+    <Box style={style}>
       <Box
         sx={styles.imgContainer}
         style={{ backgroundImage: `url(/assets/images/genres.jpg)` }}
       >
-        <Box sx={styles.transparentBackground} onClick={goToGenrePage}>
+        <Box
+          component={Link}
+          sx={styles.transparentBackground}
+          to={AppRoutes.genre.detailPage(genre.slug)}
+        >
           <IconButton>
             <PlayCircleOutlineIcon sx={styles.icon} />
           </IconButton>
@@ -112,3 +108,5 @@ export default function GenreThumbnail(props: Props) {
     </Box>
   )
 }
+
+export default GenreThumbnail

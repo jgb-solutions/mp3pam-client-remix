@@ -152,14 +152,18 @@ class ApiClient {
     )
   }
 
-  fetchTracksByGenre(genreSlug: string) {
+  fetchTracksByGenre({
+    first = FETCH_TRACKS_NUMBER,
+    orderBy = [{ column: 'created_at', order: SortOrder.Desc }],
+    slug,
+  }: TracksDataByGenreQueryVariables) {
     return client.request<
       TracksDataByGenreQuery,
       TracksDataByGenreQueryVariables
     >(FetchTracksByGenreDocument, {
-      first: FETCH_TRACKS_NUMBER,
-      orderBy: [{ column: 'created_at', order: SortOrder.Desc }],
-      slug: genreSlug,
+      first,
+      orderBy,
+      slug,
     })
   }
 

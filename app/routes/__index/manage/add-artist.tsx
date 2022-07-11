@@ -29,6 +29,9 @@ import {
 } from '~/utils/constants'
 
 import Grid from '@mui/material/Grid'
+import { Box } from '@mui/material'
+import { BoxStyles } from '~/interfaces/types'
+import colors from '~/utils/colors'
 
 type IconFieldProps = {
   icon: ReactNode
@@ -126,18 +129,25 @@ export default function AddArtistPage() {
     }
   }, [uploadedArtist])
 
-  const styles: BoxStyles = addArtistPageStyles()
+  const styles: BoxStyles = {
+    uploadButton: {
+      marginTop: 10,
+      marginBottom: 5,
+    },
+    successColor: { color: colors.success },
+    errorColor: { color: colors.error },
+  }
 
   return (
-    <CheckAuth sx="react-transition scale-in">
+    <Box>
       <HeaderTitle icon={<PersonPinCircleIcon />} text={`Add a new artist`} />
-      <SEO title={`Add a new artist`} />
+      {/* <SEO title={`Add a new artist`} /> */}
 
       <form onSubmit={handleSubmit(handleAddArtist)} noValidate>
         <Grid container direction="row" spacing={2}>
           <Grid item xs={12} sm>
             <TextField
-              inputRef={register({
+              {...register('name', {
                 required: 'The name of the artist is required.',
               })}
               name="name"
@@ -151,7 +161,9 @@ export default function AddArtistPage() {
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
-                      <span sx={styles.errorColor}>{errors.name.message}</span>
+                      <Box component="span" sx={styles.errorColor}>
+                        {errors.name.message}
+                      </Box>
                     }
                   />
                 )
@@ -160,10 +172,9 @@ export default function AddArtistPage() {
           </Grid>
           <Grid item xs={12} sm>
             <TextField
-              inputRef={register({
+              {...register('stage_name', {
                 required: 'The Stage Name of the artist is required.',
               })}
-              name="stage_name"
               id="stage_name"
               label="Stage Name *"
               type="text"
@@ -174,9 +185,9 @@ export default function AddArtistPage() {
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
-                      <span sx={styles.errorColor}>
+                      <Box component="span" sx={styles.errorColor}>
                         {errors.stage_name.message}
-                      </span>
+                      </Box>
                     }
                   />
                 )
@@ -212,7 +223,11 @@ export default function AddArtistPage() {
         {formState.isSubmitted && !imgValid && (
           <TextIcon
             icon={<ErrorIcon sx={styles.errorColor} />}
-            text={<span sx={styles.errorColor}>{imgErrorMessage}</span>}
+            text={
+              <Box component="span" sx={styles.errorColor}>
+                {imgErrorMessage}
+              </Box>
+            }
           />
         )}
 
@@ -232,13 +247,12 @@ export default function AddArtistPage() {
               field={
                 <TextField
                   onChange={(e) => (e.target.value = e.target.value.trim())}
-                  inputRef={register({
+                  {...register('facebook', {
                     minLength: {
                       value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
                       message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters."`,
                     },
                   })}
-                  name="facebook"
                   id="facebook"
                   label="Facebook Username or Link"
                   margin="normal"
@@ -248,9 +262,9 @@ export default function AddArtistPage() {
                       <TextIcon
                         icon={<ErrorIcon sx={styles.errorColor} />}
                         text={
-                          <span sx={styles.errorColor}>
+                          <Box component="span" sx={styles.errorColor}>
                             {errors.facebook.message}
-                          </span>
+                          </Box>
                         }
                       />
                     )
@@ -268,13 +282,12 @@ export default function AddArtistPage() {
               field={
                 <TextField
                   onChange={(e) => (e.target.value = e.target.value.trim())}
-                  inputRef={register({
+                  {...register('twitter', {
                     minLength: {
                       value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
                       message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                     },
                   })}
-                  name="twitter"
                   id="twitter"
                   label="Twitter Username or Link"
                   margin="normal"
@@ -284,9 +297,9 @@ export default function AddArtistPage() {
                       <TextIcon
                         icon={<ErrorIcon sx={styles.errorColor} />}
                         text={
-                          <span sx={styles.errorColor}>
+                          <Box component="span" sx={styles.errorColor}>
                             {errors.twitter.message}
-                          </span>
+                          </Box>
                         }
                       />
                     )
@@ -306,13 +319,12 @@ export default function AddArtistPage() {
               field={
                 <TextField
                   onChange={(e) => (e.target.value = e.target.value.trim())}
-                  inputRef={register({
+                  {...register('isntagram', {
                     minLength: {
                       value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
                       message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                     },
                   })}
-                  name="instagram"
                   id="instagram"
                   label="Instagram Username or Link"
                   margin="normal"
@@ -322,9 +334,9 @@ export default function AddArtistPage() {
                       <TextIcon
                         icon={<ErrorIcon sx={styles.errorColor} />}
                         text={
-                          <span sx={styles.errorColor}>
+                          <Box component="span" sx={styles.errorColor}>
                             {errors.instagram.message}
-                          </span>
+                          </Box>
                         }
                       />
                     )
@@ -342,13 +354,12 @@ export default function AddArtistPage() {
               field={
                 <TextField
                   onChange={(e) => (e.target.value = e.target.value.trim())}
-                  inputRef={register({
+                  {...register('youtube', {
                     minLength: {
                       value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
                       message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                     },
                   })}
-                  name="youtube"
                   id="youtube"
                   label="YouTube Username or Link"
                   margin="normal"
@@ -358,9 +369,9 @@ export default function AddArtistPage() {
                       <TextIcon
                         icon={<ErrorIcon sx={styles.errorColor} />}
                         text={
-                          <span sx={styles.errorColor}>
+                          <Box component="span" sx={styles.errorColor}>
                             {errors.youtube.message}
-                          </span>
+                          </Box>
                         }
                       />
                     )
@@ -373,24 +384,27 @@ export default function AddArtistPage() {
         </Grid>
 
         <TextField
-          inputRef={register({
+          {...register('bio', {
             minLength: {
               value: MIN_ARTIST_BIO_LENGTH,
               message: `The bio must be at least ${MIN_ARTIST_BIO_LENGTH} characters.`,
             },
           })}
-          name="bio"
           id="bio"
           label="Biography"
           multiline
-          rowsMax="50"
+          rows="50"
           margin="normal"
           error={!!errors.bio}
           helperText={
             errors.bio && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<span sx={styles.errorColor}>{errors.bio.message}</span>}
+                text={
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.bio.message}
+                  </Box>
+                }
               />
             )
           }
@@ -413,14 +427,14 @@ export default function AddArtistPage() {
         disableBackdropClick
       >
         <DialogContentText id="alert-dialog-description" align="center">
-          <span>
+          <Box>
             <CheckCircleIcon
               style={{ fontSize: 64 }}
               sx={styles.successColor}
             />
-          </span>
+          </Box>
           <br />
-          <span>Artist successfully added!</span>
+          <Box>Artist successfully added!</Box>
           <br />
           <br />
           <Button size="small" onClick={goToArtistsLibrary} color="primary">
@@ -435,11 +449,11 @@ export default function AddArtistPage() {
         handleClose={handleOpenInvalidFileSizeClose}
       >
         <DialogContentText id="alert-dialog-description" align="center">
-          <span>
+          <Box>
             <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
-          </span>
+          </Box>
           <br />
-          <span dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />
+          <Box dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />
           <br />
           <br />
           <Button
@@ -451,6 +465,6 @@ export default function AddArtistPage() {
           </Button>
         </DialogContentText>
       </AlertDialog>
-    </CheckAuth>
+    </Box>
   )
 }

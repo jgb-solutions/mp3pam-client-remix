@@ -115,3 +115,31 @@ export const withUser = (
     },
     options
   )
+
+type WithTokenData = {
+  token: string
+}
+
+type WithTokenCallback = (
+  withTokenData: WithTokenData,
+  context: DataFunctionArgs
+) => Promise<Response> | Response | Promise<AppData> | AppData
+
+export const withToken = (
+  context: DataFunctionArgs,
+  contextCallback: WithTokenCallback = () => {},
+  options: WithUserOptions = {}
+) =>
+  withAuth(
+    context,
+    async (context: DataFunctionArgs) => {
+      const { request } = context
+
+      const session = await getCookieSession(request)
+
+      const { token } = (await session.get(USER_SESSION_ID)) as LoggedInUserData
+
+      return contextCallback({ token }, context) || {}
+    },
+    options
+  )

@@ -45,9 +45,6 @@ export default function SearchPage() {
     // eslint-disable-next-line
   }, [term])
 
-  if (loading) return <Spinner.Full />
-
-  if (error) return <p>Error Loading new data. Please refresh the page.</p>
   const { tracks, albums, artists } = state
   const title =
     tracks.length || artists.length || albums.length
@@ -65,7 +62,7 @@ export default function SearchPage() {
         textStyle={{ fontSize: 16, textTransform: 'none' }}
         text={title}
       />
-      <SEO title={title} />
+      {/* <SEO title={title} /> */}
 
       {tracks.length ? (
         <>

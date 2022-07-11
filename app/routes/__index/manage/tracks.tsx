@@ -95,10 +95,10 @@ export default function ManageTracksPage() {
                       <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
-                      <span
+                      <Box
                         onClick={() => confirmDelete(track.hash)}
                         sx={styles.link}
-                        style={{ cursor: 'pointer' }}>Delete</span>
+                        style={{ cursor: 'pointer' }}>Delete</Box>
                     </StyledTableCell> */}
                     </TableRow>
                   )

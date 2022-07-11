@@ -1,4 +1,4 @@
-import { gql } from "graphql-request"
+import { gql } from 'graphql-request'
 
 export const HomepageQueryDocument = gql`
   query homepage($page: Int, $first: Int, $orderBy: [OrderByClause!]) {
@@ -64,7 +64,7 @@ export const fetchManagementDocument = gql`
         }
       }
 
-      latestPlaylists: playlists(first: $first, page: $page,) {
+      latestPlaylists: playlists(first: $first, page: $page) {
         data {
           hash
           title
@@ -111,13 +111,19 @@ export const fetchTracksDocument = gql`
       paginatorInfo {
         hasMorePages
         currentPage
+        total
       }
     }
   }
 `
 
 export const FetchTracksByGenreDocument = gql`
-  query tracksDataByGenre($page: Int, $first: Int, $orderBy: [OrderByClause!], $slug: String!) {
+  query tracksDataByGenre(
+    $page: Int
+    $first: Int
+    $orderBy: [OrderByClause!]
+    $slug: String!
+  ) {
     genre(slug: $slug) {
       name
     }
@@ -135,6 +141,7 @@ export const FetchTracksByGenreDocument = gql`
       paginatorInfo {
         hasMorePages
         currentPage
+        total
       }
     }
   }
@@ -160,6 +167,7 @@ export const fetchArtistsDocument = gql`
       paginatorInfo {
         hasMorePages
         currentPage
+        total
       }
     }
   }
@@ -176,6 +184,7 @@ export const fetchPlaylistsDocument = gql`
       paginatorInfo {
         hasMorePages
         currentPage
+        total
       }
     }
   }
@@ -197,6 +206,7 @@ export const fetchAlbumsDocument = gql`
       paginatorInfo {
         hasMorePages
         currentPage
+        total
       }
     }
   }
@@ -266,7 +276,7 @@ export const fetchTrackDetailDocument = gql`
       detail
       lyrics
       play_count
-	    download_count
+      download_count
       audio_file_size
       genre {
         name
@@ -406,8 +416,8 @@ export const fetchDownloadUrlDocument = gql`
 export const uploadUrlDocument = gql`
   query getUploadUrl($input: UploadUrlInput!) {
     uploadUrl(input: $input) {
-     signedUrl
-     filename
+      signedUrl
+      filename
     }
   }
 `
@@ -417,7 +427,7 @@ export const trackUploadDocument = gql`
     genres {
       id
       name
-  	}
+    }
     me {
       artists_by_stage_name_asc(first: 50) {
         data {
@@ -450,7 +460,7 @@ export const searchDocument = gql`
         hash
         title
         cover_url
-         artist {
+        artist {
           hash
           stage_name
         }

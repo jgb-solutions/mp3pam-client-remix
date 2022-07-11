@@ -3,13 +3,13 @@ import type {
   LoaderFunction,
   HtmlMetaDescriptor,
 } from '@remix-run/node'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
 import { useFetcher, useLoaderData } from '@remix-run/react'
-import InfiniteScroll from 'react-infinite-scroller'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import InfiniteScroll from 'react-infinite-scroller'
 
 import { apiClient } from '~/graphql/requests.server'
 import HeaderTitle from '~/components/HeaderTitle'
@@ -41,27 +41,30 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 type TrackType = NonNullable<TracksDataQuery['tracks']>['data'][0]
 
+let fetching = false
+
 export default function BrowseTracksPage() {
   const tracksFetcher = useFetcher<TracksDataQuery>()
   const { tracks } = useLoaderData<TracksDataQuery>()
   const [tracksData, setTracksData] = useState<TrackType[]>(tracks?.data || [])
   const [hasMoreTracks, setHasMoreTracks] = useState(
-    tracks?.paginatorInfo.hasMorePages
-  )
-  const [nextPage, setNextPage] = useState(
-    tracks?.paginatorInfo.currentPage || 2
+    !!tracks?.paginatorInfo.hasMorePages
   )
 
-  const containerRef = useRef<HTMLElement>(null)
+  const [currentPage, setCurrentPage] = useState(
+    tracks?.paginatorInfo.currentPage || 1
+  )
 
   const loadMoreTracks = useCallback(() => {
-    console.log('called')
-    if (tracksFetcher.type === 'init') {
-      tracksFetcher.load(`/browse/tracks?page=${nextPage}`)
-    }
-  }, [nextPage, tracksFetcher])
+    if (fetching) return
+    fetching = true
+
+    tracksFetcher.load(`/tracks?page=${currentPage + 1}`)
+  }, [currentPage, tracksFetcher])
 
   useEffect(() => {
+    fetching = false
+
     if (tracksFetcher.data) {
       const { tracks } = tracksFetcher.data
 
@@ -70,14 +73,12 @@ export default function BrowseTracksPage() {
 
       setTracksData((existingTracks) => [...existingTracks, ...newTracks])
       setHasMoreTracks(!!hasEvenMoreTracks)
-      setNextPage((page) => tracks?.paginatorInfo.currentPage || page + 1)
+      setCurrentPage((page) => tracks?.paginatorInfo.currentPage || page + 1)
     }
   }, [tracksFetcher.data])
 
-  console.log(tracksFetcher.data)
-
   return (
-    <Box ref={containerRef} sx={{ overflow: 'auto' }}>
+    <Box sx={{}}>
       <HeaderTitle icon={<MusicNoteIcon />} text="Browse Tracks" />
 
       <InfiniteScroll
@@ -87,7 +88,7 @@ export default function BrowseTracksPage() {
         loader={<Spinner key={1} />}
         useWindow={false}
         threshold={250}
-        getScrollParent={() => containerRef.current}
+        getScrollParent={() => document.querySelector('#main-content')}
       >
         <Grid container spacing={2}>
           {tracksData.map((track) => (

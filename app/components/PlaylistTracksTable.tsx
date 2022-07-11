@@ -17,6 +17,11 @@ import type ListInterface from '~/interfaces/ListInterface'
 import { Link } from '@remix-run/react'
 import type { BoxStyles } from '~/interfaces/types'
 import theme from '~/mui/theme'
+import { withStyles } from '@mui/styles'
+import AppRoutes from '~/app-routes'
+import { Box } from '@mui/material'
+import Heart from './Heart'
+import More from './More'
 
 const styles: BoxStyles = {
   table: {
@@ -31,22 +36,22 @@ const styles: BoxStyles = {
   },
 }
 
-// export const StyledTableCell = withStyles({
-//   head: {
-//     color: colors.grey,
-//     textTransform: 'uppercase',
-//     textAlign: 'left',
-//     paddingLeft: 0
-//   },
-//   body: {
-//     fontSize: 14,
-//     color: colors.white,
-//     border: 'none',
-//     paddingLeft: 1,
-//     paddingRight: 1,
-//     textOverflow: 'ellipsis'
-//   },
-//}(TableCell)
+export const StyledTableCell = withStyles({
+  head: {
+    color: colors.grey,
+    textTransform: 'uppercase',
+    textAlign: 'left',
+    paddingLeft: 0,
+  },
+  body: {
+    fontSize: 14,
+    color: colors.white,
+    border: 'none',
+    paddingLeft: 1,
+    paddingRight: 1,
+    textOverflow: 'ellipsis',
+  },
+})(TableCell)
 
 type Props = { playlist: PlaylistInterface; list: ListInterface }
 
@@ -59,12 +64,12 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
     <Table sx={styles.table} size="small">
       <TableHead>
         <TableRow>
-          {/* <StyledTableCell>#</StyledTableCell>
+          <StyledTableCell>#</StyledTableCell>
           <StyledTableCell>&nbsp;</StyledTableCell>
-          <StyledTableCell>Title</StyledTableCell> */}
+          <StyledTableCell>Title</StyledTableCell>
 
-          {/* <StyledTableCell>Play</StyledTableCell> */}
-          {/* <StyledTableCell>Download</StyledTableCell> */}
+          <StyledTableCell>Play</StyledTableCell>
+          <StyledTableCell>Download</StyledTableCell>
           {/* <StyledTableCell>By</StyledTableCell> */}
         </TableRow>
       </TableHead>
@@ -88,22 +93,31 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
               </StyledTableCell>
               <StyledTableCell style={{ width: '10%', minWidth: '60px' }}>
                 <PlayPause sound={makeSoundFromTrack(track)} list={list} />
-                {/* <Heart /> */}
+                <Heart />
               </StyledTableCell>
               <StyledTableCell style={{ width: '90%', color }}>
-                <Link
+                <Box
+                  component={Link}
                   prefetch="intent"
                   to={AppRoutes.track.detailPage(track.hash)}
                   sx={styles.link}
                   style={{ color }}
                 >
                   {track.title}
-                </Link>
+                </Box>
               </StyledTableCell>
-              {/* <StyledTableCell style={{ width: '1.5%', color }}>{track.play_count}</StyledTableCell> */}
-              {/* <StyledTableCell style={{ width: '1.5%', color }}>{track.download_count}</StyledTableCell> */}
-              {/* <StyledTableCell style={{ width: '35%', color }}>{playlist.artist.stage_name}</StyledTableCell> */}
-              {/* <StyledTableCell style={{ width: '20%', color }}>{track.type.toUpperCase()}</StyledTableCell> */}
+              <StyledTableCell style={{ width: '1.5%', color }}>
+                {track.play_count}
+              </StyledTableCell>
+              <StyledTableCell style={{ width: '1.5%', color }}>
+                {track.download_count}
+              </StyledTableCell>
+              {/* <StyledTableCell style={{ width: '35%', color }}>
+                {playlist.artist?.stage_name}
+              </StyledTableCell>
+              <StyledTableCell style={{ width: '20%', color }}>
+                {track.type?.toUpperCase()}
+              </StyledTableCell> */}
               {/* <StyledTableCell>
                 <More />
               </StyledTableCell> */}
