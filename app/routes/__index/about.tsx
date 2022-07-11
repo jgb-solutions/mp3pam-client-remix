@@ -2,7 +2,11 @@ import type { FC } from 'react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { Link } from '@remix-run/react'
-import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
+import type {
+  HeadersFunction,
+  HtmlMetaDescriptor,
+  MetaFunction,
+} from '@remix-run/node'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import YouTubeIcon from '@mui/icons-material/YouTube'
@@ -12,6 +16,12 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import Logo from '~/components/Logo'
 import colors from '~/utils/colors'
 import LogoJGB from '~/components/LogoJGB'
+
+export const headers: HeadersFunction = () => {
+  return {
+    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3595',
+  }
+}
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'About us'
