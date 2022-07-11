@@ -3,7 +3,7 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node'
-import { useFetcher, Link, Outlet, useLoaderData } from '@remix-run/react'
+import { useFetcher, Link, Outlet } from '@remix-run/react'
 import HeaderTitle from '~/components/HeaderTitle'
 import Avatar from '@mui/material/Avatar'
 import { Box } from '@mui/material'
@@ -48,7 +48,6 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
 export const loader: LoaderFunction = (context) => withAuth(context)
 
 export default function AccountPage() {
-  const {} = useLoaderData()
   const { currentUser } = useAuth()
   const logoutFetcher = useFetcher()
 
