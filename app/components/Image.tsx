@@ -1,6 +1,6 @@
 // https://developer.wordpress.com/docs/photon/api/
 
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import type { BoxProps } from '@mui/material'
 import type { CSSProperties } from 'react'
 
@@ -31,24 +31,25 @@ interface Photon {
     y: number | string // y-offset percentage or numberpx
     w: number | string // width percentage or numberpx
     h: number | string // height percentage or numberpx
-  },
+  }
   // http://i0.wp.com/s.ma.tt/files/2012/06/9-DSC01406-1600x1066.jpg?resize=400,220
   resize?: {
     width: number
     height: number
-  },
+  }
   // http://i0.wp.com/s.ma.tt/files/2010/10/MCM_4049.jpg?fit=300,300
   fit?: {
     width: number
     height: number
-  },
+  }
   // http://i0.wp.com/developer.files.wordpress.com/2013/03/letterboxing-example.jpg?lb=310,250
-  lb?: { // black letterboxing
+  lb?: {
+    // black letterboxing
     width: number
     height: number
-  },
+  }
   // http://i0.wp.com/developer.files.wordpress.com/2012/11/black-letterboxing-example.jpg?ulb=true
-  ulb?: boolean, // remove black letterboxing
+  ulb?: boolean // remove black letterboxing
   // https://i0.wp.com/s.ma.tt/files/2010/12/MCM_5875-1600x1064.jpg?w=200&filter=negate
   // https://i0.wp.com/s.ma.tt/files/2010/12/MCM_5875-1600x1064.jpg?w=200&filter=grayscale
   // https://i0.wp.com/s.ma.tt/files/2010/12/MCM_5875-1600x1064.jpg?w=200&filter=sepia
@@ -57,7 +58,15 @@ interface Photon {
   // https://i0.wp.com/s.ma.tt/files/2010/12/MCM_5875-1600x1064.jpg?w=200&filter=blurgaussian
   // https://i0.wp.com/s.ma.tt/files/2010/12/MCM_5875-1600x1064.jpg?w=200&filter=blurselective
   // https://i0.wp.com/s.ma.tt/files/2010/12/MCM_5875-1600x1064.jpg?w=200&filter=meanremoval
-  filter?: 'negate' | 'grayscale' | 'sepia' | 'edgedetect' | 'emboss' | 'blurgaussian' | 'blurselective' | 'meanremoval',
+  filter?:
+    | 'negate'
+    | 'grayscale'
+    | 'sepia'
+    | 'edgedetect'
+    | 'emboss'
+    | 'blurgaussian'
+    | 'blurselective'
+    | 'meanremoval'
   // http://i0.wp.com/s.ma.tt/files/2011/06/MCM_9517-1600x1065.jpg?brightness=-40
   // http://i0.wp.com/s.ma.tt/files/2011/06/MCM_9517-1600x1065.jpg?brightness=0
   // http://i0.wp.com/s.ma.tt/files/2011/06/MCM_9517-1600x1065.jpg?brightness=80
@@ -69,24 +78,25 @@ interface Photon {
   // http://i0.wp.com/s.ma.tt/files/2012/01/DSC00259.jpg?colorize=100,0,0
   // http://i0.wp.com/s.ma.tt/files/2012/01/DSC00259.jpg?colorize=0,100,0
   // http://i0.wp.com/s.ma.tt/files/2012/01/DSC00259.jpg?colorize=0,0,100
-  colorize?: { // RGB values such as 255,0,0 (red), 0,255,0 (green), 0,0,255 (blue)
+  colorize?: {
+    // RGB values such as 255,0,0 (red), 0,255,0 (green), 0,0,255 (blue)
     red: number
     green: number
     blue: number
-  },
+  }
   // http://i0.wp.com/s.ma.tt/files/2011/06/MCM_9230-1600x1064.jpg?smooth=1
   smooth?: number // 0 appears to be maximum smoothing with higher numbers being less smoothing.
   // http://i0.wp.com/s.ma.tt/files/2012/02/MCM_4246-1600x1064.jpg?w=310&zoom=2
-  zoom?: 1 | 1.5 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10. // Valid zoom levels are 1, 1.5, 2-10.
+  zoom?: 1 | 1.5 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 // Valid zoom levels are 1, 1.5, 2-10.
   // http://i0.wp.com/ma.tt/files/2014/09/8084136238_169f1ca1f0_o.jpg?w=310&quality=50
   quality?: number // values between 20 and 100
   // http://i0.wp.com/ma.tt/files/2012/06/13-MCM_0885.jpg?w=310&strip=all
   strip?: 'all' | 'info' | 'color' // strip functionality to remove JPEG image Exif, IPTC, comment, and color data
 }
 
-
 const makePhotonUrl = (photon: Photon, domainWithoutProtocol: string) => {
-  const photonHost = PHOTON_HOSTS[Math.floor(Math.random() * PHOTON_HOSTS.length)]
+  const photonHost =
+    PHOTON_HOSTS[Math.floor(Math.random() * PHOTON_HOSTS.length)]
 
   let photonQuery = ``
 
@@ -121,7 +131,6 @@ const makePhotonUrl = (photon: Photon, domainWithoutProtocol: string) => {
     const { width, height } = photon.lb
     photonQuery += `&lb=${width},${height}`
   }
-
 
   if (photon.filter) {
     photonQuery += `&filter=${photon.filter}`
@@ -167,7 +176,7 @@ function Image(props: Props) {
 
   const style: CSSProperties = {
     maxWidth: '100%',
-    ...propStyle
+    ...propStyle,
   }
 
   let optimizedProps = { src }
@@ -176,22 +185,25 @@ function Image(props: Props) {
     optimizedProps.src = makePhotonUrl(photon, domainWithoutProtocol)
   }
 
-  return <Box
-    component={"img"}
-    loading="lazy"
-    {...rest}
-    style={style}
-    {...optimizedProps}
-    alt={alt}
-    width={`${props.photon?.width}px`}
-    height={`${props.photon?.height}px`}
-  />
+  return (
+    <Box
+      component={'img'}
+      loading="lazy"
+      {...rest}
+      style={style}
+      {...optimizedProps}
+      alt={alt}
+      width={`${props.photon?.width}px`}
+      height={`${props.photon?.height}px`}
+    />
+  )
 }
 
 Image.phoneCdnUrl = function (url: string, options: Photon) {
   const domainWithoutProtocol = url.replace(/(^\w+:|^)\/\//, '')
 
-  const photonHost = PHOTON_HOSTS[Math.floor(Math.random() * PHOTON_HOSTS.length)]
+  const photonHost =
+    PHOTON_HOSTS[Math.floor(Math.random() * PHOTON_HOSTS.length)]
 
   let photonQuery = ``
 
@@ -226,7 +238,6 @@ Image.phoneCdnUrl = function (url: string, options: Photon) {
     const { width, height } = options.lb
     photonQuery += `&lb=${width},${height}`
   }
-
 
   if (options.filter) {
     photonQuery += `&filter=${options.filter}`

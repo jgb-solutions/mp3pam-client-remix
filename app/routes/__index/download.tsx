@@ -3,7 +3,7 @@ import { useParams } from '@remix-run/react'
 import Logo from '~/components/Logo'
 import Download from '~/components/Download'
 import GoogleAdsense from '~/components/GoogleAdsense'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 
 export default function DownloadPage() {
   const { hash, type } = useParams() as { hash: string; type: string }

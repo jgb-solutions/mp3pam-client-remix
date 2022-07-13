@@ -1,27 +1,23 @@
-import React from 'react'
+import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
+import { withStyles } from '@mui/styles'
+import { useSelector } from 'react-redux'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 
-import colors from '../utils/colors'
-import { useSelector } from 'react-redux'
-import AppStateInterface from '../interfaces/AppStateInterface'
-import PlaylistInterface, {
-  PlaylistTrackInterface,
-} from '../interfaces/PlaylistInterface'
+import theme from '~/mui/theme'
 import PlayPause from './PlayPause'
-import { makeSoundFromTrack } from '../utils/helpers'
-import type ListInterface from '~/interfaces/ListInterface'
+import AppRoutes from '~/app-routes'
+import colors from '../utils/colors'
 import { Link } from '@remix-run/react'
 import type { BoxStyles } from '~/interfaces/types'
-import theme from '~/mui/theme'
-import { withStyles } from '@mui/styles'
-import AppRoutes from '~/app-routes'
-import { Box } from '@mui/material'
-import Heart from './Heart'
-import More from './More'
+import { makeSoundFromTrack } from '../utils/helpers'
+import type AppStateInterface from '../interfaces/AppStateInterface'
+import type PlaylistInterface from '../interfaces/PlaylistInterface'
+import type { PlaylistTrackInterface } from '../interfaces/PlaylistInterface'
+import type ListInterface from '~/interfaces/ListInterface'
 
 const styles: BoxStyles = {
   table: {
@@ -89,11 +85,11 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
               }}
             >
               <StyledTableCell style={{ width: '4%' }}>
-                {track.number}
+                {index + 1}
               </StyledTableCell>
               <StyledTableCell style={{ width: '10%', minWidth: '60px' }}>
                 <PlayPause sound={makeSoundFromTrack(track)} list={list} />
-                <Heart />
+                {/* <Heart /> */}
               </StyledTableCell>
               <StyledTableCell style={{ width: '90%', color }}>
                 <Box

@@ -22,7 +22,7 @@ import { IMG_BUCKET } from '~/utils/constants.server'
 import { getFile } from '~/utils/helpers'
 import colors from '~/utils/colors'
 import type { BoxStyles } from '~/interfaces/types'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 
 export interface FormData {
   title: string

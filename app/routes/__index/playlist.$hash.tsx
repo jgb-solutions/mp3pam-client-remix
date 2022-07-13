@@ -5,6 +5,11 @@ import {
   WhatsappShareButton,
   EmailShareButton,
 } from 'react-share'
+import type {
+  LoaderFunction,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import { json } from '@remix-run/node'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -47,12 +52,12 @@ import Image from '~/components/Image'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import type { BoxStyles } from '~/interfaces/types'
-import type { LoaderFunction } from '@remix-run/node'
 import { apiClient } from '~/graphql/requests.server'
 import type ListInterface from '~/interfaces/ListInterface'
 import type { PlaylistDetailQuery } from '~/graphql/generated-types'
 import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
 import Heart from '~/components/Heart'
+import { DOMAIN } from '~/utils/constants.server'
 
 const styles: BoxStyles = {
   imageContainer: {
@@ -107,6 +112,34 @@ const styles: BoxStyles = {
   ctaButtons: {
     marginTop: '10px',
   },
+}
+
+export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
+  if (!data?.playlist) {
+    return {
+      title: 'Track not found',
+    }
+  }
+
+  const { playlist } = data as PlaylistDetailQuery
+
+  const title = `${playlist?.title} by ${playlist?.user.name}`
+  const url = `${DOMAIN}/playlist/${playlist?.hash}`
+  const description = `Listen to ${playlist?.title} by ${playlist?.user.name} on ${APP_NAME}`
+  const type = SEO_PLAYLIST_TYPE
+  const image = playlist?.cover_url
+
+  return {
+    title,
+    'og:title': title,
+    'og:url': url,
+    'og:description': description,
+    'og:type': type,
+    'og:image': image,
+    'twitter:title': title,
+    'twitter:description': description,
+    'twitter:image': image,
+  }
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -357,14 +390,6 @@ const PlaylistDetailPage = () => {
           browse={AppRoutes.browse.playlists}
         />
       ) : null}
-      {/* handling SEO */}
-      {/* <SEO
-        title={`${playlist.title} (playlist) by ${playlist.user.name}`}
-        url={`${DOMAIN}/playlist/${playlist.hash}`}
-        description={`Listen to ${playlist.title} by ${playlist.user.name} on ${APP_NAME}`}
-        type={SEO_PLAYLIST_TYPE}
-        image={playlist.cover_url}
-      /> */}
     </Box>
   ) : (
     <>

@@ -6,7 +6,7 @@ import type {
 import { useFetcher, Link, Outlet } from '@remix-run/react'
 import HeaderTitle from '~/components/HeaderTitle'
 import Avatar from '@mui/material/Avatar'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 
 import colors from '~/utils/colors'
 import Button from '@mui/material/Button'

@@ -29,7 +29,7 @@ import {
 } from '~/utils/constants'
 
 import Grid from '@mui/material/Grid'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import { BoxStyles } from '~/interfaces/types'
 import colors from '~/utils/colors'
 

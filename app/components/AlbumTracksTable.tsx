@@ -17,7 +17,7 @@ import { withStyles } from '@mui/styles'
 import PlayPause from './PlayPause'
 import AppRoutes from '~/app-routes'
 import { Link } from '@remix-run/react'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 
 const styles: BoxStyles = {
   table: {
