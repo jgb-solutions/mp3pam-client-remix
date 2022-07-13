@@ -183,9 +183,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function App() {
-  const { ENV, flashError } = useLoaderData<LoaderData>()
-  const matches = useMatches()
-
   return (
     <Document>
       <Provider store={store}>
@@ -236,6 +233,7 @@ export function CatchBoundary() {
   const caught = useCatch()
 
   let message
+
   switch (caught.status) {
     case 401:
       message = (
@@ -286,6 +284,9 @@ export function CatchBoundary() {
           </Link>
           .
         </Typography>
+
+        {message}
+
         <FourOrFour />
       </Box>
     </Document>

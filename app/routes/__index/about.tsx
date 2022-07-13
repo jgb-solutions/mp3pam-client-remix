@@ -1,20 +1,20 @@
+import type {
+  MetaFunction,
+  HeadersFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import type { FC } from 'react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { Link } from '@remix-run/react'
-import type {
-  HeadersFunction,
-  HtmlMetaDescriptor,
-  MetaFunction,
-} from '@remix-run/node'
-import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 import TelegramIcon from '@mui/icons-material/Telegram'
+import FacebookIcon from '@mui/icons-material/Facebook'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 
-import Logo from '~/components/Logo'
 import colors from '~/utils/colors'
+import Logo from '~/components/Logo'
 import LogoJGB from '~/components/LogoJGB'
 
 export const headers: HeadersFunction = () => {
@@ -102,7 +102,7 @@ const AboutPage: FC = () => {
       </Box>
 
       <Box component="p">
-        <small>Version 2.0.0</small>
+        <small>Version 3.0.0</small>
       </Box>
 
       <Box component="p">&copy; 2022</Box>

@@ -237,12 +237,17 @@ class ApiClient {
     )
   }
 
-  fetchArtists() {
+  fetchArtists({
+    page = 1,
+    first = FETCH_ARTISTS_NUMBER,
+    orderBy = [{ column: 'created_at', order: SortOrder.Desc }],
+  }: ArtistsDataQueryVariables) {
     return client.request<ArtistsDataQuery, ArtistsDataQueryVariables>(
       fetchArtistsDocument,
       {
-        first: FETCH_ARTISTS_NUMBER,
-        orderBy: [{ column: 'created_at', order: SortOrder.Desc }],
+        first,
+        orderBy,
+        page,
       }
     )
   }

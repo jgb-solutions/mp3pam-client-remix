@@ -14,7 +14,9 @@ import type { FC } from 'react'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
 
 const styles: BoxStyles = {
-  imgContainer: {},
+  imgContainer: {
+    with: '175px',
+  },
   transparentBackground: {
     opacity: 0,
     position: 'absolute',
@@ -34,26 +36,26 @@ const styles: BoxStyles = {
     fontSize: 75,
     color: colors.white,
     '&:hover': {
-      fontSize: 80,
+      fontSize: '80px',
       opacity: 1,
     },
   },
   title: {
     margin: 0,
-    fontSize: 14,
+    fontSize: '14px',
     color: colors.white,
     sm: {
-      fontSize: 12,
+      fontSize: '12px',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
     },
   },
   details: {
-    fontSize: 13,
+    fontSize: '13px',
     color: '#9d9d9d',
     sm: {
-      fontSize: 11,
+      fontSize: '11px',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
@@ -71,16 +73,16 @@ type Props = {
   sx?: BoxProps['sx']
 }
 
-const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
-  const { listId, isPlaying } = useSelector(
+const TrackThumbnail: FC<Props> = ({ track, sx }: Props) => {
+  const { listHash, isPlaying } = useSelector(
     ({ player }: AppStateInterface) => ({
-      listId: player?.list?.id,
+      listHash: player?.list?.hash,
       isPlaying: player.isPlaying,
     })
   )
 
   return (
-    <Box {...props}>
+    <Box sx={sx}>
       <Box sx={{ position: 'relative' }}>
         <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)}>
           <Box
@@ -89,20 +91,20 @@ const TrackThumbnail: FC<Props> = ({ track, ...props }: Props) => {
             src={Image.phoneCdnUrl(track.poster_url, {
               ulb: true,
               lb: {
-                width: 200,
-                height: 200,
+                width: 175,
+                height: 175,
               },
             })}
           />
 
           <Box sx={styles.transparentBackground}>
             <IconButton>
-              {/* {(isPlaying && listId === track.hash) && ( */}
-              {/* <PauseCircleOutline sx={styles.icon} /> */}
-              {/* )} */}
-              {/* {(!isPlaying || (isPlaying && listId !== track.hash)) && ( */}
-              <PlayCircleOutline sx={styles.icon} />
-              {/* )} */}
+              {isPlaying && listHash === track.hash && (
+                <PauseCircleOutline sx={styles.icon} />
+              )}
+              {(!isPlaying || (isPlaying && listHash !== track.hash)) && (
+                <PlayCircleOutline sx={styles.icon} />
+              )}
             </IconButton>
           </Box>
         </Link>

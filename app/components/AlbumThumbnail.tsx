@@ -1,4 +1,3 @@
-import type { FC } from 'react'
 import Box from '@mui/material/Box'
 import { Link } from '@remix-run/react'
 import { useSelector } from 'react-redux'
@@ -10,7 +9,6 @@ import Image from './Image'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import type { BoxStyles } from '~/interfaces/types'
-import type { Album } from '~/graphql/generated-types'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
 
 const styles: BoxStyles = {
@@ -83,12 +81,12 @@ const styles: BoxStyles = {
   },
 }
 
-type Props = {
-  album: Pick<Album, 'hash' | 'artist' | 'cover_url' | 'title'>
+type Props<T> = {
+  album: T
   sx?: BoxProps['sx']
 }
 
-const AlbumThumbnail: FC<Props> = ({ album, sx }) => {
+function AlbumThumbnail<T>({ album, sx }: Props<T>) {
   const { isPlaying, list: playyingList } = useSelector(
     ({ player }: AppStateInterface) => player
   )

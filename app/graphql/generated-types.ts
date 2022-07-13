@@ -410,7 +410,7 @@ export type Query = {
   me: User;
   playlist?: Maybe<Playlist>;
   playlists?: Maybe<PlaylistPaginator>;
-  randomAlbums: Array<Album>;
+  randomAlbums: Array<Maybe<Album>>;
   randomArtists: Array<Artist>;
   randomPlaylists: Array<Playlist>;
   relatedTracks: Array<Maybe<Track>>;
@@ -994,7 +994,7 @@ export type AlbumDetailQueryVariables = Exact<{
 }>;
 
 
-export type AlbumDetailQuery = { __typename?: 'Query', album?: { __typename?: 'Album', id: string, title: string, hash: string, cover_url: string, detail?: string | null, release_year: number, tracks: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, audio_url: string, number?: number | null, play_count: number, download_count: number }>, artist: { __typename?: 'Artist', hash: string, stage_name: string } } | null, randomAlbums: Array<{ __typename?: 'Album', hash: string, title: string, cover_url: string, artist: { __typename?: 'Artist', hash: string, stage_name: string } }> };
+export type AlbumDetailQuery = { __typename?: 'Query', album?: { __typename?: 'Album', id: string, title: string, hash: string, cover_url: string, detail?: string | null, release_year: number, tracks: Array<{ __typename?: 'Track', hash: string, title: string, poster_url: string, audio_url: string, number?: number | null, play_count: number, download_count: number }>, artist: { __typename?: 'Artist', hash: string, stage_name: string } } | null, randomAlbums: Array<{ __typename?: 'Album', hash: string, title: string, cover_url: string, artist: { __typename?: 'Artist', hash: string, stage_name: string } } | null> };
 
 export type PlaylistDetailQueryVariables = Exact<{
   hash: Scalars['String'];

@@ -1,13 +1,30 @@
+import type {
+  MetaFunction,
+  LoaderFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import Grid from '@mui/material/Grid'
+import { json } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
+import { apiClient } from '~/graphql/requests.server'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
 import HeaderTitle from '~/components/HeaderTitle'
-
-import { json, LoaderFunction } from '@remix-run/node'
-import { apiClient } from '~/graphql/requests.server'
-import { useLoaderData } from '@remix-run/react'
-import type { AllGenresQuery } from '~/graphql/generated-types'
 import GenreThumbnail from '~/components/GenreThumbnail'
+import type { AllGenresQuery } from '~/graphql/generated-types'
+
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = 'Browse All The Genres'
+  const description = `Browse all the genres on on this website.`
+
+  return {
+    title,
+    'og:title': title,
+    'og:description': description,
+    'twitter:title': title,
+    'twitter:description': description,
+  }
+}
 
 export const loader: LoaderFunction = async () => {
   const data = await apiClient.fetchGenres()
@@ -21,7 +38,6 @@ export default function BrowsePage() {
   return (
     <>
       <HeaderTitle icon={<FolderOpenIcon />} text="Browse Genres" />
-      {/* <SEO title={`Browse Genres`} /> */}
 
       <Grid container spacing={2}>
         {genres.map((genre) => (

@@ -2,13 +2,27 @@ import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import AlbumIcon from '@mui/icons-material/Album'
-import InfiniteScroll from 'react-infinite-scroller'
 import type { LoaderFunction } from '@remix-run/node'
+import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
 
-import Spinner from '~/components/Spinner'
 import HeaderTitle from '~/components/HeaderTitle'
 import { apiClient } from '~/graphql/requests.server'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
+import InfiniteLoader from '~/components/InfiniteLoader'
+import type { AlbumsDataQuery } from '~/graphql/generated-types'
+
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = 'Browse All The Albums'
+  const description = `Browse all the albums on on this website.`
+
+  return {
+    title,
+    'og:title': title,
+    'og:description': description,
+    'twitter:title': title,
+    'twitter:description': description,
+  }
+}
 
 export const loader: LoaderFunction = async () => {
   const data = await apiClient.fetchAlbums()
@@ -16,31 +30,35 @@ export const loader: LoaderFunction = async () => {
   return json(data)
 }
 
+type AlbumType = NonNullable<AlbumsDataQuery['albums']>['data'][0]
+
 export default function BrowseAlbumsPage() {
-  const { albums } = useLoaderData()
+  const { albums } = useLoaderData<AlbumsDataQuery>()
 
   return (
     <>
-      {albums.data.length ? (
+      {albums?.data.length ? (
         <>
           <HeaderTitle icon={<AlbumIcon />} text="Browse Albums" />
-          {/* <SEO title={`Browse Albums`} /> */}
 
-          <InfiniteScroll
-            pageStart={1}
-            loadMore={() => {}}
-            hasMore={false}
-            loader={<Spinner key={1} />}
-            useWindow={false}
+          <InfiniteLoader<AlbumType>
+            path="/albums"
+            resource={'albums'}
+            initialData={albums?.data}
+            defaultPage={albums?.paginatorInfo.currentPage || 1}
+            shouldLoadMore={!!albums?.paginatorInfo.hasMorePages}
+            scrollParentID={'main-content'}
           >
-            <Grid container spacing={2}>
-              {albums.data.map((album) => (
-                <Grid item xs={4} md={3} sm={4} key={album.hash}>
-                  <AlbumThumbnail album={album} />
-                </Grid>
-              ))}
-            </Grid>
-          </InfiniteScroll>
+            {(infiniteData) => (
+              <Grid container spacing={2}>
+                {infiniteData.map((album) => (
+                  <Grid item xs={4} md={3} sm={4} key={album.hash}>
+                    <AlbumThumbnail album={album} />
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+          </InfiniteLoader>
         </>
       ) : (
         <HeaderTitle icon={<AlbumIcon />} text="No albums yet" />
