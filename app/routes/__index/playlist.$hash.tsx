@@ -12,13 +12,14 @@ import type {
 } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import { darken, Hidden } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import ShareIcon from '@mui/icons-material/Share'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useLoaderData } from '@remix-run/react'
+import { Link, useCatch, useLoaderData } from '@remix-run/react'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import TelegramIcon from '@mui/icons-material/Telegram'
@@ -421,6 +422,72 @@ const PlaylistDetailPage = () => {
       </Box>
       <FourOrFour />
     </>
+  )
+}
+
+export function CatchBoundary() {
+  const caught = useCatch()
+
+  let message
+  switch (caught.status) {
+    case 401:
+      message =
+        'Oops! Looks like you tried to visit a page that you do not have access to.'
+      break
+    case 404:
+      message = 'OOPS! The Track was not found.'
+      break
+
+    default:
+      throw new Error(caught.data || caught.statusText)
+  }
+
+  return (
+    <Box>
+      <HeaderTitle icon={<FindReplaceIcon />} text={message} />
+      <h3>
+        Go to the{' '}
+        <Link
+          prefetch="intent"
+          style={{ color: 'white' }}
+          to={AppRoutes.pages.home}
+        >
+          home page
+        </Link>{' '}
+        or{' '}
+        <Link
+          style={{
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            color: colors.white,
+          }}
+          to={AppRoutes.browse.tracks}
+        >
+          browse other tracks.
+        </Link>
+        .
+      </h3>
+      <FourOrFour />
+    </Box>
+  )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.log(error)
+
+  return (
+    <Box sx={{}}>
+      <Box>
+        <Typography variant="h3" color={'red'} sx={{ mb: '1rem' }}>
+          Oop! Playlist Error here.
+        </Typography>
+        <Typography variant="h5" color={theme.palette.error.light}>
+          {/* {error.message} */}
+          We could not fetch this playlist data. Probably an error on our end.
+          Please don't hesitate to contact us if the error persists.
+        </Typography>
+      </Box>
+    </Box>
   )
 }
 

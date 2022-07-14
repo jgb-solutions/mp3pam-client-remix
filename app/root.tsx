@@ -221,7 +221,12 @@ export function ErrorBoundary({ error }: { error: Error }) {
             Oop! Global Error here.
           </Typography>
           <Typography variant="h5" color={theme.palette.error.light}>
-            {error.message}
+            {process.env.NODE_ENV === 'development'
+              ? error.message
+              : `
+              Sorry, something went wrong. It's probably our fault.
+              Please contact us if the issue persists.
+            `}
           </Typography>
         </Box>
       </Box>
