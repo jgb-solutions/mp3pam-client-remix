@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { useNavigate } from '@remix-run/react'
+import { Link } from '@remix-run/react'
 import type { BoxProps } from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
@@ -8,7 +8,6 @@ import Image from './Image'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import type { BoxStyles } from '~/interfaces/types'
-import type { PlaylistThumbnailData } from './PlaylistScrollingList'
 
 const styles: BoxStyles = {
   imgContainer: {
@@ -79,22 +78,15 @@ const styles: BoxStyles = {
   },
 }
 
-type Props = {
-  playlist: PlaylistThumbnailData
+type Props<T> = {
+  playlist: T
   className?: string
   style?: object
   sx?: BoxProps['sx']
 }
 
-export default function PlaylistThumbnail(props: Props) {
-  const navigate = useNavigate()
-
+export default function PlaylistThumbnail<T>(props: Props<T>) {
   const { playlist } = props
-
-  const goToPlaylistPage = () => {
-    const route = AppRoutes.playlist.detailPage(playlist.hash)
-    navigate(route, { state: { hash: playlist.hash } })
-  }
 
   return (
     <Box sx={props.sx} style={props.style}>
@@ -110,7 +102,12 @@ export default function PlaylistThumbnail(props: Props) {
           })})`,
         }}
       >
-        <Box sx={styles.transparentBackground} onClick={goToPlaylistPage}>
+        <Box
+          sx={styles.transparentBackground}
+          component={Link}
+          prefetch="intent"
+          to={AppRoutes.playlist.detailPage(playlist.hash)}
+        >
           <IconButton>
             <PlayCircleOutlineIcon sx={styles.icon} />
           </IconButton>

@@ -107,6 +107,7 @@ function AlbumThumbnail<T>({ album, sx }: Props<T>) {
       >
         <Box
           component={Link}
+          prefetch="intent"
           to={AppRoutes.album.detailPage(album.hash)}
           sx={styles.transparentBackground}
         >
