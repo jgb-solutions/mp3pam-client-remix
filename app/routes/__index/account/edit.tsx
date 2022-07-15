@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography'
 
 import HeaderTitle from '~/components/HeaderTitle'
 import { useForm } from 'react-hook-form'
-import { accountStyles } from '../account'
+import { accountStyles } from '.'
 import UploadButton from '~/components/UploadButton'
 import { IMG_BUCKET } from '~/utils/constants.server'
 import useFileUpload from '~/hooks/useFileUpload'
