@@ -143,3 +143,11 @@ export const withToken = (
     },
     options
   )
+
+export const shouldCache = async (request: Request): Promise<HeadersInit> => {
+  const session = await getCookieSession(request)
+
+  const userSessionData = session.get(USER_SESSION_ID)
+
+  return { ...(!userSessionData && { Vary: '' }) }
+}

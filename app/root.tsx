@@ -38,6 +38,7 @@ import {
   USER_SESSION_ID,
   getCookieSession,
   updateCookieSessionHeader,
+  shouldCache,
 } from './auth/sessions.server'
 import type { LoggedInUserData } from './interfaces/types'
 import HeaderTitle from './components/HeaderTitle'
@@ -177,7 +178,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     },
     {
       headers: {
-        // ...(await updateCookieSessionHeader(session)),
+        ...(await updateCookieSessionHeader(session)),
+        ...(await shouldCache(request)),
       },
     }
   )

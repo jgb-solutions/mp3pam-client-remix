@@ -61,6 +61,7 @@ import {
   playNextAction,
   resumeListAction,
 } from '~/redux/actions/playerActions'
+import { shouldCache } from '~/auth/sessions.server'
 
 const styles: BoxStyles = {
   row: {
@@ -160,7 +161,7 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
   }
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
   const { hash } = params as { hash: string }
 
   const data = await apiClient.fetchTrackDetail(hash)
@@ -171,8 +172,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   return json(data, {
     headers: {
-      'Cache-Control': 's-maxage=1, stale-while-revalidate=3600',
-      Vary: 'Cookie',
+      ...(await shouldCache(request)),
     },
   })
 }
