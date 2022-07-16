@@ -1,9 +1,5 @@
 import { useCallback, useState } from 'react'
-import type {
-  MetaFunction,
-  HeadersFunction,
-  HtmlMetaDescriptor,
-} from '@remix-run/node'
+import type { MetaFunction, HtmlMetaDescriptor } from '@remix-run/node'
 import {
   EmailShareButton,
   TwitterShareButton,
@@ -170,11 +166,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     throw new Response('Track not found', { status: 404 })
   }
 
-  return json(data, {
-    headers: {
-      ...(await shouldCache(request)),
-    },
-  })
+  return json(data)
 }
 
 export default function TrackDetailPage() {
