@@ -116,10 +116,11 @@ const Document = withEmotionCache(
   }
 )
 
-export const headers: HeadersFunction = () => {
+export const headers: HeadersFunction = ({ loaderHeaders }) => {
   return {
-    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3595',
-    Vary: 'Authorization, Cookie',
+    'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=86400',
+    Vary: 'Cookie',
+    ...loaderHeaders,
   }
 }
 
@@ -176,7 +177,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     },
     {
       headers: {
-        ...(await updateCookieSessionHeader(session)),
+        // ...(await updateCookieSessionHeader(session)),
       },
     }
   )

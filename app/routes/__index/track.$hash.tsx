@@ -132,13 +132,6 @@ const styles: BoxStyles = {
   },
 }
 
-export const headers: HeadersFunction = () => {
-  return {
-    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3595',
-    Vary: 'Authorization, Cookie',
-  }
-}
-
 export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
   if (!data?.track) {
     return {
@@ -176,7 +169,12 @@ export const loader: LoaderFunction = async ({ params }) => {
     throw new Response('Track not found', { status: 404 })
   }
 
-  return json(data)
+  return json(data, {
+    headers: {
+      'Cache-Control': 's-maxage=1, stale-while-revalidate=3600',
+      Vary: 'Cookie',
+    },
+  })
 }
 
 export default function TrackDetailPage() {

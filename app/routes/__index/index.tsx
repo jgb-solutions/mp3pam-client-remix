@@ -2,8 +2,10 @@ import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import HomeIcon from '@mui/icons-material/Home'
 import { useLoaderData } from '@remix-run/react'
+import Typography from '@mui/material/Typography'
 import type { LoaderFunction } from '@remix-run/node'
 
+import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
 import HeaderTitle from '~/components/HeaderTitle'
 import { apiClient } from '~/graphql/requests.server'
@@ -12,9 +14,6 @@ import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 import { TrackScrollingList } from '~/components/TrackScrollingList'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
 import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
-import MainLayout from '~/components/layouts/Main'
-import { Typography } from '@mui/material'
-import theme from '~/mui/theme'
 
 export const loader: LoaderFunction = async () => {
   const data = await apiClient.fetchHomepage()
