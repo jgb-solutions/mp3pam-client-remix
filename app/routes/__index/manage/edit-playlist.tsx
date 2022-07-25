@@ -182,7 +182,7 @@ export const AddTrackToPlaylist = ({
   trackHash,
   onRequestClose,
 }: {
-  trackHash: string
+  trackHash: number
   onRequestClose: () => void
 }) => {
   const [openCreatePlaylistPopup, setOpenCreatePlaylistPopup] = useState(false)

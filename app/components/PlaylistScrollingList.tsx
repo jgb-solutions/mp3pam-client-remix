@@ -5,9 +5,8 @@ import { Link } from '@remix-run/react'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 
-import type { BoxStyles } from '~/interfaces/types'
+import type { BoxStyles, HomePage } from '~/interfaces/types'
 import PlaylistThumbnail from './PlaylistThumbnail'
-import type { HomepageQuery } from '~/graphql/generated-types'
 
 const styles: BoxStyles = {
   container: {
@@ -43,10 +42,8 @@ const styles: BoxStyles = {
   },
 }
 
-type Playlists = NonNullable<HomepageQuery['latestPlaylists']>['data']
-
 type Props = {
-  playlists: Playlists
+  playlists: HomePage['playlists']
   category: string
   browse: string
 }

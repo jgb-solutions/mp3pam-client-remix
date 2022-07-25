@@ -8,8 +8,8 @@ import { PauseCircleOutline, PlayCircleOutline } from '@mui/icons-material'
 import Image from './Image'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type { BoxStyles } from '~/interfaces/types'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
+import type { AlbumThumbnailData, BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   imgContainer: {
@@ -81,12 +81,12 @@ const styles: BoxStyles = {
   },
 }
 
-type Props<T> = {
-  album: T
+type Props = {
+  album: AlbumThumbnailData
   sx?: BoxProps['sx']
 }
 
-function AlbumThumbnail<T>({ album, sx }: Props<T>) {
+function AlbumThumbnail({ album, sx }: Props) {
   const { isPlaying, list: playyingList } = useSelector(
     ({ player }: AppStateInterface) => player
   )
@@ -96,7 +96,7 @@ function AlbumThumbnail<T>({ album, sx }: Props<T>) {
       <Box
         sx={styles.imgContainer}
         style={{
-          backgroundImage: `url(${Image.phoneCdnUrl(album.cover_url, {
+          backgroundImage: `url(${Image.phoneCdnUrl(album.coverUrl, {
             ulb: true,
             lb: {
               width: 250,
@@ -132,7 +132,7 @@ function AlbumThumbnail<T>({ album, sx }: Props<T>) {
           to={AppRoutes.artist.detailPage(album.artist.hash)}
         >
           <Box component="span" sx={styles.link}>
-            {album.artist.stage_name}
+            {album.artist.stageName}
           </Box>
         </Link>
       </Box>

@@ -1,15 +1,15 @@
 import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
+import type { LoaderArgs } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import type { LoaderFunction } from '@remix-run/node'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import type { MetaFunction, HtmlMetaDescriptor } from '@remix-run/node'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import { apiClient } from '~/graphql/requests.server'
 import InfiniteLoader from '~/components/InfiniteLoader'
 import PlaylistThumbnail from '~/components/PlaylistThumbnail'
-import type { PlaylistsDataQuery } from '~/graphql/generated-types'
+import { fetchPlaylists } from '~/database/requests.server'
+import type { PlaylistThumbnailData } from '~/interfaces/types'
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'Browse All The Playlists'
@@ -24,27 +24,28 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-export const loader: LoaderFunction = async () => {
-  const data = await apiClient.fetchPlaylists()
+export const loader = async ({ request }: LoaderArgs) => {
+  const url = new URL(request.url)
+  const page = Number(url.searchParams.get('page')) || 1
 
-  return json(data)
+  const playlists = await fetchPlaylists({ page })
+
+  return json({ playlists })
 }
 
-type PlaylistType = NonNullable<PlaylistsDataQuery['playlists']>['data'][0]
-
 export default function BrowsePlaylistsPage() {
-  const { playlists } = useLoaderData<PlaylistsDataQuery>()
+  const { playlists } = useLoaderData<typeof loader>()
 
   return (
     <>
       <HeaderTitle icon={<PersonPinCircleIcon />} text="Browse Playlists" />
 
-      <InfiniteLoader<PlaylistType>
+      <InfiniteLoader<PlaylistThumbnailData>
         path="/playlists"
         resource={'playlists'}
-        initialData={playlists?.data}
-        defaultPage={playlists?.paginatorInfo.currentPage || 1}
-        shouldLoadMore={!!playlists?.paginatorInfo.hasMorePages}
+        initialData={playlists.data}
+        defaultPage={playlists.paginatorInfo.currentPage || 1}
+        shouldLoadMore={!!playlists.paginatorInfo.hasMorePages}
         scrollParentID={'main-content'}
       >
         {(infiniteData) => (

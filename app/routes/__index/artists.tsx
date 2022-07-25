@@ -1,7 +1,6 @@
 import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { apiClient } from '~/graphql/requests.server'
 import type { LoaderFunction } from '@remix-run/node'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'

@@ -67,7 +67,7 @@ export default function QueueTable() {
                 ? colors.primary
                 : undefined
             const soundPage = AppRoutes.track.detailPage(sound.hash)
-            const authorPage = AppRoutes.artist.detailPage(sound.author_hash)
+            const authorPage = AppRoutes.artist.detailPage(sound.authorHash)
 
             return (
               <TableRow
@@ -84,7 +84,7 @@ export default function QueueTable() {
                 <Link prefetch="intent" to={soundPage} sx={styles.link} style={{ color }}>{sound.title}</Link>
               </StyledTableCell>
               <StyledTableCell style={{ width: '35%' }}>
-                <Link prefetch="intent" to={authorPage} sx={styles.link} style={{ color }}>{sound.author_name}</Link>
+                <Link prefetch="intent" to={authorPage} sx={styles.link} style={{ color }}>{sound.authorName}</Link>
               </StyledTableCell>
               <StyledTableCell style={{ width: '20%', color }}>{sound.type.toUpperCase()}</StyledTableCell> */}
 

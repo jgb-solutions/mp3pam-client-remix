@@ -3,60 +3,57 @@ import { json } from '@remix-run/node'
 import HomeIcon from '@mui/icons-material/Home'
 import { useLoaderData } from '@remix-run/react'
 import Typography from '@mui/material/Typography'
-import type { LoaderFunction } from '@remix-run/node'
 
 import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
 import HeaderTitle from '~/components/HeaderTitle'
-import { apiClient } from '~/graphql/requests.server'
-import type { HomepageQuery } from '~/graphql/generated-types'
+import { fetchHomepage } from '~/database/requests.server'
 import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 import { TrackScrollingList } from '~/components/TrackScrollingList'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
 import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
 
-export const loader: LoaderFunction = async () => {
-  const data = await apiClient.fetchHomepage()
+export const loader = async () => {
+  const home = await fetchHomepage()
 
-  return json(data)
+  return json(home)
 }
 
 export default function Index() {
-  const { latestTracks, latestPlaylists, latestArtists, latestAlbums } =
-    useLoaderData<HomepageQuery>()
+  const { tracks, artists, playlists, albums } = useLoaderData<typeof loader>()
 
   return (
     <Box>
       <HeaderTitle icon={<HomeIcon />} text="Home" />
 
-      {latestTracks?.data.length ? (
+      {tracks.length > 0 ? (
         <TrackScrollingList
           category="New Tracks"
-          tracks={latestTracks.data}
+          tracks={tracks}
           browse={AppRoutes.browse.tracks}
         />
       ) : null}
 
-      {latestArtists?.data.length ? (
+      {artists.length > 0 ? (
         <ArtistScrollingList
           category="New Artists"
-          artists={latestArtists.data}
+          artists={artists}
           browse={AppRoutes.browse.artists}
         />
       ) : null}
 
-      {latestAlbums?.data.length ? (
+      {albums.length > 0 ? (
         <AlbumScrollingList
           category="New Albums"
-          albums={latestAlbums.data}
+          albums={albums}
           browse={AppRoutes.browse.albums}
         />
       ) : null}
 
-      {latestPlaylists?.data.length ? (
+      {playlists.length > 0 ? (
         <PlaylistScrollingList
           category="New Playlists"
-          playlists={latestPlaylists.data}
+          playlists={playlists}
           browse={AppRoutes.browse.playlists}
         />
       ) : null}

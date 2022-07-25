@@ -7,7 +7,7 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 import Image from './Image'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type { BoxStyles } from '~/interfaces/types'
+import type { BoxStyles, PlaylistThumbnailData } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   imgContainer: {
@@ -78,14 +78,14 @@ const styles: BoxStyles = {
   },
 }
 
-type Props<T> = {
-  playlist: T
+type Props = {
+  playlist: PlaylistThumbnailData
   className?: string
   style?: object
   sx?: BoxProps['sx']
 }
 
-export default function PlaylistThumbnail<T>(props: Props<T>) {
+export default function PlaylistThumbnail<T>(props: Props) {
   const { playlist } = props
 
   return (
@@ -93,7 +93,7 @@ export default function PlaylistThumbnail<T>(props: Props<T>) {
       <Box
         sx={styles.imgContainer}
         style={{
-          backgroundImage: `url(${Image.phoneCdnUrl(playlist.cover_url, {
+          backgroundImage: `url(${Image.phoneCdnUrl(playlist.coverUrl, {
             ulb: true,
             lb: {
               width: 250,

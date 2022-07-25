@@ -275,8 +275,8 @@ export const fetchTrackDetailDocument = gql`
       featured
       detail
       lyrics
-      play_count
-      download_count
+      playCount
+      downloadCount
       audio_file_size
       genre {
         name
@@ -351,8 +351,8 @@ export const fetchAlbumDocument = gql`
         poster_url
         audio_url
         number
-        play_count
-        download_count
+        playCount
+        downloadCount
       }
       artist {
         hash
@@ -385,8 +385,8 @@ export const fetchPlaylistDocument = gql`
         poster_url
         audio_url
         number
-        play_count
-        download_count
+        playCount
+        downloadCount
         artist {
           hash
           stage_name

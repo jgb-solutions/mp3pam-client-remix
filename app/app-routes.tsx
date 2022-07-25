@@ -12,22 +12,22 @@ const AppRoutes = {
   album: {
     show: `/album/:hash`,
     edit: `/manage/album/:hash`,
-    detailPage: (hash: string) => `/album/${hash}`,
-    editPage: (hash: string) => `/manage/album/${hash}`,
+    detailPage: (hash: number) => `/album/${hash}`,
+    editPage: (hash: number) => `/manage/album/${hash}`,
   },
   artist: {
     show: `/artist/:hash`,
-    detailPage: (hash: string) => `/artist/${hash}`,
-    editPage: (hash: string) => `/manage/artists/${hash}`,
+    detailPage: (hash: number) => `/artist/${hash}`,
+    editPage: (hash: number) => `/manage/artists/${hash}`,
   },
   track: {
     show: `/track/:hash`,
-    detailPage: (hash: string) => `/track/${hash}`,
-    editPage: (hash: string) => `/manage/tracks/${hash}`,
+    detailPage: (hash: number) => `/track/${hash}`,
+    editPage: (hash: number) => `/manage/tracks/${hash}`,
   },
   episode: {
     show: `/episode/:hash`,
-    detailPage: (hash: string) => `/episode/${hash}`,
+    detailPage: (hash: number) => `/episode/${hash}`,
   },
   genre: {
     show: `/browse/:slug/tracks`,
@@ -36,16 +36,16 @@ const AppRoutes = {
   playlist: {
     show: `/playlist/:hash`,
     edit: `/manage/playlists/:hash`,
-    detailPage: (hash: string) => `/playlist/${hash}`,
+    detailPage: (hash: number) => `/playlist/${hash}`,
     goToAuthorDetail: (authorID: string) => `/author/${authorID}`,
-    editPage: (hash: string) => `/manage/playlists/${hash}`,
+    editPage: (hash: number) => `/manage/playlists/${hash}`,
   },
   download: {
     audio: `/download/:type/:hash`,
-    trackPage: (hash: string) => `/download/track/${hash}`,
+    trackPage: (hash: number) => `/download/track/${hash}`,
   },
   user: {
-    detailPage: (userHash: string) => `/user/${userHash}`,
+    detailPage: (userHash: number) => `/user/${userHash}`,
     account: `/account`,
     library: {
       tracks: `/your/tracks`,

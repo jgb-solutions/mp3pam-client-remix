@@ -8,8 +8,7 @@ import { PlayCircleOutline } from '@mui/icons-material'
 import Image from './Image'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type { BoxStyles } from '~/interfaces/types'
-import type { Artist } from '~/graphql/generated-types'
+import type { ArtistThumbnailData, BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   imgContainer: {
@@ -84,7 +83,7 @@ const styles: BoxStyles = {
 }
 
 type Props = {
-  artist: Pick<Artist, 'poster_url' | 'hash' | 'stage_name'>
+  artist: ArtistThumbnailData
   style?: CSSProperties
   sx?: BoxProps['sx']
 }
@@ -95,7 +94,7 @@ export default function ArtistThumbnail({ artist, style, sx }: Props) {
       <Box
         sx={styles.imgContainer}
         style={{
-          backgroundImage: `url(${Image.phoneCdnUrl(artist.poster_url, {
+          backgroundImage: `url(${Image.phoneCdnUrl(artist.posterUrl, {
             ulb: true,
             lb: {
               width: 250,
@@ -116,7 +115,7 @@ export default function ArtistThumbnail({ artist, style, sx }: Props) {
         </Box>
       </Box>
       <Typography variant="h3" sx={styles.title}>
-        {artist.stage_name}
+        {artist.stageName}
       </Typography>
     </Box>
   )

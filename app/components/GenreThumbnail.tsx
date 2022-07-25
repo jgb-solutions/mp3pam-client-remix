@@ -7,12 +7,7 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type { BoxStyles } from '~/interfaces/types'
-
-export interface GenreInterface {
-  name: string
-  slug: string
-}
+import type { BoxStyles, ThumbnailGenre } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   imgContainer: {
@@ -80,7 +75,7 @@ const styles: BoxStyles = {
 }
 
 type Props = {
-  genre: GenreInterface
+  genre: ThumbnailGenre
   className?: string
   style?: object
 }
@@ -94,6 +89,7 @@ const GenreThumbnail: FC<Props> = ({ genre, style }) => {
       >
         <Box
           component={Link}
+          prefetch="intent"
           sx={styles.transparentBackground}
           to={AppRoutes.genre.detailPage(genre.slug)}
         >
@@ -101,7 +97,7 @@ const GenreThumbnail: FC<Props> = ({ genre, style }) => {
             <PlayCircleOutlineIcon sx={styles.icon} />
           </IconButton>
           <Typography variant="h3" sx={styles.title}>
-            {genre.name}
+            {genre.name} ({genre._count.tracks})
           </Typography>
         </Box>
       </Box>

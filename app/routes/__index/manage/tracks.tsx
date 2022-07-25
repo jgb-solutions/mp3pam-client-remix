@@ -19,7 +19,6 @@ import Button from '@mui/material/Button'
 import type { ActionFunction } from '@remix-run/node'
 
 import colors from '~/utils/colors'
-import { apiClient } from '~/graphql/requests.server'
 import type { BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {

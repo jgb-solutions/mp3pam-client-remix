@@ -42,7 +42,6 @@ import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import TrackThumbnail from '~/components/TrackThumbnail'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
-import { apiClient } from '~/graphql/requests.server'
 import type { ArtistDetailQuery } from '~/graphql/generated-types'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
 import { DOMAIN } from '~/utils/constants.server'
@@ -132,7 +131,7 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
   const url = `${DOMAIN}/artist/${artist.hash}`
   const description = `Listen to ${artist.stage_name} on ${APP_NAME}`
   const type = SEO_ARTIST_TYPE
-  const image = artist.poster_url
+  const image = artist.posterUrl
 
   return {
     title,
@@ -230,11 +229,7 @@ export default function ArtistDetailPage() {
             <br />
             <Grid container spacing={2}>
               {artist.tracks.map(
-                (track: {
-                  title: string
-                  hash: string
-                  poster_url: string
-                }) => {
+                (track: { title: string; hash: string; posterUrl: string }) => {
                   const trackWithArtist = {
                     ...track,
                     artist: {
@@ -378,7 +373,7 @@ export default function ArtistDetailPage() {
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
           <Image
-            src={artist.poster_url}
+            src={artist.posterUrl}
             alt={artist.stage_name}
             sx={styles.image}
             photon={{

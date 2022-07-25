@@ -118,7 +118,6 @@ const Document = withEmotionCache(
 )
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
-  console.log('headers', loaderHeaders)
   return {
     'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=86400',
     Vary: 'Cookie, Authorization',

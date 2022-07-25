@@ -2,11 +2,42 @@ import type { ReactNode } from 'react'
 import Grid from '@mui/material/Grid'
 
 import Left from '../Left'
+import Header from '../Header'
 import Sidebar from '../Sidebar'
 import Content from '../Content'
-import Header from '../Header'
+import colors from '~/utils/colors'
+import type { BoxStyles } from '~/interfaces/types'
 
-import { mainLayoutStyles as styles } from '../../styles/mainLayoutStyles'
+export const styles: BoxStyles = {
+  col: {
+    height: '100vh',
+    overflowY: 'auto',
+  },
+  mainGrid: {
+    height: '100vh',
+    overflowY: 'auto',
+    backgroundColor: colors.contentGrey,
+    position: 'relative',
+  },
+  leftGrid: {
+    height: '100vh',
+    overflowY: 'auto',
+    paddingTop: '3px',
+    paddingLeft: '4px',
+    paddingRight: '4px',
+    backgroundColor: colors.black,
+    display: { xs: 'none', sm: 'block' },
+  },
+  rightGrid: {
+    height: '100vh',
+    overflowY: 'auto',
+    paddingTop: '3px',
+    paddingLeft: '4px',
+    paddingRight: '4px',
+    backgroundColor: colors.black,
+    display: { xs: 'none', sm: 'block' },
+  },
+}
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (

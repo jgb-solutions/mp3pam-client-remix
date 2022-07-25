@@ -85,7 +85,7 @@ export default function ListTable(props: Props) {
                   {sound.title}
                 </StyledTableCell>
                 <StyledTableCell style={{ width: '30%', color }}>
-                  {sound.author_name}
+                  {sound.authorName}
                 </StyledTableCell>
                 <StyledTableCell style={{ width: '20%', color }}>
                   {sound.title}

@@ -6,7 +6,6 @@ import type {
 } from '@remix-run/node'
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 
-import { apiClient } from '~/graphql/requests.server'
 import type { LoggedInUserData } from '~/interfaces/types'
 
 const { getSession, commitSession, destroySession } =

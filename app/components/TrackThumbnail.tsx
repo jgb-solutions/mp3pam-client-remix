@@ -1,17 +1,17 @@
-import { Link } from '@remix-run/react'
+import type { FC } from 'react'
 import Box from '@mui/material/Box'
-import type { BoxProps } from '@mui/material/Box'
-import type { BoxStyles } from '~/interfaces/types'
-import { PlayCircleOutline, PauseCircleOutline } from '@mui/icons-material'
-
+import { Link } from '@remix-run/react'
 import { useSelector } from 'react-redux'
+import type { BoxProps } from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import PlayCircleOutline from '@mui/icons-material/PlayCircleOutline'
+import PauseCircleOutline from '@mui/icons-material/PauseCircleOutline'
 
 import Image from './Image'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type { FC } from 'react'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
+import type { BoxStyles, TrackThumbnailData } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   imgContainer: {
@@ -69,7 +69,7 @@ const styles: BoxStyles = {
 }
 
 type Props = {
-  track: {}
+  track: TrackThumbnailData
   sx?: BoxProps['sx']
 }
 
@@ -88,7 +88,7 @@ const TrackThumbnail: FC<Props> = ({ track, sx }: Props) => {
           <Box
             component="img"
             sx={styles.imgContainer}
-            src={Image.phoneCdnUrl(track.poster_url, {
+            src={Image.phoneCdnUrl(track.posterUrl, {
               ulb: true,
               lb: {
                 width: 175,
@@ -118,7 +118,7 @@ const TrackThumbnail: FC<Props> = ({ track, sx }: Props) => {
       >
         <Box component="p" sx={styles.details}>
           <Box component="span" sx={styles.link}>
-            {track.artist.stage_name}
+            {track.artist.stageName}
           </Box>
         </Box>
       </Link>

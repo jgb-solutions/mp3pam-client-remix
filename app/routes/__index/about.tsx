@@ -45,9 +45,8 @@ const AboutPage: FC = () => {
       <Logo />
 
       <Box component="p">
-        MP3Pam is a free entertainment platform for sharing all kinds of audios.{' '}
-        <br />
-        Music, and even Ad. You name it.
+        MP3Pam is a free entertainment platform for sharing audios. <br />
+        Music is king here!
       </Box>
 
       <Box style={{ maxWidth: 310, marginLeft: 'auto', marginRight: 'auto' }}>
@@ -87,22 +86,7 @@ const AboutPage: FC = () => {
       </Box>
 
       <Box component="p">
-        <small>
-          Licensed under{' '}
-          <a
-            style={{ color: 'white' }}
-            href="https://opensource.org/licenses/MIT"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            MIT
-          </a>
-          .
-        </small>
-      </Box>
-
-      <Box component="p">
-        <small>Version 3.0.0</small>
+        <small>Version 3.1.0</small>
       </Box>
 
       <Box component="p">&copy; 2022</Box>

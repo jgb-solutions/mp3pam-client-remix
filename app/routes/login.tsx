@@ -20,7 +20,6 @@ import type { BoxStyles } from '~/interfaces/types'
 import PlainLayout from '~/components/layouts/Plain'
 import { Link, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
 import type { LoginInput } from '~/graphql/generated-types'
-import { apiClient } from '~/graphql/requests.server'
 import {
   getCookieSession,
   redirectToFacebookLogin,

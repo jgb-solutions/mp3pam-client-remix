@@ -2,14 +2,13 @@ import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import AlbumIcon from '@mui/icons-material/Album'
-import type { LoaderFunction } from '@remix-run/node'
 import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import { apiClient } from '~/graphql/requests.server'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
 import InfiniteLoader from '~/components/InfiniteLoader'
 import type { AlbumsDataQuery } from '~/graphql/generated-types'
+import { db } from '~/database/db.server'
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'Browse All The Albums'
@@ -24,16 +23,46 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-export const loader: LoaderFunction = async () => {
-  const data = await apiClient.fetchAlbums()
+export const loader = async () => {
+  const [data, prisma] = await Promise.all([
+    apiClient.fetchAlbums(),
+    db.album.findMany({
+      select: {
+        title: true,
+        hash: true,
+        cover: true,
+        artist: {
+          select: {
+            hash: true,
+            poster: true,
+            stageName: true,
+          },
+        },
+      },
+    }),
+  ])
 
-  return json(data)
+  return json({
+    ...data,
+    prisma: prisma.map(
+      ({ cover, artist: { poster, ...artist }, ...album }) => ({
+        ...album,
+        coverUrl: `https://img-storage-prod.mp3pam.com/${cover}`,
+        artist: {
+          ...artist,
+          posterUrl: `https://img-storage-prod.mp3pam.com/${poster}`,
+        },
+      })
+    ),
+  })
 }
 
 type AlbumType = NonNullable<AlbumsDataQuery['albums']>['data'][0]
 
 export default function BrowseAlbumsPage() {
-  const { albums } = useLoaderData<AlbumsDataQuery>()
+  const { albums, prisma } = useLoaderData<typeof loader>()
+  console.log('prisma', prisma[0])
+  console.log('albums', albums?.data[0])
 
   return (
     <>

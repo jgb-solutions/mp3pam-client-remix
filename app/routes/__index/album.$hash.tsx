@@ -47,7 +47,6 @@ import type { TabItem } from '~/components/Tabs'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import type { BoxStyles } from '~/interfaces/types'
-import { apiClient } from '~/graphql/requests.server'
 import AlbumTracksTable from '~/components/AlbumTracksTable'
 import type ListInterface from '../../interfaces/ListInterface'
 import type { AlbumDetailQuery } from '~/graphql/generated-types'
@@ -161,13 +160,13 @@ export default function AlbumDetailPage() {
   }
 
   const makeSoundList = () => {
-    return album.tracks.map(({ hash, title, poster_url, audio_url }) => ({
+    return album.tracks.map(({ hash, title, posterURl, audioUrl }) => ({
       hash,
       title,
-      image: poster_url,
-      author_name: album.artist.stage_name,
-      author_hash: album.artist.hash,
-      play_url: audio_url,
+      image: posterURl,
+      authorName: album.artist.stage_name,
+      authorHash: album.artist.hash,
+      playUrl: audioUrl,
       type: 'track',
     }))
   }

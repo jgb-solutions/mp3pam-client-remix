@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
+import { Link } from '@remix-run/react'
 import { withStyles } from '@mui/styles'
 import { useSelector } from 'react-redux'
 import TableBody from '@mui/material/TableBody'
@@ -11,13 +12,10 @@ import theme from '~/mui/theme'
 import PlayPause from './PlayPause'
 import AppRoutes from '~/app-routes'
 import colors from '../utils/colors'
-import { Link } from '@remix-run/react'
-import type { BoxStyles } from '~/interfaces/types'
 import { makeSoundFromTrack } from '../utils/helpers'
-import type AppStateInterface from '../interfaces/AppStateInterface'
-import type PlaylistInterface from '../interfaces/PlaylistInterface'
-import type { PlaylistTrackInterface } from '../interfaces/PlaylistInterface'
 import type ListInterface from '~/interfaces/ListInterface'
+import type { BoxStyles, PlaylistDetail } from '~/interfaces/types'
+import type AppStateInterface from '../interfaces/AppStateInterface'
 
 const styles: BoxStyles = {
   table: {
@@ -49,7 +47,7 @@ export const StyledTableCell = withStyles({
   },
 })(TableCell)
 
-type Props = { playlist: PlaylistInterface; list: ListInterface }
+type Props = { playlist: PlaylistDetail; list: ListInterface }
 
 export default function PlaylistTracksTable({ playlist, list }: Props) {
   const { currentSound } = useSelector(
@@ -70,7 +68,7 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {playlist.tracks.map((track: PlaylistTrackInterface, index: number) => {
+        {playlist.tracks.map((track, index: number) => {
           const color =
             currentSound && track.hash === currentSound.hash
               ? colors.primary
@@ -103,10 +101,10 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
                 </Box>
               </StyledTableCell>
               <StyledTableCell style={{ width: '1.5%', color }}>
-                {track.play_count}
+                {track.playCount}
               </StyledTableCell>
               <StyledTableCell style={{ width: '1.5%', color }}>
-                {track.download_count}
+                {track.downloadCount}
               </StyledTableCell>
               {/* <StyledTableCell style={{ width: '35%', color }}>
                 {playlist.artist?.stage_name}

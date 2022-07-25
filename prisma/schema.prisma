@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Album {
+  id          Int      @id @default(autoincrement())
+  title       String
+  hash        Int      @unique
+  cover       String
+  imgBucket   String   @map("img_bucket")
+  detail      String?
+  userId      Int      @map("user_id")
+  artistId    Int      @map("artist_id")
+  artist      Artist   @relation(fields: [artistId], references: [id])
+  releaseYear Int      @map("release_year")
+  createdAt   DateTime @default(now()) @map("created_at")
+  uppdatedAt  DateTime @default(now()) @map("updated_at")
+  Track       Track[]
+
+  @@map("albums")
+}
+
+model Artist {
+  id         Int      @id @default(autoincrement())
+  name       String
+  stageName  String   @map("stage_name")
+  hash       Int      @unique
+  poster     String
+  imgBucket  String   @map("img_bucket")
+  userId     Int      @map("user_id")
+  bio        String?
+  facebook   String?
+  twitter    String?
+  instagram  String?
+  youtube    String?
+  verified   Boolean
+  createdAt  DateTime @default(now()) @map("created_at")
+  uppdatedAt DateTime @default(now()) @map("updated_at")
+  albums     Album[]
+  tracks     Track[]
+
+  @@map("artists")
+}
+
+model Genre {
+  id         Int      @id @default(autoincrement())
+  name       String
+  slug       String
+  createdAt  DateTime @default(now()) @map("created_at")
+  uppdatedAt DateTime @default(now()) @map("updated_at")
+  tracks     Track[]
+
+  @@map("genres")
+}
+
+model PlaylistTrack {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now()) @map("created_at")
+  uppdatedAt DateTime @default(now()) @map("updated_at")
+
+  playlistId Int      @map("playlist_id")
+  trackId    Int      @map("track_id")
+  Playlist   Playlist @relation(fields: [playlistId], references: [id])
+  track      Track    @relation(fields: [trackId], references: [id])
+
+  @@map("playlist_track")
+}
+
+model Playlist {
+  id         Int      @id @default(autoincrement())
+  title      String
+  hash       Int      @unique
+  userId     Int      @map("user_id")
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  uppdatedAt DateTime @default(now()) @map("updated_at")
+
+  tracks PlaylistTrack[]
+
+  @@map("playlists")
+}
+
+model Track {
+  id            Int      @id @default(autoincrement())
+  title         String
+  hash          Int      @unique
+  audioName     String   @map("audio_name")
+  poster        String
+  imgBucket     String   @map("img_bucket")
+  audioBucket   String   @map("audio_bucket")
+  featured      Int?
+  detail        String?
+  lyrics        String?
+  audioFileSize Int?     @map("audio_file_size")
+  userId        Int      @map("user_id")
+  user          User     @relation(fields: [userId], references: [id])
+  artistId      Int      @map("artist_id")
+  artist        Artist   @relation(fields: [artistId], references: [id])
+  albumId       Int?     @map("album_id")
+  album         Album?   @relation(fields: [albumId], references: [id])
+  genreId       Int      @map("genre_id")
+  genre         Genre    @relation(fields: [genreId], references: [id])
+  number        Int?
+  playCount     Int?     @map("play_count")
+  downloadCount Int      @map("download_count")
+  publish       Int?
+  allowDownload Int?
+  createdAt     DateTime @default(now()) @map("created_at")
+  uppdatedAt    DateTime @default(now()) @map("updated_at")
+
+  playlists PlaylistTrack[]
+
+  @@map("tracks")
+}
+
+model User {
+  id            Int        @id @default(autoincrement())
+  name          String
+  email         String?
+  password      String?
+  avatar        String?
+  fbAvatar      String?    @map("fb_avatar")
+  fbId          String?    @map("facebook_id")
+  fbLink        String?    @map("facebook_link")
+  phone         Int?       @map("telephone")
+  type          String?
+  admin         Int?
+  active        Int?
+  resetCode     String?    @map("password_reset_code")
+  firstLogin    Boolean    @default(true) @map("first_login")
+  imgBucket     String     @map("img_bucket")
+  rememberToken String?    @map("remember_token")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  uppdatedAt    DateTime   @default(now()) @map("updated_at")
+  tracks        Track[]
+  playlists     Playlist[]
+
+  @@map("users")
+}

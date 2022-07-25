@@ -1,6 +1,6 @@
 import type {
+  LoaderArgs,
   MetaFunction,
-  LoaderFunction,
   HtmlMetaDescriptor,
 } from '@remix-run/node'
 import Box from '@mui/material/Box'
@@ -10,10 +10,10 @@ import { useLoaderData } from '@remix-run/react'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import { apiClient } from '~/graphql/requests.server'
 import TrackThumbnail from '~/components/TrackThumbnail'
 import InfiniteLoader from '~/components/InfiniteLoader'
-import type { TracksDataQuery } from '~/graphql/generated-types'
+import { fetchTracks } from '~/database/requests.server'
+import type { AllTracks } from '~/interfaces/types'
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'Browse All The Tracks'
@@ -28,30 +28,30 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const page = Number(url.searchParams.get('page')) || 1
 
-  const data = await apiClient.fetchTracks({ page })
+  const tracks = await fetchTracks({ page })
 
-  return json(data)
+  return json({
+    tracks,
+  })
 }
 
-type TrackType = NonNullable<TracksDataQuery['tracks']>['data'][0]
-
 export default function BrowseTracksPage() {
-  const { tracks } = useLoaderData<TracksDataQuery>()
+  const { tracks } = useLoaderData<typeof loader>()
 
   return (
     <Box sx={{}}>
       <HeaderTitle icon={<MusicNoteIcon />} text="Browse Tracks" />
 
-      <InfiniteLoader<TrackType>
+      <InfiniteLoader<AllTracks['data'][0]>
         path="/tracks"
         resource={'tracks'}
-        initialData={tracks?.data}
-        defaultPage={tracks?.paginatorInfo.currentPage || 1}
-        shouldLoadMore={!!tracks?.paginatorInfo.hasMorePages}
+        initialData={tracks.data}
+        defaultPage={tracks.paginatorInfo.currentPage || 1}
+        shouldLoadMore={!!tracks.paginatorInfo.hasMorePages}
         scrollParentID={'main-content'}
       >
         {(infiniteData) => (
