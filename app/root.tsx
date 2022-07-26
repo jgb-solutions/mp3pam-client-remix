@@ -1,50 +1,47 @@
 import {
+  Link,
   Meta,
   Links,
   Outlet,
   Scripts,
   useCatch,
   LiveReload,
-  useLoaderData,
   ScrollRestoration,
-  Link,
-  useMatches,
 } from '@remix-run/react'
-import { useContext } from 'react'
-import Box from '@mui/material/Box'
-import { json, LinksFunction } from '@remix-run/node'
-import { Provider } from 'react-redux'
-import { withEmotionCache } from '@emotion/react'
 import type {
+  MetaFunction,
+  LinksFunction,
   LoaderFunction,
   HeadersFunction,
   HtmlMetaDescriptor,
-  MetaFunction,
 } from '@remix-run/node'
-import {
-  Typography,
-  unstable_useEnhancedEffect as useEnhancedEffect,
-} from '@mui/material'
+import { useContext } from 'react'
+import Box from '@mui/material/Box'
+import { json } from '@remix-run/node'
+import { Provider } from 'react-redux'
+import { withEmotionCache } from '@emotion/react'
+import Typography from '@mui/material/Typography'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
-
-import theme from './mui/theme'
-import { persistedStore } from './redux/store'
-import RootLayout from './components/layouts/Root'
-import ClientStyleContext from './mui/ClientStyleContext'
 import { PersistGate } from 'redux-persist/integration/react'
-import { DOMAIN } from './utils/constants.server'
-import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
+import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
+
 import {
+  shouldCache,
   USER_SESSION_ID,
   getCookieSession,
   updateCookieSessionHeader,
-  shouldCache,
 } from './auth/sessions.server'
-import type { LoggedInUserData } from './interfaces/types'
-import HeaderTitle from './components/HeaderTitle'
-import FourOrFour from './components/FourOrFour'
+import theme from './mui/theme'
 import AppRoutes from './app-routes'
 import appStyles from '~/styles/app.css'
+import { persistedStore } from './redux/store'
+import FourOrFour from './components/FourOrFour'
+import { DOMAIN } from './utils/constants.server'
+import RootLayout from './components/layouts/Root'
+import HeaderTitle from './components/HeaderTitle'
+import ClientStyleContext from './mui/ClientStyleContext'
+import type { LoggedInUserData } from './interfaces/types'
+import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
 
 export const links: LinksFunction = () => [
   {

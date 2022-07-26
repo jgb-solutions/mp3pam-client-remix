@@ -37,7 +37,10 @@
     "react-share": "^4.4.0",
     "react-window": "^1.8.5",
     "redux": "^4.0.4",
-    "redux-persist": "^5.10.0"
+    "redux-persist": "^5.10.0",
+    "remix-auth": "^3.2.2",
+    "remix-auth-socials": "^1.0.2",
+    "remix-auth-twitter": "^0.1.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.6.2",
@@ -55,5 +58,9 @@
   },
   "engines": {
     "node": ">=14"
+  },
+  "volta": {
+    "node": "16.15.1",
+    "npm": "8.5.5"
   }
 }

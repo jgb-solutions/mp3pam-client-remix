@@ -6,6 +6,7 @@ import type {
   fetchTrackDetail,
   fetchTracksByGenre,
   fetchPlaylistDetail,
+  fetchArtists,
 } from '~/database/requests.server'
 
 import type { LogUserInQuery } from '~/graphql/generated-types'
@@ -24,8 +25,6 @@ export type TrackDetail = NonNullable<
 
 export type AllGenres = NonNullable<Awaited<ReturnType<typeof fetchGenres>>>
 
-export type ThumbnailTrack = TrackDetail['relatedTracks'][0]
-
 export type ThumbnailGenre = AllGenres[0]
 
 export type AlbumThumbnailData = HomePage['albums'][0]
@@ -34,6 +33,7 @@ export type ArtistThumbnailData = HomePage['artists'][0]
 export type PlaylistThumbnailData = HomePage['playlists'][0]
 
 export type AllTracks = NonNullable<Awaited<ReturnType<typeof fetchTracks>>>
+export type AllArtists = NonNullable<Awaited<ReturnType<typeof fetchArtists>>>
 
 export type GenreWithTracks = NonNullable<
   Awaited<ReturnType<typeof fetchTracksByGenre>>

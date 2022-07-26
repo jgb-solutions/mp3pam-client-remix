@@ -116,7 +116,7 @@ export default function BrowseTracksByGenrePage() {
         <Grid container spacing={2}>
           {allTracks.map((track) => (
             <Grid item xs={4} md={3} sm={4} key={track.hash}>
-              <TrackThumbnail track={track} />
+              <TrackThumbnail track={track} imgStyles={{ maxWidth: '100%' }} />
             </Grid>
           ))}
         </Grid>

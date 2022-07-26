@@ -422,16 +422,62 @@ export async function fetchArtistDetail(variables: ArtistDetailQueryVariables) {
 export async function fetchArtists({
   page = 1,
   first = FETCH_ARTISTS_NUMBER,
-  orderBy = [{ column: 'created_at', order: SortOrder.Desc }],
-}: ArtistsDataQueryVariables) {
-  return client.request<ArtistsDataQuery, ArtistsDataQueryVariables>(
-    fetchArtistsDocument,
-    {
-      first,
-      orderBy,
-      page,
-    }
-  )
+} = {}) {
+  const [total, artists] = await db.$transaction([
+    db.artist.count({
+      where: {
+        tracks: {
+          some: {},
+        },
+      },
+    }),
+    db.artist.findMany({
+      take: first,
+      skip: (page - 1) * first,
+      where: {
+        tracks: {
+          some: {},
+        },
+      },
+      select: {
+        hash: true,
+        poster: true,
+        imgBucket: true,
+        stageName: true,
+        tracks: {
+          take: 1,
+          orderBy: [{ createdAt: 'desc' }],
+          select: {
+            poster: true,
+            imgBucket: true,
+          },
+        },
+      },
+      orderBy: [{ createdAt: 'desc' }],
+    }),
+  ])
+
+  return {
+    data: artists.map(({ imgBucket, poster, tracks, ...artist }) => {
+      const { poster: trackPoster, imgBucket: trackImgBucket } = tracks[0]
+
+      const posterUrl = getResourceUrl({ bucket: imgBucket, resource: poster })
+      const trackPosterUrl = getResourceUrl({
+        bucket: trackImgBucket,
+        resource: trackPoster,
+      })
+
+      return {
+        ...artist,
+        posterUrl: !poster ? trackPosterUrl : posterUrl,
+      }
+    }),
+    paginatorInfo: {
+      currentPage: page,
+      hasMorePages: total > page * first,
+      total,
+    },
+  }
 }
 
 export async function createAlbum(albumInput: AlbumInput) {
@@ -775,7 +821,7 @@ export async function fetchPlaylists({
     }),
     paginatorInfo: {
       currentPage: page,
-      hasMorePages: total > page * FETCH_TRACKS_NUMBER,
+      hasMorePages: total > page * first,
       total,
     },
   }
@@ -795,7 +841,7 @@ export async function fetchTracks({
     db.track.count(),
     db.track.findMany({
       take: first,
-      skip: (page - 1) * FETCH_TRACKS_NUMBER,
+      skip: (page - 1) * first,
       select: {
         hash: true,
         title: true,
@@ -823,7 +869,7 @@ export async function fetchTracks({
     })),
     paginatorInfo: {
       currentPage: page,
-      hasMorePages: total > page * FETCH_TRACKS_NUMBER,
+      hasMorePages: total > page * first,
       total,
     },
   }

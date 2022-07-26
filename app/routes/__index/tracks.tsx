@@ -57,8 +57,11 @@ export default function BrowseTracksPage() {
         {(infiniteData) => (
           <Grid container spacing={2}>
             {infiniteData.map((track) => (
-              <Grid item xs={4} md={3} sm={4} key={track.hash}>
-                <TrackThumbnail track={track} />
+              <Grid item xs={4} md={3} key={track.hash}>
+                <TrackThumbnail
+                  track={track}
+                  imgStyles={{ maxWidth: '100%' }}
+                />
               </Grid>
             ))}
           </Grid>

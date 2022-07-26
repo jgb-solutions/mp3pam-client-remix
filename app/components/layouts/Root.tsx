@@ -15,7 +15,7 @@ export const styles: BoxStyles = {
 
 const RootLayout: FC = ({ children }) => {
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" disableGutters>
       <Grid container sx={styles.container}>
         {children}
       </Grid>

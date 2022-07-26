@@ -17,7 +17,7 @@ export const styles: BoxStyles = {
     height: '100vh',
     overflowY: 'auto',
     backgroundColor: colors.contentGrey,
-    position: 'relative',
+    // position: 'relative',
   },
   leftGrid: {
     height: '100vh',

@@ -1,13 +1,11 @@
 import { useRef } from 'react'
-import type { FC } from 'react'
 import Box from '@mui/material/Box'
 import { Link } from '@remix-run/react'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 
 import TrackThumbnail from './TrackThumbnail'
-import type { BoxStyles } from '~/interfaces/types'
-import type { HomepageQuery } from '~/graphql/generated-types'
+import type { BoxStyles, TrackThumbnailData } from '~/interfaces/types'
 
 export const styles: BoxStyles = {
   container: {
@@ -36,17 +34,13 @@ export const styles: BoxStyles = {
   },
 }
 
-export type TracksWithArtist = NonNullable<
-  HomepageQuery['latestTracks']
->['data']
-
-type Props<T> = {
-  tracks: T
+type Props = {
+  tracks: TrackThumbnailData[]
   category: string
   browse: string
 }
 
-export function TrackScrollingList<T>(props: Props<T>) {
+export function TrackScrollingList(props: Props) {
   const { tracks, category, browse } = props
   const divRef = useRef<HTMLDivElement>(null)
 
