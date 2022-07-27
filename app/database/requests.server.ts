@@ -689,8 +689,8 @@ export async function fetchArtistDetail(hash: number) {
           const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
 
           const albumCoverUrl = getResourceUrl({
-            bucket: artistBucket,
-            resource: artistPoster,
+            bucket: albumBucket,
+            resource: albumCover,
           })
 
           const trackPosterUrl = getResourceUrl({
