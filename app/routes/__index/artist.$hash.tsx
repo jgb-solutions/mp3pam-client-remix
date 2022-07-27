@@ -1,3 +1,8 @@
+import type {
+  LoaderArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import {
   EmailShareButton,
   TwitterShareButton,
@@ -6,15 +11,13 @@ import {
   WhatsappShareButton,
 } from 'react-share'
 import Box from '@mui/material/Box'
-import { json } from '@remix-run/node'
 import Grid from '@mui/material/Grid'
+import { json } from '@remix-run/node'
 import { darken, Typography } from '@mui/material'
 import InfoIcon from '@mui/icons-material/Info'
 import EmailIcon from '@mui/icons-material/Email'
 import ShareIcon from '@mui/icons-material/Share'
-import type { BoxStyles } from '~/interfaces/types'
 import TwitterIcon from '@mui/icons-material/Twitter'
-import type { LoaderFunction } from '@remix-run/node'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Link, useLoaderData } from '@remix-run/react'
 import TelegramIcon from '@mui/icons-material/Telegram'
@@ -23,28 +26,27 @@ import FacebookIcon from '@mui/icons-material/Facebook'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
-import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
 
 import {
   APP_NAME,
   TWITTER_HANDLE,
   SEO_ARTIST_TYPE,
   SMALL_SCREEN_SIZE,
-  RANDOM_ARTISTS_NUMBER,
 } from '~/utils/constants'
 import theme from '~/mui/theme'
+import colors from '~/utils/colors'
 import AppRoutes from '~/app-routes'
 import Tabs from '~/components/Tabs'
 import Image from '~/components/Image'
-import colors from '~/utils/colors'
 import type { TabItem } from '~/components/Tabs'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
+import { DOMAIN } from '~/utils/constants.server'
 import TrackThumbnail from '~/components/TrackThumbnail'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
-import type { ArtistDetailQuery } from '~/graphql/generated-types'
+import { fetchArtistDetail } from '~/database/requests.server'
+import type { ArtistDetail, BoxStyles } from '~/interfaces/types'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
-import { DOMAIN } from '~/utils/constants.server'
 
 const styles: BoxStyles = {
   row: {
@@ -116,8 +118,6 @@ const styles: BoxStyles = {
   },
 }
 
-type ArtistParams = { hash: string }
-
 export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
   if (!data) {
     return {
@@ -125,11 +125,11 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
     }
   }
 
-  const { artist } = data as ArtistDetailQuery
+  const artist = data.artist as ArtistDetail
 
-  const title = `${artist.stage_name} on ${APP_NAME}`
+  const title = `${artist.stageName} on ${APP_NAME}`
   const url = `${DOMAIN}/artist/${artist.hash}`
-  const description = `Listen to ${artist.stage_name} on ${APP_NAME}`
+  const description = `Listen to ${artist.stageName} on ${APP_NAME}`
   const type = SEO_ARTIST_TYPE
   const image = artist.posterUrl
 
@@ -140,82 +140,31 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
     'og:description': description,
     'og:type': type,
     'og:image': image,
-    'twitter:title': title,
-    'twitter:description': description,
-    'twitter:image': image,
   }
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader = async ({ params }: LoaderArgs) => {
   const { hash } = params as { hash: string }
 
   try {
-    const data = await apiClient.fetchArtistDetail({
-      hash,
-      input: {
-        hash,
-        first: RANDOM_ARTISTS_NUMBER,
-      },
-    })
+    const artist = await fetchArtistDetail(parseInt(hash))
 
-    return json(data)
+    return json({ artist })
   } catch (error) {
-    throw new Response('Not Found', {
+    throw new Response('Artist Not Found', {
       status: 404,
     })
   }
 }
 
-export function CatchBoundary() {
-  return (
-    <Box
-      sx={{
-        height: '100%',
-        borderWidth: '2px',
-        borderStyle: 'solid',
-        borderColor: 'red',
-        borderRadius: '8px',
-        padding: '2rem',
-        color: theme.palette.error.light,
-        textAlign: 'center',
-      }}
-    >
-      <Typography variant="h1" component="h1">
-        Not Found!
-      </Typography>
-      <Typography variant="h5">We could not find this artist.</Typography>
-    </Box>
-  )
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <Box
-      sx={{
-        height: '100%',
-        borderWidth: '2px',
-        borderStyle: 'solid',
-        borderColor: 'red',
-        borderRadius: '8px',
-        padding: '2rem',
-        color: theme.palette.error.light,
-        textAlign: 'center',
-      }}
-    >
-      <Typography variant="h1" component="h1">
-        Oops! Error.
-      </Typography>
-      <Typography variant="h5">{error.message}</Typography>
-    </Box>
-  )
-}
-
 export default function ArtistDetailPage() {
-  const { artist, randomArtists } = useLoaderData<ArtistDetailQuery>()
+  const { artist } = useLoaderData<typeof loader>()
+
+  if (!artist) return null
 
   const getTabs = () => {
     const url = window.location.href
-    const title = `${artist.stage_name} on ${APP_NAME}`
+    const title = `${artist.stageName} on ${APP_NAME}`
     const hashtags = `${APP_NAME} music artist share`
 
     const tabs: TabItem[] = []
@@ -228,23 +177,21 @@ export default function ArtistDetailPage() {
           <>
             <br />
             <Grid container spacing={2}>
-              {artist.tracks.map(
-                (track: { title: string; hash: string; posterUrl: string }) => {
-                  const trackWithArtist = {
-                    ...track,
-                    artist: {
-                      hash: artist.hash,
-                      stage_name: artist.stage_name,
-                    },
-                  }
-
-                  return (
-                    <Grid item xs={4} md={3} sm={4} key={track.hash}>
-                      <TrackThumbnail track={trackWithArtist} />
-                    </Grid>
-                  )
+              {artist.tracks.map((track) => {
+                const trackWithArtist = {
+                  ...track,
+                  artist: {
+                    hash: artist.hash,
+                    stageName: artist.stageName,
+                  },
                 }
-              )}
+
+                return (
+                  <Grid item xs={4} md={3} sm={4} key={track.hash}>
+                    <TrackThumbnail track={trackWithArtist} />
+                  </Grid>
+                )
+              })}
             </Grid>
           </>
         ),
@@ -259,23 +206,21 @@ export default function ArtistDetailPage() {
           <>
             <br />
             <Grid container spacing={2}>
-              {artist.albums.map(
-                (album: { title: string; hash: string; cover_url: string }) => {
-                  const albumWithArtist = {
-                    ...album,
-                    artist: {
-                      hash: artist.hash,
-                      stage_name: artist.stage_name,
-                    },
-                  }
-
-                  return (
-                    <Grid item xs={4} md={3} sm={4} key={album.hash}>
-                      <AlbumThumbnail album={albumWithArtist} />
-                    </Grid>
-                  )
+              {artist.albums.map((album) => {
+                const albumWithArtist = {
+                  ...album,
+                  artist: {
+                    hash: artist.hash,
+                    stageName: artist.stageName,
+                  },
                 }
-              )}
+
+                return (
+                  <Grid item xs={4} md={3} sm={4} key={album.hash}>
+                    <AlbumThumbnail album={albumWithArtist} />
+                  </Grid>
+                )
+              })}
             </Grid>
           </>
         ),
@@ -374,7 +319,7 @@ export default function ArtistDetailPage() {
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
           <Image
             src={artist.posterUrl}
-            alt={artist.stage_name}
+            alt={artist.stageName}
             sx={styles.image}
             photon={{
               ulb: true,
@@ -391,12 +336,12 @@ export default function ArtistDetailPage() {
               Artist
             </Box>
             <Box component="h1" sx={styles.listName}>
-              {artist.stage_name}
+              {artist.stageName}
             </Box>
             <Grid container spacing={2}>
-              {artist.facebook_url && (
+              {artist.facebook && (
                 <Grid item>
-                  <Link to={artist.facebook_url} target="_blank">
+                  <Link to={artist.facebook} target="_blank">
                     <FacebookIcon
                       style={{
                         fontSize: 48,
@@ -407,27 +352,27 @@ export default function ArtistDetailPage() {
                   </Link>
                 </Grid>
               )}
-              {artist.twitter_url && (
+              {artist.twitter && (
                 <Grid item>
-                  <Link to={artist.twitter_url} target="_blank">
+                  <Link to={artist.twitter} target="_blank">
                     <TwitterIcon
                       style={{ fontSize: 48, color: colors.twitter }}
                     />
                   </Link>
                 </Grid>
               )}
-              {artist.instagram_url && (
+              {artist.instagram && (
                 <Grid item>
-                  <Link to={artist.instagram_url} target="_blank">
+                  <Link to={artist.instagram} target="_blank">
                     <InstagramIcon
                       style={{ fontSize: 48, color: colors.instagram }}
                     />
                   </Link>
                 </Grid>
               )}
-              {artist.youtube_url && (
+              {artist.youtube && (
                 <Grid item>
-                  <Link to={artist.youtube_url} target="_blank">
+                  <Link to={artist.youtube} target="_blank">
                     <YouTubeIcon
                       style={{ fontSize: 48, color: colors.youtube }}
                     />
@@ -446,10 +391,10 @@ export default function ArtistDetailPage() {
       <br />
       <br />
 
-      {randomArtists ? (
+      {artist.relatedArtists.length > 0 ? (
         <ArtistScrollingList
           category="Other Artists You Might Like"
-          artists={randomArtists}
+          artists={artist.relatedArtists}
           browse={AppRoutes.browse.artists}
         />
       ) : null}
@@ -484,5 +429,49 @@ export default function ArtistDetailPage() {
       </h3>
       <FourOrFour />
     </>
+  )
+}
+
+export function CatchBoundary() {
+  return (
+    <Box
+      sx={{
+        height: '100%',
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        borderColor: 'red',
+        borderRadius: '8px',
+        padding: '2rem',
+        color: theme.palette.error.light,
+        textAlign: 'center',
+      }}
+    >
+      <Typography variant="h1" component="h1">
+        Not Found!
+      </Typography>
+      <Typography variant="h5">We could not find this artist.</Typography>
+    </Box>
+  )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Box
+      sx={{
+        height: '100%',
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        borderColor: 'red',
+        borderRadius: '8px',
+        padding: '2rem',
+        color: theme.palette.error.light,
+        textAlign: 'center',
+      }}
+    >
+      <Typography variant="h1" component="h1">
+        Oops! Error.
+      </Typography>
+      <Typography variant="h5">{error.message}</Typography>
+    </Box>
   )
 }

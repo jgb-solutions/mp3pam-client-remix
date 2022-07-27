@@ -3,8 +3,6 @@ import {
   LogUserInDocument,
   fetchAlbumDocument,
   fetchAlbumsDocument,
-  fetchArtistDocument,
-  fetchArtistsDocument,
   fetchManagementDocument,
   fetchDownloadUrlDocument,
   fetchMyAlbumsDocument,
@@ -27,9 +25,7 @@ import type {
   AlbumsDataQuery,
   UpdateUserInput,
   AlbumDetailQuery,
-  ArtistsDataQuery,
   AddTrackMutation,
-  ArtistDetailQuery,
   AddArtistMutation,
   UpdateUserMutation,
   ManagePageDataQuery,
@@ -49,8 +45,6 @@ import type {
   DeletePlaylistMutation,
   DeleteTrackMutation,
   DeleteArtistMutation,
-  ArtistsDataQueryVariables,
-  ArtistDetailQueryVariables,
   AddArtistMutationVariables,
   AddTrackMutationVariables,
   DeleteAlbumMutationVariables,
@@ -102,6 +96,8 @@ import {
   HOMEPAGE_PER_PAGE_NUMBER,
   MANAGE_PAGE_PER_PAGE_NUMBER,
   RANDOM_PLAYLISTS_NUMBER,
+  RANDOM_ARTISTS_NUMBER,
+  RANDOM_ALBUMS_NUMBER,
 } from '~/utils/constants'
 import { SortOrder } from '~/graphql/generated-types'
 import { graphQLClient as client } from '~/graphql/client.server'
@@ -395,28 +391,348 @@ export async function addTrackToPlaylist(
   >(AddTrackToPlaylistDocument, addTrackToPlaylistVariables)
 }
 
-export async function fetchAlbumDetail(variables: AlbumDetailQueryVariables) {
-  return client.request<AlbumDetailQuery, AlbumDetailQueryVariables>(
-    fetchAlbumDocument,
-    variables
-  )
-}
+export async function fetchAlbumDetail(hash: number) {
+  const [album, relatedAlbums] = await db.$transaction([
+    db.album.findUnique({
+      where: { hash },
+      select: {
+        hash: true,
+        title: true,
+        cover: true,
+        imgBucket: true,
+        detail: true,
+        releaseYear: true,
+        tracks: {
+          orderBy: [{ number: 'asc' }],
+          select: {
+            hash: true,
+            title: true,
+            poster: true,
+            imgBucket: true,
+            audioBucket: true,
+            audioName: true,
+            number: true,
+            playCount: true,
+            downloadCount: true,
+          },
+        },
+        artist: {
+          select: {
+            stageName: true,
+            hash: true,
+          },
+        },
+      },
+    }),
+    db.album.findMany({
+      take: RANDOM_ALBUMS_NUMBER,
+      where: {
+        hash: {
+          not: hash,
+        },
+        tracks: {
+          some: {},
+        },
+      },
+      orderBy: [
+        {
+          tracks: {
+            _count: 'desc',
+          },
+        },
+      ],
+      select: {
+        hash: true,
+        title: true,
+        cover: true,
+        imgBucket: true,
+        tracks: {
+          take: 1,
+          orderBy: [{ createdAt: 'desc' }],
+          select: {
+            imgBucket: true,
+            poster: true,
+          },
+        },
+        artist: {
+          select: {
+            stageName: true,
+            hash: true,
+          },
+        },
+      },
+    }),
+  ])
 
-export async function fetchAlbums() {
-  return client.request<AlbumsDataQuery, AlbumsDataQueryVariables>(
-    fetchAlbumsDocument,
-    {
-      first: FETCH_ALBUMS_NUMBER,
-      orderBy: [{ column: 'created_at', order: SortOrder.Desc }],
+  if (album) {
+    const { cover: albumCover, imgBucket: albumBucket, tracks, ...data } = album
+    const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
+
+    const albumCoverUrl = getResourceUrl({
+      bucket: albumBucket,
+      resource: albumCover,
+    })
+
+    const trackPosterUrl = getResourceUrl({
+      bucket: trackBucket,
+      resource: trackPoster,
+    })
+
+    return {
+      ...data,
+      coverUrl: !albumCover ? trackPosterUrl : albumCoverUrl,
+      tracks: tracks.map(
+        ({ imgBucket, poster, audioBucket, audioName, ...data }) => ({
+          ...data,
+          posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
+          audioUrl: getSignedUrl({ bucket: audioBucket, resource: audioName }),
+        })
+      ),
+      relatedAlbums: relatedAlbums.map(
+        ({ cover: albumCover, imgBucket: albumBucket, tracks, ...data }) => {
+          const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
+
+          const artistPosterUrl = getResourceUrl({
+            bucket: albumBucket,
+            resource: albumCover,
+          })
+
+          const trackPosterUrl = getResourceUrl({
+            bucket: trackBucket,
+            resource: trackPoster,
+          })
+
+          return {
+            ...data,
+            coverUrl: !albumCover ? trackPosterUrl : artistPosterUrl,
+          }
+        }
+      ),
     }
-  )
+  }
+
+  return album
 }
 
-export async function fetchArtistDetail(variables: ArtistDetailQueryVariables) {
-  return client.request<ArtistDetailQuery, ArtistDetailQueryVariables>(
-    fetchArtistDocument,
-    variables
-  )
+export async function fetchAlbums({
+  page = 1,
+  first = FETCH_ALBUMS_NUMBER,
+} = {}) {
+  const [total, albums] = await db.$transaction([
+    db.album.count(),
+    db.album.findMany({
+      take: first,
+      orderBy: [{ createdAt: 'desc' }],
+      where: {
+        tracks: {
+          some: {},
+        },
+      },
+      select: {
+        hash: true,
+        title: true,
+        cover: true,
+        imgBucket: true,
+        tracks: {
+          take: 1,
+          orderBy: [{ createdAt: 'desc' }],
+          select: {
+            imgBucket: true,
+            poster: true,
+          },
+        },
+        artist: {
+          select: {
+            hash: true,
+            imgBucket: true,
+            poster: true,
+            stageName: true,
+          },
+        },
+      },
+    }),
+  ])
+
+  return {
+    data: albums.map(
+      ({ tracks, imgBucket: albumBucket, cover: albumCover, ...album }) => {
+        const { imgBucket: trackBucket, poster: trackPoster } = tracks[0]
+
+        const albumCoverUrl = getResourceUrl({
+          bucket: albumBucket,
+          resource: albumCover,
+        })
+
+        const trackPosterUrl = getResourceUrl({
+          bucket: trackBucket,
+          resource: trackPoster,
+        })
+
+        return {
+          ...album,
+          coverUrl: !albumCover ? trackPosterUrl : albumCoverUrl,
+        }
+      }
+    ),
+    paginatorInfo: {
+      currentPage: page,
+      hasMorePages: total > page * first,
+      total,
+    },
+  }
+}
+
+export async function fetchArtistDetail(hash: number) {
+  const [artist, relatedArtists] = await db.$transaction([
+    db.artist.findUnique({
+      where: { hash },
+      select: {
+        hash: true,
+        name: true,
+        stageName: true,
+        poster: true,
+        imgBucket: true,
+        bio: true,
+        facebook: true,
+        twitter: true,
+        instagram: true,
+        youtube: true,
+        tracks: {
+          orderBy: [{ createdAt: 'desc' }],
+          select: {
+            hash: true,
+            title: true,
+            poster: true,
+            imgBucket: true,
+          },
+        },
+        albums: {
+          orderBy: [{ createdAt: 'desc' }],
+          select: {
+            hash: true,
+            title: true,
+            cover: true,
+            imgBucket: true,
+            tracks: {
+              take: 1,
+              select: {
+                imgBucket: true,
+                poster: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+    db.artist.findMany({
+      take: RANDOM_ARTISTS_NUMBER,
+      where: {
+        hash: {
+          not: hash,
+        },
+        tracks: {
+          some: {},
+        },
+      },
+      orderBy: [
+        {
+          tracks: {
+            _count: 'desc',
+          },
+        },
+      ],
+      select: {
+        hash: true,
+        stageName: true,
+        poster: true,
+        imgBucket: true,
+        tracks: {
+          take: 1,
+          select: {
+            imgBucket: true,
+            poster: true,
+          },
+        },
+      },
+    }),
+  ])
+
+  if (artist) {
+    const {
+      poster: artistPoster,
+      imgBucket: artistBucket,
+      tracks,
+      albums,
+      ...data
+    } = artist
+    const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
+
+    const artistPosterUrl = getResourceUrl({
+      bucket: artistBucket,
+      resource: artistPoster,
+    })
+
+    const trackPosterUrl = getResourceUrl({
+      bucket: trackBucket,
+      resource: trackPoster,
+    })
+
+    return {
+      ...data,
+      posterUrl: !artistPoster ? trackPosterUrl : artistPosterUrl,
+      tracks: tracks.map(({ imgBucket, poster, ...data }) => ({
+        ...data,
+        posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
+      })),
+      albums: albums.map(
+        ({ imgBucket: albumBucket, cover: albumCover, tracks, ...data }) => {
+          const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
+
+          const albumCoverUrl = getResourceUrl({
+            bucket: artistBucket,
+            resource: artistPoster,
+          })
+
+          const trackPosterUrl = getResourceUrl({
+            bucket: trackBucket,
+            resource: trackPoster,
+          })
+
+          return {
+            ...data,
+            coverUrl: !albumCover ? trackPosterUrl : albumCoverUrl,
+          }
+        }
+      ),
+      relatedArtists: relatedArtists.map(
+        ({
+          poster: artistPoster,
+          imgBucket: artistBucket,
+          tracks,
+          ...data
+        }) => {
+          const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
+
+          const artistPosterUrl = getResourceUrl({
+            bucket: artistBucket,
+            resource: artistPoster,
+          })
+
+          const trackPosterUrl = getResourceUrl({
+            bucket: trackBucket,
+            resource: trackPoster,
+          })
+
+          return {
+            ...data,
+            posterUrl: !artistPoster ? trackPosterUrl : artistPosterUrl,
+          }
+        }
+      ),
+    }
+  }
+
+  return artist
 }
 
 export async function fetchArtists({

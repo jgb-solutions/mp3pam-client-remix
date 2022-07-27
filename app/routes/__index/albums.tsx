@@ -1,14 +1,18 @@
+import type {
+  LoaderArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import AlbumIcon from '@mui/icons-material/Album'
-import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
 
 import HeaderTitle from '~/components/HeaderTitle'
+import type { AllAlbums } from '~/interfaces/types'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
 import InfiniteLoader from '~/components/InfiniteLoader'
-import type { AlbumsDataQuery } from '~/graphql/generated-types'
-import { db } from '~/database/db.server'
+import { fetchAlbums } from '~/database/requests.server'
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'Browse All The Albums'
@@ -23,54 +27,27 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-export const loader = async () => {
-  const [data, prisma] = await Promise.all([
-    apiClient.fetchAlbums(),
-    db.album.findMany({
-      select: {
-        title: true,
-        hash: true,
-        cover: true,
-        artist: {
-          select: {
-            hash: true,
-            poster: true,
-            stageName: true,
-          },
-        },
-      },
-    }),
-  ])
+export const loader = async ({ request }: LoaderArgs) => {
+  const url = new URL(request.url)
+  const page = Number(url.searchParams.get('page')) || 1
+
+  const albums = await fetchAlbums({ page })
 
   return json({
-    ...data,
-    prisma: prisma.map(
-      ({ cover, artist: { poster, ...artist }, ...album }) => ({
-        ...album,
-        coverUrl: `https://img-storage-prod.mp3pam.com/${cover}`,
-        artist: {
-          ...artist,
-          posterUrl: `https://img-storage-prod.mp3pam.com/${poster}`,
-        },
-      })
-    ),
+    albums,
   })
 }
 
-type AlbumType = NonNullable<AlbumsDataQuery['albums']>['data'][0]
-
 export default function BrowseAlbumsPage() {
-  const { albums, prisma } = useLoaderData<typeof loader>()
-  console.log('prisma', prisma[0])
-  console.log('albums', albums?.data[0])
+  const { albums } = useLoaderData<typeof loader>()
 
   return (
     <>
-      {albums?.data.length ? (
+      {albums.data.length > 0 ? (
         <>
           <HeaderTitle icon={<AlbumIcon />} text="Browse Albums" />
 
-          <InfiniteLoader<AlbumType>
+          <InfiniteLoader<AllAlbums['data'][0]>
             path="/albums"
             resource={'albums'}
             initialData={albums?.data}

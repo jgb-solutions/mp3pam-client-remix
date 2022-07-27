@@ -2,11 +2,14 @@ import type { BoxProps, GridProps } from '@mui/material'
 import type {
   fetchTracks,
   fetchGenres,
+  fetchArtists,
   fetchHomepage,
   fetchTrackDetail,
+  fetchArtistDetail,
   fetchTracksByGenre,
   fetchPlaylistDetail,
-  fetchArtists,
+  fetchAlbumDetail,
+  fetchAlbums,
 } from '~/database/requests.server'
 
 import type { LogUserInQuery } from '~/graphql/generated-types'
@@ -23,7 +26,16 @@ export type TrackDetail = NonNullable<
   Awaited<ReturnType<typeof fetchTrackDetail>>
 >
 
+export type ArtistDetail = NonNullable<
+  Awaited<ReturnType<typeof fetchArtistDetail>>
+>
+
+export type AlbumDetail = NonNullable<
+  Awaited<ReturnType<typeof fetchAlbumDetail>>
+>
+
 export type AllGenres = NonNullable<Awaited<ReturnType<typeof fetchGenres>>>
+export type AllAlbums = NonNullable<Awaited<ReturnType<typeof fetchAlbums>>>
 
 export type ThumbnailGenre = AllGenres[0]
 

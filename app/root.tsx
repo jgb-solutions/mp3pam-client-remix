@@ -7,13 +7,14 @@ import {
   useCatch,
   LiveReload,
   ScrollRestoration,
+  useLoaderData,
 } from '@remix-run/react'
 import type {
   MetaFunction,
   LinksFunction,
-  LoaderFunction,
   HeadersFunction,
   HtmlMetaDescriptor,
+  LoaderArgs,
 } from '@remix-run/node'
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
@@ -55,10 +56,11 @@ const { store, persistor } = persistedStore()
 interface DocumentProps {
   children: React.ReactNode
   title?: string
+  pathname?: string
 }
 
 const Document = withEmotionCache(
-  ({ children, title }: DocumentProps, emotionCache) => {
+  ({ children, title, pathname }: DocumentProps, emotionCache) => {
     const clientStyleData = useContext(ClientStyleContext)
 
     useEnhancedEffect(() => {
@@ -78,6 +80,8 @@ const Document = withEmotionCache(
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           <meta name="theme-color" content={theme.palette.primary.main} />
+          {pathname && <link rel="canonical" href={`${DOMAIN}${pathname}`} />}
+
           {title ? <title>{title}</title> : null}
           <Meta />
           <Links />
@@ -122,7 +126,7 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
   }
 }
 
-export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+export const meta: MetaFunction = ({ location }): HtmlMetaDescriptor => {
   const title = `${APP_NAME} | Listen, Download and Share Unlimited Sounds!`
   const description = `${APP_NAME} is a free entertainment platform for sharing all kinds of sounds.
       Music, and even Ad. You name it. Brought to you by JGB Solutions.
@@ -133,25 +137,20 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
     title,
     'og:title': title,
     'og:site_name': APP_NAME,
-    'og:url': DOMAIN,
+    'og:url': DOMAIN + location.pathname,
     'og:description': description,
     'og:type': 'website',
     'og:image': image,
     'fb:app_id': FB_APP_ID,
     'twitter:card': 'summary',
     'twitter:site': `@${TWITTER_HANDLE}`,
-    'twitter:title': title,
-    'twitter:description': { description },
-    'twitter:image': { image },
+    // 'twitter:title': title,
+    // 'twitter:description': description,
+    // 'twitter:image': image,
   }
 }
 
-type LoaderData = {
-  ENV: { [key: string]: string }
-  flashError?: string
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const session = await getCookieSession(request)
 
   const userSessionData = session.get(USER_SESSION_ID) as
@@ -165,13 +164,16 @@ export const loader: LoaderFunction = async ({ request }) => {
     session.unset('flashError')
   }
 
+  const url = new URL(request.url)
+
   return json(
     {
-      ENV: {
-        STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-      },
+      // ENV: {
+      //   STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+      // },
       currentUser,
       flashError,
+      pathname: url.pathname,
     },
     {
       headers: {
@@ -183,8 +185,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function App() {
+  const { pathname } = useLoaderData<typeof loader>()
+
   return (
-    <Document>
+    <Document pathname={pathname}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <RootLayout>

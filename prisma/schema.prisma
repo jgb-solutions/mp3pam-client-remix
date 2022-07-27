@@ -20,7 +20,7 @@ model Album {
   releaseYear Int      @map("release_year")
   createdAt   DateTime @default(now()) @map("created_at")
   uppdatedAt  DateTime @default(now()) @map("updated_at")
-  Track       Track[]
+  tracks      Track[]
 
   @@map("albums")
 }

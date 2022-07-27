@@ -1308,14 +1308,22 @@ export type AlbumDetailQuery = {
       playCount: number
       downloadCount: number
     }>
-    artist: { __typename?: 'Artist'; hash: string; stage_name: string }
+    artist: {
+      __typename?: 'Artist'
+      hash: string
+      stage_name: string
+    }
   } | null
   randomAlbums: Array<{
     __typename?: 'Album'
     hash: string
     title: string
     cover_url: string
-    artist: { __typename?: 'Artist'; hash: string; stage_name: string }
+    artist: {
+      __typename?: 'Artist'
+      hash: string
+      stage_name: string
+    }
   } | null>
 }
 
