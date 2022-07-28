@@ -10,25 +10,12 @@ import AppRoutes from '~/app-routes'
 import type { BoxStyles, PlaylistThumbnailData } from '~/interfaces/types'
 
 const styles: BoxStyles = {
-  imgContainer: {
-    backgroundSize: 'contain',
-    backgroundRepeat: 'no-repeat',
-    cursor: 'pointer',
-    width: '175px',
-    height: '175px',
-    maxWidth: '100%',
-    maxHeight: '100%',
-    position: 'relative',
-    marginBottom: '10px',
-    alignItems: 'center',
-    justifyContent: 'center',
-    sm: {
-      width: '100px',
-      height: '100px',
-    },
-  },
   transparentBackground: {
     opacity: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     position: 'absolute',
     backgroundColor: '#000',
     width: '100%',
@@ -59,18 +46,6 @@ const styles: BoxStyles = {
       textOverflow: 'ellipsis',
     },
   },
-  details: {
-    fontSize: '13px',
-    color: '#9d9d9d',
-    marginTop: '5px',
-    marginBottom: 0,
-    sm: {
-      fontSize: '11px',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-    },
-  },
   link: {
     color: colors.white,
     textDecoration: 'none',
@@ -85,23 +60,23 @@ type Props = {
   sx?: BoxProps['sx']
 }
 
-export default function PlaylistThumbnail<T>(props: Props) {
+export default function PlaylistThumbnail(props: Props) {
   const { playlist } = props
 
   return (
-    <Box sx={props.sx} style={props.style}>
-      <Box
-        sx={styles.imgContainer}
-        style={{
-          backgroundImage: `url(${Image.phoneCdnUrl(playlist.coverUrl, {
+    <Box>
+      <Box sx={props.sx} style={props.style} position="relative">
+        <Box
+          component="img"
+          maxWidth={'100%'}
+          src={Image.phoneCdnUrl(playlist.coverUrl, {
             ulb: true,
             lb: {
               width: 250,
               height: 250,
             },
-          })})`,
-        }}
-      >
+          })}
+        />
         <Box
           sx={styles.transparentBackground}
           component={Link}

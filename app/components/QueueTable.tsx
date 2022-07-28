@@ -1,21 +1,21 @@
-import React from 'react'
-import { makeStyles, withStyles } from '@mui/material/styles'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
+import Box from '@mui/material/Box'
+import { Link } from '@remix-run/react'
 
 import colors from '../utils/colors'
 import PlayPause from './PlayPause'
 import { useSelector } from 'react-redux'
 import type AppStateInterface from '../interfaces/AppStateInterface'
-import { SoundInterface } from '../interfaces/ListInterface'
-import { Link } from '@remix-run/react'
+import type { SoundInterface } from '../interfaces/ListInterface'
 
 import AppRoutes from '~/app-routes'
 import type { BoxStyles } from '~/interfaces/types'
 import theme from '~/mui/theme'
+import { withStyles } from '@mui/styles'
 
 const styles: BoxStyles = {
   table: {
@@ -30,22 +30,22 @@ const styles: BoxStyles = {
   },
 }
 
-// const StyledTableCell = withStyles({
-//   head: {
-//     color: colors.grey,
-//     textTransform: 'uppercase',
-//     textAlign: 'left',
-//     paddingLeft: 0
-//   },
-//   body: {
-//     fontSize: 14,
-//     color: colors.white,
-//     border: 'none',
-//     paddingLeft: 1,
-//     paddingRight: 1,
-//     textOverflow: 'ellipsis'
-//   },
-// //}(TableCell)
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    color: colors.grey,
+    textTransform: 'uppercase',
+    textAlign: 'left',
+    paddingLeft: 0,
+  },
+  body: {
+    fontSize: 14,
+    color: colors.white,
+    border: 'none',
+    paddingLeft: 1,
+    paddingRight: 1,
+    textOverflow: 'ellipsis',
+  },
+}))(TableCell)
 
 export default function QueueTable() {
   const { currentSound, currentPlayingIndex, queueList, list } = useSelector(
@@ -77,16 +77,34 @@ export default function QueueTable() {
                     queueList.length - 1 === index ? '' : '1px solid white',
                 }}
               >
-                {/* <StyledTableCell style={{ width: '10%', minWidth: '60px' }}>
-                <PlayPause sound={sound} list={list} />
-              </StyledTableCell>
-              <StyledTableCell style={{ width: '30%', color }}>
-                <Link prefetch="intent" to={soundPage} sx={styles.link} style={{ color }}>{sound.title}</Link>
-              </StyledTableCell>
-              <StyledTableCell style={{ width: '35%' }}>
-                <Link prefetch="intent" to={authorPage} sx={styles.link} style={{ color }}>{sound.authorName}</Link>
-              </StyledTableCell>
-              <StyledTableCell style={{ width: '20%', color }}>{sound.type.toUpperCase()}</StyledTableCell> */}
+                <StyledTableCell style={{ width: '10%', minWidth: '60px' }}>
+                  <PlayPause sound={sound} list={list} />
+                </StyledTableCell>
+                <StyledTableCell style={{ width: '30%', color }}>
+                  <Box
+                    component={Link}
+                    prefetch="intent"
+                    to={soundPage}
+                    sx={styles.link}
+                    style={{ color }}
+                  >
+                    {sound.title}
+                  </Box>
+                </StyledTableCell>
+                <StyledTableCell style={{ width: '35%' }}>
+                  <Box
+                    component={Link}
+                    prefetch="intent"
+                    to={authorPage}
+                    sx={styles.link}
+                    style={{ color }}
+                  >
+                    {sound.authorName}
+                  </Box>
+                </StyledTableCell>
+                {/* <StyledTableCell style={{ width: '20%', color }}>
+                  {sound.type.toUpperCase()}
+                </StyledTableCell> */}
 
                 {/* <StyledTableCell>
                 <More />

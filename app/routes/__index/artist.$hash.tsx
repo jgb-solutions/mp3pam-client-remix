@@ -188,7 +188,10 @@ export default function ArtistDetailPage() {
 
                 return (
                   <Grid item xs={4} md={3} sm={4} key={track.hash}>
-                    <TrackThumbnail track={trackWithArtist} />
+                    <TrackThumbnail
+                      track={trackWithArtist}
+                      imgStyles={{ maxWidth: '100%' }}
+                    />
                   </Grid>
                 )
               })}

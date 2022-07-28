@@ -34,7 +34,7 @@ const Content: FC<Props> = (props) => {
         paddingLeft: '15px',
         paddingRight: '15px',
         overflow: 'auto',
-        paddingBottom: currentTrack ? '100px' : '50px',
+        paddingBottom: currentTrack ? '150px' : '50px',
       }}
     >
       {props.children}

@@ -336,33 +336,27 @@ const PlaylistDetailPage = () => {
             <Box component="h1" sx={styles.listName}>
               {playlist.title}
             </Box>
-            <Box
-              component="p"
-              sx={styles.listByAuthor}
-              style={{ marginBottom: 5 }}
-            >
-              <Box sx={styles.listBy}>By </Box> {playlist.user.name}
+            <Box component="p" sx={styles.listByAuthor} mb="1rem">
+              <Box component={'span'} sx={styles.listBy}>
+                By{' '}
+              </Box>{' '}
+              {playlist.user.name}
             </Box>
-            <Grid sx={styles.ctaButtons} container spacing={2}>
-              <Grid item xs={2} implementation="css" smUp component={Hidden} />
-              <Grid item>
-                <Button
-                  style={{ width: '100px' }}
-                  onClick={togglePlay}
-                  variant="contained"
-                >
-                  {playingListHash !== playlist.hash && 'Play'}
-                  {isPlaying && playingListHash === playlist.hash && 'Pause'}
-                  {!isPlaying && playingListHash === playlist.hash && 'Resume'}
-                  {/* todo // using currentTime > 0  to display rsesume or replay */}
-                </Button>
-              </Grid>
-              <Grid item>
-                <Heart border />
-                &nbsp; &nbsp;
-                <More border options={getMoreOptions()} />
-              </Grid>
-            </Grid>
+            <Box>
+              <Button
+                sx={{ minWidth: '100px', mr: '1rem' }}
+                onClick={togglePlay}
+                variant="contained"
+              >
+                {playingListHash !== playlist.hash && 'Play'}
+                {isPlaying && playingListHash === playlist.hash && 'Pause'}
+                {!isPlaying && playingListHash === playlist.hash && 'Resume'}
+                {/* todo // using currentTime > 0  to display rsesume or replay */}
+              </Button>
+              <Heart border />
+              &nbsp; &nbsp;
+              <More border options={getMoreOptions()} />
+            </Box>
           </Box>
         </Grid>
       </Grid>

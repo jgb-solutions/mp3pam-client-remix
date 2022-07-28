@@ -17,7 +17,7 @@ function QueuePage() {
     <>
       <HeaderTitle icon={<QueueMusicIcon />} text="Your Current Queue" />
 
-      {!list && <h3>Your queue is empty!</h3>}
+      {!list?.sounds.length && <h3>Your queue is empty!</h3>}
 
       <QueueTable />
     </>

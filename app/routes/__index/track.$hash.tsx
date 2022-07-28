@@ -451,7 +451,7 @@ export default function TrackDetailPage() {
                 {track.genre.name}
               </Box>
             </Box>
-            <Box component="p" sx={styles.listByAuthor}>
+            <Box component="p" sx={styles.listByAuthor} mb="1rem">
               <HeadsetIcon sx={styles.listBy} />{' '}
               <Box component="span" sx={styles.listAuthor}>
                 {track.playCount}
@@ -462,35 +462,22 @@ export default function TrackDetailPage() {
                 {track.downloadCount}
               </Box>
             </Box>
-
-            <Grid sx={styles.ctaButtons} container spacing={2}>
-              <Grid
-                item
-                xs={2}
-                sx={{
-                  sm: {
-                    display: 'none',
-                  },
-                }}
-              />
-              <Grid item>
-                <Button
-                  variant="contained"
-                  style={{ width: '100px' }}
-                  onClick={togglePlay}
-                >
-                  {playingListHash !== track.hash && 'Play'}
-                  {isPlaying && playingListHash === track.hash && 'Pause'}
-                  {!isPlaying && playingListHash === track.hash && 'Resume'}
-                  {/* todo // using currentTime > 0  to display rsesume or replay */}
-                </Button>
-              </Grid>
-              <Grid item>
-                <Heart border />
-                &nbsp; &nbsp;
-                <More border options={getMoreOptions()} />
-              </Grid>
-            </Grid>
+            <Box>
+              <Button
+                variant="contained"
+                sx={{ minWidth: '100px', mr: '1rem' }}
+                onClick={togglePlay}
+                size="large"
+              >
+                {playingListHash !== track.hash && 'Play'}
+                {isPlaying && playingListHash === track.hash && 'Pause'}
+                {!isPlaying && playingListHash === track.hash && 'Resume'}
+                {/* todo // using currentTime > 0  to display rsesume or replay */}
+              </Button>
+              <Heart border />
+              &nbsp; &nbsp;
+              <More border options={getMoreOptions()} />
+            </Box>
           </Box>
         </Grid>
       </Grid>

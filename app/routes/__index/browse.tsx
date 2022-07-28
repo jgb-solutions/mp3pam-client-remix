@@ -1,8 +1,4 @@
-import type {
-  MetaFunction,
-  LoaderFunction,
-  HtmlMetaDescriptor,
-} from '@remix-run/node'
+import type { MetaFunction, HtmlMetaDescriptor } from '@remix-run/node'
 import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'

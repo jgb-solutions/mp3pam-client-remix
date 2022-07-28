@@ -2,6 +2,7 @@ import { useNavigate, Link } from '@remix-run/react'
 import LoopIcon from '@mui/icons-material/Loop'
 import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 import Container from '@mui/material/Container'
 import Slide from '@mui/material/Slide'
 import RepeatIcon from '@mui/icons-material/Repeat'
@@ -56,10 +57,11 @@ const styles: BoxStyles = {
     bottom: 0,
     left: 0,
     right: 0,
-    height: '86px',
+    minHeight: '86px',
     backgroundColor: colors.darkGrey,
     color: 'white',
-    px: '24px',
+    px: '1rem',
+    // py: '1rem',
     zIndex: 999,
   },
   player: {
@@ -104,7 +106,7 @@ const styles: BoxStyles = {
     flexDirection: 'column',
   },
   buttons: {
-    width: '37%',
+    // width: '37%',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -113,27 +115,15 @@ const styles: BoxStyles = {
       width: '70%',
     },
   },
-  sliderTime: {
-    display: 'flex',
-    width: '90%',
-    alignSelf: 'center',
-    position: 'relative',
-  },
   slider: {
     flex: 1,
-    mx: '40px',
-    marginTop: '-9px',
+    [theme.breakpoints.down('sm')]: {
+      px: '1rem',
+    },
   },
-  startTime: {
+  time: {
     fontSize: '10px',
-    position: 'absolute',
-    top: '-4px',
-  },
-  endTime: {
-    fontSize: '10px',
-    position: 'absolute',
-    top: '-4px',
-    right: 0,
+    mt: '-6px',
   },
   icon: {
     fontSize: '18px',
@@ -637,7 +627,7 @@ export default function Player() {
       unmountOnExit
     >
       <Box sx={styles.container}>
-        <Container sx={styles.player} maxWidth="lg">
+        <Container sx={styles.player} maxWidth="lg" disableGutters>
           <Box
             sx={styles.posterTitle}
             onClick={() => {
@@ -750,17 +740,21 @@ export default function Player() {
                 )}
               </IconButton>
             </Box>
-            <Box sx={styles.sliderTime}>
-              <Box sx={styles.startTime}>{state.elapsed}</Box>
-              <Box sx={styles.slider}>
+            <Grid container alignItems={'center'}>
+              <Grid item xs={1} sx={styles.time}>
+                {state.elapsed}
+              </Grid>
+              <Grid item xs={10} sx={styles.slider}>
                 <Slider
                   value={state.position}
                   onChange={handleSeekChange}
                   aria-labelledby="continuous-slider"
                 />
-              </Box>
-              <Box sx={styles.endTime}>{state.duration}</Box>
-            </Box>
+              </Grid>
+              <Grid item xs={1} sx={styles.time} textAlign="right">
+                {state.duration}
+              </Grid>
+            </Grid>
           </Box>
           <Box sx={styles.playlistVolume}>
             <Link prefetch="intent" to={AppRoutes.user.library.queue}>
