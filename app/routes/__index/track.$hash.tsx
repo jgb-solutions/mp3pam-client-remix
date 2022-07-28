@@ -313,6 +313,7 @@ export default function TrackDetailPage() {
             <Box component="p">File Size: {track.audioFileSize}</Box>
             <Button
               component={Link}
+              prefetch="intent"
               variant="contained"
               size="large"
               style={{ minWidth: '150px`' }}
@@ -434,6 +435,7 @@ export default function TrackDetailPage() {
               </Box>
               <Box
                 component={Link}
+                prefetch="intent"
                 to={AppRoutes.artist.detailPage(track.artist.hash)}
                 sx={styles.listAuthor}
               >
@@ -445,6 +447,7 @@ export default function TrackDetailPage() {
               </Box>
               <Box
                 component={Link}
+                prefetch="intent"
                 to={AppRoutes.genre.detailPage(track.genre.slug)}
                 sx={styles.listAuthor}
               >

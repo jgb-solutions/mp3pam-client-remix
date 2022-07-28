@@ -155,37 +155,41 @@ export default function LoginPage() {
         </Box>
 
         <Box maxWidth="450px">
-          <Box component={Link} to=".?facebook">
-            <Button
-              variant="contained"
-              sx={styles.facebookButton}
-              size="large"
-              fullWidth
-            >
-              Log In With Facebook
-            </Button>
-          </Box>
-          <Box component={Link} to=".?twitter">
-            <Button
-              variant="contained"
-              sx={styles.twitterButton}
-              size="large"
-              fullWidth
-            >
-              Log In With Twitter
-            </Button>
-          </Box>
+          <Button
+            component={Link}
+            to=".?facebook"
+            prefetch="intent"
+            variant="contained"
+            sx={styles.facebookButton}
+            size="large"
+            fullWidth
+          >
+            Log In With Facebook
+          </Button>
 
-          <Box component={Link} to=".?google">
-            <Button
-              variant="contained"
-              sx={styles.googleButton}
-              size="large"
-              fullWidth
-            >
-              Log In With Google
-            </Button>
-          </Box>
+          <Button
+            component={Link}
+            prefetch="intent"
+            to=".?twitter"
+            variant="contained"
+            sx={styles.twitterButton}
+            size="large"
+            fullWidth
+          >
+            Log In With Twitter
+          </Button>
+
+          <Button
+            component={Link}
+            to=".?google"
+            prefetch="intent"
+            variant="contained"
+            sx={styles.googleButton}
+            size="large"
+            fullWidth
+          >
+            Log In With Google
+          </Button>
         </Box>
 
         <Divider>or</Divider>

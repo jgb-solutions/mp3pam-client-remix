@@ -258,7 +258,7 @@ export default function ArtistDetailPage() {
               >
                 <FacebookIcon
                   style={{
-                    fontSize: 48,
+                    fontSize: '48px',
                     cursor: 'pointer',
                     color: colors.facebook,
                   }}
@@ -274,7 +274,7 @@ export default function ArtistDetailPage() {
               >
                 <TwitterIcon
                   style={{
-                    fontSize: 48,
+                    fontSize: '48px',
                     cursor: 'pointer',
                     color: colors.twitter,
                   }}
@@ -285,7 +285,7 @@ export default function ArtistDetailPage() {
               <WhatsappShareButton url={url} title={title}>
                 <WhatsAppIcon
                   style={{
-                    fontSize: 48,
+                    fontSize: '48px',
                     cursor: 'pointer',
                     color: colors.whatsapp,
                   }}
@@ -296,7 +296,7 @@ export default function ArtistDetailPage() {
               <TelegramShareButton url={url} title={title}>
                 <TelegramIcon
                   style={{
-                    fontSize: 48,
+                    fontSize: '48px',
                     cursor: 'pointer',
                     color: colors.telegram,
                   }}
@@ -305,7 +305,7 @@ export default function ArtistDetailPage() {
             </Grid>
             <Grid item>
               <EmailShareButton url={url} subject={title} body={title}>
-                <EmailIcon style={{ fontSize: 48, cursor: 'pointer' }} />
+                <EmailIcon style={{ fontSize: '48px', cursor: 'pointer' }} />
               </EmailShareButton>
             </Grid>
           </Grid>
@@ -316,7 +316,7 @@ export default function ArtistDetailPage() {
     return tabs
   }
 
-  return artist ? (
+  return (
     <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
@@ -347,7 +347,7 @@ export default function ArtistDetailPage() {
                   <Link to={artist.facebook} target="_blank">
                     <FacebookIcon
                       style={{
-                        fontSize: 48,
+                        fontSize: '48px',
                         cursor: 'pointer',
                         color: colors.facebook,
                       }}
@@ -359,7 +359,7 @@ export default function ArtistDetailPage() {
                 <Grid item>
                   <Link to={artist.twitter} target="_blank">
                     <TwitterIcon
-                      style={{ fontSize: 48, color: colors.twitter }}
+                      style={{ fontSize: '48px', color: colors.twitter }}
                     />
                   </Link>
                 </Grid>
@@ -368,7 +368,7 @@ export default function ArtistDetailPage() {
                 <Grid item>
                   <Link to={artist.instagram} target="_blank">
                     <InstagramIcon
-                      style={{ fontSize: 48, color: colors.instagram }}
+                      style={{ fontSize: '48px', color: colors.instagram }}
                     />
                   </Link>
                 </Grid>
@@ -377,7 +377,7 @@ export default function ArtistDetailPage() {
                 <Grid item>
                   <Link to={artist.youtube} target="_blank">
                     <YouTubeIcon
-                      style={{ fontSize: 48, color: colors.youtube }}
+                      style={{ fontSize: '48px', color: colors.youtube }}
                     />
                   </Link>
                 </Grid>
@@ -402,36 +402,6 @@ export default function ArtistDetailPage() {
         />
       ) : null}
     </Box>
-  ) : (
-    <>
-      <HeaderTitle
-        icon={<FindReplaceIcon />}
-        text="OOPS! The Artist was not found."
-      />
-      <h3>
-        Go to the{' '}
-        <Link
-          prefetch="intent"
-          style={{ color: 'white' }}
-          to={AppRoutes.pages.home}
-        >
-          home page
-        </Link>{' '}
-        or{' '}
-        <Link
-          style={{
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            color: colors.white,
-          }}
-          to={AppRoutes.browse.artists}
-        >
-          browse other artists.
-        </Link>
-        .
-      </h3>
-      <FourOrFour />
-    </>
   )
 }
 

@@ -32,18 +32,18 @@ const CreateMenu = [
 ]
 
 const libraryMenu = [
-  { name: 'Tracks', to: AppRoutes.manage.tracks, icon: <MusicNoteIcon /> },
+  { name: 'Your Tracks', to: AppRoutes.manage.tracks, icon: <MusicNoteIcon /> },
   {
-    name: 'PlayLists',
+    name: 'Your PlayLists',
     to: AppRoutes.manage.playlists,
     icon: <PlaylistAddIcon />,
   },
   {
-    name: 'Artists',
+    name: 'Your Artists',
     to: AppRoutes.manage.artists,
     icon: <PersonPinCircleIcon />,
   },
-  { name: 'Albums', to: AppRoutes.manage.albums, icon: <AlbumIcon /> },
+  { name: 'Your Albums', to: AppRoutes.manage.albums, icon: <AlbumIcon /> },
 ]
 
 type Props = {
@@ -51,7 +51,7 @@ type Props = {
 }
 
 const Right: FC<Props> = ({ closeDrawerRight }) => {
-  const { currentUser } = useAuth()
+  const { currentUser, isLoggedIn } = useAuth()
 
   const closeDrawer = useCallback(() => {
     if (closeDrawerRight) {
@@ -62,67 +62,70 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
   return (
     <Box sx={styles.container}>
       <Box sx={styles.menuList}>
-        <Box sx={styles.mainMenu}>
-          <NavLink
-            to={AppRoutes.user.account}
-            prefetch="intent"
-            style={({ isActive }) => ({
-              ...styles.link,
-              ...styles.mainMenuLink,
-              ...(isActive ? styles.activeClassName : {}),
-            })}
-            onClick={closeDrawer}
-          >
-            <Box component="span" sx={styles.linkIcon}>
-              <Avatar
-                style={{ width: 20, height: 20 }}
-                alt={currentUser.name}
-                src={currentUser.avatar_url || ''}
-              />
+        {isLoggedIn && (
+          <>
+            <Box sx={styles.mainMenu}>
+              <NavLink
+                to={AppRoutes.user.account}
+                prefetch="intent"
+                style={({ isActive }) => ({
+                  ...styles.link,
+                  ...styles.mainMenuLink,
+                  ...(isActive ? styles.activeClassName : {}),
+                })}
+                onClick={closeDrawer}
+              >
+                <Box component="span" sx={styles.linkIcon}>
+                  <Avatar
+                    style={{ width: 20, height: 20 }}
+                    alt={currentUser.name}
+                    src={currentUser.avatarUrl || ''}
+                  />
+                </Box>
+                <Box component="span" sx={styles.linkText}>
+                  Account
+                </Box>
+              </NavLink>
             </Box>
-            <Box component="span" sx={styles.linkText}>
-              Account
+
+            <Box pt="1rem" mb="2rem">
+              <NavLink
+                prefetch="intent"
+                to={AppRoutes.manage.home}
+                style={({ isActive }) => ({
+                  ...styles.yourLibraryLink,
+                  ...(isActive ? styles.activeClassName : {}),
+                })}
+                onClick={closeDrawer}
+              >
+                Your Library
+              </NavLink>
+
+              {libraryMenu.map((menuItem, index) => (
+                <NavLink
+                  prefetch="intent"
+                  key={index}
+                  to={menuItem.to}
+                  style={({ isActive }) => ({
+                    ...styles.link,
+                    ...styles.libraryLink,
+                    ...(isActive ? styles.activeClassName : {}),
+                  })}
+                  onClick={closeDrawer}
+                >
+                  <Box component="span" sx={styles.linkIcon}>
+                    {menuItem.icon}
+                  </Box>
+                  <Box component="span" sx={styles.linkText}>
+                    {menuItem.name}
+                  </Box>
+                </NavLink>
+              ))}
             </Box>
-          </NavLink>
-        </Box>
+          </>
+        )}
 
         <Box>
-          <p>
-            <NavLink
-              prefetch="intent"
-              to={AppRoutes.manage.home}
-              style={({ isActive }) => ({
-                ...styles.yourLibraryLink,
-                ...(isActive ? styles.activeClassName : {}),
-              })}
-              onClick={closeDrawer}
-            >
-              Your Library
-            </NavLink>
-          </p>
-          {libraryMenu.map((menuItem, index) => (
-            <NavLink
-              prefetch="intent"
-              key={index}
-              to={menuItem.to}
-              style={({ isActive }) => ({
-                ...styles.link,
-                ...styles.libraryLink,
-                ...(isActive ? styles.activeClassName : {}),
-              })}
-              onClick={closeDrawer}
-            >
-              <Box component="span" sx={styles.linkIcon}>
-                {menuItem.icon}
-              </Box>
-              <Box component="span" sx={styles.linkText}>
-                {menuItem.name}
-              </Box>
-            </NavLink>
-          ))}
-
-          <br />
-
           {CreateMenu.map((menuItem, index) => (
             <NavLink
               prefetch="intent"
