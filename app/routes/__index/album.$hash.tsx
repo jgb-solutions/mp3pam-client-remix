@@ -116,10 +116,10 @@ const styles: BoxStyles = {
     textTransform: 'uppercase',
   },
   listName: {
-    fontSize: '36px',
+    fontSize: '2.5rem',
     fontWeight: 'bold',
-    [theme.breakpoints.down('xs')]: {
-      fontSize: '32px',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2rem',
     },
   },
   ctaButtons: {
@@ -375,23 +375,19 @@ export default function AlbumDetailPage() {
               >
                 {album.artist.stageName}
               </Box>
-              <br />
-              <Box component="span" sx={styles.listBy}>
-                Released In{' '}
+
+              <Box mb="1rem">
+                <Box component="span" sx={styles.listBy}>
+                  Released In{' '}
+                </Box>
+                <Box component="span" sx={styles.listAuthor}>
+                  {album.releaseYear}
+                </Box>
               </Box>
-              <Box
-                component="span"
-                sx={styles.listAuthor}
-                style={{ textDecoration: 'none' }}
-              >
-                {album.releaseYear}
-              </Box>
-            </Box>
-            <Grid sx={styles.ctaButtons} container spacing={2}>
-              <Grid item xs={2} implementation="css" smUp component={Hidden} />
-              <Grid item>
+
+              <Box>
                 <Button
-                  style={{ width: '100px' }}
+                  sx={{ minWidth: '100px', mr: '1rem' }}
                   onClick={togglePlay}
                   variant="contained"
                 >
@@ -400,13 +396,11 @@ export default function AlbumDetailPage() {
                   {!isPlaying && playingListHash === album.hash && 'Resume'}
                   {/* todo // using currentTime > 0  to display rsesume or replay */}
                 </Button>
-              </Grid>
-              <Grid item>
                 <Heart border />
                 &nbsp; &nbsp;
                 <More border options={getMoreOptions()} />
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </Box>
         </Grid>
       </Grid>

@@ -13,12 +13,12 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 import Left from './Left'
 import Right from './Right'
+import theme from '~/mui/theme'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import SearchInput from './SearchInput'
-import type { BoxStyles } from '~/interfaces/types'
 import { useAuth } from '~/hooks/useAuth'
-import theme from '~/mui/theme'
+import type { BoxStyles } from '~/interfaces/types'
 import { SMALL_SCREEN_SIZE } from '~/utils/constants'
 
 const styles: BoxStyles = {
@@ -104,7 +104,7 @@ const Header: FC = () => {
             >
               <Avatar
                 alt={currentUser.name}
-                src={currentUser.avatar_url || ''}
+                src={currentUser.avatarUrl || currentUser.fbAvatar || ''}
                 sx={styles.avatar}
               />
               <KeyboardArrowDownIcon />
@@ -127,6 +127,7 @@ const Header: FC = () => {
           )}
         </Toolbar>
       </AppBar>
+
       {/* Left Drawer */}
       <SwipeableDrawer
         onOpen={() => setDrawerLeftOpen(true)}

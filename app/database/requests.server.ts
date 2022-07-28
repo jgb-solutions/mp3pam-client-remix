@@ -1,8 +1,7 @@
+import bcrypt from 'bcrypt'
+
 import {
   searchDocument,
-  LogUserInDocument,
-  fetchAlbumDocument,
-  fetchAlbumsDocument,
   fetchManagementDocument,
   fetchDownloadUrlDocument,
   fetchMyAlbumsDocument,
@@ -14,25 +13,19 @@ import {
 
 import type {
   PlayInput,
-  LoginInput,
   AlbumInput,
   TrackInput,
   ArtistInput,
   SearchQuery,
   DownloadQuery,
   DownloadInput,
-  LogUserInQuery,
-  AlbumsDataQuery,
   UpdateUserInput,
-  AlbumDetailQuery,
   AddTrackMutation,
   AddArtistMutation,
   UpdateUserMutation,
   ManagePageDataQuery,
   UpdatePlayCountMutation,
-  AlbumsDataQueryVariables,
   AddTrackToAlbumMutation,
-  LogUserInQueryVariables,
   AddTrackToAlbumInput,
   AddTrackToPlaylistMutation,
   CreateAlbumMutation,
@@ -40,7 +33,6 @@ import type {
   CreateAlbumMutationVariables,
   CreatePlaylistMutation,
   SearchQueryVariables,
-  AlbumDetailQueryVariables,
   DeleteAlbumMutation,
   DeletePlaylistMutation,
   DeleteTrackMutation,
@@ -99,10 +91,10 @@ import {
   RANDOM_ARTISTS_NUMBER,
   RANDOM_ALBUMS_NUMBER,
 } from '~/utils/constants'
-import { SortOrder } from '~/graphql/generated-types'
-import { graphQLClient as client } from '~/graphql/client.server'
 import { db } from './db.server'
+import { graphQLClient as client } from '~/graphql/client.server'
 import { getSignedUrl } from '~/services/s3.server'
+import type { Credentials } from '~/interfaces/types'
 
 export async function fetchHomepage() {
   const [tracks, artists, albums, playlists] = await db.$transaction([
@@ -148,6 +140,11 @@ export async function fetchHomepage() {
     db.album.findMany({
       take: HOMEPAGE_PER_PAGE_NUMBER,
       orderBy: [{ createdAt: 'desc' }],
+      where: {
+        tracks: {
+          some: {},
+        },
+      },
       select: {
         hash: true,
         title: true,
@@ -897,13 +894,56 @@ export async function fetchGenres() {
   })
 }
 
-export async function doLogin(loginInput: LoginInput) {
-  return client.request<LogUserInQuery, LogUserInQueryVariables>(
-    LogUserInDocument,
-    {
-      input: loginInput,
+export async function doLogin({ email, password }: Credentials) {
+  const account = await db.account.findFirst({
+    where: {
+      email,
+    },
+    select: {
+      name: true,
+      email: true,
+      password: true,
+      avatar: true,
+      fbAvatar: true,
+      fbId: true,
+      phone: true,
+      type: true,
+      isAdmin: true,
+      isActive: true,
+      firstLogin: true,
+      imgBucket: true,
+    },
+  })
+
+  if (account && account.password) {
+    const isPasswordCorrect = await bcrypt.compare(password, account.password)
+
+    if (isPasswordCorrect) {
+      const {
+        type: _1,
+        imgBucket,
+        avatar,
+        password: _2,
+        ...accountData
+      } = account
+
+      return {
+        ...accountData,
+        ...(avatar
+          ? {
+              avatarUrl: getResourceUrl({
+                bucket: imgBucket,
+                resource: avatar,
+              }),
+            }
+          : {}),
+      }
     }
-  )
+
+    return null
+  }
+
+  return null
 }
 
 export async function fetchManage({
@@ -933,6 +973,9 @@ export async function loginWithFacebook(
 }
 
 export async function updateUser(updateUserInput: UpdateUserInput) {
+  // has the password first before inserting into db
+  // this.password = await hash(this.password, 10)
+
   return client.request<UpdateUserMutation, UpdateUserMutationVariables>(
     UpdateUserDocument,
     {

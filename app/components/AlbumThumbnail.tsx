@@ -12,30 +12,14 @@ import type AppStateInterface from '~/interfaces/AppStateInterface'
 import type { AlbumThumbnailData, BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
-  imgContainer: {
-    backgroundSize: 'contain',
-    backgroundRepeat: 'no-repeat',
-    cursor: 'pointer',
-    width: '175px',
-    height: '175px',
-    maxWidth: '100%',
-    maxHeight: '100%',
-    position: 'relative',
-    marginBottom: '10px',
-    // display: "flex",
-    alignItems: 'center',
-    justifyContent: 'center',
-    sm: {
-      width: '100px',
-      height: '100px',
-    },
-  },
   transparentBackground: {
     opacity: 0,
     position: 'absolute',
-    backgroundColor: '#000',
-    width: '100%',
-    height: '100%',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgb(0, 0, 0, 0.5)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -92,19 +76,19 @@ function AlbumThumbnail({ album, sx }: Props) {
   )
 
   return (
-    <Box sx={sx}>
-      <Box
-        sx={styles.imgContainer}
-        style={{
-          backgroundImage: `url(${Image.phoneCdnUrl(album.coverUrl, {
+    <Box>
+      <Box sx={sx} position="relative">
+        <Box
+          component="img"
+          maxWidth={'100%'}
+          src={Image.phoneCdnUrl(album.coverUrl, {
             ulb: true,
             lb: {
               width: 250,
               height: 250,
             },
-          })})`,
-        }}
-      >
+          })}
+        />
         <Box
           component={Link}
           prefetch="intent"

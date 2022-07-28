@@ -1,6 +1,8 @@
 import type { BoxProps, GridProps } from '@mui/material'
 import type {
+  doLogin,
   fetchTracks,
+  fetchAlbums,
   fetchGenres,
   fetchArtists,
   fetchHomepage,
@@ -9,18 +11,11 @@ import type {
   fetchTracksByGenre,
   fetchPlaylistDetail,
   fetchAlbumDetail,
-  fetchAlbums,
 } from '~/database/requests.server'
-
-import type { LogUserInQuery } from '~/graphql/generated-types'
 
 export type BoxStyles = { [key: string]: BoxProps['sx'] }
 
 export type GridStyles = { [key: string]: GridProps['sx'] }
-
-export type LoggedInUserData = LogUserInQuery['login']
-
-export type UserData = LogUserInQuery['login']['data']
 
 export type TrackDetail = NonNullable<
   Awaited<ReturnType<typeof fetchTrackDetail>>
@@ -55,3 +50,10 @@ export type HomePage = Awaited<ReturnType<typeof fetchHomepage>>
 export type PlaylistDetail = NonNullable<
   Awaited<ReturnType<typeof fetchPlaylistDetail>>
 >
+
+export type Credentials = {
+  email: string
+  password: string
+}
+
+export type Account = NonNullable<Awaited<ReturnType<typeof doLogin>>>

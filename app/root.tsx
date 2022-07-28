@@ -41,7 +41,7 @@ import { DOMAIN } from './utils/constants.server'
 import RootLayout from './components/layouts/Root'
 import HeaderTitle from './components/HeaderTitle'
 import ClientStyleContext from './mui/ClientStyleContext'
-import type { LoggedInUserData } from './interfaces/types'
+import type { Account } from './interfaces/types'
 import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
 
 export const links: LinksFunction = () => [
@@ -153,11 +153,8 @@ export const meta: MetaFunction = ({ location }): HtmlMetaDescriptor => {
 export const loader = async ({ request }: LoaderArgs) => {
   const session = await getCookieSession(request)
 
-  const userSessionData = session.get(USER_SESSION_ID) as
-    | LoggedInUserData
-    | undefined
+  const currentUser = session.get(USER_SESSION_ID) as Account | null
 
-  const currentUser = userSessionData?.data || null
   const flashError = session.get('flashError')
 
   if (flashError) {
