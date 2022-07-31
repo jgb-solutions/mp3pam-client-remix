@@ -53,7 +53,7 @@ export default function AccountPage() {
               style={{ width: '75px', height: '75px' }}
               alt={currentUser?.name}
               // avatar or random avatar
-              src={currentUser?.avatar_url || 'https://picsum.photos/75'}
+              src={currentUser?.avatarUrl || currentUser.fbAvatar || ''}
             />
           }
           textStyle={{ paddingLeft: '10px' }}
@@ -66,20 +66,18 @@ export default function AccountPage() {
         </p>
 
         <p>
-          <i>Telephone</i>: <b>{currentUser?.telephone || NOT_AVAILABLE}</b>
+          <i>Telephone</i>: <b>{currentUser?.phone || NOT_AVAILABLE}</b>
         </p>
 
         <p>
-          <i>Account created on</i>:{' '}
-          <b>{getFormattedDate(currentUser?.created_at) || NOT_AVAILABLE}</b>
-        </p>
-
-        <p>
-          <Link to="./edit">
-            <Button size="large" sx={accountStyles.noBgButton}>
-              Edit Profile
-            </Button>
-          </Link>
+          <Button
+            component={Link}
+            to="./edit"
+            size="large"
+            sx={accountStyles.noBgButton}
+          >
+            Edit Profile
+          </Button>
         </p>
         <HR style={{ width: '300px', marginLeft: 0 }} />
         {
@@ -91,7 +89,7 @@ export default function AccountPage() {
         }
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleClose}>
+        <Button autoFocus onClick={handleClose} variant="contained">
           Save changes
         </Button>
       </DialogActions>

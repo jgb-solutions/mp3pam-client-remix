@@ -8,13 +8,13 @@ import colors from '~/utils/colors'
 
 export const accountStyles: BoxStyles = {
   noBgButton: {
-    width: 150,
+    width: '150px',
     backgroundColor: colors.contentGrey,
     border: `1px solid ${colors.primary}`,
   },
   uploadButton: {
-    marginTop: 10,
-    marginBottom: 5,
+    marginTop: '10px',
+    marginBottom: '5px',
   },
   successColor: { color: colors.success },
   errorColor: { color: colors.error },

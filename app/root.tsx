@@ -6,46 +6,49 @@ import {
   Scripts,
   useCatch,
   LiveReload,
-  ScrollRestoration,
   useLoaderData,
+  ScrollRestoration,
 } from '@remix-run/react'
 import type {
+  LoaderArgs,
   MetaFunction,
   LinksFunction,
   HeadersFunction,
   HtmlMetaDescriptor,
-  LoaderArgs,
 } from '@remix-run/node'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import { Provider } from 'react-redux'
+import Dialog from '@mui/material/Dialog'
+import type { Socket } from 'socket.io-client'
 import { withEmotionCache } from '@emotion/react'
 import Typography from '@mui/material/Typography'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import { PersistGate } from 'redux-persist/integration/react'
-import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
-import type { Socket } from 'socket.io-client'
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events'
+import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
 
 import {
   shouldCache,
-  USER_SESSION_ID,
   getCookieSession,
   updateCookieSessionHeader,
 } from './auth/sessions.server'
 import theme from './mui/theme'
 import AppRoutes from './app-routes'
+import { connect } from './ws/client'
 import appStyles from '~/styles/app.css'
 import { persistedStore } from './redux/store'
 import FourOrFour from './components/FourOrFour'
 import { DOMAIN } from './utils/constants.server'
 import RootLayout from './components/layouts/Root'
 import HeaderTitle from './components/HeaderTitle'
+import { authenticator } from './auth/auth.server'
 import ClientStyleContext from './mui/ClientStyleContext'
-import type { Account } from './interfaces/types'
 import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
-import { connect } from './ws/client'
 
 export const links: LinksFunction = () => [
   {
@@ -121,6 +124,24 @@ const Document = withEmotionCache(
   }
 )
 
+type ChatProps = {
+  open: boolean
+  handleClose: () => void
+}
+export function Chat({ open, handleClose }: ChatProps) {
+  return (
+    <Dialog onClose={handleClose} open={open} maxWidth="sm" fullWidth>
+      <DialogTitle>Chat widget</DialogTitle>
+      <DialogContent>Content for you here</DialogContent>
+      <DialogActions>
+        {/* <Button autoFocus onClick={handleClose} variant="contained">
+          Save changes
+        </Button> */}
+      </DialogActions>
+    </Dialog>
+  )
+}
+
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
   return {
     'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=86400',
@@ -156,7 +177,7 @@ export const meta: MetaFunction = ({ location }): HtmlMetaDescriptor => {
 export const loader = async ({ request }: LoaderArgs) => {
   const session = await getCookieSession(request)
 
-  const currentUser = session.get(USER_SESSION_ID) as Account | null
+  const currentUser = await authenticator.isAuthenticated(request)
 
   const flashError = session.get('flashError')
 
@@ -168,9 +189,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   return json(
     {
-      // ENV: {
-      //   STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-      // },
       currentUser,
       flashError,
       pathname: url.pathname,
@@ -184,33 +202,46 @@ export const loader = async ({ request }: LoaderArgs) => {
   )
 }
 
-export type OutletContext = {
+export type AppOutletContext = {
   socket?: Socket
+  openChatBox: () => void
+  isChatBoxOpen: boolean
 }
 
 export default function App() {
   const { pathname } = useLoaderData<typeof loader>()
   let [socket, setSocket] =
     useState<Socket<DefaultEventsMap, DefaultEventsMap>>()
-
-  const context: OutletContext = {
-    socket,
-  }
+  const [isChatBoxOpen, setIsChatBoxOpen] = useState(false)
 
   useEffect(() => {
-    let connection = connect()
-    setSocket(connection)
-    return () => {
-      connection.close()
-    }
+    // let connection = connect()
+    // setSocket(connection)
+    // return () => {
+    //   connection.close()
+    // }
   }, [])
 
   useEffect(() => {
-    if (!socket) return
-    socket.on('event', (data) => {
-      console.log(data)
-    })
+    // if (!socket) return
+    // socket.on('event', (data) => {
+    //   console.log(data)
+    // })
   }, [socket])
+
+  const handleCloseChatBox = useCallback(() => {
+    setIsChatBoxOpen(false)
+  }, [])
+
+  const handleOpenChatBox = useCallback(() => {
+    setIsChatBoxOpen(true)
+  }, [])
+
+  const context: AppOutletContext = {
+    socket,
+    openChatBox: handleOpenChatBox,
+    isChatBoxOpen,
+  }
 
   return (
     <Document pathname={pathname}>
@@ -218,6 +249,8 @@ export default function App() {
         <PersistGate loading={null} persistor={persistor}>
           <RootLayout>
             <Outlet context={context} />
+
+            <Chat open={isChatBoxOpen} handleClose={handleCloseChatBox} />
           </RootLayout>
         </PersistGate>
       </Provider>
