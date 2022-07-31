@@ -11,6 +11,7 @@ import type {
   fetchTracksByGenre,
   fetchPlaylistDetail,
   fetchAlbumDetail,
+  getSessionDataFromAccount,
 } from '~/database/requests.server'
 
 export type BoxStyles = { [key: string]: BoxProps['sx'] }
@@ -56,4 +57,4 @@ export type Credentials = {
   password: string
 }
 
-export type Account = NonNullable<Awaited<ReturnType<typeof doLogin>>>
+export type SessionAccount = ReturnType<typeof getSessionDataFromAccount>

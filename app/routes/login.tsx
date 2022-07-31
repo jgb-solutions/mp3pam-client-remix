@@ -5,6 +5,7 @@ import type {
   HtmlMetaDescriptor,
 } from '@remix-run/node'
 import { z } from 'zod'
+import type { FC } from 'react'
 import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import Alert from '@mui/material/Alert'
@@ -15,7 +16,14 @@ import { AuthorizationError } from 'remix-auth'
 import ErrorIcon from '@mui/icons-material/Error'
 import { useCallback, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useSubmit,
+} from '@remix-run/react'
+import { SocialsProvider } from 'remix-auth-socials'
 
 import {
   getCookieSession,
@@ -109,6 +117,7 @@ export const action: ActionFunction = async ({ request }) => {
       }
     )
   } catch (error) {
+    console.log(error)
     let errorMessage
 
     if (error instanceof Response) return error
@@ -124,6 +133,30 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 type ActionData = { error?: string }
+
+interface SocialButtonProps {
+  provider: SocialsProvider | 'twitter'
+  label: string
+}
+
+const SocialButton: FC<SocialButtonProps> = ({ provider, label }) => (
+  <Box
+    component={Form}
+    action={`/auth/${provider}`}
+    method="post"
+    width={'100%'}
+  >
+    <Button
+      type="submit"
+      variant="contained"
+      sx={styles[`${provider}Button`]}
+      size="large"
+      fullWidth
+    >
+      Log In With {label}
+    </Button>
+  </Box>
+)
 
 export default function LoginPage() {
   const submit = useSubmit()
@@ -171,42 +204,10 @@ export default function LoginPage() {
           <Logo size={300} />
         </Box>
 
-        <Box maxWidth="450px">
-          <Button
-            component={Link}
-            to=".?facebook"
-            prefetch="intent"
-            variant="contained"
-            sx={styles.facebookButton}
-            size="large"
-            fullWidth
-          >
-            Log In With Facebook
-          </Button>
-
-          <Button
-            component={Link}
-            prefetch="intent"
-            to=".?twitter"
-            variant="contained"
-            sx={styles.twitterButton}
-            size="large"
-            fullWidth
-          >
-            Log In With Twitter
-          </Button>
-
-          <Button
-            component={Link}
-            to=".?google"
-            prefetch="intent"
-            variant="contained"
-            sx={styles.googleButton}
-            size="large"
-            fullWidth
-          >
-            Log In With Google
-          </Button>
+        <Box maxWidth="332px">
+          <SocialButton provider={SocialsProvider.FACEBOOK} label="Facebook" />
+          <SocialButton provider={'twitter'} label="TWitter" />
+          <SocialButton provider={SocialsProvider.GOOGLE} label="Google" />
         </Box>
 
         <Divider>or</Divider>

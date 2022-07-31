@@ -95,6 +95,7 @@ import { db } from './db.server'
 import { graphQLClient as client } from '~/graphql/client.server'
 import { getSignedUrl } from '~/services/s3.server'
 import type { Credentials } from '~/interfaces/types'
+import { Account, Prisma } from '@prisma/client'
 
 export async function fetchHomepage() {
   const [tracks, artists, albums, playlists] = await db.$transaction([
@@ -919,25 +920,7 @@ export async function doLogin({ email, password }: Credentials) {
     const isPasswordCorrect = await bcrypt.compare(password, account.password)
 
     if (isPasswordCorrect) {
-      const {
-        type: _1,
-        imgBucket,
-        avatar,
-        password: _2,
-        ...accountData
-      } = account
-
-      return {
-        ...accountData,
-        ...(avatar
-          ? {
-              avatarUrl: getResourceUrl({
-                bucket: imgBucket,
-                resource: avatar,
-              }),
-            }
-          : {}),
-      }
+      return getSessionDataFromAccount(account)
     }
 
     return null
@@ -1241,3 +1224,19 @@ export const getResourceUrl = ({
   bucket: string
   resource: string
 }) => `https://${bucket}/${resource}`
+
+export const getSessionDataFromAccount = (account: Partial<Account>) => {
+  const { type: _1, imgBucket, avatar, password: _2, ...accountData } = account
+
+  return {
+    ...accountData,
+    ...(avatar && imgBucket
+      ? {
+          avatarUrl: getResourceUrl({
+            bucket: imgBucket,
+            resource: avatar,
+          }),
+        }
+      : {}),
+  }
+}

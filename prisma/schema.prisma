@@ -119,26 +119,31 @@ model Track {
 }
 
 model Account {
-  id            Int        @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   name          String
   email         String?
   password      String?
   avatar        String?
-  fbAvatar      String?    @map("fb_avatar")
-  fbId          String?    @map("facebook_id")
-  fbLink        String?    @map("facebook_link")
-  phone         Int?       @map("telephone")
-  type          String?
-  isAdmin       Boolean    @map("admin")
-  isActive      Boolean    @map("active")
-  resetCode     String?    @map("password_reset_code")
-  firstLogin    Boolean    @default(true) @map("first_login")
-  imgBucket     String     @map("img_bucket")
-  rememberToken String?    @map("remember_token")
-  createdAt     String     @map("created_at")
-  uppdatedAt    String     @map("updated_at")
+  fbAvatar      String?      @map("fb_avatar")
+  fbId          String?      @map("facebook_id")
+  fbLink        String?      @map("facebook_link")
+  phone         Int?         @map("telephone")
+  type          ACCOUNT_TYPE @default(user)
+  isAdmin       Boolean      @default(false) @map("admin")
+  isActive      Boolean      @default(true) @map("active")
+  resetCode     String?      @map("password_reset_code")
+  firstLogin    Boolean      @default(true) @map("first_login")
+  imgBucket     String?      @map("img_bucket")
+  rememberToken String?      @map("remember_token")
+  createdAt     String       @map("created_at")
+  uppdatedAt    String       @map("updated_at")
   tracks        Track[]
   playlists     Playlist[]
 
   @@map("users")
+}
+
+enum ACCOUNT_TYPE {
+  artist
+  user
 }

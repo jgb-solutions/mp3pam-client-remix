@@ -167,6 +167,7 @@ const Left = (props: Props) => {
               ...styles.libraryLink,
               ...(isChatBoxOpen ? styles.activeClassName : {}),
               cursor: 'pointer',
+              marginBottom: '3rem',
             } as CSSProperties
           }
           onClick={() => {

@@ -8,3 +8,4 @@ export const AUDIO_BUCKET =
     : `audio-storage-prod.mp3pam.com`
 export const DOMAIN = process.env.DOMAIN || `https://mp3pam.com`
 export const API_URL = process.env.API_URL || `https://mp3pam.graphcdn.app`
+export const DB_DATE_FORMAT = 'YYYY-MM-DD HH-mm-ss'

@@ -1,12 +1,18 @@
 import { redirect } from '@remix-run/node'
-import type { LoaderFunction } from '@remix-run/node'
+import type { LoaderFunction, ActionFunction } from '@remix-run/node'
 import {
+  USER_SESSION_ID,
   getCookieSession,
   updateCookieSessionHeader,
-  USER_SESSION_ID,
 } from '~/auth/sessions.server'
+import { authenticator } from '~/auth/auth.server'
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = () => redirect('/login')
+
+export const action: ActionFunction = async ({ request, params }) => {
+  const { provider } = params as { provider: string }
+  return authenticator.authenticate(provider, request)
+
   const session = await getCookieSession(request)
 
   try {
