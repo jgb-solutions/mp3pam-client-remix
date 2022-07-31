@@ -29,7 +29,6 @@ export const loader = async () => {
 
 export default function BrowsePage() {
   const { genres } = useLoaderData<typeof loader>()
-  console.log(genres)
 
   return (
     <>

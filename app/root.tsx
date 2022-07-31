@@ -16,7 +16,7 @@ import type {
   HtmlMetaDescriptor,
   LoaderArgs,
 } from '@remix-run/node'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import { Provider } from 'react-redux'
@@ -25,6 +25,8 @@ import Typography from '@mui/material/Typography'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import { PersistGate } from 'redux-persist/integration/react'
 import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
+import type { Socket } from 'socket.io-client'
+import type { DefaultEventsMap } from 'socket.io/dist/typed-events'
 
 import {
   shouldCache,
@@ -43,6 +45,7 @@ import HeaderTitle from './components/HeaderTitle'
 import ClientStyleContext from './mui/ClientStyleContext'
 import type { Account } from './interfaces/types'
 import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
+import { connect } from './ws/client'
 
 export const links: LinksFunction = () => [
   {
@@ -181,24 +184,43 @@ export const loader = async ({ request }: LoaderArgs) => {
   )
 }
 
+export type OutletContext = {
+  socket?: Socket
+}
+
 export default function App() {
   const { pathname } = useLoaderData<typeof loader>()
+  let [socket, setSocket] =
+    useState<Socket<DefaultEventsMap, DefaultEventsMap>>()
+
+  const context: OutletContext = {
+    socket,
+  }
+
+  useEffect(() => {
+    let connection = connect()
+    setSocket(connection)
+    return () => {
+      connection.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!socket) return
+    socket.on('event', (data) => {
+      console.log(data)
+    })
+  }, [socket])
 
   return (
     <Document pathname={pathname}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <RootLayout>
-            <Outlet />
+            <Outlet context={context} />
           </RootLayout>
         </PersistGate>
       </Provider>
-
-      {/* <script
-        dangerouslySetInnerHTML={{
-          __html: `window.ENV = ${JSON.stringify(ENV)}`,
-        }}
-      /> */}
     </Document>
   )
 }

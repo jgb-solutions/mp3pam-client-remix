@@ -4,18 +4,20 @@ import type {
   ActionFunction,
   HtmlMetaDescriptor,
 } from '@remix-run/node'
+import { z } from 'zod'
 import Box from '@mui/material/Box'
+import { json } from '@remix-run/node'
 import Alert from '@mui/material/Alert'
 import { useForm } from 'react-hook-form'
 import Button from '@mui/material/Button'
-import { useCallback, useState } from 'react'
 import TextField from '@mui/material/TextField'
-import { json, redirect } from '@remix-run/node'
+import { AuthorizationError } from 'remix-auth'
 import ErrorIcon from '@mui/icons-material/Error'
+import { useCallback, useRef, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
 
 import {
-  USER_SESSION_ID,
   getCookieSession,
   redirectToFacebookLogin,
   shouldLoginWithFacebook,
@@ -25,11 +27,9 @@ import colors from '../utils/colors'
 import Logo from '~/components/Logo'
 import Divider from '~/components/Divider'
 import TextIcon from '~/components/TextIcon'
-import { emailRegex } from '../utils/validators'
-import type { BoxStyles } from '~/interfaces/types'
 import PlainLayout from '~/components/layouts/Plain'
-import { doLogin } from '~/database/requests.server'
-import type { LoginInput } from '~/graphql/generated-types'
+import { authenticator, AuthenticatorOptions } from '~/auth/auth.server'
+import type { BoxStyles, Credentials } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   facebookButton: {
@@ -49,9 +49,24 @@ const styles: BoxStyles = {
   },
 }
 
-type ActionData = {
-  error?: string
-}
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, {
+      message: 'The email is required.',
+    })
+    .email({
+      message: 'This email is not valid.',
+    }),
+  password: z
+    .string()
+    .min(1, {
+      message: 'Your password Required.',
+    })
+    .min(6, {
+      message: 'The password must be at least 6 characters.',
+    }),
+})
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'Log into your account'
@@ -63,11 +78,11 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
 }
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const session = await getCookieSession(request)
+  await authenticator.isAuthenticated(request, {
+    successRedirect: '/',
+  })
 
-  if (session.has(USER_SESSION_ID)) {
-    return redirect('/')
-  }
+  const session = await getCookieSession(request)
 
   if (shouldLoginWithFacebook(request)) {
     return await redirectToFacebookLogin()
@@ -85,30 +100,34 @@ export const loader = async ({ request }: LoaderArgs) => {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  const form = await request.formData()
+  try {
+    await authenticator.authenticate(
+      AuthenticatorOptions.Credentials,
+      request,
+      {
+        successRedirect: '/',
+      }
+    )
+  } catch (error) {
+    let errorMessage
 
-  const email = form.get('email') as string
-  const password = form.get('password') as string
+    if (error instanceof Response) return error
 
-  const account = await doLogin({ email, password })
+    if (error instanceof AuthorizationError) {
+      errorMessage = error.message
+    } else {
+      errorMessage = 'An unknown error occurred.'
+    }
 
-  if (account) {
-    const session = await getCookieSession(request)
-
-    session.set(USER_SESSION_ID, account)
-
-    return redirect('/', {
-      headers: {
-        ...(await updateCookieSessionHeader(session)),
-      },
-    })
-  } else {
-    return json({ error: 'The email or password is incorrect.' }, 401)
+    return json({ error: errorMessage }, 401)
   }
 }
 
+type ActionData = { error?: string }
+
 export default function LoginPage() {
   const submit = useSubmit()
+  const formRef = useRef<HTMLFormElement>()
   const { flashError } = useLoaderData<typeof loader>()
   const [errorMessage, setErrorMessage] = useState(flashError)
   const actionData = useActionData<ActionData>()
@@ -116,18 +135,16 @@ export default function LoginPage() {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<LoginInput>({
+  } = useForm<Credentials>({
     mode: 'onBlur',
+    resolver: zodResolver(loginSchema),
   })
 
   const handleLogin = useCallback(
-    async ({ email, password }: LoginInput) => {
-      const formData = new FormData()
-
-      formData.append('email', email)
-      formData.append('password', password)
-
-      submit(formData, { method: 'post' })
+    async (credentials: Credentials) => {
+      if (formRef.current) {
+        submit(formRef.current, { method: 'post' })
+      }
     },
     [submit]
   )
@@ -194,7 +211,12 @@ export default function LoginPage() {
 
         <Divider>or</Divider>
 
-        <Box component="form" onSubmit={handleSubmit(handleLogin)} noValidate>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(handleLogin)}
+          noValidate
+          ref={formRef}
+        >
           {actionData?.error && (
             <Box
               component="h3"
@@ -206,13 +228,7 @@ export default function LoginPage() {
             <TextField
               fullWidth
               variant="standard"
-              {...register('email', {
-                required: 'The email is required.',
-                pattern: {
-                  value: emailRegex,
-                  message: 'This email is not valid.',
-                },
-              })}
+              {...register('email')}
               id="email"
               label="Email"
               type="email"
@@ -228,13 +244,7 @@ export default function LoginPage() {
             <TextField
               fullWidth
               variant="standard"
-              {...register('password', {
-                required: 'Your password Required.',
-                minLength: {
-                  value: 6,
-                  message: 'The password must be at least 6 characters.',
-                },
-              })}
+              {...register('password')}
               id="password"
               label="Password"
               type="password"

@@ -64,7 +64,7 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
       <Box sx={styles.menuList}>
         {isLoggedIn && (
           <>
-            <Box sx={styles.mainMenu}>
+            <Box>
               <NavLink
                 to={AppRoutes.user.account}
                 prefetch="intent"
@@ -89,17 +89,19 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
             </Box>
 
             <Box pt="1rem" mb="2rem">
-              <NavLink
-                prefetch="intent"
-                to={AppRoutes.manage.home}
-                style={({ isActive }) => ({
-                  ...styles.yourLibraryLink,
-                  ...(isActive ? styles.activeClassName : {}),
-                })}
-                onClick={closeDrawer}
-              >
-                Your Library
-              </NavLink>
+              <Box mb="1rem">
+                <NavLink
+                  prefetch="intent"
+                  to={AppRoutes.manage.home}
+                  style={({ isActive }) => ({
+                    ...styles.yourLibraryLink,
+                    ...(isActive ? styles.activeClassName : {}),
+                  })}
+                  onClick={closeDrawer}
+                >
+                  Your Library
+                </NavLink>
+              </Box>
 
               {libraryMenu.map((menuItem, index) => (
                 <NavLink
