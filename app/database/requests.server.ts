@@ -913,6 +913,9 @@ export async function doLogin({ email, password }: Credentials) {
       isActive: true,
       firstLogin: true,
       imgBucket: true,
+      twitterAvatar: true,
+      twitterId: true,
+      twitterLink: true,
     },
   })
 
@@ -1226,7 +1229,15 @@ export const getResourceUrl = ({
 }) => `https://${bucket}/${resource}`
 
 export const getSessionDataFromAccount = (account: Partial<Account>) => {
-  const { type: _1, imgBucket, avatar, password: _2, ...accountData } = account
+  const {
+    type: _1,
+    imgBucket,
+    avatar,
+    password: _2,
+    twitterAvatar,
+    fbAvatar,
+    ...accountData
+  } = account
 
   return {
     ...accountData,
@@ -1237,6 +1248,8 @@ export const getSessionDataFromAccount = (account: Partial<Account>) => {
             resource: avatar,
           }),
         }
-      : {}),
+      : {
+          avatarUrl: twitterAvatar || fbAvatar || '',
+        }),
   }
 }

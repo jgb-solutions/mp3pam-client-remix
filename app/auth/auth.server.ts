@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import { Authenticator } from 'remix-auth'
 import { FormStrategy } from 'remix-auth-form'
 import {
@@ -6,14 +5,13 @@ import {
   FacebookStrategy,
   SocialsProvider,
 } from 'remix-auth-socials'
+import { TwitterStrategy } from 'remix-auth-twitter'
 
 import { db } from '~/database/db.server'
 import { loginSchema } from '~/routes/login'
-import { DB_DATE_FORMAT } from '~/utils/constants.server'
 import type { SessionAccount } from '~/interfaces/types'
 import { sessionStorage, USER_SESSION_ID } from './sessions.server'
 import { doLogin, getSessionDataFromAccount } from '~/database/requests.server'
-import { TwitterStrategy } from 'remix-auth-twitter'
 
 export enum AuthenticatorOptions {
   Credentials = 'Credentials',
@@ -49,9 +47,10 @@ authenticator.use(
         SocialsProvider.FACEBOOK
       }/callback`,
     },
-    async ({ profile: { _json: fbData } }) => {
+    async ({ profile: { _json: fbData, ...data } }) => {
       const email = fbData.email
       const fbAvatar = fbData.profile_pic ?? ''
+      console.log('fb', data)
       console.log('facebook', fbData)
 
       let account = await db.account.findFirst({
@@ -79,8 +78,6 @@ authenticator.use(
           })
         }
       } else {
-        const stringDate = dayjs().format(DB_DATE_FORMAT)
-
         account = await db.account.create({
           data: {
             fbId: fbData.id,
@@ -88,8 +85,6 @@ authenticator.use(
             email,
             fbAvatar,
             fbLink: '',
-            createdAt: stringDate,
-            uppdatedAt: stringDate,
           },
         })
       }
@@ -134,23 +129,59 @@ authenticator.use(
       callbackURL: `${
         process.env.SOCIAL_REDIRECT_URL as string
       }/twitter/callback`,
-      // In order to get user's email address, you need to configure your app permission.
-      // See https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials.
-      includeEmail: true, // Optional parameter. Default: false.
+      includeEmail: true,
     },
-    // Define what to do when the user is authenticated
     async ({ accessToken, accessTokenSecret, profile }) => {
-      // profile contains all the info from `account/verify_credentials`
-      // https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials
+      const twitterAvatar =
+        profile.profile_image_url_https.replace('_normal', '') ?? ''
+      const twitterId = profile.id_str
+      const twitterLink = profile.url
+      const name = profile.name
+      const email = profile.email
+      let account = await db.account.findFirst({
+        where: {
+          OR: [
+            {
+              email,
+            },
+            {
+              twitterId,
+            },
+          ],
+        },
+      })
 
-      // Return a user object to store in sessionStorage.
-      // You can also throw Error to reject the login
-      console.log('twitter profile', profile)
+      if (account) {
+        account = await db.account.update({
+          where: {
+            id: account.id,
+          },
+          data: {
+            name,
+            email,
+            twitterId,
+            twitterLink,
+            twitterAvatar,
+          },
+        })
+      } else {
+        account = await db.account.create({
+          data: {
+            name,
+            email,
+            twitterId,
+            twitterAvatar,
+            twitterLink,
+          },
+        })
+      }
 
-      return await profile
+      if (!account) {
+        throw new Error('Unable to log you in with Twitter. Please try again')
+      }
+
+      return getSessionDataFromAccount(account)
     }
   ),
-  // each strategy has a name and can be changed to use another one
-  // same strategy multiple times, especially useful for the OAuth2 strategy.
   'twitter'
 )

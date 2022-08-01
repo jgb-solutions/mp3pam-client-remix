@@ -1,6 +1,7 @@
 import type {
   ActionFunction,
   HtmlMetaDescriptor,
+  LoaderArgs,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node'
@@ -8,6 +9,7 @@ import { json } from '@remix-run/node'
 import { useActionData, useFetcher, useSubmit } from '@remix-run/react'
 import { nanoid } from 'nanoid'
 import { useEffect } from 'react'
+import { db } from '~/database/db.server'
 import { getHash } from '~/utils/helpers'
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
@@ -19,15 +21,11 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-type LoaderData = {
-  flashError?: string
-}
+export const loader = async ({ request }: LoaderArgs) => {
+  const table = new URL(request.url).searchParams.get('table') as string
 
-export const loader: LoaderFunction = async ({ request }) => {
-  return json({
-    nanoid: nanoid(10),
-    geHash: getHash(),
-  })
+  const data = await db[table].findMany()
+  return json(data)
 }
 
 export const action: ActionFunction = async ({ request }) => {

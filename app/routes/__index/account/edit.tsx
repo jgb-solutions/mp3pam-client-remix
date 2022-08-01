@@ -37,7 +37,7 @@ export interface FormData {
   id: string
   name: string
   email: string
-  telephone: string
+  phone: string
   password: string
 }
 
@@ -76,9 +76,9 @@ export default function EditAccount() {
 
   //     dispatch({ type: UPDATE_USER, payload: { data: currentUser } })
 
-  //     const { id, name, email, telephone } = currentUser
+  //     const { id, name, email, phone } = currentUser
 
-  //     reset({ id, name, email, telephone })
+  //     reset({ id, name, email, phone })
 
   //     setShouldEdit(false)
   //   }
@@ -107,7 +107,7 @@ export default function EditAccount() {
       id: currentUser.id,
       name: currentUser.name,
       email: currentUser.email || '',
-      telephone: currentUser.telephone || '',
+      phone: currentUser.phone || '',
     },
   })
 
@@ -192,26 +192,26 @@ export default function EditAccount() {
           <Grid container direction="row" spacing={2}>
             <Grid item xs={12} sm>
               <TextField
-                {...register('telephone', {
+                {...register('phone', {
                   required: 'Your phone number is required.',
                   minLength: {
                     value: 8,
                     message: 'The phone number must be at least 8 characters.',
                   },
                 })}
-                name="telephone"
-                id="telephone"
+                name="phone"
+                id="phone"
                 label="Phone"
                 type="text"
                 margin="normal"
-                error={!!errors.telephone}
+                error={!!errors.phone}
                 helperText={
-                  errors.telephone && (
+                  errors.phone && (
                     <TextIcon
                       icon={<ErrorIcon sx={accountStyles.errorColor} />}
                       text={
                         <Box component="span" sx={accountStyles.errorColor}>
-                          {errors.telephone.message}
+                          {errors.phone.message}
                         </Box>
                       }
                     />

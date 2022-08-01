@@ -104,7 +104,7 @@ const Header: FC = () => {
             >
               <Avatar
                 alt={currentUser.name}
-                src={currentUser.avatarUrl || currentUser.fbAvatar || ''}
+                src={currentUser.avatarUrl}
                 sx={styles.avatar}
               />
               <KeyboardArrowDownIcon />

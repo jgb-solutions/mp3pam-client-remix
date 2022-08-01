@@ -92,10 +92,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const session = await getCookieSession(request)
 
-  if (shouldLoginWithFacebook(request)) {
-    return await redirectToFacebookLogin()
-  }
-
   const data = { flashError: session.get('flashError') }
 
   session.unset('flashError')
@@ -205,9 +201,9 @@ export default function LoginPage() {
         </Box>
 
         <Box maxWidth="332px" mx="auto">
-          <SocialButton provider={SocialsProvider.FACEBOOK} label="Facebook" />
+          {/* <SocialButton provider={SocialsProvider.FACEBOOK} label="Facebook" /> */}
           <SocialButton provider={'twitter'} label="TWitter" />
-          <SocialButton provider={SocialsProvider.GOOGLE} label="Google" />
+          {/* <SocialButton provider={SocialsProvider.GOOGLE} label="Google" /> */}
         </Box>
 
         <Divider>or</Divider>

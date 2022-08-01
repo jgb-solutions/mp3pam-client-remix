@@ -15,8 +15,8 @@ processes = []
 
   # Social Login
   # Facebook
-  FACEBOOK_CLIENT_ID = "232624100615967"
-  FACEBOOK_CLIENT_SECRET = "656f8d5c1f588cf908f983036a8edc34"
+  FACEBOOK_CLIENT_ID = "2586789314943948"
+  FACEBOOK_CLIENT_SECRET = "f367b5d5f345a0afa8ae7e39d1ba5afa"
 
   SOCIAL_REDIRECT_URL = "https://mp3pam.com/auth"
 

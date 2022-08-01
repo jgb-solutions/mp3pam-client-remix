@@ -7,140 +7,135 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Album {
-  id          Int     @id @default(autoincrement())
-  title       String
-  hash        Int     @unique
-  cover       String
-  imgBucket   String  @map("img_bucket")
-  detail      String?
-  userId      Int     @map("user_id")
-  artistId    Int     @map("artist_id")
-  artist      Artist  @relation(fields: [artistId], references: [id])
-  releaseYear Int     @map("release_year")
-  createdAt   String  @map("created_at")
-  uppdatedAt  String  @map("updated_at")
-  tracks      Track[]
+model Genre {
+  id         Int      @id @default(autoincrement())
+  name       String
+  slug       String
+  createdAt  DateTime @default(now())
+  uppdatedAt DateTime @updatedAt
+  tracks     Track[]
+}
 
-  @@map("albums")
+model Account {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String?
+  password String?
+  avatar   String?
+
+  fbAvatar String?
+  fbId     String?
+  fbLink   String?
+
+  twitterAvatar String?
+  twitterId     String?
+  twitterLink   String?
+
+  phone         String?
+  type          ACCOUNT_TYPE @default(user)
+  isAdmin       Boolean      @default(false)
+  isActive      Boolean      @default(true)
+  resetCode     String?
+  firstLogin    Boolean      @default(true)
+  imgBucket     String?
+  rememberToken String?
+  createdAt     DateTime     @default(now())
+  uppdatedAt    DateTime     @updatedAt
+  tracks        Track[]
+  albums        Album[]
+  artists       Artist[]
+  playlists     Playlist[]
 }
 
 model Artist {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   name       String
-  stageName  String  @map("stage_name")
-  hash       Int     @unique
+  stageName  String
+  hash       Int      @unique
   poster     String
-  imgBucket  String  @map("img_bucket")
-  userId     Int     @map("user_id")
+  imgBucket  String
+  accountId  Int
   bio        String?
   facebook   String?
   twitter    String?
   instagram  String?
   youtube    String?
   verified   Boolean
-  createdAt  String  @map("created_at")
-  uppdatedAt String  @map("updated_at")
+  createdAt  DateTime @default(now())
+  uppdatedAt DateTime @updatedAt
   albums     Album[]
   tracks     Track[]
-
-  @@map("artists")
-}
-
-model Genre {
-  id         Int     @id @default(autoincrement())
-  name       String
-  slug       String
-  createdAt  String  @map("created_at")
-  uppdatedAt String  @map("updated_at")
-  tracks     Track[]
-
-  @@map("genres")
-}
-
-model PlaylistTrack {
-  id         Int    @id @default(autoincrement())
-  createdAt  String @map("created_at")
-  uppdatedAt String @map("updated_at")
-
-  playlistId Int      @map("playlist_id")
-  trackId    Int      @map("track_id")
-  Playlist   Playlist @relation(fields: [playlistId], references: [id])
-  track      Track    @relation(fields: [trackId], references: [id])
-
-  @@map("playlist_track")
-}
-
-model Playlist {
-  id         Int     @id @default(autoincrement())
-  title      String
-  hash       Int     @unique
-  userId     Int     @map("user_id")
-  user       Account @relation(fields: [userId], references: [id])
-  createdAt  String  @map("created_at")
-  uppdatedAt String  @map("updated_at")
-
-  tracks PlaylistTrack[]
-
-  @@map("playlists")
+  Account    Account  @relation(fields: [accountId], references: [id])
 }
 
 model Track {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   title         String
-  hash          Int     @unique
-  audioName     String  @map("audio_name")
+  hash          Int      @unique
+  audioName     String
   poster        String
-  imgBucket     String  @map("img_bucket")
-  audioBucket   String  @map("audio_bucket")
+  imgBucket     String
+  audioBucket   String
   featured      Int?
   detail        String?
   lyrics        String?
-  audioFileSize Int?    @map("audio_file_size")
-  userId        Int     @map("user_id")
-  user          Account @relation(fields: [userId], references: [id])
-  artistId      Int     @map("artist_id")
-  artist        Artist  @relation(fields: [artistId], references: [id])
-  albumId       Int?    @map("album_id")
-  album         Album?  @relation(fields: [albumId], references: [id])
-  genreId       Int     @map("genre_id")
-  genre         Genre   @relation(fields: [genreId], references: [id])
+  audioFileSize Int?
+  accountId     Int
+  account       Account  @relation(fields: [accountId], references: [id])
+  artistId      Int
+  artist        Artist   @relation(fields: [artistId], references: [id])
+  albumId       Int?
+  album         Album?   @relation(fields: [albumId], references: [id])
+  genreId       Int
+  genre         Genre    @relation(fields: [genreId], references: [id])
   number        Int?
-  playCount     Int?    @map("play_count")
-  downloadCount Int     @map("download_count")
+  playCount     Int?
+  downloadCount Int
   publish       Int?
   allowDownload Int?
-  createdAt     String  @map("created_at")
-  uppdatedAt    String  @map("updated_at")
+  createdAt     DateTime @default(now())
+  uppdatedAt    DateTime @updatedAt
 
-  playlists PlaylistTrack[]
-
-  @@map("tracks")
+  playlists PlaylistTracks[]
 }
 
-model Account {
-  id            Int          @id @default(autoincrement())
-  name          String
-  email         String?
-  password      String?
-  avatar        String?
-  fbAvatar      String?      @map("fb_avatar")
-  fbId          String?      @map("facebook_id")
-  fbLink        String?      @map("facebook_link")
-  phone         Int?         @map("telephone")
-  type          ACCOUNT_TYPE @default(user)
-  isAdmin       Boolean      @default(false) @map("admin")
-  isActive      Boolean      @default(true) @map("active")
-  resetCode     String?      @map("password_reset_code")
-  firstLogin    Boolean      @default(true) @map("first_login")
-  imgBucket     String?      @map("img_bucket")
-  rememberToken String?      @map("remember_token")
-  createdAt     String       @map("created_at")
-  uppdatedAt    String       @map("updated_at")
-  tracks        Track[]
-  playlists     Playlist[]
+model Album {
+  id          Int      @id @default(autoincrement())
+  title       String
+  hash        Int      @unique
+  cover       String
+  imgBucket   String
+  detail      String?
+  accountId   Int
+  artistId    Int
+  artist      Artist   @relation(fields: [artistId], references: [id])
+  releaseYear Int
+  createdAt   DateTime @default(now())
+  uppdatedAt  DateTime @updatedAt
+  tracks      Track[]
+  Account     Account  @relation(fields: [accountId], references: [id])
+}
 
-  @@map("users")
+model Playlist {
+  id         Int      @id @default(autoincrement())
+  title      String
+  hash       Int      @unique
+  accountId  Int
+  user       Account  @relation(fields: [accountId], references: [id])
+  createdAt  DateTime @default(now())
+  uppdatedAt DateTime @updatedAt
+
+  tracks PlaylistTracks[]
+}
+
+model PlaylistTracks {
+  track      Track    @relation(fields: [trackId], references: [id])
+  trackId    Int
+  playlist   Playlist @relation(fields: [playlistId], references: [id])
+  playlistId Int
+  createdAt  DateTime @default(now())
+
+  @@id([trackId, playlistId])
 }
 
 enum ACCOUNT_TYPE {
