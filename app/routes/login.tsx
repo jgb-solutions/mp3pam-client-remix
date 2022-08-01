@@ -204,7 +204,7 @@ export default function LoginPage() {
           <Logo size={300} />
         </Box>
 
-        <Box maxWidth="332px">
+        <Box maxWidth="332px" mx="auto">
           <SocialButton provider={SocialsProvider.FACEBOOK} label="Facebook" />
           <SocialButton provider={'twitter'} label="TWitter" />
           <SocialButton provider={SocialsProvider.GOOGLE} label="Google" />
@@ -225,7 +225,7 @@ export default function LoginPage() {
               dangerouslySetInnerHTML={{ __html: actionData?.error }}
             />
           )}
-          <Box mb="2rem">
+          <Box mb="2rem" maxWidth={'332px'} mx="auto">
             <TextField
               fullWidth
               variant="standard"
