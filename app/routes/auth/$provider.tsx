@@ -11,6 +11,7 @@ export const loader: LoaderFunction = () => redirect('/login')
 
 export const action: ActionFunction = async ({ request, params }) => {
   const { provider } = params as { provider: string }
+  console.log('provider', provider)
   return authenticator.authenticate(provider, request)
 
   const session = await getCookieSession(request)

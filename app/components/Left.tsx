@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import { NavLink } from '@remix-run/react'
+import type { CSSProperties } from 'react'
 import HomeIcon from '@mui/icons-material/Home'
 import InfoIcon from '@mui/icons-material/Info'
 import AlbumIcon from '@mui/icons-material/Album'
@@ -10,13 +11,12 @@ import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
 import PrivacyTipIcon from '@mui/icons-material/PrivacyTip'
 import SecurityIcon from '@mui/icons-material/Security'
-import Button from '@mui/material/Button'
+import SafetyCheckIcon from '@mui/icons-material/SafetyCheck'
 
 import Logo from './Logo'
 import AppRoutes from '~/app-routes'
 import { sidebarStyles as styles } from '~/styles/sidebar-styles'
 import { useApp } from '~/hooks/useApp'
-import { CSSProperties } from 'react'
 
 const mainMenu = [
   { name: 'Home', to: AppRoutes.pages.home, icon: <HomeIcon /> },
@@ -25,6 +25,7 @@ const mainMenu = [
 
 const pagesMenu = [
   { name: 'Privacy', to: '/privacy', icon: <PrivacyTipIcon /> },
+  { name: 'Terms', to: '/terms', icon: <SafetyCheckIcon /> },
   { name: 'Your Data', to: '/account-deletion', icon: <SecurityIcon /> },
 ]
 
