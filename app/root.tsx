@@ -1,14 +1,3 @@
-import {
-  Link,
-  Meta,
-  Links,
-  Outlet,
-  Scripts,
-  useCatch,
-  LiveReload,
-  useLoaderData,
-  ScrollRestoration,
-} from '@remix-run/react'
 import type {
   LoaderArgs,
   MetaFunction,
@@ -16,21 +5,20 @@ import type {
   HeadersFunction,
   HtmlMetaDescriptor,
 } from '@remix-run/node'
-import { useCallback, useContext, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import { Provider } from 'react-redux'
 import Dialog from '@mui/material/Dialog'
 import type { Socket } from 'socket.io-client'
-import { withEmotionCache } from '@emotion/react'
 import Typography from '@mui/material/Typography'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import { useCallback, useEffect, useState } from 'react'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import { PersistGate } from 'redux-persist/integration/react'
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
+import { Link, Outlet, useCatch, useLoaderData } from '@remix-run/react'
 
 import {
   shouldCache,
@@ -42,13 +30,15 @@ import AppRoutes from './app-routes'
 import { connect } from './ws/client'
 import appStyles from '~/styles/app.css'
 import { persistedStore } from './redux/store'
+import { Document } from './components/Document'
 import FourOrFour from './components/FourOrFour'
 import { DOMAIN } from './utils/constants.server'
 import RootLayout from './components/layouts/Root'
 import HeaderTitle from './components/HeaderTitle'
 import { authenticator } from './auth/auth.server'
-import ClientStyleContext from './mui/ClientStyleContext'
 import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
+import AccountModal from './components/account'
+import { useApp } from './hooks/useApp'
 
 export const links: LinksFunction = () => [
   {
@@ -58,71 +48,6 @@ export const links: LinksFunction = () => [
 ]
 
 const { store, persistor } = persistedStore()
-
-interface DocumentProps {
-  children: React.ReactNode
-  title?: string
-  pathname?: string
-}
-
-const Document = withEmotionCache(
-  ({ children, title, pathname }: DocumentProps, emotionCache) => {
-    const clientStyleData = useContext(ClientStyleContext)
-
-    useEnhancedEffect(() => {
-      emotionCache.sheet.container = document.head
-      const tags = emotionCache.sheet.tags
-      emotionCache.sheet.flush()
-      tags.forEach((tag) => {
-        ;(emotionCache.sheet as any)._insertTag(tag)
-      })
-      clientStyleData.reset()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    return (
-      <html lang="en">
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <meta name="theme-color" content={theme.palette.primary.main} />
-          {pathname && <link rel="canonical" href={`${DOMAIN}${pathname}`} />}
-
-          {title ? <title>{title}</title> : null}
-          <Meta />
-          <Links />
-          <link
-            rel="preconnect"
-            href="https://fonts.googleapis.com/"
-            crossOrigin="true"
-          />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com/"
-            crossOrigin="true"
-          />
-          <link
-            rel="preload"
-            as="font"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          />
-          <meta
-            name="emotion-insertion-point"
-            content="emotion-insertion-point"
-          />
-        </head>
-
-        <Box component="body" sx={{ bgcolor: 'black' }}>
-          {children}
-
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </Box>
-      </html>
-    )
-  }
-)
 
 type ChatProps = {
   open: boolean
@@ -209,10 +134,12 @@ export type AppOutletContext = {
 }
 
 export default function App() {
+  const { isLoggedIn, currentUser } = useApp()
   const { pathname } = useLoaderData<typeof loader>()
   let [socket, setSocket] =
     useState<Socket<DefaultEventsMap, DefaultEventsMap>>()
   const [isChatBoxOpen, setIsChatBoxOpen] = useState(false)
+  const [isAccountBoxOpen, setIsAccountBoxOpen] = useState(false)
 
   useEffect(() => {
     // let connection = connect()
@@ -229,11 +156,21 @@ export default function App() {
     // })
   }, [socket])
 
+  // Chat box
   const handleCloseChatBox = useCallback(() => {
     setIsChatBoxOpen(false)
   }, [])
 
   const handleOpenChatBox = useCallback(() => {
+    setIsChatBoxOpen(true)
+  }, [])
+
+  // Account box
+  const handleCloseAccountBox = useCallback(() => {
+    setIsAccountBoxOpen(false)
+  }, [])
+
+  const handleOpenAccountBox = useCallback(() => {
     setIsChatBoxOpen(true)
   }, [])
 
@@ -250,6 +187,12 @@ export default function App() {
           <RootLayout>
             <Outlet context={context} />
 
+            {isLoggedIn && (
+              <AccountModal
+                account={currentUser}
+                handleClose={handleCloseAccountBox}
+              />
+            )}
             <Chat open={isChatBoxOpen} handleClose={handleCloseChatBox} />
           </RootLayout>
         </PersistGate>

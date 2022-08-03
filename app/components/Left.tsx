@@ -161,7 +161,7 @@ const Left = (props: Props) => {
           </NavLink>
         ))}
 
-        <Box
+        {/* <Box
           style={
             {
               ...styles.link,
@@ -182,7 +182,7 @@ const Left = (props: Props) => {
           <Box component="span" sx={styles.linkText}>
             Chat
           </Box>
-        </Box>
+        </Box> */}
       </Box>
 
       <Box sx={styles.mainMenu}>

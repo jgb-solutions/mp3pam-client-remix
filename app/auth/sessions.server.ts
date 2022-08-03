@@ -1,21 +1,21 @@
 import type {
   AppData,
+  Session,
   DataFunctionArgs,
   LoaderFunction,
-  Session,
 } from '@remix-run/node'
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 
 import { fetchFacebookLoginUrl } from '~/database/requests.server'
 
-import type { Account } from '~/interfaces/types'
+import type { SessionAccount } from '~/interfaces/types'
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: '__session',
     // domain: DOMAIN,
     httpOnly: true,
-    maxAge: 60 * 60,
+    maxAge: 365 * 24 * 60 * 60,
     path: '/',
     sameSite: 'lax',
     secrets: [(process.env.SESSION_SECRET as string) || 'Random-Secret-Here'],
@@ -86,7 +86,7 @@ type WithUserOptions = {
 }
 
 type WithUserData = {
-  userSessionData: Account
+  userSessionData: SessionAccount
 }
 
 type WithUserCallback = (
@@ -106,7 +106,9 @@ export const withUser = (
 
       const session = await getCookieSession(request)
 
-      const userSessionData = (await session.get(USER_SESSION_ID)) as Account
+      const userSessionData = (await session.get(
+        USER_SESSION_ID
+      )) as SessionAccount
 
       return (
         contextCallback({ userSessionData: { ...userSessionData } }, context) ||
@@ -117,7 +119,7 @@ export const withUser = (
   )
 
 type WithTokenCallback = (
-  account: Account,
+  account: SessionAccount,
   context: DataFunctionArgs
 ) => Promise<Response> | Response | Promise<AppData> | AppData
 
@@ -133,7 +135,7 @@ export const withToken = (
 
       const session = await getCookieSession(request)
 
-      const account = (await session.get(USER_SESSION_ID)) as Account
+      const account = (await session.get(USER_SESSION_ID)) as SessionAccount
 
       return contextCallback(account, context) || {}
     },
