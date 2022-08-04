@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import PlayCircleOutline from '@mui/icons-material/PlayCircleOutline'
 import PauseCircleOutline from '@mui/icons-material/PauseCircleOutline'
 
-import Image from './Image'
+import { PhotonImage } from './PhotonImage'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
@@ -90,7 +90,7 @@ const TrackThumbnail: FC<Props> = ({ track, sx, imgStyles }: Props) => {
             style={imgStyles}
             component="img"
             sx={styles.imgContainer}
-            src={Image.phoneCdnUrl(track.posterUrl, {
+            src={PhotonImage.cdnUrl(track.posterUrl, {
               ulb: true,
               lb: {
                 width: 175,

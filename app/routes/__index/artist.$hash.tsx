@@ -37,7 +37,7 @@ import theme from '~/mui/theme'
 import colors from '~/utils/colors'
 import AppRoutes from '~/app-routes'
 import Tabs from '~/components/Tabs'
-import Image from '~/components/Image'
+import { PhotonImage } from '~/components/PhotonImage'
 import type { TabItem } from '~/components/Tabs'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
@@ -320,7 +320,7 @@ export default function ArtistDetailPage() {
     <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
-          <Image
+          <PhotonImage
             src={artist.posterUrl}
             alt={artist.stageName}
             sx={styles.image}

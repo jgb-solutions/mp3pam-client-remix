@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import type { BoxProps } from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -7,10 +7,10 @@ import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
 import { useForm } from 'react-hook-form'
 import Dialog from '@mui/material/Dialog'
+import Divider from '@mui/material/Divider'
 import { useFetcher } from '@remix-run/react'
 import DialogTitle from '@mui/material/DialogTitle'
 import PersonIcon from '@mui/icons-material/Person'
-import DialogContent from '@mui/material/DialogContent'
 import TextField from '@mui/material/TextField'
 import EditIcon from '@mui/icons-material/Edit'
 import IconButton from '@mui/material/IconButton'
@@ -18,6 +18,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import Typography from '@mui/material/Typography'
 import ErrorIcon from '@mui/icons-material/Error'
 import { zodResolver } from '@hookform/resolvers/zod'
+import DialogContent from '@mui/material/DialogContent'
 
 import theme from '~/mui/theme'
 import colors from '~/utils/colors'
@@ -26,7 +27,7 @@ import HeaderTitle from '~/components/HeaderTitle'
 import useFileUpload from '~/hooks/useFileUpload'
 import type { BoxStyles, SessionAccount } from '~/interfaces/types'
 
-export type AccountAction = 'avatar' | 'form'
+export type AccountAction = 'avatar' | 'profile' | 'password'
 
 export const styles: BoxStyles = {
   container: {
@@ -35,7 +36,7 @@ export const styles: BoxStyles = {
   errorColor: { color: colors.error },
 }
 
-export const editFormSchema = z.object({
+export const ProfileSchema = z.object({
   name: z.string().min(1, {
     message: 'The name is required.',
   }),
@@ -52,42 +53,70 @@ export const editFormSchema = z.object({
     .min(8, { message: 'The phone number must be at least 8 characters.' })
     .optional()
     .nullable(),
-  password: z
-    .string()
-    .min(6, {
-      message: 'The password must be at least 6 characters.',
-    })
-    .optional()
-    .nullable(),
 })
+
+export const PasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(1, {
+        message: 'The password is required.',
+      })
+      .min(6, {
+        message: 'The password must be at least 6 characters.',
+      }),
+    passwordConfirmation: z
+      .string()
+      .min(1, {
+        message: 'The password Confirmation is required.',
+      })
+      .min(6, {
+        message: 'The password must be at least 6 characters.',
+      }),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Passwords don't match",
+    path: ['passwordConfirmation'], // path of error
+  })
 
 type EditProps = {
   account: Required<SessionAccount>
+  handleClose: () => void
 }
 
-function Edit({ account }: EditProps) {
-  const fetcher = useFetcher()
+function Edit({ account, handleClose }: EditProps) {
+  const profileFetcher = useFetcher()
+  const passwordFetcher = useFetcher()
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
+    register: registerProfile,
+    handleSubmit: handleProfileSubmit,
+    formState: { errors: profileErrors, isValid: profileIsValid },
   } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     defaultValues: {
       name: account.name,
       email: account.email,
       phone: account.phone,
-      password: null,
     },
-    resolver: zodResolver(editFormSchema),
+    resolver: zodResolver(ProfileSchema),
   })
 
-  const handleUpdate = useCallback(
-    (data) => {
-      if (!fetcher) return
+  const {
+    register: registerPassword,
+    handleSubmit: handlePasswordSubmit,
+    formState: { errors: passwordErrors, isValid: passwordIsValid },
+    reset: resetPasswords,
+  } = useForm({
+    mode: 'onChange',
+    resolver: zodResolver(PasswordSchema),
+  })
 
-      const values = editFormSchema.parse(data)
+  const handleUpdateProfile = useCallback(
+    (data) => {
+      if (!profileFetcher) return
+
+      const values = ProfileSchema.parse(data)
 
       const formData = new FormData()
       for (const [key, value] of Object.entries(values)) {
@@ -96,35 +125,66 @@ function Edit({ account }: EditProps) {
         formData.append(key, value)
       }
 
-      fetcher.submit(formData, {
+      profileFetcher.submit(formData, {
         method: 'post',
-        action: '/api/account?action=form',
+        action: '/api/account?action=profile',
       })
     },
-    [fetcher]
+    [profileFetcher]
   )
+
+  const handleUpdatePassword = useCallback(
+    (data) => {
+      if (!passwordFetcher) return
+
+      const values = PasswordSchema.parse(data)
+
+      const formData = new FormData()
+      for (const [key, value] of Object.entries(values)) {
+        if (!value) continue
+
+        formData.append(key, value)
+      }
+
+      passwordFetcher.submit(formData, {
+        method: 'post',
+        action: '/api/account?action=password',
+      })
+    },
+    [passwordFetcher]
+  )
+
+  useEffect(() => {
+    if (passwordFetcher.type === 'done') {
+      resetPasswords()
+    }
+  }, [passwordFetcher, resetPasswords])
 
   return (
     <Box>
       <HeaderTitle icon={<EditIcon />} text={`Edit Your Profile`} />
-      <Box component="form" onSubmit={handleSubmit(handleUpdate)} noValidate>
+      <Box
+        component="form"
+        onSubmit={handleProfileSubmit(handleUpdateProfile)}
+        noValidate
+      >
         <Grid container direction="row" spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
-              {...register('name')}
+              {...registerProfile('name')}
               fullWidth
               id="name"
               label="Name"
               type="text"
               margin="normal"
-              error={!!errors.name}
+              error={!!profileErrors.name}
               helperText={
-                errors.name && (
+                profileErrors.name && (
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
                       <Box component="span" sx={styles.errorColor}>
-                        {errors.name.message}
+                        {profileErrors.name.message}
                       </Box>
                     }
                   />
@@ -136,19 +196,19 @@ function Edit({ account }: EditProps) {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              {...register('email')}
+              {...registerProfile('email')}
               id="email"
               label="Email"
               type="email"
               margin="normal"
-              error={!!errors.email}
+              error={!!profileErrors.email}
               helperText={
-                errors.email && (
+                profileErrors.email && (
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
                       <Box component="span" sx={styles.errorColor}>
-                        {errors.email.message}
+                        {profileErrors.email.message}
                       </Box>
                     }
                   />
@@ -162,45 +222,20 @@ function Edit({ account }: EditProps) {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              {...register('phone')}
+              {...registerProfile('phone')}
               name="phone"
               id="phone"
               label="Phone"
               type="text"
               margin="normal"
-              error={!!errors.phone}
+              error={!!profileErrors.phone}
               helperText={
-                errors.phone && (
+                profileErrors.phone && (
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
                       <Box component="span" sx={styles.errorColor}>
-                        {errors.phone.message}
-                      </Box>
-                    }
-                  />
-                )
-              }
-              style={{ marginBottom: 15 }}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              {...register('password')}
-              id="password"
-              label="New Password"
-              type="password"
-              margin="normal"
-              error={!!errors.password}
-              helperText={
-                errors.password && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={styles.errorColor} />}
-                    text={
-                      <Box component="span" sx={styles.errorColor}>
-                        {errors.password.message}
+                        {profileErrors.phone.message}
                       </Box>
                     }
                   />
@@ -214,9 +249,80 @@ function Edit({ account }: EditProps) {
           variant="contained"
           type="submit"
           size="large"
-          disabled={fetcher.state === 'loading'}
+          disabled={profileFetcher.state === 'loading' || !profileIsValid}
         >
-          Update Profile
+          {profileFetcher.state === 'loading'
+            ? 'Updating...'
+            : 'Update Profile'}
+        </Button>
+      </Box>
+
+      <Divider sx={{ my: '2rem' }} />
+
+      <Box
+        component="form"
+        onSubmit={handlePasswordSubmit(handleUpdatePassword)}
+        noValidate
+      >
+        <Grid container direction="row" spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              {...registerPassword('password')}
+              id="password"
+              label="New Password"
+              type="password"
+              margin="normal"
+              error={!!passwordErrors.password}
+              helperText={
+                passwordErrors.password && (
+                  <TextIcon
+                    icon={<ErrorIcon sx={styles.errorColor} />}
+                    text={
+                      <Box component="span" sx={styles.errorColor}>
+                        {passwordErrors.password.message}
+                      </Box>
+                    }
+                  />
+                )
+              }
+              style={{ marginBottom: 15 }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              {...registerPassword('passwordConfirmation')}
+              id="passwordConfirmation"
+              label="Password Confirmation"
+              type="password"
+              margin="normal"
+              error={!!passwordErrors.passwordConfirmation}
+              helperText={
+                passwordErrors.passwordConfirmation && (
+                  <TextIcon
+                    icon={<ErrorIcon sx={styles.errorColor} />}
+                    text={
+                      <Box component="span" sx={styles.errorColor}>
+                        {passwordErrors.passwordConfirmation.message}
+                      </Box>
+                    }
+                  />
+                )
+              }
+              style={{ marginBottom: 15 }}
+            />
+          </Grid>
+        </Grid>
+        <Button
+          variant="contained"
+          type="submit"
+          size="large"
+          disabled={passwordFetcher.state === 'loading' || !passwordIsValid}
+        >
+          {passwordFetcher.state === 'loading'
+            ? 'Updating...'
+            : 'Update Password'}
         </Button>
       </Box>
     </Box>
@@ -227,10 +333,10 @@ type AccountFieldProops = {
   label: string
   value?: string | null
   sx?: BoxProps['sx']
-} & BoxProps['sx']
+}
 
 const AccountField = ({ label, value, sx, ...rest }: AccountFieldProops) => (
-  <Box sx={sx} {...rest}>
+  <Box sx={sx}>
     <Typography variant="body1" fontWeight={'bold'} color="#89898e">
       {label}
     </Typography>
@@ -248,15 +354,27 @@ function View({ account }: ViewProps) {
   return (
     <Box>
       {account.name && (
-        <AccountField label={'Display Name'} value={account.name} mb="1rem" />
+        <AccountField
+          label={'Display Name'}
+          value={account.name}
+          sx={{ mb: '1rem' }}
+        />
       )}
 
       {account.email && (
-        <AccountField label="Email" value={account?.email} mb="1rem" />
+        <AccountField
+          label="Email"
+          value={account?.email}
+          sx={{ mb: '1rem' }}
+        />
       )}
 
       {account.phone && (
-        <AccountField label="Phone" value={account?.phone} mb="1rem" />
+        <AccountField
+          label="Phone"
+          value={account?.phone}
+          sx={{ mb: '1rem' }}
+        />
       )}
     </Box>
   )
@@ -268,24 +386,55 @@ type AccountProps = {
 }
 
 export default function AccountModal({ handleClose, account }: AccountProps) {
+  const accountData = account as Required<SessionAccount>
   const logoutFetcher = useFetcher()
-  const [wantToEdit, setWantToEdit] = useState(true)
-  const {
-    upload,
-    uploading,
-    isUploaded,
-    percentUploaded,
-    isValid,
-    errorMessage,
-  } = useFileUpload({
+  const avatarFetcher = useFetcher()
+  const inputref = useRef<HTMLInputElement>(null)
+  const [wantToEdit, setWantToEdit] = useState(false)
+  const [filePath, setFilePath] = useState<string>()
+  const { upload, uploading, isUploaded } = useFileUpload({
     headers: { public: true },
   })
 
+  useEffect(() => {
+    if (isUploaded && filePath) {
+      const formData = new FormData()
+
+      formData.append('avatar', filePath!)
+
+      avatarFetcher.submit(formData, {
+        method: 'post',
+        action: '/api/account?action=avatar',
+      })
+
+      setFilePath(undefined)
+    }
+  }, [avatarFetcher, filePath, isUploaded])
+
   const handleWantToEdit = () => setWantToEdit(true)
   const handleStopEditing = () => setWantToEdit(false)
-  const handleUpdateAvatar = useCallback(() => {
-    // TODO: pick and update avatar
+
+  const handleSelectAvatar = useCallback(() => {
+    inputref.current?.click()
   }, [])
+
+  const handleAvatarChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
+
+      if (!file) return
+
+      const query = `filename=${file.name}&type=image&mimeType=${file.type}`
+
+      fetch(`/api/account?${query}`)
+        .then((res) => res.json())
+        .then(({ signedUrl, filePath }) => {
+          upload({ signedUrl, file })
+          setFilePath(filePath)
+        })
+    },
+    [upload]
+  )
 
   return (
     <Dialog
@@ -334,6 +483,13 @@ export default function AccountModal({ handleClose, account }: AccountProps) {
           >
             <Box display="flex" alignItems="center">
               <Box mr="1rem" position={'relative'}>
+                <input
+                  type="file"
+                  ref={inputref}
+                  hidden
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                />
                 <Avatar
                   alt={account?.name}
                   src={account?.avatarUrl}
@@ -352,7 +508,8 @@ export default function AccountModal({ handleClose, account }: AccountProps) {
                       left: 0,
                       border: `1px solid ${colors.newBlack}`,
                     }}
-                    onClick={handleUpdateAvatar}
+                    onClick={handleSelectAvatar}
+                    disabled={uploading || avatarFetcher.state === 'loading'}
                   >
                     <EditIcon />
                   </IconButton>
@@ -374,7 +531,7 @@ export default function AccountModal({ handleClose, account }: AccountProps) {
           </Box>
           <Box bgcolor={colors.newGrey} borderRadius={3} p="1rem" mb="2rem">
             {wantToEdit ? (
-              <Edit account={account} />
+              <Edit account={accountData} handleClose={handleStopEditing} />
             ) : (
               <View account={account} />
             )}

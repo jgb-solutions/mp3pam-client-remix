@@ -130,6 +130,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 export type AppOutletContext = {
   socket?: Socket
   openChatBox: () => void
+  openAccountBox: () => void
   isChatBoxOpen: boolean
 }
 
@@ -171,12 +172,13 @@ export default function App() {
   }, [])
 
   const handleOpenAccountBox = useCallback(() => {
-    setIsChatBoxOpen(true)
+    setIsAccountBoxOpen(true)
   }, [])
 
   const context: AppOutletContext = {
     socket,
     openChatBox: handleOpenChatBox,
+    openAccountBox: handleOpenAccountBox,
     isChatBoxOpen,
   }
 
@@ -187,7 +189,7 @@ export default function App() {
           <RootLayout>
             <Outlet context={context} />
 
-            {isLoggedIn && (
+            {isLoggedIn && isAccountBoxOpen && (
               <AccountModal
                 account={currentUser}
                 handleClose={handleCloseAccountBox}

@@ -9,7 +9,7 @@ export const getFilePath = ({ filename, accountId }: FilePath) => {
   const date = dayjs().format('YYYY/MM/DD')
   const time = Date.now()
   const fileExtension = filename.split('.').pop()
-  const filePath = `${accountId}/${date}/${time}.${fileExtension}`
+  const filePath = `user_${accountId}/${date}/${time}.${fileExtension}`
 
   return filePath
 }

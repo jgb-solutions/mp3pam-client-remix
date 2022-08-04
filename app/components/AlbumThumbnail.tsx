@@ -5,7 +5,7 @@ import { IconButton } from '@mui/material'
 import type { BoxProps } from '@mui/material/Box'
 import { PauseCircleOutline, PlayCircleOutline } from '@mui/icons-material'
 
-import Image from './Image'
+import { PhotonImage } from './PhotonImage'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
@@ -81,7 +81,7 @@ function AlbumThumbnail({ album, sx }: Props) {
         <Box
           component="img"
           maxWidth={'100%'}
-          src={Image.phoneCdnUrl(album.coverUrl, {
+          src={PhotonImage.cdnUrl(album.coverUrl!, {
             ulb: true,
             lb: {
               width: 250,

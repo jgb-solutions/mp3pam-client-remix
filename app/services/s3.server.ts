@@ -13,7 +13,7 @@ export const audioBucket = process.env.AUDIO_BUCKET as string
 
 const s3 = new AWS.S3({ endpoint })
 const getSignedUrlExpireSeconds = 30 * 24 * 60 * 60
-const putSignedUrlExpireSeconds = 5 * 60
+const putSignedUrlExpireSeconds = 30 * 60
 
 type GetURLParams = { bucket: string; resource: string }
 
@@ -35,17 +35,20 @@ type PostURLParams = {
   resource: string
   isPublic?: boolean
   type: ResourceType
+  mimeType: string
 }
 
 export const putSignedUrl = ({
   resource,
   isPublic = false,
   type,
+  mimeType,
 }: PostURLParams) => {
   let options: Record<string, any> = {
     Bucket: type === 'image' ? imageBucket : audioBucket,
     Key: resource,
     Expires: putSignedUrlExpireSeconds,
+    ContentType: mimeType,
   }
 
   if (isPublic) {

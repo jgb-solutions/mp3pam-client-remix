@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { CSSProperties, FC } from 'react'
 import { useCallback } from 'react'
 import Avatar from '@mui/material/Avatar'
 import { NavLink } from '@remix-run/react'
@@ -7,10 +7,11 @@ import AlbumIcon from '@mui/icons-material/Album'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 
 import AppRoutes from '~/app-routes'
 import { sidebarStyles as styles } from '~/styles/sidebar-styles'
-import { useAuth } from '~/hooks/useAuth'
+import { useApp } from '~/hooks/useApp'
 
 const CreateMenu = [
   {
@@ -51,7 +52,11 @@ type Props = {
 }
 
 const Right: FC<Props> = ({ closeDrawerRight }) => {
-  const { currentUser, isLoggedIn } = useAuth()
+  const {
+    currentUser,
+    isLoggedIn,
+    context: { openAccountBox },
+  } = useApp()
 
   const closeDrawer = useCallback(() => {
     if (closeDrawerRight) {
@@ -65,15 +70,19 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
         {isLoggedIn && (
           <>
             <Box>
-              <NavLink
-                to={AppRoutes.user.account}
-                prefetch="intent"
-                style={({ isActive }) => ({
-                  ...styles.link,
-                  ...styles.mainMenuLink,
-                  ...(isActive ? styles.activeClassName : {}),
-                })}
-                onClick={closeDrawer}
+              <Button
+                variant="text"
+                style={
+                  {
+                    ...styles.link,
+                    ...styles.mainMenuLink,
+                    // ...(isActive ? styles.activeClassName : {}),
+                  } as CSSProperties
+                }
+                onClick={() => {
+                  closeDrawer()
+                  openAccountBox()
+                }}
               >
                 <Box component="span" sx={styles.linkIcon}>
                   <Avatar
@@ -85,7 +94,7 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
                 <Box component="span" sx={styles.linkText}>
                   Account
                 </Box>
-              </NavLink>
+              </Button>
             </Box>
 
             <Box pt="1rem" mb="2rem">

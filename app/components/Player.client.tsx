@@ -38,7 +38,7 @@ import {
   PLAY_NEXT,
   ADD_TO_QUEUE,
 } from '../redux/actions/player_action_types'
-import Image from './Image'
+import { PhotonImage } from './PhotonImage'
 import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
 import colors from '../utils/colors'
@@ -645,7 +645,7 @@ export default function Player() {
             }}
           >
             {state.currentSound ? (
-              <Image
+              <PhotonImage
                 src={state.currentSound.image}
                 sx={styles.image}
                 alt={state.currentSound && state.currentSound.title}

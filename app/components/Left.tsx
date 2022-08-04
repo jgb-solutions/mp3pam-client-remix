@@ -57,7 +57,9 @@ type Props = {
 }
 
 const Left = (props: Props) => {
-  const { isChatBoxOpen, openChatBox } = useApp()
+  const {
+    context: { isChatBoxOpen, openChatBox },
+  } = useApp()
 
   const closeDrawer = () => {
     if (props.closeDrawerLeft) {

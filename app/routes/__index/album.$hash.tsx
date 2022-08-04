@@ -17,7 +17,7 @@ import Button from '@mui/material/Button'
 import InfoIcon from '@mui/icons-material/Info'
 import ShareIcon from '@mui/icons-material/Share'
 import EmailIcon from '@mui/icons-material/Email'
-import { Box, darken, Hidden } from '@mui/material'
+import { Box, darken } from '@mui/material'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TelegramIcon from '@mui/icons-material/Telegram'
@@ -43,7 +43,7 @@ import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
 import More from '~/components/More'
 import Tabs from '~/components/Tabs'
-import Image from '~/components/Image'
+import { PhotonImage } from '~/components/PhotonImage'
 import Heart from '~/components/Heart'
 import colors from '../../utils/colors'
 import type { TabItem } from '~/components/Tabs'
@@ -339,7 +339,7 @@ export default function AlbumDetailPage() {
     <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
-          <Image
+          <PhotonImage
             src={album.coverUrl}
             alt={album.title}
             sx={styles.image}

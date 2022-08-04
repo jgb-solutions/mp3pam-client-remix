@@ -43,7 +43,7 @@ import { TrackScrollingList } from '~/components/TrackScrollingList'
 
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
-import Image from '~/components/Image'
+import { PhotonImage } from '~/components/PhotonImage'
 import { Box, Button, darken, Grid } from '@mui/material'
 import type { BoxStyles, TrackDetail } from '~/interfaces/types'
 import theme from '~/mui/theme'
@@ -404,7 +404,7 @@ export default function TrackDetailPage() {
     <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
-          <Image
+          <PhotonImage
             src={track.posterUrl}
             alt={track.title}
             sx={styles.image}

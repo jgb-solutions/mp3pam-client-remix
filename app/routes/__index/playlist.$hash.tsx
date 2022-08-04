@@ -15,7 +15,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
-import { darken, Hidden } from '@mui/material'
+import { darken } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import ShareIcon from '@mui/icons-material/Share'
 import { useDispatch, useSelector } from 'react-redux'
@@ -48,7 +48,7 @@ import {
 } from '~/utils/constants'
 import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
-import Image from '~/components/Image'
+import { PhotonImage } from '~/components/PhotonImage'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import type { BoxStyles, PlaylistDetail } from '~/interfaces/types'
@@ -160,7 +160,6 @@ const PlaylistDetailPage = () => {
   )
 
   const { playlist } = useLoaderData<typeof loader>()
-  console.log('playlist', playlist)
   const makeList = () => {
     const { hash } = playlist
 
@@ -315,7 +314,7 @@ const PlaylistDetailPage = () => {
     <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
-          <Image
+          <PhotonImage
             src={playlist.coverUrl}
             alt={playlist.title}
             sx={styles.image}
@@ -456,8 +455,6 @@ export function CatchBoundary() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.log(error)
-
   return (
     <Box sx={{}}>
       <Box>

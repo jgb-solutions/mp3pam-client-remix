@@ -5,7 +5,7 @@ import { Box, Typography } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import { PlayCircleOutline } from '@mui/icons-material'
 
-import Image from './Image'
+import { PhotonImage } from './PhotonImage'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import type { ArtistThumbnailData, BoxStyles } from '~/interfaces/types'
@@ -77,7 +77,7 @@ export default function ArtistThumbnail({ artist, style, sx }: Props) {
         <Box
           component="img"
           maxWidth={'100%'}
-          src={Image.phoneCdnUrl(artist.posterUrl, {
+          src={PhotonImage.cdnUrl(artist.posterUrl, {
             ulb: true,
             lb: {
               width: 250,

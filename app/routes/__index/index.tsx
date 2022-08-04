@@ -62,8 +62,6 @@ export default function Index() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.log(error)
-
   return (
     <Box
       sx={{

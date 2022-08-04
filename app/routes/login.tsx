@@ -105,7 +105,6 @@ export const action: ActionFunction = async ({ request }) => {
       }
     )
   } catch (error) {
-    console.log(error)
     let errorMessage
 
     if (error instanceof Response) return error

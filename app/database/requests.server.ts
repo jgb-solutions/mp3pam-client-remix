@@ -96,6 +96,7 @@ import { graphQLClient as client } from '~/graphql/client.server'
 import { getSignedUrl } from '~/services/s3.server'
 import type { Credentials } from '~/interfaces/types'
 import { Account, Prisma } from '@prisma/client'
+import { PhotonImage } from '~/components/PhotonImage'
 
 export async function fetchHomepage() {
   const [tracks, artists, albums, playlists] = await db.$transaction([
@@ -1223,10 +1224,29 @@ export async function fetchTracks({
 export const getResourceUrl = ({
   bucket,
   resource,
+  cdn,
+  width,
+  height,
 }: {
   bucket: string
   resource: string
-}) => `https://${bucket}/${resource}`
+  cdn?: boolean
+  width?: number
+  height?: number
+}) => {
+  const url = `https://${bucket}/${resource}`
+
+  if (cdn) {
+    return PhotonImage.cdnUrl(url, {
+      lb: {
+        width: 250,
+        height: 250,
+      },
+    })
+  }
+
+  return url
+}
 
 export const getSessionDataFromAccount = (account: Partial<Account>) => {
   const {
@@ -1246,6 +1266,9 @@ export const getSessionDataFromAccount = (account: Partial<Account>) => {
           avatarUrl: getResourceUrl({
             bucket: imgBucket,
             resource: avatar,
+            cdn: true,
+            width: 200,
+            height: 200,
           }),
         }
       : {
