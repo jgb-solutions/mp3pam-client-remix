@@ -16,19 +16,11 @@ import { AuthorizationError } from 'remix-auth'
 import ErrorIcon from '@mui/icons-material/Error'
 import { useCallback, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Form,
-  Link,
-  useActionData,
-  useLoaderData,
-  useSubmit,
-} from '@remix-run/react'
-import { SocialsProvider } from 'remix-auth-socials'
+import type { SocialsProvider } from 'remix-auth-socials'
+import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
 
 import {
   getCookieSession,
-  redirectToFacebookLogin,
-  shouldLoginWithFacebook,
   updateCookieSessionHeader,
 } from '~/auth/sessions.server'
 import colors from '../utils/colors'

@@ -1,27 +1,25 @@
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
-
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import YouTubeIcon from '@mui/icons-material/YouTube'
-
-import ProgressBar from '~/components/ProgressBar'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import UploadButton from '~/components/UploadButton'
 
+import ProgressBar from '~/components/ProgressBar'
+import UploadButton from '~/components/UploadButton'
 import HeaderTitle from '~/components/HeaderTitle'
-import useFileUpload from '../../../hooks/useFileUpload'
+import useFileUpload from '~/hooks/useFileUpload'
 import TextIcon from '~/components/TextIcon'
 import AppRoutes from '~/app-routes'
 import AlertDialog from '~/components/AlertDialog'
 import { getFile } from '~/utils/helpers'
-import { IMG_BUCKET } from '~/utils/constants.server'
 import {
   MAX_IMG_FILE_SIZE,
   MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
@@ -30,7 +28,7 @@ import {
 
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
-import { BoxStyles } from '~/interfaces/types'
+import type { BoxStyles } from '~/interfaces/types'
 import colors from '~/utils/colors'
 
 type IconFieldProps = {

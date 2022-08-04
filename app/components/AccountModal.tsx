@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { useCallback, useState } from 'react'
 import Box from '@mui/material/Box'
 import type { BoxProps } from '@mui/material/Box'
@@ -16,143 +17,102 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Typography from '@mui/material/Typography'
 import ErrorIcon from '@mui/icons-material/Error'
-import LinearProgress from '@mui/material/LinearProgress'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import DialogContentText from '@mui/material/DialogContentText'
+import { zodResolver } from '@hookform/resolvers/zod'
 
+import theme from '~/mui/theme'
 import colors from '~/utils/colors'
-import { HR } from '~/components/Divider'
-import { useAuth } from '~/hooks/useAuth'
 import TextIcon from '~/components/TextIcon'
 import HeaderTitle from '~/components/HeaderTitle'
 import useFileUpload from '~/hooks/useFileUpload'
-import AlertDialog from '~/components/AlertDialog'
 import type { BoxStyles, SessionAccount } from '~/interfaces/types'
-import UploadButton from '~/components/UploadButton'
-import { IMG_BUCKET } from '~/utils/constants.server'
-import { getFile } from '~/utils/helpers'
-import theme from '~/mui/theme'
+
+export type AccountAction = 'avatar' | 'form'
 
 export const styles: BoxStyles = {
   container: {
     backgroundColor: colors.newBlack,
   },
-  noBgButton: {
-    // width: '150px',
-    // backgroundColor: '#18171d',
-    // // backgroundColor: colors.contentGrey,
-    // border: `1px solid ${colors.primary}`,
-  },
-  uploadButton: {
-    marginTop: '10px',
-    marginBottom: '5px',
-  },
-  successColor: { color: colors.success },
   errorColor: { color: colors.error },
 }
 
-export interface FormData {
-  id: string
-  name: string
-  email: string
-  phone: string
-  password: string
-}
+export const editFormSchema = z.object({
+  name: z.string().min(1, {
+    message: 'The name is required.',
+  }),
+  email: z
+    .string()
+    .min(1, {
+      message: 'The email is required.',
+    })
+    .email({
+      message: 'This email is not valid.',
+    }),
+  phone: z
+    .string()
+    .min(8, { message: 'The phone number must be at least 8 characters.' })
+    .optional()
+    .nullable(),
+  password: z
+    .string()
+    .min(6, {
+      message: 'The password must be at least 6 characters.',
+    })
+    .optional()
+    .nullable(),
+})
 
 type EditProps = {
-  account: SessionAccount
-  handleClose: () => void
+  account: Required<SessionAccount>
 }
 
-function Edit({ account, handleClose }: EditProps) {
-  const accountFetcher = useFetcher()
-
-  const {
-    upload: uploadImg,
-    uploading: imgUploading,
-    isUploaded: imgUploaded,
-    percentUploaded: imgPercentUploaded,
-    // isValid: imgValid,
-    // errorMessage: imgErrorMessage,
-    filename: avatar,
-  } = useFileUpload({
-    bucket: IMG_BUCKET,
-    message: 'You must choose an avatar.',
-    headers: { public: true },
-  })
-  const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
-
-  // useEffect(() => {
-  //   if (updatedaccount) {
-  //     const account = updatedaccount.updateUser
-
-  //     dispatch({ type: UPDATE_USER, payload: { data: account } })
-
-  //     const { id, name, email, phone } = account
-
-  //     reset({ id, name, email, phone })
-
-  //     setShouldEdit(false)
-  //   }
-
-  // }, [updatedaccount])
-
-  const handleInvalidImageSize = (filesize: number) => {
-    setOpenInvalidFileSize(`
-		The file size exceeds 1 MB. <br />
-		Choose another one or reduce the size to upload.
-	`)
-  }
-
-  // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   uploadImg(getFile(event))
-  // }
+function Edit({ account }: EditProps) {
+  const fetcher = useFetcher()
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
-  } = useForm<FormData>({
+  } = useForm({
     mode: 'onBlur',
     defaultValues: {
-      id: account.id,
       name: account.name,
-      email: account.email || '',
-      phone: account.phone || '',
+      email: account.email,
+      phone: account.phone,
+      password: null,
     },
+    resolver: zodResolver(editFormSchema),
   })
 
-  const handleUpdateUser = (values: FormData) => {
-    const user: UserFormData = {
-      ...values,
-      avatar,
-    }
+  const handleUpdate = useCallback(
+    (data) => {
+      if (!fetcher) return
 
-    if (avatar) {
-      user.img_bucket = IMG_BUCKET
-    }
+      const values = editFormSchema.parse(data)
 
-    // console.table(user)
-    updateUser(user)
-  }
+      const formData = new FormData()
+      for (const [key, value] of Object.entries(values)) {
+        if (!value) continue
+
+        formData.append(key, value)
+      }
+
+      fetcher.submit(formData, {
+        method: 'post',
+        action: '/api/account?action=form',
+      })
+    },
+    [fetcher]
+  )
 
   return (
     <Box>
       <HeaderTitle icon={<EditIcon />} text={`Edit Your Profile`} />
-      <Box
-        component="form"
-        onSubmit={handleSubmit(handleUpdateUser)}
-        noValidate
-      >
-        <input type="hidden" {...register('id', { required: true })} />
+      <Box component="form" onSubmit={handleSubmit(handleUpdate)} noValidate>
         <Grid container direction="row" spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
+              {...register('name')}
               fullWidth
-              {...register('name', {
-                required: 'Your name is required.',
-              })}
               id="name"
               label="Name"
               type="text"
@@ -176,9 +136,7 @@ function Edit({ account, handleClose }: EditProps) {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              {...register('email', {
-                required: 'Your email is required.',
-              })}
+              {...register('email')}
               id="email"
               label="Email"
               type="email"
@@ -204,13 +162,7 @@ function Edit({ account, handleClose }: EditProps) {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              {...register('phone', {
-                required: 'Your phone number is required.',
-                minLength: {
-                  value: 8,
-                  message: 'The phone number must be at least 8 characters.',
-                },
-              })}
+              {...register('phone')}
               name="phone"
               id="phone"
               label="Phone"
@@ -236,12 +188,7 @@ function Edit({ account, handleClose }: EditProps) {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              {...register('password', {
-                minLength: {
-                  value: 6,
-                  message: 'The password must be at least 6 characters.',
-                },
-              })}
+              {...register('password')}
               id="password"
               label="New Password"
               type="password"
@@ -263,82 +210,17 @@ function Edit({ account, handleClose }: EditProps) {
             />
           </Grid>
         </Grid>
-        <Grid container direction="row" spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <Grid
-              container
-              direction="row"
-              alignItems="center"
-              spacing={1}
-              sx={styles.uploadButton}
-            >
-              <Grid item xs={9}>
-                {/* <UploadButton
-                  allowedFileSize={MAX_IMG_FILE_SIZE()}
-                  onFileSizeInvalid={handleInvalidImageSize}
-                  buttonSize='large'
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  title="Choose your avatar"
-                  disabled={imgUploaded}
-                  fullWidth
-                /> */}
-              </Grid>
-              <Grid item xs={3}>
-                {imgUploaded && <CheckCircleIcon sx={styles.successColor} />}
-              </Grid>
-            </Grid>
-
-            {imgPercentUploaded > 0 && imgPercentUploaded < 100 && (
-              <LinearProgress
-                variant="determinate"
-                color="secondary"
-                value={imgPercentUploaded}
-              />
-            )}
-          </Grid>
-        </Grid>
         <Button
           variant="contained"
           type="submit"
           size="large"
-          disabled={imgUploading || accountFetcher.state === 'loading'}
+          disabled={fetcher.state === 'loading'}
         >
           Update Profile
-        </Button>{' '}
-        &nbsp;{' '}
-        <Button size="large" variant="outlined" onClick={handleClose}>
-          Cancel
         </Button>
       </Box>
-
-      <AlertDialog open={false} handleClose={() => setOpenInvalidFileSize('')}>
-        <DialogContentText id="alert-dialog-description" align="center">
-          <Box>
-            <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
-          </Box>
-          <br />
-          <Box dangerouslySetInnerHTML={{ __html: 'error' }} />
-          <br />
-          <br />
-          <Button
-            size="small"
-            onClick={() => setOpenInvalidFileSize('')}
-            color="primary"
-          >
-            OK
-          </Button>
-        </DialogContentText>
-      </AlertDialog>
     </Box>
   )
-}
-
-export const NOT_AVAILABLE = `N/A`
-
-export interface UserFormData extends FormData {
-  avatar?: string
-  img_bucket?: string
 }
 
 type AccountFieldProops = {
@@ -353,7 +235,7 @@ const AccountField = ({ label, value, sx, ...rest }: AccountFieldProops) => (
       {label}
     </Typography>
     <Typography variant="body1" fontWeight={'bold'}>
-      {value || NOT_AVAILABLE}
+      {value}
     </Typography>
   </Box>
 )
@@ -365,11 +247,17 @@ type ViewProps = {
 function View({ account }: ViewProps) {
   return (
     <Box>
-      <AccountField label={'Display Name'} value={account.name} mb="1rem" />
+      {account.name && (
+        <AccountField label={'Display Name'} value={account.name} mb="1rem" />
+      )}
 
-      <AccountField label="Email" value={account?.email} mb="1rem" />
+      {account.email && (
+        <AccountField label="Email" value={account?.email} mb="1rem" />
+      )}
 
-      <AccountField label="Phone" value={account?.phone} mb="1rem" />
+      {account.phone && (
+        <AccountField label="Phone" value={account?.phone} mb="1rem" />
+      )}
     </Box>
   )
 }
@@ -379,9 +267,19 @@ type AccountProps = {
   account: SessionAccount
 }
 
-export default function Account({ handleClose, account }: AccountProps) {
+export default function AccountModal({ handleClose, account }: AccountProps) {
   const logoutFetcher = useFetcher()
-  const [wantToEdit, setWantToEdit] = useState(false)
+  const [wantToEdit, setWantToEdit] = useState(true)
+  const {
+    upload,
+    uploading,
+    isUploaded,
+    percentUploaded,
+    isValid,
+    errorMessage,
+  } = useFileUpload({
+    headers: { public: true },
+  })
 
   const handleWantToEdit = () => setWantToEdit(true)
   const handleStopEditing = () => setWantToEdit(false)
@@ -476,13 +374,17 @@ export default function Account({ handleClose, account }: AccountProps) {
           </Box>
           <Box bgcolor={colors.newGrey} borderRadius={3} p="1rem" mb="2rem">
             {wantToEdit ? (
-              <Edit handleClose={handleStopEditing} account={account} />
+              <Edit account={account} />
             ) : (
               <View account={account} />
             )}
           </Box>
 
-          {!wantToEdit && (
+          {wantToEdit ? (
+            <Button size="large" variant="outlined" onClick={handleStopEditing}>
+              Cancel
+            </Button>
+          ) : (
             <logoutFetcher.Form method="post" action="/logout">
               <Button size="large" type="submit" variant="outlined">
                 Log out

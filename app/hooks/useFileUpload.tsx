@@ -1,64 +1,31 @@
-import { useState, useEffect } from 'react'
-import axios from "axios"
-
-import { uploadUrlDocument } from '../graphql/queries'
-import { graphQLClient } from '~/graphql/client.server'
-
-type UploadFileType = {
-  upload: (file: File) => void,
-  fileUrl: string | undefined,
-  filename: string | undefined,
-  size: number,
-  uploading: boolean,
-  error: object | null,
-  isUploaded: boolean,
-  percentUploaded: number,
-  isValid: boolean,
-  errorMessage: string | undefined
-}
+import axios from 'axios'
+import type { AxiosError } from 'axios'
+import { useState, useEffect, useCallback } from 'react'
 
 type Params = {
-  bucket: string,
-  message?: string | undefined,
+  message?: string
   headers?: {
-    public?: boolean,
+    public?: boolean
     attachment?: boolean
   }
 }
 
-export default function useFileUpload({ bucket, message, headers }: Params): UploadFileType {
+export default function useFileUpload({ message, headers }: Params) {
+  const [size, setSize] = useState(0)
   const [isValid, setIsValid] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+  const [error, setError] = useState<AxiosError>()
   const [uploading, setUploading] = useState(false)
-  const [error, setError] = useState(null)
-  const [fileUrl, setFileUrl] = useState(undefined)
-  const [filename, setFilename] = useState(undefined)
   const [isUploaded, setIsUploaded] = useState(false)
   const [percentUploaded, setPercentUploaded] = useState(0)
-  const [size, setSize] = useState(0)
-
-  const getHeaders = () => {
-    let h: any = {}
-
-    if (headers && headers.public) {
-      h["x-amz-acl"] = 'public-read'
-    }
-
-    if (headers && headers.attachment) {
-      h['Content-Disposition'] = 'attachment'
-    }
-
-    return h
-  }
+  const [errorMessage, setErrorMessage] = useState<string>()
 
   useEffect(() => {
     if (isValid) {
       setErrorMessage(undefined)
     } else {
-      setErrorMessage(message || "Please choose a file.")
+      setErrorMessage(message || 'Please choose a file.')
     }
-    // eslint-disable-next-line
-  }, [isValid])
+  }, [isValid, message])
 
   useEffect(() => {
     if (percentUploaded === 100) {
@@ -67,53 +34,54 @@ export default function useFileUpload({ bucket, message, headers }: Params): Upl
     setUploading(percentUploaded > 0 && percentUploaded < 100)
   }, [percentUploaded])
 
-  const upload = async (file: File) => {
-    if (!file) return
+  const getHeaders = useCallback(() => {
+    let h: Record<string, string> = {}
 
-    // file size
-    setSize(file.size)
+    if (headers) {
+      if (headers.public) {
+        h['x-amz-acl'] = 'public-read'
+      }
 
-    try {
-      const { data: { uploadUrl: { signedUrl, fileUrl, filename } } } = await graphQLClient.request(uploadUrlDocument, {
-        input: {
-          name: file.name,
-          bucket,
-          ...headers
-        }
-      })
+      if (headers.attachment) {
+        h['Content-Disposition'] = 'attachment'
+      }
+    }
 
-      setFileUrl(fileUrl)
-      setFilename(filename)
+    return h
+  }, [headers])
+
+  const upload = useCallback(
+    async ({ file, signedUrl }: { file: File; signedUrl: string }) => {
+      setSize(file.size)
 
       const options = {
         headers: {
-          "Content-Type": file.type,
+          'Content-Type': file.type,
           'X-Requested-With': 'XMLHttpRequest',
-          ...getHeaders()
+          ...getHeaders(),
         },
         onUploadProgress: (progressEvent: ProgressEvent) => {
           const percentCompleted = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
           )
           setPercentUploaded(percentCompleted)
-        }
+        },
       }
 
       try {
         setIsValid(true)
         await axios.put(signedUrl, file, options)
       } catch (error) {
-        setError(error)
+        const e = error as AxiosError
+        setError(e)
         setIsValid(false)
       }
-    } catch (error) {
-      setError(error)
-    }
-  }
+    },
+    [getHeaders]
+  )
 
   return {
     upload,
-    fileUrl,
     size,
     uploading,
     error,
@@ -121,6 +89,5 @@ export default function useFileUpload({ bucket, message, headers }: Params): Upl
     percentUploaded,
     isValid,
     errorMessage,
-    filename
   }
 }

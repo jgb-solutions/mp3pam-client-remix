@@ -81,23 +81,23 @@ export const withAuth = async (
   return contextCallback(context) || {}
 }
 
-type WithUserOptions = {
+type WithAccountOptions = {
   redirectTo?: string
 }
 
-type WithUserData = {
-  userSessionData: SessionAccount
+type WithAccountData = {
+  sessionAccount: SessionAccount
 }
 
-type WithUserCallback = (
-  withUserData: WithUserData,
+type WithAccountCallback = (
+  withAccountData: WithAccountData,
   context: DataFunctionArgs
 ) => Promise<Response> | Response | Promise<AppData> | AppData
 
-export const withUser = (
+export const withAccount = (
   context: DataFunctionArgs,
-  contextCallback: WithUserCallback = () => {},
-  options: WithUserOptions = {}
+  contextCallback: WithAccountCallback = () => {},
+  options: WithAccountOptions = {}
 ) =>
   withAuth(
     context,
@@ -106,12 +106,12 @@ export const withUser = (
 
       const session = await getCookieSession(request)
 
-      const userSessionData = (await session.get(
+      const sessionAccount = (await session.get(
         USER_SESSION_ID
       )) as SessionAccount
 
       return (
-        contextCallback({ userSessionData: { ...userSessionData } }, context) ||
+        contextCallback({ sessionAccount: { ...sessionAccount } }, context) ||
         {}
       )
     },
@@ -126,7 +126,7 @@ type WithTokenCallback = (
 export const withToken = (
   context: DataFunctionArgs,
   contextCallback: WithTokenCallback = () => {},
-  options: WithUserOptions = {}
+  options: WithAccountOptions = {}
 ) =>
   withAuth(
     context,
@@ -145,7 +145,7 @@ export const withToken = (
 export const shouldCache = async (request: Request): Promise<HeadersInit> => {
   const session = await getCookieSession(request)
 
-  const userSessionData = session.get(USER_SESSION_ID)
+  const sessionAccount = session.get(USER_SESSION_ID)
 
-  return { ...(!userSessionData && { Vary: '' }) }
+  return { ...(!sessionAccount && { Vary: '' }) }
 }

@@ -901,6 +901,7 @@ export async function doLogin({ email, password }: Credentials) {
       email,
     },
     select: {
+      id: true,
       name: true,
       email: true,
       password: true,
@@ -960,7 +961,6 @@ export async function loginWithFacebook(
 
 export async function updateUser(updateUserInput: UpdateUserInput) {
   // has the password first before inserting into db
-  // this.password = await hash(this.password, 10)
 
   return client.request<UpdateUserMutation, UpdateUserMutationVariables>(
     UpdateUserDocument,
@@ -1253,3 +1253,5 @@ export const getSessionDataFromAccount = (account: Partial<Account>) => {
         }),
   }
 }
+
+export const hashPassword = (password: string) => bcrypt.hashSync(password, 10)

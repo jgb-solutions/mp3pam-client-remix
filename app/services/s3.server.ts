@@ -8,19 +8,51 @@ AWS.config.update({
   region: process.env.WASABI_REGION,
 })
 
+export const imageBucket = process.env.IMAGE_BUCKET as string
+export const audioBucket = process.env.AUDIO_BUCKET as string
+
 const s3 = new AWS.S3({ endpoint })
-const signedUrlExpireSeconds = 30 * 24 * 60 * 60
+const getSignedUrlExpireSeconds = 30 * 24 * 60 * 60
+const putSignedUrlExpireSeconds = 5 * 60
 
-type Params = { bucket: string; resource: string }
+type GetURLParams = { bucket: string; resource: string }
 
-export const getSignedUrl = ({ bucket, resource }: Params) => {
+export const getSignedUrl = ({ bucket, resource }: GetURLParams) => {
   const url = s3
     .getSignedUrl('getObject', {
       Bucket: bucket,
       Key: resource,
-      Expires: signedUrlExpireSeconds,
+      Expires: getSignedUrlExpireSeconds,
     })
     .replace(endpoint, 'https:/')
+
+  return url
+}
+
+export type ResourceType = 'image' | 'audio'
+
+type PostURLParams = {
+  resource: string
+  isPublic?: boolean
+  type: ResourceType
+}
+
+export const putSignedUrl = ({
+  resource,
+  isPublic = false,
+  type,
+}: PostURLParams) => {
+  let options: Record<string, any> = {
+    Bucket: type === 'image' ? imageBucket : audioBucket,
+    Key: resource,
+    Expires: putSignedUrlExpireSeconds,
+  }
+
+  if (isPublic) {
+    options.ACL = 'public-read'
+  }
+
+  const url = s3.getSignedUrl('putObject', options)
 
   return url
 }

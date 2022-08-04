@@ -6,7 +6,7 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork'
 import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
 
 import AppRoutes from '~/app-routes'
-import { withUser } from '~/auth/sessions.server'
+import { withAccount } from '~/auth/sessions.server'
 import HeaderTitle from '~/components/HeaderTitle'
 import type { BoxStyles } from '~/interfaces/types'
 import { AlbumScrollingList } from '~/components/AlbumScrollingList'
@@ -23,8 +23,8 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => ({
 })
 
 export const loader: LoaderFunction = (context) =>
-  withUser(context, async ({ userSessionData }) => {
-    const data = await apiClient.setToken(userSessionData.token).fetchManage()
+  withAccount(context, async ({ sessionAccount }) => {
+    const data = await apiClient.setToken(sessionAccount.token).fetchManage()
 
     return json(data)
   })

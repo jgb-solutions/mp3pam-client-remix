@@ -1,5 +1,5 @@
+import Box from '@mui/material/Box'
 import type { ReactNode } from 'react'
-
 import Button from '@mui/material/Button'
 
 export interface ImageDimensions {
@@ -9,7 +9,6 @@ export interface ImageDimensions {
 
 type Props = {
   accept: string
-  buttonStyle?: string
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   multiple?: boolean
   icon?: ReactNode
@@ -29,7 +28,6 @@ type Props = {
 const UploadButton = ({
   style,
   buttonSize,
-  buttonStyle,
   icon,
   title,
   accept,
@@ -112,9 +110,8 @@ const UploadButton = ({
   }
 
   return (
-    <Box sx={style}>
+    <Box>
       <Button
-        sx={buttonStyle}
         onClick={triggerInput}
         size={buttonSize}
         disabled={disabled}

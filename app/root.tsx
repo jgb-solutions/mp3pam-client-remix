@@ -37,8 +37,8 @@ import RootLayout from './components/layouts/Root'
 import HeaderTitle from './components/HeaderTitle'
 import { authenticator } from './auth/auth.server'
 import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
-import AccountModal from './components/account'
 import { useApp } from './hooks/useApp'
+import AccountModal from './components/AccountModal'
 
 export const links: LinksFunction = () => [
   {
