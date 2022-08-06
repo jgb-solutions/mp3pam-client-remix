@@ -1,12 +1,12 @@
 import { useMatches } from '@remix-run/react'
-import type { Account } from '~/interfaces/types'
+import type { SessionAccount } from '~/interfaces/types'
 
 export function useAuth() {
   const matches = useMatches()
 
   const [rootMatch] = matches
 
-  const currentUser = (rootMatch?.data?.currentUser || {}) as Account
+  const currentUser = (rootMatch?.data?.currentUser || {}) as SessionAccount
 
   return {
     isLoggedIn: !!Object.keys(currentUser).length,

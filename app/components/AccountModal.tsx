@@ -1,6 +1,7 @@
 import { z } from 'zod'
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
+import type { ChangeEvent } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { BoxProps } from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
@@ -22,9 +23,10 @@ import DialogContent from '@mui/material/DialogContent'
 
 import theme from '~/mui/theme'
 import colors from '~/utils/colors'
+import { useApp } from '~/hooks/useApp'
 import TextIcon from '~/components/TextIcon'
-import HeaderTitle from '~/components/HeaderTitle'
 import useFileUpload from '~/hooks/useFileUpload'
+import HeaderTitle from '~/components/HeaderTitle'
 import type { BoxStyles, SessionAccount } from '~/interfaces/types'
 
 export type AccountAction = 'avatar' | 'profile' | 'password'
@@ -380,14 +382,12 @@ function View({ account }: ViewProps) {
   )
 }
 
-type AccountProps = {
-  handleClose: () => void
-  account: SessionAccount
-}
-
-export default function AccountModal({ handleClose, account }: AccountProps) {
-  const accountData = account as Required<SessionAccount>
-  const logoutFetcher = useFetcher()
+export default function AccountModal() {
+  const {
+    currentUser,
+    context: { closeAccountBox, logout },
+  } = useApp()
+  const accountData = currentUser as Required<SessionAccount>
   const avatarFetcher = useFetcher()
   const inputref = useRef<HTMLInputElement>(null)
   const [wantToEdit, setWantToEdit] = useState(false)
@@ -439,7 +439,7 @@ export default function AccountModal({ handleClose, account }: AccountProps) {
   return (
     <Dialog
       open
-      onClose={handleClose}
+      onClose={closeAccountBox}
       aria-labelledby="account-dialog-title"
       maxWidth="sm"
       fullWidth
@@ -467,7 +467,7 @@ export default function AccountModal({ handleClose, account }: AccountProps) {
             <IconButton
               size="large"
               sx={{ bgcolor: '#21212b' }}
-              onClick={handleClose}
+              onClick={closeAccountBox}
             >
               <CloseIcon />
             </IconButton>
@@ -491,8 +491,8 @@ export default function AccountModal({ handleClose, account }: AccountProps) {
                   onChange={handleAvatarChange}
                 />
                 <Avatar
-                  alt={account?.name}
-                  src={account?.avatarUrl}
+                  alt={currentUser?.name}
+                  src={currentUser?.avatarUrl}
                   sx={{ width: { sm: 75, xs: 50 }, height: { sm: 75, xs: 50 } }}
                 />
                 {wantToEdit && (
@@ -516,7 +516,7 @@ export default function AccountModal({ handleClose, account }: AccountProps) {
                 )}
               </Box>
               <Typography variant="h6" fontWeight={'bold'}>
-                {account?.name}
+                {currentUser?.name}
               </Typography>
             </Box>
             {wantToEdit ? (
@@ -533,20 +533,14 @@ export default function AccountModal({ handleClose, account }: AccountProps) {
             {wantToEdit ? (
               <Edit account={accountData} handleClose={handleStopEditing} />
             ) : (
-              <View account={account} />
+              <View account={accountData} />
             )}
           </Box>
 
-          {wantToEdit ? (
+          {wantToEdit && (
             <Button size="large" variant="outlined" onClick={handleStopEditing}>
               Cancel
             </Button>
-          ) : (
-            <logoutFetcher.Form method="post" action="/logout">
-              <Button size="large" type="submit" variant="outlined">
-                Log out
-              </Button>
-            </logoutFetcher.Form>
           )}
         </DialogContent>
       </Box>

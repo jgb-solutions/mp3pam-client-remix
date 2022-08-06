@@ -8,6 +8,7 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import LogoutIcon from '@mui/icons-material/Logout'
 
 import AppRoutes from '~/app-routes'
 import { sidebarStyles as styles } from '~/styles/sidebar-styles'
@@ -55,7 +56,7 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
   const {
     currentUser,
     isLoggedIn,
-    context: { openAccountBox },
+    context: { openAccountBox, logout },
   } = useApp()
 
   const closeDrawer = useCallback(() => {
@@ -69,35 +70,32 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
       <Box sx={styles.menuList}>
         {isLoggedIn && (
           <>
-            <Box>
-              <Button
-                variant="text"
-                style={
-                  {
-                    ...styles.link,
-                    ...styles.mainMenuLink,
-                    // ...(isActive ? styles.activeClassName : {}),
-                  } as CSSProperties
-                }
-                onClick={() => {
-                  closeDrawer()
-                  openAccountBox()
-                }}
-              >
-                <Box component="span" sx={styles.linkIcon}>
-                  <Avatar
-                    style={{ width: 20, height: 20 }}
-                    alt={currentUser.name}
-                    src={currentUser.avatarUrl || ''}
-                  />
-                </Box>
-                <Box component="span" sx={styles.linkText}>
-                  Account
-                </Box>
-              </Button>
-            </Box>
+            <Button
+              variant="text"
+              style={
+                {
+                  ...styles.link,
+                  ...styles.mainMenuLink,
+                } as CSSProperties
+              }
+              sx={styles.account}
+              onClick={() => {
+                closeDrawer()
+                openAccountBox()
+              }}
+            >
+              <Box component="span" sx={styles.linkIcon}>
+                <Avatar
+                  alt={currentUser.name}
+                  src={currentUser.avatarUrl || ''}
+                />
+              </Box>
+              <Box component="span" sx={styles.linkText} textTransform="none">
+                Account
+              </Box>
+            </Button>
 
-            <Box pt="1rem" mb="2rem">
+            <Box mb="2rem">
               <Box mb="1rem">
                 <NavLink
                   prefetch="intent"
@@ -159,6 +157,19 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
           ))}
         </Box>
       </Box>
+
+      <Button
+        size="large"
+        variant="outlined"
+        onClick={() => {
+          logout()
+          closeDrawer()
+        }}
+        startIcon={<LogoutIcon />}
+        sx={styles.account}
+      >
+        Log out
+      </Button>
     </Box>
   )
 }

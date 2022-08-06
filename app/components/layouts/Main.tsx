@@ -7,6 +7,8 @@ import Sidebar from '../Sidebar'
 import Content from '../Content'
 import colors from '~/utils/colors'
 import type { BoxStyles } from '~/interfaces/types'
+import { useApp } from '~/hooks/useApp'
+import AccountModal from '../AccountModal'
 
 export const styles: BoxStyles = {
   col: {
@@ -39,6 +41,11 @@ export const styles: BoxStyles = {
 }
 
 export default function MainLayout({ children }: { children: ReactNode }) {
+  const {
+    isLoggedIn,
+    context: { isAccountBoxOpen },
+  } = useApp()
+
   return (
     <>
       <Grid item md={2} sm={3} xs={12} sx={styles.leftGrid}>
@@ -53,6 +60,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       <Grid item md={2} sm={2} xs={12} sx={styles.rightGrid}>
         <Sidebar />
       </Grid>
+
+      {isLoggedIn && isAccountBoxOpen && <AccountModal />}
     </>
   )
 }

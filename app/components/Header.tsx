@@ -1,14 +1,19 @@
 import type { FC } from 'react'
 import { useState } from 'react'
 import Box from '@mui/material/Box'
+import Menu from '@mui/material/Menu'
 import { Link } from '@remix-run/react'
 import AppBar from '@mui/material/AppBar'
 import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
 import Toolbar from '@mui/material/Toolbar'
+import MenuItem from '@mui/material/MenuItem'
 import MenuIcon from '@mui/icons-material/Menu'
 import IconButton from '@mui/material/IconButton'
+import LogoutIcon from '@mui/icons-material/Logout'
+import LoginIcon from '@mui/icons-material/Login'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
-import AccountCircle from '@mui/icons-material/AccountCircle'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 import Left from './Left'
@@ -17,7 +22,7 @@ import theme from '~/mui/theme'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import SearchInput from './SearchInput'
-import { useAuth } from '~/hooks/useAuth'
+import { useApp } from '~/hooks/useApp'
 import type { BoxStyles } from '~/interfaces/types'
 import { SMALL_SCREEN_SIZE } from '~/utils/constants'
 
@@ -62,16 +67,18 @@ const styles: BoxStyles = {
   accountButton: {
     padding: 0,
   },
-  accountIcon: {
-    fontSize: '35px',
-  },
-  loginButton: {
-    color: colors.white,
-  },
-  avatarWrapper: {
+  avatarWrapperMobile: {
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
+  },
+  avatarWrapperDesktop: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
   },
   avatar: {
     marginRight: '5px',
@@ -81,7 +88,20 @@ const styles: BoxStyles = {
 const Header: FC = () => {
   const [drawerLeftOPen, setDrawerLeftOpen] = useState(false)
   const [drawerRightOPen, setDrawerRightOpen] = useState(false)
-  const { currentUser, isLoggedIn } = useAuth()
+  const {
+    currentUser,
+    isLoggedIn,
+    context: { openAccountBox, logout },
+  } = useApp()
+  // Menu
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(menuAnchorEl)
+  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchorEl(event.currentTarget)
+  }
+  const handleCloseMenu = () => {
+    setMenuAnchorEl(null)
+  }
 
   return (
     <Box sx={styles.grow}>
@@ -98,31 +118,50 @@ const Header: FC = () => {
           <SearchInput />
           <Box sx={styles.grow} />
           {isLoggedIn ? (
-            <Box
-              sx={styles.avatarWrapper}
-              onClick={() => setDrawerRightOpen(true)}
-            >
-              <Avatar
-                alt={currentUser.name}
-                src={currentUser.avatarUrl}
-                sx={styles.avatar}
-              />
-              <KeyboardArrowDownIcon />
-            </Box>
+            <>
+              <Box
+                sx={styles.avatarWrapperMobile}
+                onClick={() => setDrawerRightOpen(true)}
+              >
+                <Avatar
+                  alt={currentUser.name}
+                  src={currentUser.avatarUrl}
+                  sx={styles.avatar}
+                />
+                <KeyboardArrowDownIcon />
+              </Box>
+
+              <Button
+                variant="text"
+                color="inherit"
+                onClick={handleOpenMenu}
+                sx={styles.avatarWrapperDesktop}
+              >
+                <Avatar
+                  alt={currentUser.name}
+                  src={currentUser.avatarUrl}
+                  sx={styles.avatar}
+                />
+                <KeyboardArrowDownIcon />
+              </Button>
+            </>
           ) : (
             <Box
               component={Link}
               prefetch="intent"
               to={AppRoutes.pages.login}
-              sx={styles.loginButton}
+              sx={{ textDecoration: 'none' }}
             >
-              <IconButton
-                aria-label="Login"
+              <Button
+                variant="outlined"
                 color="inherit"
-                sx={styles.accountButton}
+                startIcon={<LoginIcon />}
+                sx={{
+                  textTransform: 'none',
+                }}
               >
-                <AccountCircle sx={styles.accountIcon} />
-              </IconButton>
+                Log In
+              </Button>
             </Box>
           )}
         </Toolbar>
@@ -150,6 +189,59 @@ const Header: FC = () => {
           </Box>
         </SwipeableDrawer>
       )}
+
+      <Menu
+        anchorEl={menuAnchorEl}
+        id="account-menu"
+        open={open}
+        onClose={handleCloseMenu}
+        onClick={handleCloseMenu}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={openAccountBox}>
+          <Avatar alt={currentUser.name} src={currentUser.avatarUrl || ''} />{' '}
+          Account
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={logout}>
+          <Button
+            size="large"
+            variant="outlined"
+            onClick={logout}
+            startIcon={<LogoutIcon />}
+            sx={{ textTransform: 'none' }}
+          >
+            Log out
+          </Button>
+        </MenuItem>
+      </Menu>
     </Box>
   )
 }

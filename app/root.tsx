@@ -18,7 +18,13 @@ import { useCallback, useEffect, useState } from 'react'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import { PersistGate } from 'redux-persist/integration/react'
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { Link, Outlet, useCatch, useLoaderData } from '@remix-run/react'
+import {
+  Link,
+  Outlet,
+  useCatch,
+  useLoaderData,
+  useSubmit,
+} from '@remix-run/react'
 
 import {
   shouldCache,
@@ -132,9 +138,13 @@ export type AppOutletContext = {
   openChatBox: () => void
   openAccountBox: () => void
   isChatBoxOpen: boolean
+  isAccountBoxOpen: boolean
+  closeAccountBox: () => void
+  logout: () => void
 }
 
 export default function App() {
+  const submit = useSubmit()
   const { isLoggedIn, currentUser } = useApp()
   const { pathname } = useLoaderData<typeof loader>()
   let [socket, setSocket] =
@@ -156,6 +166,10 @@ export default function App() {
     //   console.log(data)
     // })
   }, [socket])
+
+  const logout = useCallback(() => {
+    submit(null, { method: 'post', action: '/logout' })
+  }, [submit])
 
   // Chat box
   const handleCloseChatBox = useCallback(() => {
@@ -179,7 +193,10 @@ export default function App() {
     socket,
     openChatBox: handleOpenChatBox,
     openAccountBox: handleOpenAccountBox,
+    closeAccountBox: handleCloseAccountBox,
     isChatBoxOpen,
+    isAccountBoxOpen,
+    logout,
   }
 
   return (
@@ -188,13 +205,6 @@ export default function App() {
         <PersistGate loading={null} persistor={persistor}>
           <RootLayout>
             <Outlet context={context} />
-
-            {isLoggedIn && isAccountBoxOpen && (
-              <AccountModal
-                account={currentUser}
-                handleClose={handleCloseAccountBox}
-              />
-            )}
             <Chat open={isChatBoxOpen} handleClose={handleCloseChatBox} />
           </RootLayout>
         </PersistGate>
