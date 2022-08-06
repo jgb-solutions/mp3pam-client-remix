@@ -142,10 +142,14 @@ authenticator.use(
         where: {
           OR: [
             {
-              email,
+              email: {
+                equals: email,
+              },
             },
             {
-              twitterId,
+              twitterId: {
+                equals: twitterId,
+              },
             },
           ],
         },

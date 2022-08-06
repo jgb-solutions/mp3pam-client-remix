@@ -2940,7 +2940,7 @@ const tracks = [
 ]
 
 const adminAccount = {
-  id: 1,
+  // id: 1,
   name: 'Jean Gérard',
   email: 'jgbneatdesign@gmail.com',
   password: '$2b$10$Buh0t9KG9TTNcLTAmqN4u.iMlX3opvmvvwkMX.cB9EwKt7H753aLa',
@@ -2999,6 +2999,10 @@ async function run() {
       })),
     }),
   ])
+
+  // await prisma.$queryRawUnsafe(
+  //   "SELECT setval(pg_get_serial_sequence('\"Account\"', 'id'), coalesce(max(id)+1, 1), false) FROM \"Account\""
+  // )
 }
 
 run()
