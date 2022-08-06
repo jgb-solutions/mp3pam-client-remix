@@ -7,34 +7,19 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type { BoxStyles } from '~/interfaces/types'
-
-export interface GenreInterface {
-  name: string
-  slug: string
-}
+import type { BoxStyles, ThumbnailGenre } from '~/interfaces/types'
 
 const styles: BoxStyles = {
-  imgContainer: {
-    backgroundSize: 'contain',
-    backgroundRepeat: 'no-repeat',
-    cursor: 'pointer',
-    width: '175px',
-    height: '175px',
-    maxWidth: '100%',
-    maxHeight: '100%',
+  container: {
     position: 'relative',
-    marginBottom: '10px',
-    // display: "flex",
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   transparentBackground: {
-    opacity: 0.7,
     position: 'absolute',
-    backgroundColor: '#000',
-    width: '100%',
-    height: '100%',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -60,18 +45,6 @@ const styles: BoxStyles = {
       textOverflow: 'ellipsis',
     },
   },
-  details: {
-    fontSize: '13px',
-    color: '#9d9d9d',
-    marginTop: '5px',
-    marginBottom: 0,
-    sm: {
-      fontSize: '11px',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-    },
-  },
   link: {
     color: colors.white,
     textDecoration: 'none',
@@ -80,30 +53,35 @@ const styles: BoxStyles = {
 }
 
 type Props = {
-  genre: GenreInterface
+  genre: ThumbnailGenre
   className?: string
   style?: object
 }
 
 const GenreThumbnail: FC<Props> = ({ genre, style }) => {
   return (
-    <Box style={style}>
+    <Box sx={styles.container} style={style}>
       <Box
-        sx={styles.imgContainer}
-        style={{ backgroundImage: `url(/assets/images/genres.jpg)` }}
+        component={'img'}
+        src="/assets/images/genres.jpg"
+        sx={{
+          maxWidth: '100%',
+          height: 'auto',
+          opacity: 0.7,
+        }}
+      />
+      <Box
+        component={Link}
+        prefetch="intent"
+        sx={styles.transparentBackground}
+        to={AppRoutes.genre.detailPage(genre.slug)}
       >
-        <Box
-          component={Link}
-          sx={styles.transparentBackground}
-          to={AppRoutes.genre.detailPage(genre.slug)}
-        >
-          <IconButton>
-            <PlayCircleOutlineIcon sx={styles.icon} />
-          </IconButton>
-          <Typography variant="h3" sx={styles.title}>
-            {genre.name}
-          </Typography>
-        </Box>
+        <IconButton>
+          <PlayCircleOutlineIcon sx={styles.icon} />
+        </IconButton>
+        <Typography variant="h3" sx={styles.title}>
+          {genre.name} ({genre._count.tracks})
+        </Typography>
       </Box>
     </Box>
   )

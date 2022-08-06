@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-
 import { useForm } from 'react-hook-form'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -7,24 +6,22 @@ import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import { Grid, FormControlLabel, Checkbox, Box, Button } from '@mui/material'
+import TextField from '@mui/material/TextField'
 
 import ProgressBar from '~/components/ProgressBar'
-import TextField from '@mui/material/TextField'
 import UploadButton from '~/components/UploadButton'
-
 import HeaderTitle from '~/components/HeaderTitle'
-import useFileUpload from '../../../hooks/useFileUpload'
+import useFileUpload from '~/hooks/useFileUpload'
 import TextIcon from '~/components/TextIcon'
 import AppRoutes from '~/app-routes'
 import AlertDialog from '~/components/AlertDialog'
-import { ADD_GENRE_MUTATION } from '../../../graphql/mutations'
+import { ADD_GENRE_MUTATION } from '~/graphql/mutations'
 import {
   MAX_AUDIO_FILE_SIZE,
   MAX_IMG_FILE_SIZE,
   MIN_TRACK_LYRICS_LENGTH,
   MIN_TRACK_DETAIL_LENGTH,
 } from '~/utils/constants'
-import { IMG_BUCKET, AUDIO_BUCKET } from '~/utils/constants.server'
 import { getFile } from '~/utils/helpers'
 import type { BoxStyles } from '~/interfaces/types'
 import colors from '~/utils/colors'

@@ -1,27 +1,29 @@
 import type {
   AppData,
+  Session,
   DataFunctionArgs,
   LoaderFunction,
-  Session,
 } from '@remix-run/node'
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 
-import { apiClient } from '~/graphql/requests.server'
-import type { LoggedInUserData } from '~/interfaces/types'
+import { fetchFacebookLoginUrl } from '~/database/requests.server'
 
-const { getSession, commitSession, destroySession } =
-  createCookieSessionStorage({
-    cookie: {
-      name: '__session',
-      // domain: DOMAIN,
-      httpOnly: true,
-      maxAge: 60 * 60,
-      path: '/',
-      sameSite: 'lax',
-      secrets: [process.env.SESSION_SECRET as string],
-      secure: process.env.NODE_ENV === 'production',
-    },
-  })
+import type { SessionAccount } from '~/interfaces/types'
+
+export const sessionStorage = createCookieSessionStorage({
+  cookie: {
+    name: '__session',
+    // domain: DOMAIN,
+    httpOnly: true,
+    maxAge: 365 * 24 * 60 * 60,
+    path: '/',
+    sameSite: 'lax',
+    secrets: [(process.env.SESSION_SECRET as string) || 'Random-Secret-Here'],
+    secure: process.env.NODE_ENV === 'production',
+  },
+})
+
+export const { getSession, commitSession, destroySession } = sessionStorage
 
 export const getCookieSession = (request: Request) =>
   getSession(request.headers.get('Cookie'))
@@ -43,7 +45,7 @@ export const shouldLoginWithFacebook = (request: Request) => {
 }
 
 export const redirectToFacebookLogin = async () => {
-  const { facebookLoginUrl } = await apiClient.fetchFacebookLoginUrl()
+  const { facebookLoginUrl } = await fetchFacebookLoginUrl()
 
   return redirect(facebookLoginUrl.url)
 }
@@ -79,23 +81,23 @@ export const withAuth = async (
   return contextCallback(context) || {}
 }
 
-type WithUserOptions = {
+type WithAccountOptions = {
   redirectTo?: string
 }
 
-type WithUserData = {
-  userSessionData: LoggedInUserData
+type WithAccountData = {
+  sessionAccount: SessionAccount
 }
 
-type WithUserCallback = (
-  withUserData: WithUserData,
+type WithAccountCallback = (
+  withAccountData: WithAccountData,
   context: DataFunctionArgs
 ) => Promise<Response> | Response | Promise<AppData> | AppData
 
-export const withUser = (
+export const withAccount = (
   context: DataFunctionArgs,
-  contextCallback: WithUserCallback = () => {},
-  options: WithUserOptions = {}
+  contextCallback: WithAccountCallback = () => {},
+  options: WithAccountOptions = {}
 ) =>
   withAuth(
     context,
@@ -104,31 +106,27 @@ export const withUser = (
 
       const session = await getCookieSession(request)
 
-      const userSessionData = (await session.get(
+      const sessionAccount = (await session.get(
         USER_SESSION_ID
-      )) as LoggedInUserData
+      )) as SessionAccount
 
       return (
-        contextCallback({ userSessionData: { ...userSessionData } }, context) ||
+        contextCallback({ sessionAccount: { ...sessionAccount } }, context) ||
         {}
       )
     },
     options
   )
 
-type WithTokenData = {
-  token: string
-}
-
 type WithTokenCallback = (
-  withTokenData: WithTokenData,
+  account: SessionAccount,
   context: DataFunctionArgs
 ) => Promise<Response> | Response | Promise<AppData> | AppData
 
 export const withToken = (
   context: DataFunctionArgs,
   contextCallback: WithTokenCallback = () => {},
-  options: WithUserOptions = {}
+  options: WithAccountOptions = {}
 ) =>
   withAuth(
     context,
@@ -137,9 +135,9 @@ export const withToken = (
 
       const session = await getCookieSession(request)
 
-      const { token } = (await session.get(USER_SESSION_ID)) as LoggedInUserData
+      const account = (await session.get(USER_SESSION_ID)) as SessionAccount
 
-      return contextCallback({ token }, context) || {}
+      return contextCallback(account, context) || {}
     },
     options
   )
@@ -147,7 +145,7 @@ export const withToken = (
 export const shouldCache = async (request: Request): Promise<HeadersInit> => {
   const session = await getCookieSession(request)
 
-  const userSessionData = session.get(USER_SESSION_ID)
+  const sessionAccount = session.get(USER_SESSION_ID)
 
-  return { ...(!userSessionData && { Vary: '' }) }
+  return { ...(!sessionAccount && { Vary: '' }) }
 }

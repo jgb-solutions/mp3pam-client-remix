@@ -1,21 +1,23 @@
-import {
-  Repeat,
-  Shuffle,
-  SkipNext,
-  RepeatOne,
-  SkipPrevious,
-  VolumeUpOutlined,
-  PlayCircleOutline,
-  VolumeDownOutlined,
-  PauseCircleOutline,
-  VolumeMuteOutlined,
-  PlaylistPlayOutlined,
-} from '@mui/icons-material'
-import { Link } from '@remix-run/react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useState, useEffect, useRef } from 'react'
-import IconButton from '@mui/material/IconButton'
+import { useNavigate, Link } from '@remix-run/react'
 import LoopIcon from '@mui/icons-material/Loop'
+import IconButton from '@mui/material/IconButton'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
+import Slide from '@mui/material/Slide'
+import RepeatIcon from '@mui/icons-material/Repeat'
+import ShuffleIcon from '@mui/icons-material/Shuffle'
+import SkipNextIcon from '@mui/icons-material/SkipNext'
+import RepeatOneIcon from '@mui/icons-material/RepeatOne'
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
+import VolumeUpOutlinedIcon from '@mui/icons-material/VolumeUpOutlined'
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
+import VolumeDownOutlinedIcon from '@mui/icons-material/VolumeDownOutlined'
+import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline'
+import VolumeMuteOutlinedIcon from '@mui/icons-material/VolumeMuteOutlined'
+import PlaylistPlayOutlinedIcon from '@mui/icons-material/PlaylistPlayOutlined'
+import { useState, useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Slider from './Slider'
 import { debounce } from '../utils/helpers'
@@ -36,16 +38,14 @@ import {
   PLAY_NEXT,
   ADD_TO_QUEUE,
 } from '../redux/actions/player_action_types'
+import { PhotonImage } from './PhotonImage'
+import theme from '~/mui/theme'
+import AppRoutes from '~/app-routes'
+import colors from '../utils/colors'
+import type { BoxStyles } from '~/interfaces/types'
 import type { SoundInterface } from '../interfaces/ListInterface'
 import type PlayerInterface from '../interfaces/PlayerInterface'
 import type AppStateInterface from '../interfaces/AppStateInterface'
-import colors from '../utils/colors'
-import Image from './Image'
-import { useNavigate } from '@remix-run/react'
-import { Box, Container, Slide } from '@mui/material'
-import type { BoxStyles } from '~/interfaces/types'
-import AppRoutes from '~/app-routes'
-import theme from '~/mui/theme'
 import { syncStateAction } from '~/redux/actions/playerActions'
 
 let syncStateTimeoutId: number
@@ -57,10 +57,11 @@ const styles: BoxStyles = {
     bottom: 0,
     left: 0,
     right: 0,
-    height: '86px',
+    minHeight: '86px',
     backgroundColor: colors.darkGrey,
     color: 'white',
-    px: '24px',
+    px: '1rem',
+    // py: '1rem',
     zIndex: 999,
   },
   player: {
@@ -72,11 +73,8 @@ const styles: BoxStyles = {
   },
   posterTitle: {
     flex: 1,
-    display: 'flex',
     alignItems: 'center',
-    sm: {
-      display: 'none',
-    },
+    display: { xs: 'none', sm: 'flex' },
     cursor: 'pointer',
   },
   image: {
@@ -98,12 +96,9 @@ const styles: BoxStyles = {
   },
   playlistVolume: {
     flex: 1,
-    display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    sm: {
-      display: 'none',
-    },
+    display: { xs: 'none', sm: 'flex' },
   },
   controls: {
     flex: 2,
@@ -111,7 +106,7 @@ const styles: BoxStyles = {
     flexDirection: 'column',
   },
   buttons: {
-    width: '37%',
+    // width: '37%',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -120,27 +115,15 @@ const styles: BoxStyles = {
       width: '70%',
     },
   },
-  sliderTime: {
-    display: 'flex',
-    width: '90%',
-    alignSelf: 'center',
-    position: 'relative',
-  },
   slider: {
     flex: 1,
-    mx: '40px',
-    marginTop: '-9px',
+    [theme.breakpoints.down('sm')]: {
+      px: '1rem',
+    },
   },
-  startTime: {
+  time: {
     fontSize: '10px',
-    position: 'absolute',
-    top: '-4px',
-  },
-  endTime: {
-    fontSize: '10px',
-    position: 'absolute',
-    top: '-4px',
-    right: 0,
+    mt: '-6px',
   },
   icon: {
     fontSize: '18px',
@@ -175,7 +158,7 @@ export default function Player() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [soundLoading, setSoundLoading] = useState(false)
-  const [loggedHash, setLoggedHash] = useState('')
+  const [loggedHash, setLoggedHash] = useState<number>()
   const storePlayerData = useSelector(
     (appState: AppStateInterface) => appState.player
   )
@@ -274,7 +257,7 @@ export default function Player() {
 
     setSoundLoading(true)
 
-    setLoggedHash('')
+    setLoggedHash(undefined)
 
     const currentPlayingIndex = findIndex(state?.currentSound, state.queueList)
 
@@ -305,7 +288,7 @@ export default function Player() {
 
   const prepareAudio = () => {
     if (!state.currentSound) return
-    audio.src = state.currentSound.play_url
+    audio.src = state.currentSound.playUrl
     // audio.load();
   }
 
@@ -313,7 +296,7 @@ export default function Player() {
     audio.play()
 
     if (state.currentTime < SECONDS_TO_UPDATE_PLAY_COUNT) {
-      setLoggedHash('')
+      setLoggedHash(undefined)
     }
 
     setState((prevState) => ({
@@ -644,12 +627,12 @@ export default function Player() {
       unmountOnExit
     >
       <Box sx={styles.container}>
-        <Container sx={styles.player} maxWidth="lg">
+        <Container sx={styles.player} maxWidth="lg" disableGutters>
           <Box
             sx={styles.posterTitle}
             onClick={() => {
               const type = state?.currentSound?.type
-              const hash = state?.currentSound?.hash as string
+              const hash = state?.currentSound?.hash as number
 
               switch (type) {
                 case 'track':
@@ -662,7 +645,7 @@ export default function Player() {
             }}
           >
             {state.currentSound ? (
-              <Image
+              <PhotonImage
                 src={state.currentSound.image}
                 sx={styles.image}
                 alt={state.currentSound && state.currentSound.title}
@@ -690,20 +673,23 @@ export default function Player() {
               </Box>
               <br />
               <Box component="span" sx={styles.artist}>
-                {state.currentSound && state.currentSound.author_name}
+                {state.currentSound && state.currentSound.authorName}
               </Box>
             </Box>
           </Box>
           <Box sx={styles.controls}>
             <Box sx={styles.buttons}>
               <IconButton onClick={toggleShuffle}>
-                {!state.isShuffled && <Shuffle sx={styles.icon} />}
+                {!state.isShuffled && <ShuffleIcon sx={styles.icon} />}
                 {state.isShuffled && (
-                  <Shuffle sx={styles.icon} style={{ color: colors.primary }} />
+                  <ShuffleIcon
+                    sx={styles.icon}
+                    style={{ color: colors.primary }}
+                  />
                 )}
               </IconButton>
               <IconButton onClick={playPrevious}>
-                <SkipPrevious sx={styles.icon} />
+                <SkipPreviousIcon sx={styles.icon} />
               </IconButton>
 
               <IconButton onClick={togglePlay} disabled={soundLoading}>
@@ -719,13 +705,13 @@ export default function Player() {
                 ) : (
                   <>
                     {state.isPlaying && (
-                      <PauseCircleOutline
+                      <PauseCircleOutlineIcon
                         sx={styles.icon}
                         style={{ fontSize: 42 }}
                       />
                     )}
                     {!state.isPlaying && (
-                      <PlayCircleOutline
+                      <PlayCircleOutlineIcon
                         sx={styles.icon}
                         style={{ fontSize: 42 }}
                       />
@@ -735,47 +721,56 @@ export default function Player() {
               </IconButton>
 
               <IconButton onClick={playNext}>
-                <SkipNext sx={styles.icon} />
+                <SkipNextIcon sx={styles.icon} />
               </IconButton>
 
               <IconButton onClick={toggleRepeat}>
-                {state.repeat === NONE && <Repeat sx={styles.icon} />}
+                {state.repeat === NONE && <RepeatIcon sx={styles.icon} />}
                 {state.repeat === ALL && (
-                  <Repeat sx={styles.icon} style={{ color: colors.primary }} />
+                  <RepeatIcon
+                    sx={styles.icon}
+                    style={{ color: colors.primary }}
+                  />
                 )}
                 {state.repeat === ONE && (
-                  <RepeatOne
+                  <RepeatOneIcon
                     sx={styles.icon}
                     style={{ color: colors.primary }}
                   />
                 )}
               </IconButton>
             </Box>
-            <Box sx={styles.sliderTime}>
-              <Box sx={styles.startTime}>{state.elapsed}</Box>
-              <Box sx={styles.slider}>
+            <Grid container alignItems={'center'}>
+              <Grid item xs={1} sx={styles.time}>
+                {state.elapsed}
+              </Grid>
+              <Grid item xs={10} sx={styles.slider}>
                 <Slider
                   value={state.position}
                   onChange={handleSeekChange}
                   aria-labelledby="continuous-slider"
                 />
-              </Box>
-              <Box sx={styles.endTime}>{state.duration}</Box>
-            </Box>
+              </Grid>
+              <Grid item xs={1} sx={styles.time} textAlign="right">
+                {state.duration}
+              </Grid>
+            </Grid>
           </Box>
           <Box sx={styles.playlistVolume}>
             <Link prefetch="intent" to={AppRoutes.user.library.queue}>
               <IconButton>
-                <PlaylistPlayOutlined sx={styles.icon} />
+                <PlaylistPlayOutlinedIcon sx={styles.icon} />
               </IconButton>
             </Link>
             <Box sx={styles.volumeIcons}>
-              {state.volume === 0 && <VolumeMuteOutlined sx={styles.icon} />}
+              {state.volume === 0 && (
+                <VolumeMuteOutlinedIcon sx={styles.icon} />
+              )}
               {state.volume > 0 && state.volume <= 70 && (
-                <VolumeDownOutlined sx={styles.icon} />
+                <VolumeDownOutlinedIcon sx={styles.icon} />
               )}
               {state.volume > 0 && state.volume > 70 && (
-                <VolumeUpOutlined sx={styles.icon} />
+                <VolumeUpOutlinedIcon sx={styles.icon} />
               )}
             </Box>
             <Box sx={styles.volumeSliderContainer}>

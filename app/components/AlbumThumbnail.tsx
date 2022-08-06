@@ -5,37 +5,21 @@ import { IconButton } from '@mui/material'
 import type { BoxProps } from '@mui/material/Box'
 import { PauseCircleOutline, PlayCircleOutline } from '@mui/icons-material'
 
-import Image from './Image'
+import { PhotonImage } from './PhotonImage'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type { BoxStyles } from '~/interfaces/types'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
+import type { AlbumThumbnailData, BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
-  imgContainer: {
-    backgroundSize: 'contain',
-    backgroundRepeat: 'no-repeat',
-    cursor: 'pointer',
-    width: '175px',
-    height: '175px',
-    maxWidth: '100%',
-    maxHeight: '100%',
-    position: 'relative',
-    marginBottom: '10px',
-    // display: "flex",
-    alignItems: 'center',
-    justifyContent: 'center',
-    sm: {
-      width: '100px',
-      height: '100px',
-    },
-  },
   transparentBackground: {
     opacity: 0,
     position: 'absolute',
-    backgroundColor: '#000',
-    width: '100%',
-    height: '100%',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgb(0, 0, 0, 0.5)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -81,30 +65,30 @@ const styles: BoxStyles = {
   },
 }
 
-type Props<T> = {
-  album: T
+type Props = {
+  album: AlbumThumbnailData
   sx?: BoxProps['sx']
 }
 
-function AlbumThumbnail<T>({ album, sx }: Props<T>) {
+function AlbumThumbnail({ album, sx }: Props) {
   const { isPlaying, list: playyingList } = useSelector(
     ({ player }: AppStateInterface) => player
   )
 
   return (
-    <Box sx={sx}>
-      <Box
-        sx={styles.imgContainer}
-        style={{
-          backgroundImage: `url(${Image.phoneCdnUrl(album.cover_url, {
+    <Box>
+      <Box sx={sx} position="relative">
+        <Box
+          component="img"
+          maxWidth={'100%'}
+          src={PhotonImage.cdnUrl(album.coverUrl!, {
             ulb: true,
             lb: {
               width: 250,
               height: 250,
             },
-          })})`,
-        }}
-      >
+          })}
+        />
         <Box
           component={Link}
           prefetch="intent"
@@ -132,7 +116,7 @@ function AlbumThumbnail<T>({ album, sx }: Props<T>) {
           to={AppRoutes.artist.detailPage(album.artist.hash)}
         >
           <Box component="span" sx={styles.link}>
-            {album.artist.stage_name}
+            {album.artist.stageName}
           </Box>
         </Link>
       </Box>

@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -7,17 +8,14 @@ import TableRow from '@mui/material/TableRow'
 import colors from '../utils/colors'
 import { useSelector } from 'react-redux'
 import type AppStateInterface from '../interfaces/AppStateInterface'
-import type AlbumInterface from '../interfaces/AlbumInterface'
-import type { AlbumTrackInterface } from '../interfaces/AlbumInterface'
 import { makeSoundFromTrack } from '../utils/helpers'
 import type ListInterface from '../interfaces/ListInterface'
-import type { BoxStyles } from '~/interfaces/types'
+import type { AlbumDetail, BoxStyles } from '~/interfaces/types'
 import theme from '~/mui/theme'
 import { withStyles } from '@mui/styles'
 import PlayPause from './PlayPause'
 import AppRoutes from '~/app-routes'
 import { Link } from '@remix-run/react'
-import Box from '@mui/material/Box'
 
 const styles: BoxStyles = {
   table: {
@@ -49,7 +47,10 @@ export const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell)
 
-type Props = { album: AlbumInterface; list: ListInterface }
+type Props = {
+  album: NonNullable<AlbumDetail>
+  list: ListInterface
+}
 
 export default function AlbumTracksTable({ album, list }: Props) {
   const { currentSound } = useSelector(
@@ -70,7 +71,7 @@ export default function AlbumTracksTable({ album, list }: Props) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {album.tracks.map((track: AlbumTrackInterface, index: number) => {
+        {album.tracks.map((track, index: number) => {
           const color =
             currentSound && track.hash === currentSound.hash
               ? colors.primary
@@ -106,10 +107,10 @@ export default function AlbumTracksTable({ album, list }: Props) {
               </StyledTableCell>
 
               <StyledTableCell style={{ width: '1.5%', color }}>
-                {track.play_count}
+                {track.playCount}
               </StyledTableCell>
               <StyledTableCell style={{ width: '1.5%', color }}>
-                {track.download_count}
+                {track.downloadCount}
               </StyledTableCell>
               {/* <StyledTableCell style={{ width: '35%', color }}>
                 {album.artist.stage_name}

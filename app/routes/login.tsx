@@ -1,54 +1,72 @@
-import { useCallback, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Box, Button, Grid, TextField } from '@mui/material'
 import type {
+  LoaderArgs,
+  MetaFunction,
   ActionFunction,
   HtmlMetaDescriptor,
-  LoaderFunction,
-  MetaFunction,
 } from '@remix-run/node'
-import { json, redirect } from '@remix-run/node'
-import ErrorIcon from '@mui/icons-material/Error'
+import { z } from 'zod'
+import type { FC } from 'react'
+import Box from '@mui/material/Box'
+import { json } from '@remix-run/node'
 import Alert from '@mui/material/Alert'
+import { useForm } from 'react-hook-form'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import { AuthorizationError } from 'remix-auth'
+import ErrorIcon from '@mui/icons-material/Error'
+import { useCallback, useRef, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { SocialsProvider } from 'remix-auth-socials'
+import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
 
-import colors from '../utils/colors'
-import Logo from '~/components/Logo'
-import { HR } from '~/components/Divider'
-import TextIcon from '~/components/TextIcon'
-import { emailRegex } from '../utils/validators'
-import type { BoxStyles } from '~/interfaces/types'
-import PlainLayout from '~/components/layouts/Plain'
-import { Link, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
-import type { LoginInput } from '~/graphql/generated-types'
-import { apiClient } from '~/graphql/requests.server'
 import {
   getCookieSession,
-  redirectToFacebookLogin,
-  shouldLoginWithFacebook,
   updateCookieSessionHeader,
-  USER_SESSION_ID,
 } from '~/auth/sessions.server'
+import colors from '../utils/colors'
+import Logo from '~/components/Logo'
+import Divider from '~/components/Divider'
+import TextIcon from '~/components/TextIcon'
+import PlainLayout from '~/components/layouts/Plain'
+import { authenticator, AuthenticatorOptions } from '~/auth/auth.server'
+import type { BoxStyles, Credentials } from '~/interfaces/types'
 
 const styles: BoxStyles = {
-  facebookSignupButton: {
-    marginTop: '15px',
-    marginBottom: '15px',
-    backgroundColor: colors.contentGrey,
-    border: `1px solid ${colors.primary}`,
+  facebookButton: {
+    backgroundColor: colors.facebook,
+    mb: '1rem',
   },
-  facebookLoginButton: {
-    backgroundColor: '#3b5998',
-    marginTop: '15px',
-    marginBottom: '15px',
+  twitterButton: {
+    backgroundColor: colors.twitter,
+    mb: '1rem',
+  },
+  googleButton: {
+    backgroundColor: colors.youtube,
+    mb: '1rem',
   },
   errorTitle: {
     color: colors.error,
   },
 }
 
-type ActionData = {
-  error?: string
-}
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, {
+      message: 'The email is required.',
+    })
+    .email({
+      message: 'This email is not valid.',
+    }),
+  password: z
+    .string()
+    .min(1, {
+      message: 'Your password Required.',
+    })
+    .min(6, {
+      message: 'The password must be at least 6 characters.',
+    }),
+})
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'Log into your account'
@@ -59,20 +77,12 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   }
 }
 
-type LoaderData = {
-  flashError?: string
-}
+export const loader = async ({ request }: LoaderArgs) => {
+  await authenticator.isAuthenticated(request, {
+    successRedirect: '/',
+  })
 
-export const loader: LoaderFunction = async ({ request }) => {
   const session = await getCookieSession(request)
-
-  if (session.has(USER_SESSION_ID)) {
-    return redirect('/')
-  }
-
-  if (shouldLoginWithFacebook(request)) {
-    return await redirectToFacebookLogin()
-  }
 
   const data = { flashError: session.get('flashError') }
 
@@ -87,49 +97,74 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const action: ActionFunction = async ({ request }) => {
   try {
-    const form = await request.formData()
+    await authenticator.authenticate(
+      AuthenticatorOptions.Credentials,
+      request,
+      {
+        successRedirect: '/',
+      }
+    )
+  } catch (error) {
+    let errorMessage
 
-    const email = form.get('email') as string
-    const password = form.get('password') as string
+    if (error instanceof Response) return error
 
-    const data = await apiClient.doLogin({ email, password })
+    if (error instanceof AuthorizationError) {
+      errorMessage = error.message
+    } else {
+      errorMessage = 'An unknown error occurred.'
+    }
 
-    const session = await getCookieSession(request)
-
-    session.set(USER_SESSION_ID, data.login)
-
-    return redirect('/', {
-      headers: {
-        ...(await updateCookieSessionHeader(session)),
-      },
-    })
-  } catch (e) {
-    console.error(e)
-    return json({ error: 'The email or password is incorrect.' }, 401)
+    return json({ error: errorMessage }, 401)
   }
 }
 
+type ActionData = { error?: string }
+
+interface SocialButtonProps {
+  provider: SocialsProvider | 'twitter'
+  label: string
+}
+
+const SocialButton: FC<SocialButtonProps> = ({ provider, label }) => (
+  <Box
+    component={Form}
+    action={`/auth/${provider}`}
+    method="post"
+    width={'100%'}
+  >
+    <Button
+      type="submit"
+      variant="contained"
+      sx={styles[`${provider}Button`]}
+      size="large"
+      fullWidth
+    >
+      Log In With {label}
+    </Button>
+  </Box>
+)
+
 export default function LoginPage() {
   const submit = useSubmit()
-  const { flashError } = useLoaderData<LoaderData>()
+  const formRef = useRef<HTMLFormElement>()
+  const { flashError } = useLoaderData<typeof loader>()
   const [errorMessage, setErrorMessage] = useState(flashError)
   const actionData = useActionData<ActionData>()
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<LoginInput>({
+  } = useForm<Credentials>({
     mode: 'onBlur',
+    resolver: zodResolver(loginSchema),
   })
 
   const handleLogin = useCallback(
-    async ({ email, password }: LoginInput) => {
-      const formData = new FormData()
-
-      formData.append('email', email)
-      formData.append('password', password)
-
-      submit(formData, { method: 'post' })
+    async (credentials: Credentials) => {
+      if (formRef.current) {
+        submit(formRef.current, { method: 'post' })
+      }
     },
     [submit]
   )
@@ -151,24 +186,25 @@ export default function LoginPage() {
         </Alert>
       )}
 
-      <Box sx={{ width: '450px', textAlign: 'center' }}>
-        <Logo size={300} />
-
+      <Box sx={{ width: '100%', textAlign: 'center' }}>
         <Box>
-          <Link to=".?facebook">
-            <Button
-              variant="contained"
-              sx={styles.facebookLoginButton}
-              size="large"
-            >
-              Log In With Facebook
-            </Button>
-          </Link>
+          <Logo size={300} />
         </Box>
 
-        <HR>or</HR>
+        <Box maxWidth="332px" mx="auto">
+          {/* <SocialButton provider={SocialsProvider.FACEBOOK} label="Facebook" /> */}
+          <SocialButton provider={'twitter'} label="TWitter" />
+          {/* <SocialButton provider={SocialsProvider.GOOGLE} label="Google" /> */}
+        </Box>
 
-        <Box component="form" onSubmit={handleSubmit(handleLogin)} noValidate>
+        <Divider>or</Divider>
+
+        <Box
+          component="form"
+          onSubmit={handleSubmit(handleLogin)}
+          noValidate
+          ref={formRef}
+        >
           {actionData?.error && (
             <Box
               component="h3"
@@ -176,84 +212,51 @@ export default function LoginPage() {
               dangerouslySetInnerHTML={{ __html: actionData?.error }}
             />
           )}
-          <Grid>
-            <Grid item>
-              <TextField
-                fullWidth
-                variant="standard"
-                {...register('email', {
-                  required: 'The email is required.',
-                  pattern: {
-                    value: emailRegex,
-                    message: 'This email is not valid.',
-                  },
-                })}
-                id="email"
-                label="Email"
-                type="email"
-                margin="normal"
-                error={!!errors.email}
-                helperText={
-                  errors.email && (
-                    <TextIcon
-                      icon={<ErrorIcon />}
-                      text={errors.email.message}
-                    />
-                  )
-                }
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                fullWidth
-                variant="standard"
-                {...register('password', {
-                  required: 'Your password Required.',
-                  minLength: {
-                    value: 6,
-                    message: 'The password must be at least 6 characters.',
-                  },
-                })}
-                id="password"
-                label="Password"
-                type="password"
-                margin="normal"
-                error={!!errors.password}
-                helperText={
-                  errors.password && (
-                    <TextIcon
-                      icon={<ErrorIcon />}
-                      text={errors.password.message}
-                    />
-                  )
-                }
-              />
-            </Grid>
-          </Grid>
+          <Box mb="2rem" maxWidth={'332px'} mx="auto">
+            <TextField
+              fullWidth
+              variant="standard"
+              {...register('email')}
+              id="email"
+              label="Email"
+              type="email"
+              margin="normal"
+              error={!!errors.email}
+              helperText={
+                errors.email && (
+                  <TextIcon icon={<ErrorIcon />} text={errors.email.message} />
+                )
+              }
+            />
+
+            <TextField
+              fullWidth
+              variant="standard"
+              {...register('password')}
+              id="password"
+              label="Password"
+              type="password"
+              margin="normal"
+              error={!!errors.password}
+              helperText={
+                errors.password && (
+                  <TextIcon
+                    icon={<ErrorIcon />}
+                    text={errors.password.message}
+                  />
+                )
+              }
+            />
+          </Box>
           <Button
             variant="contained"
             type="submit"
             size="large"
             color="secondary"
-            style={{ marginTop: '15px', marginBottom: '15px' }}
           >
             Log In With Email
           </Button>
         </Box>
-
-        <HR />
-
-        <Box>Don't have an account?</Box>
-
-        <Link to=".?facebook">
-          <Button
-            variant="outlined"
-            size="large"
-            sx={styles.facebookSignupButton}
-          >
-            Sign Up With Facebook
-          </Button>
-        </Link>
       </Box>
     </PlainLayout>
   )

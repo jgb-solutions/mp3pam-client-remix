@@ -1,50 +1,50 @@
-import {
-  Meta,
-  Links,
-  Outlet,
-  Scripts,
-  useCatch,
-  LiveReload,
-  useLoaderData,
-  ScrollRestoration,
-  Link,
-  useMatches,
-} from '@remix-run/react'
-import { useContext } from 'react'
-import Box from '@mui/material/Box'
-import { json, LinksFunction } from '@remix-run/node'
-import { Provider } from 'react-redux'
-import { withEmotionCache } from '@emotion/react'
 import type {
-  LoaderFunction,
+  LoaderArgs,
+  MetaFunction,
+  LinksFunction,
   HeadersFunction,
   HtmlMetaDescriptor,
-  MetaFunction,
 } from '@remix-run/node'
-import {
-  Typography,
-  unstable_useEnhancedEffect as useEnhancedEffect,
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import { json } from '@remix-run/node'
+import { Provider } from 'react-redux'
+import Dialog from '@mui/material/Dialog'
+import type { Socket } from 'socket.io-client'
+import Typography from '@mui/material/Typography'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import { useCallback, useEffect, useState } from 'react'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
-
-import theme from './mui/theme'
-import { persistedStore } from './redux/store'
-import RootLayout from './components/layouts/Root'
-import ClientStyleContext from './mui/ClientStyleContext'
 import { PersistGate } from 'redux-persist/integration/react'
-import { DOMAIN } from './utils/constants.server'
-import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
+import type { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import {
-  USER_SESSION_ID,
+  Link,
+  Outlet,
+  useCatch,
+  useLoaderData,
+  useSubmit,
+} from '@remix-run/react'
+
+import {
+  shouldCache,
   getCookieSession,
   updateCookieSessionHeader,
-  shouldCache,
 } from './auth/sessions.server'
-import type { LoggedInUserData } from './interfaces/types'
-import HeaderTitle from './components/HeaderTitle'
-import FourOrFour from './components/FourOrFour'
+import theme from './mui/theme'
 import AppRoutes from './app-routes'
+import { connect } from './ws/client'
 import appStyles from '~/styles/app.css'
+import { persistedStore } from './redux/store'
+import { Document } from './components/Document'
+import FourOrFour from './components/FourOrFour'
+import { DOMAIN } from './utils/constants.server'
+import RootLayout from './components/layouts/Root'
+import HeaderTitle from './components/HeaderTitle'
+import { authenticator } from './auth/auth.server'
+import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
+import { useApp } from './hooks/useApp'
+import AccountModal from './components/AccountModal'
 
 export const links: LinksFunction = () => [
   {
@@ -55,70 +55,25 @@ export const links: LinksFunction = () => [
 
 const { store, persistor } = persistedStore()
 
-interface DocumentProps {
-  children: React.ReactNode
-  title?: string
+type ChatProps = {
+  open: boolean
+  handleClose: () => void
+}
+export function Chat({ open, handleClose }: ChatProps) {
+  return (
+    <Dialog onClose={handleClose} open={open} maxWidth="sm" fullWidth>
+      <DialogTitle>Chat widget</DialogTitle>
+      <DialogContent>Content for you here</DialogContent>
+      <DialogActions>
+        {/* <Button autoFocus onClick={handleClose} variant="contained">
+          Save changes
+        </Button> */}
+      </DialogActions>
+    </Dialog>
+  )
 }
 
-const Document = withEmotionCache(
-  ({ children, title }: DocumentProps, emotionCache) => {
-    const clientStyleData = useContext(ClientStyleContext)
-
-    useEnhancedEffect(() => {
-      emotionCache.sheet.container = document.head
-      const tags = emotionCache.sheet.tags
-      emotionCache.sheet.flush()
-      tags.forEach((tag) => {
-        ;(emotionCache.sheet as any)._insertTag(tag)
-      })
-      clientStyleData.reset()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    return (
-      <html lang="en">
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <meta name="theme-color" content={theme.palette.primary.main} />
-          {title ? <title>{title}</title> : null}
-          <Meta />
-          <Links />
-          <link
-            rel="preconnect"
-            href="https://fonts.googleapis.com/"
-            crossOrigin="true"
-          />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com/"
-            crossOrigin="true"
-          />
-          <link
-            rel="preload"
-            as="font"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          />
-          <meta
-            name="emotion-insertion-point"
-            content="emotion-insertion-point"
-          />
-        </head>
-
-        <Box component="body" sx={{ bgcolor: 'black' }}>
-          {children}
-
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </Box>
-      </html>
-    )
-  }
-)
-
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
-  console.log('headers', loaderHeaders)
   return {
     'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=86400',
     Vary: 'Cookie, Authorization',
@@ -126,7 +81,7 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
   }
 }
 
-export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+export const meta: MetaFunction = ({ location }): HtmlMetaDescriptor => {
   const title = `${APP_NAME} | Listen, Download and Share Unlimited Sounds!`
   const description = `${APP_NAME} is a free entertainment platform for sharing all kinds of sounds.
       Music, and even Ad. You name it. Brought to you by JGB Solutions.
@@ -137,45 +92,37 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
     title,
     'og:title': title,
     'og:site_name': APP_NAME,
-    'og:url': DOMAIN,
+    'og:url': DOMAIN + location.pathname,
     'og:description': description,
     'og:type': 'website',
     'og:image': image,
     'fb:app_id': FB_APP_ID,
     'twitter:card': 'summary',
     'twitter:site': `@${TWITTER_HANDLE}`,
-    'twitter:title': title,
-    'twitter:description': { description },
-    'twitter:image': { image },
+    // 'twitter:title': title,
+    // 'twitter:description': description,
+    // 'twitter:image': image,
   }
 }
 
-type LoaderData = {
-  ENV: { [key: string]: string }
-  flashError?: string
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const session = await getCookieSession(request)
 
-  const userSessionData = session.get(USER_SESSION_ID) as
-    | LoggedInUserData
-    | undefined
+  const currentUser = await authenticator.isAuthenticated(request)
 
-  const currentUser = userSessionData?.data || null
   const flashError = session.get('flashError')
 
   if (flashError) {
     session.unset('flashError')
   }
 
+  const url = new URL(request.url)
+
   return json(
     {
-      ENV: {
-        STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-      },
       currentUser,
       flashError,
+      pathname: url.pathname,
     },
     {
       headers: {
@@ -186,22 +133,82 @@ export const loader: LoaderFunction = async ({ request }) => {
   )
 }
 
+export type AppOutletContext = {
+  socket?: Socket
+  openChatBox: () => void
+  openAccountBox: () => void
+  isChatBoxOpen: boolean
+  isAccountBoxOpen: boolean
+  closeAccountBox: () => void
+  logout: () => void
+}
+
 export default function App() {
+  const submit = useSubmit()
+  const { isLoggedIn, currentUser } = useApp()
+  const { pathname } = useLoaderData<typeof loader>()
+  let [socket, setSocket] =
+    useState<Socket<DefaultEventsMap, DefaultEventsMap>>()
+  const [isChatBoxOpen, setIsChatBoxOpen] = useState(false)
+  const [isAccountBoxOpen, setIsAccountBoxOpen] = useState(false)
+
+  useEffect(() => {
+    // let connection = connect()
+    // setSocket(connection)
+    // return () => {
+    //   connection.close()
+    // }
+  }, [])
+
+  useEffect(() => {
+    // if (!socket) return
+    // socket.on('event', (data) => {
+    //   console.log(data)
+    // })
+  }, [socket])
+
+  const logout = useCallback(() => {
+    submit(null, { method: 'post', action: '/logout' })
+  }, [submit])
+
+  // Chat box
+  const handleCloseChatBox = useCallback(() => {
+    setIsChatBoxOpen(false)
+  }, [])
+
+  const handleOpenChatBox = useCallback(() => {
+    setIsChatBoxOpen(true)
+  }, [])
+
+  // Account box
+  const handleCloseAccountBox = useCallback(() => {
+    setIsAccountBoxOpen(false)
+  }, [])
+
+  const handleOpenAccountBox = useCallback(() => {
+    setIsAccountBoxOpen(true)
+  }, [])
+
+  const context: AppOutletContext = {
+    socket,
+    openChatBox: handleOpenChatBox,
+    openAccountBox: handleOpenAccountBox,
+    closeAccountBox: handleCloseAccountBox,
+    isChatBoxOpen,
+    isAccountBoxOpen,
+    logout,
+  }
+
   return (
-    <Document>
+    <Document pathname={pathname}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <RootLayout>
-            <Outlet />
+            <Outlet context={context} />
+            <Chat open={isChatBoxOpen} handleClose={handleCloseChatBox} />
           </RootLayout>
         </PersistGate>
       </Provider>
-
-      {/* <script
-        dangerouslySetInnerHTML={{
-          __html: `window.ENV = ${JSON.stringify(ENV)}`,
-        }}
-      /> */}
     </Document>
   )
 }

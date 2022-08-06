@@ -17,3 +17,9 @@
     transform: rotate(360deg);
   }
 }
+
+a, a:link a:visited, a:focus {
+  color: white;
+  text-decoration: underline;
+  font-weight: bold;
+}

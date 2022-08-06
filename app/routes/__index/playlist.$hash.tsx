@@ -6,16 +6,16 @@ import {
   EmailShareButton,
 } from 'react-share'
 import type {
-  LoaderFunction,
   MetaFunction,
   HtmlMetaDescriptor,
+  LoaderArgs,
 } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
-import { darken, Hidden } from '@mui/material'
+import { darken } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import ShareIcon from '@mui/icons-material/Share'
 import { useDispatch, useSelector } from 'react-redux'
@@ -45,20 +45,18 @@ import {
   APP_NAME,
   SEO_PLAYLIST_TYPE,
   TWITTER_HANDLE,
-  RANDOM_PLAYLISTS_NUMBER,
 } from '~/utils/constants'
 import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
-import Image from '~/components/Image'
+import { PhotonImage } from '~/components/PhotonImage'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
-import type { BoxStyles } from '~/interfaces/types'
-import { apiClient } from '~/graphql/requests.server'
+import type { BoxStyles, PlaylistDetail } from '~/interfaces/types'
 import type ListInterface from '~/interfaces/ListInterface'
-import type { PlaylistDetailQuery } from '~/graphql/generated-types'
 import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
 import Heart from '~/components/Heart'
 import { DOMAIN } from '~/utils/constants.server'
+import { fetchPlaylistDetail } from '~/database/requests.server'
 
 const styles: BoxStyles = {
   imageContainer: {
@@ -83,9 +81,6 @@ const styles: BoxStyles = {
     },
   },
   listDetails: {
-    // display: "flex",
-    // flexDirection: "column",
-    // justifyContent: "flex-end",
     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
       position: 'absolute',
       bottom: '4px',
@@ -118,17 +113,17 @@ const styles: BoxStyles = {
 export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
   if (!data?.playlist) {
     return {
-      title: 'Track not found',
+      title: 'Playlist not found',
     }
   }
 
-  const { playlist } = data as PlaylistDetailQuery
+  const playlist = data.playlist as PlaylistDetail
 
-  const title = `${playlist?.title} by ${playlist?.user.name}`
+  const title = `${playlist.title} by ${playlist.user.name}`
   const url = `${DOMAIN}/playlist/${playlist?.hash}`
-  const description = `Listen to ${playlist?.title} by ${playlist?.user.name} on ${APP_NAME}`
+  const description = `Listen to ${playlist.title} by ${playlist.user.name} on ${APP_NAME}`
   const type = SEO_PLAYLIST_TYPE
-  const image = playlist?.cover_url
+  const image = playlist.coverUrl
 
   return {
     title,
@@ -143,18 +138,16 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
   }
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader = async ({ params }: LoaderArgs) => {
   const { hash } = params as { hash: string }
 
-  const data = await apiClient.fetchPlaylistDetail({
-    hash,
-    input: {
-      hash,
-      first: RANDOM_PLAYLISTS_NUMBER,
-    },
-  })
+  const playlist = await fetchPlaylistDetail(parseInt(hash))
 
-  return json(data)
+  if (!playlist) {
+    throw new Response('Playlist not found', { status: 404 })
+  }
+
+  return json({ playlist })
 }
 
 const PlaylistDetailPage = () => {
@@ -166,12 +159,7 @@ const PlaylistDetailPage = () => {
     })
   )
 
-  const { playlist: playlistResult, randomPlaylists } =
-    useLoaderData<PlaylistDetailQuery>()
-  const playlist = playlistResult as NonNullable<
-    PlaylistDetailQuery['playlist']
-  >
-
+  const { playlist } = useLoaderData<typeof loader>()
   const makeList = () => {
     const { hash } = playlist
 
@@ -185,13 +173,13 @@ const PlaylistDetailPage = () => {
 
   const makeSoundList = () => {
     return playlist.tracks.map(
-      ({ hash, title, poster_url, audio_url, artist }) => ({
+      ({ hash, title, posterUrl, audioUrl, artist }) => ({
         hash,
         title,
-        image: poster_url,
-        author_name: artist.stage_name,
-        author_hash: artist.hash,
-        play_url: audio_url,
+        image: posterUrl,
+        authorName: artist.stageName,
+        authorHash: artist.hash,
+        playUrl: audioUrl,
         type: 'track',
       })
     )
@@ -326,8 +314,8 @@ const PlaylistDetailPage = () => {
     <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
-          <Image
-            src={playlist.cover_url || ''}
+          <PhotonImage
+            src={playlist.coverUrl}
             alt={playlist.title}
             sx={styles.image}
             photon={{
@@ -347,33 +335,27 @@ const PlaylistDetailPage = () => {
             <Box component="h1" sx={styles.listName}>
               {playlist.title}
             </Box>
-            <Box
-              component="p"
-              sx={styles.listByAuthor}
-              style={{ marginBottom: 5 }}
-            >
-              <Box sx={styles.listBy}>By </Box> {playlist.user.name}
+            <Box component="p" sx={styles.listByAuthor} mb="1rem">
+              <Box component={'span'} sx={styles.listBy}>
+                By{' '}
+              </Box>{' '}
+              {playlist.user.name}
             </Box>
-            <Grid sx={styles.ctaButtons} container spacing={2}>
-              <Grid item xs={2} implementation="css" smUp component={Hidden} />
-              <Grid item>
-                <Button
-                  style={{ width: '100px' }}
-                  onClick={togglePlay}
-                  variant="contained"
-                >
-                  {playingListHash !== playlist.hash && 'Play'}
-                  {isPlaying && playingListHash === playlist.hash && 'Pause'}
-                  {!isPlaying && playingListHash === playlist.hash && 'Resume'}
-                  {/* todo // using currentTime > 0  to display rsesume or replay */}
-                </Button>
-              </Grid>
-              <Grid item>
-                <Heart border />
-                &nbsp; &nbsp;
-                <More border options={getMoreOptions()} />
-              </Grid>
-            </Grid>
+            <Box>
+              <Button
+                sx={{ minWidth: '100px', mr: '1rem' }}
+                onClick={togglePlay}
+                variant="contained"
+              >
+                {playingListHash !== playlist.hash && 'Play'}
+                {isPlaying && playingListHash === playlist.hash && 'Pause'}
+                {!isPlaying && playingListHash === playlist.hash && 'Resume'}
+                {/* todo // using currentTime > 0  to display rsesume or replay */}
+              </Button>
+              <Heart border />
+              &nbsp; &nbsp;
+              <More border options={getMoreOptions()} />
+            </Box>
           </Box>
         </Grid>
       </Grid>
@@ -384,10 +366,10 @@ const PlaylistDetailPage = () => {
 
       <br />
 
-      {randomPlaylists ? (
+      {playlist.randomPlaylists.length > 0 ? (
         <PlaylistScrollingList
           category="Other Playlists Your Might Like"
-          playlists={randomPlaylists}
+          playlists={playlist.randomPlaylists}
           browse={AppRoutes.browse.playlists}
         />
       ) : null}
@@ -435,7 +417,7 @@ export function CatchBoundary() {
         'Oops! Looks like you tried to visit a page that you do not have access to.'
       break
     case 404:
-      message = 'OOPS! The Track was not found.'
+      message = 'OOPS! The playlist was not found.'
       break
 
     default:
@@ -461,9 +443,9 @@ export function CatchBoundary() {
             textDecoration: 'underline',
             color: colors.white,
           }}
-          to={AppRoutes.browse.tracks}
+          to={AppRoutes.browse.playlists}
         >
-          browse other tracks.
+          browse other playlists.
         </Link>
         .
       </h3>
@@ -473,8 +455,6 @@ export function CatchBoundary() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.log(error)
-
   return (
     <Box sx={{}}>
       <Box>

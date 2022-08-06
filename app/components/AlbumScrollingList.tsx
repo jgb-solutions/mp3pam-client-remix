@@ -4,8 +4,7 @@ import { Link } from '@remix-run/react'
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material'
 
 import AlbumThumbnail from './AlbumThumbnail'
-import type { BoxStyles } from '~/interfaces/types'
-import type { HomepageQuery } from '~/graphql/generated-types'
+import type { BoxStyles, HomePage } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   container: {
@@ -40,7 +39,7 @@ const styles: BoxStyles = {
 }
 
 type Props = {
-  albums: NonNullable<HomepageQuery['latestAlbums']>['data']
+  albums: HomePage['albums']
   category: string
   browse: string
 }
@@ -61,7 +60,9 @@ export const AlbumScrollingList: FC<Props> = ({ albums, category, browse }) => {
     <Box sx={styles.container}>
       <Box sx={styles.listHeader}>
         <Box component={Link} prefetch="intent" to={browse} sx={styles.link}>
-          <Box component="h2" sx={styles.category}>{category}</Box>
+          <Box component="h2" sx={styles.category}>
+            {category}
+          </Box>
         </Box>
         <Box>
           <KeyboardArrowLeft onClick={() => scroll('left')} />

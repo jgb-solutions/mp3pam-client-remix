@@ -170,7 +170,7 @@ const makePhotonUrl = (photon: Photon, domainWithoutProtocol: string) => {
   return photonUrl
 }
 
-function Image(props: Props) {
+function PhotonImage(props: Props) {
   const { style: propStyle, src, photon, alt, ...rest } = props
   const domainWithoutProtocol = src.replace(/(^\w+:|^)\/\//, '')
 
@@ -199,7 +199,7 @@ function Image(props: Props) {
   )
 }
 
-Image.phoneCdnUrl = function (url: string, options: Photon) {
+PhotonImage.cdnUrl = function (url: string, options: Photon) {
   const domainWithoutProtocol = url.replace(/(^\w+:|^)\/\//, '')
 
   const photonHost =
@@ -276,4 +276,4 @@ Image.phoneCdnUrl = function (url: string, options: Photon) {
 
   return photonUrl
 }
-export default Image
+export { PhotonImage }

@@ -31,15 +31,18 @@ export function getFormattedDate(dateString: string) {
 export const makeSoundFromTrack = ({
   hash,
   title,
-  poster_url,
-  audio_url,
+  posterUrl,
+  audioUrl,
   artist,
 }: any): SoundInterface => ({
   hash,
   title,
-  image: poster_url,
-  author_name: artist.stage_name,
-  author_hash: artist.hash,
-  play_url: audio_url,
+  image: posterUrl,
+  authorName: artist.stage_name,
+  authorHash: artist.hash,
+  playUrl: audioUrl,
   type: 'track',
 })
+
+export const getHash = (size = 10) =>
+  parseInt(Date.now().toString().slice(-10).replace('0', '9'))

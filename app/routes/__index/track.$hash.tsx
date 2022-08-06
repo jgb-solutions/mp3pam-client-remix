@@ -1,5 +1,9 @@
 import { useCallback, useState } from 'react'
-import type { MetaFunction, HtmlMetaDescriptor } from '@remix-run/node'
+import type {
+  MetaFunction,
+  HtmlMetaDescriptor,
+  LoaderArgs,
+} from '@remix-run/node'
 import {
   EmailShareButton,
   TwitterShareButton,
@@ -39,14 +43,11 @@ import { TrackScrollingList } from '~/components/TrackScrollingList'
 
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
-import Image from '~/components/Image'
+import { PhotonImage } from '~/components/PhotonImage'
 import { Box, Button, darken, Grid } from '@mui/material'
-import type { LoaderFunction } from '@remix-run/node'
-import { apiClient } from '~/graphql/requests.server'
-import type { BoxStyles } from '~/interfaces/types'
+import type { BoxStyles, TrackDetail } from '~/interfaces/types'
 import theme from '~/mui/theme'
 import Heart from '~/components/Heart'
-import type { TrackDetailQuery } from '~/graphql/generated-types'
 import { AddTrackToPlaylist } from '~/routes/__index/manage/edit-playlist'
 import { DOMAIN } from '~/utils/constants.server'
 import { useAuth } from '~/hooks/useAuth'
@@ -57,7 +58,7 @@ import {
   playNextAction,
   resumeListAction,
 } from '~/redux/actions/playerActions'
-import { shouldCache } from '~/auth/sessions.server'
+import { fetchTrackDetail } from '~/database/requests.server'
 
 const styles: BoxStyles = {
   row: {
@@ -68,17 +69,17 @@ const styles: BoxStyles = {
     textAlign: 'center',
   },
   image: {
-    width: 250,
+    width: '250px',
     height: 'auto',
     maxWidth: '100%',
   },
   listByAuthor: {
-    fontSize: 14,
+    fontSize: '14px',
     fontWeight: 'bold',
   },
   listBy: {
     color: darken(colors.white, 0.5),
-    fontSize: 12,
+    fontSize: '12px',
   },
   listAuthor: {
     textDecoration: 'none',
@@ -102,7 +103,7 @@ const styles: BoxStyles = {
     // justifyContent: "flex-end",
     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
       position: 'absolute',
-      bottom: 4,
+      bottom: '4px',
     },
     '& > *': {
       padding: 0,
@@ -113,19 +114,19 @@ const styles: BoxStyles = {
     },
   },
   listType: {
-    fontSize: 12,
+    fontSize: '12px',
     fontWeight: 400,
     textTransform: 'uppercase',
   },
   listName: {
-    fontSize: 36,
+    fontSize: '1.9rem',
     fontWeight: 'bold',
     [theme.breakpoints.down('xs')]: {
-      fontSize: 32,
+      fontSize: '32px',
     },
   },
   ctaButtons: {
-    marginTop: 10,
+    marginTop: '10px',
   },
 }
 
@@ -136,13 +137,13 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
     }
   }
 
-  const { track } = data as TrackDetailQuery
+  const track = data?.track as TrackDetail
 
-  const title = `${track?.title} by ${track?.artist.stage_name}`
+  const title = `${track?.title} by ${track?.artist.stageName} | ${APP_NAME}`
   const url = `${DOMAIN}/track/${track?.hash}`
-  const description = `Listen to ${track?.title} by ${track?.artist.stage_name} on ${APP_NAME}`
+  const description = `Listen to ${track?.title} by ${track.artist.stageName} on ${APP_NAME}`
   const type = SEO_TRACK_TYPE
-  const image = track?.poster_url
+  const image = track?.posterUrl
 
   return {
     title,
@@ -157,16 +158,16 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
   }
 }
 
-export const loader: LoaderFunction = async ({ params, request }) => {
+export const loader = async ({ params }: LoaderArgs) => {
   const { hash } = params as { hash: string }
 
-  const data = await apiClient.fetchTrackDetail(hash)
+  const track = await fetchTrackDetail(parseInt(hash))
 
-  if (!data.track) {
+  if (!track) {
     throw new Response('Track not found', { status: 404 })
   }
 
-  return json(data)
+  return json({ track })
 }
 
 export default function TrackDetailPage() {
@@ -184,19 +185,19 @@ export default function TrackDetailPage() {
   const [openAddTrackToPlaylistPopup, setOpenAddTrackToPlaylistPopup] =
     useState(false)
 
-  const { track, relatedTracks } = useLoaderData()
+  const { track } = useLoaderData<NonNullable<typeof loader>>()
 
   const makeSoundList = useCallback(() => {
-    const { hash, title, poster_url, artist, audio_url } = track
+    const { hash, title, posterUrl, artist, audioUrl } = track
 
     return [
       {
         hash,
         title,
-        image: poster_url,
-        author_name: artist.stage_name,
-        author_hash: artist.hash,
-        play_url: audio_url,
+        image: posterUrl,
+        authorName: artist.stageName,
+        authorHash: artist.hash,
+        playUrl: audioUrl,
         type: 'track',
       },
     ]
@@ -229,7 +230,7 @@ export default function TrackDetailPage() {
 
   const getTabs = () => {
     const url = window.location.href
-    const title = `Listen to ${track.title} by ${track.artist.stage_name}`
+    const title = `Listen to ${track.title} by ${track.artist.stageName}`
     const hashtags = `${APP_NAME} music track share`
     const tabs: TabItem[] = [
       {
@@ -309,9 +310,10 @@ export default function TrackDetailPage() {
         label: 'Download',
         value: (
           <>
-            <Box component="p">File Size: {track.audio_file_size}</Box>
+            <Box component="p">File Size: {track.audioFileSize}</Box>
             <Button
               component={Link}
+              prefetch="intent"
               variant="contained"
               size="large"
               style={{ minWidth: '150px`' }}
@@ -385,7 +387,7 @@ export default function TrackDetailPage() {
       options.push({
         name: 'Go To Album',
         method: () => {
-          navigate(AppRoutes.album.detailPage(track.album.hash))
+          navigate(AppRoutes.album.detailPage(track.album!.hash))
         },
       })
     }
@@ -402,8 +404,8 @@ export default function TrackDetailPage() {
     <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
-          <Image
-            src={track.poster_url}
+          <PhotonImage
+            src={track.posterUrl}
             alt={track.title}
             sx={styles.image}
             photon={{
@@ -426,71 +428,59 @@ export default function TrackDetailPage() {
             <Box
               component={'p'}
               sx={styles.listByAuthor}
-              style={{ marginBottom: 5 }}
+              style={{ marginBottom: '5px' }}
             >
               <Box component={'span'} sx={styles.listBy}>
                 By{' '}
               </Box>
               <Box
                 component={Link}
+                prefetch="intent"
                 to={AppRoutes.artist.detailPage(track.artist.hash)}
                 sx={styles.listAuthor}
               >
-                {track.artist.stage_name}
+                {track.artist.stageName}
               </Box>
-
+              &nbsp;&nbsp; &nbsp;&nbsp;
               <Box component="span" sx={styles.listBy}>
-                , In{' '}
+                Genre{' '}
               </Box>
-
               <Box
                 component={Link}
+                prefetch="intent"
                 to={AppRoutes.genre.detailPage(track.genre.slug)}
                 sx={styles.listAuthor}
               >
                 {track.genre.name}
               </Box>
             </Box>
-            <Box component="p" sx={styles.listByAuthor}>
+            <Box component="p" sx={styles.listByAuthor} mb="1rem">
               <HeadsetIcon sx={styles.listBy} />{' '}
               <Box component="span" sx={styles.listAuthor}>
-                {track.play_count}
+                {track.playCount}
               </Box>
-              &nbsp;&nbsp;_&nbsp;&nbsp;
+              &nbsp;&nbsp; &nbsp;&nbsp;
               <GetAppIcon sx={styles.listBy} />{' '}
               <Box component="span" sx={styles.listAuthor}>
-                {track.download_count}
+                {track.downloadCount}
               </Box>
             </Box>
-
-            <Grid sx={styles.ctaButtons} container spacing={2}>
-              <Grid
-                item
-                xs={2}
-                sx={{
-                  sm: {
-                    display: 'none',
-                  },
-                }}
-              />
-              <Grid item>
-                <Button
-                  variant="contained"
-                  style={{ width: '100px' }}
-                  onClick={togglePlay}
-                >
-                  {playingListHash !== track.hash && 'Play'}
-                  {isPlaying && playingListHash === track.hash && 'Pause'}
-                  {!isPlaying && playingListHash === track.hash && 'Resume'}
-                  {/* todo // using currentTime > 0  to display rsesume or replay */}
-                </Button>
-              </Grid>
-              <Grid item>
-                <Heart border />
-                &nbsp; &nbsp;
-                <More border options={getMoreOptions()} />
-              </Grid>
-            </Grid>
+            <Box>
+              <Button
+                variant="contained"
+                sx={{ minWidth: '100px', mr: '1rem' }}
+                onClick={togglePlay}
+                size="large"
+              >
+                {playingListHash !== track.hash && 'Play'}
+                {isPlaying && playingListHash === track.hash && 'Pause'}
+                {!isPlaying && playingListHash === track.hash && 'Resume'}
+                {/* todo // using currentTime > 0  to display rsesume or replay */}
+              </Button>
+              <Heart border />
+              &nbsp; &nbsp;
+              <More border options={getMoreOptions()} />
+            </Box>
           </Box>
         </Grid>
       </Grid>
@@ -501,10 +491,10 @@ export default function TrackDetailPage() {
 
       <br />
 
-      {relatedTracks ? (
+      {track.relatedTracks.length > 0 ? (
         <TrackScrollingList
           category="Related Tracks"
-          tracks={relatedTracks}
+          tracks={track.relatedTracks}
           browse={AppRoutes.browse.tracks}
         />
       ) : null}

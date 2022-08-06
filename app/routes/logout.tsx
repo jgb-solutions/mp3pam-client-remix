@@ -1,10 +1,10 @@
 import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { redirect } from '@remix-run/node'
+import { authenticator } from '~/auth/auth.server'
 
 import {
   withAuth,
   getCookieSession,
-  destroyCookieSessionHeader,
   updateCookieSessionHeader,
 } from '~/auth/sessions.server'
 
@@ -23,11 +23,7 @@ export const loader: LoaderFunction = (context) =>
 
 export const action: ActionFunction = (context) =>
   withAuth(context, async ({ request }) => {
-    const session = await getCookieSession(request)
-
-    return redirect('/', {
-      headers: {
-        ...(await destroyCookieSessionHeader(session)),
-      },
+    await authenticator.logout(request, {
+      redirectTo: '/',
     })
   })

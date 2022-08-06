@@ -1,15 +1,15 @@
 import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { apiClient } from '~/graphql/requests.server'
 import type { LoaderFunction } from '@remix-run/node'
+import InfiniteLoader from '~/components/InfiniteLoader'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
 
 import HeaderTitle from '~/components/HeaderTitle'
-import InfiniteLoader from '~/components/InfiniteLoader'
+import type { AllArtists } from '~/interfaces/types'
 import ArtistThumbnail from '~/components/ArtistThumbnail'
-import type { ArtistsDataQuery } from '~/graphql/generated-types'
+import { fetchArtists } from '~/database/requests.server'
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'Browse All The Artists'
@@ -28,21 +28,19 @@ export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url)
   const page = Number(url.searchParams.get('page')) || 1
 
-  const data = await apiClient.fetchArtists({ page })
+  const artists = await fetchArtists({ page })
 
-  return json(data)
+  return json({ artists })
 }
 
-type ArtistType = NonNullable<ArtistsDataQuery['artists']>['data'][0]
-
 export default function BrowseArtistsPage() {
-  const { artists } = useLoaderData<ArtistsDataQuery>()
+  const { artists } = useLoaderData<typeof loader>()
 
   return (
     <>
       <HeaderTitle icon={<PersonPinCircleIcon />} text="Browse Artists" />
 
-      <InfiniteLoader<ArtistType>
+      <InfiniteLoader<AllArtists['data'][0]>
         path="/artists"
         resource={'artists'}
         initialData={artists?.data}

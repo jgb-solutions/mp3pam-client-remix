@@ -1,21 +1,21 @@
-import { Link } from '@remix-run/react'
+import type { CSSProperties, FC } from 'react'
 import Box from '@mui/material/Box'
-import type { BoxProps } from '@mui/material/Box'
-import type { BoxStyles } from '~/interfaces/types'
-import { PlayCircleOutline, PauseCircleOutline } from '@mui/icons-material'
-
+import { Link } from '@remix-run/react'
 import { useSelector } from 'react-redux'
+import type { BoxProps } from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import PlayCircleOutline from '@mui/icons-material/PlayCircleOutline'
+import PauseCircleOutline from '@mui/icons-material/PauseCircleOutline'
 
-import Image from './Image'
+import { PhotonImage } from './PhotonImage'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type { FC } from 'react'
 import type AppStateInterface from '~/interfaces/AppStateInterface'
+import type { BoxStyles, TrackThumbnailData } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   imgContainer: {
-    with: '175px',
+    width: '175px',
   },
   transparentBackground: {
     opacity: 0,
@@ -69,11 +69,12 @@ const styles: BoxStyles = {
 }
 
 type Props = {
-  track: {}
+  track: TrackThumbnailData
   sx?: BoxProps['sx']
+  imgStyles?: CSSProperties
 }
 
-const TrackThumbnail: FC<Props> = ({ track, sx }: Props) => {
+const TrackThumbnail: FC<Props> = ({ track, sx, imgStyles }: Props) => {
   const { listHash, isPlaying } = useSelector(
     ({ player }: AppStateInterface) => ({
       listHash: player?.list?.hash,
@@ -86,9 +87,10 @@ const TrackThumbnail: FC<Props> = ({ track, sx }: Props) => {
       <Box sx={{ position: 'relative' }}>
         <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)}>
           <Box
+            style={imgStyles}
             component="img"
             sx={styles.imgContainer}
-            src={Image.phoneCdnUrl(track.poster_url, {
+            src={PhotonImage.cdnUrl(track.posterUrl, {
               ulb: true,
               lb: {
                 width: 175,
@@ -118,7 +120,7 @@ const TrackThumbnail: FC<Props> = ({ track, sx }: Props) => {
       >
         <Box component="p" sx={styles.details}>
           <Box component="span" sx={styles.link}>
-            {track.artist.stage_name}
+            {track.artist.stageName}
           </Box>
         </Box>
       </Link>

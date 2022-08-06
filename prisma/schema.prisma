@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Genre {
+  id         Int      @id @default(autoincrement())
+  name       String
+  slug       String
+  createdAt  DateTime @default(now())
+  uppdatedAt DateTime @updatedAt
+  tracks     Track[]
+}
+
+model Account {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String?
+  password String?
+  avatar   String?
+
+  fbAvatar String?
+  fbId     String?
+  fbLink   String?
+
+  twitterAvatar String?
+  twitterId     String?
+  twitterLink   String?
+
+  phone         String?
+  type          ACCOUNT_TYPE @default(user)
+  isAdmin       Boolean      @default(false)
+  isActive      Boolean      @default(true)
+  resetCode     String?
+  firstLogin    Boolean      @default(true)
+  imgBucket     String?
+  rememberToken String?
+  createdAt     DateTime     @default(now())
+  uppdatedAt    DateTime     @updatedAt
+  tracks        Track[]
+  albums        Album[]
+  artists       Artist[]
+  playlists     Playlist[]
+}
+
+model Artist {
+  id         Int      @id @default(autoincrement())
+  name       String
+  stageName  String
+  hash       Int      @unique
+  poster     String
+  imgBucket  String
+  accountId  Int
+  bio        String?
+  facebook   String?
+  twitter    String?
+  instagram  String?
+  youtube    String?
+  verified   Boolean
+  createdAt  DateTime @default(now())
+  uppdatedAt DateTime @updatedAt
+  albums     Album[]
+  tracks     Track[]
+  Account    Account  @relation(fields: [accountId], references: [id])
+}
+
+model Track {
+  id            Int      @id @default(autoincrement())
+  title         String
+  hash          Int      @unique
+  audioName     String
+  poster        String
+  imgBucket     String
+  audioBucket   String
+  featured      Int?
+  detail        String?
+  lyrics        String?
+  audioFileSize Int?
+  accountId     Int
+  account       Account  @relation(fields: [accountId], references: [id])
+  artistId      Int
+  artist        Artist   @relation(fields: [artistId], references: [id])
+  albumId       Int?
+  album         Album?   @relation(fields: [albumId], references: [id])
+  genreId       Int
+  genre         Genre    @relation(fields: [genreId], references: [id])
+  number        Int?
+  playCount     Int?
+  downloadCount Int
+  publish       Int?
+  allowDownload Int?
+  createdAt     DateTime @default(now())
+  uppdatedAt    DateTime @updatedAt
+
+  playlists PlaylistTracks[]
+}
+
+model Album {
+  id          Int      @id @default(autoincrement())
+  title       String
+  hash        Int      @unique
+  cover       String
+  imgBucket   String
+  detail      String?
+  accountId   Int
+  artistId    Int
+  artist      Artist   @relation(fields: [artistId], references: [id])
+  releaseYear Int
+  createdAt   DateTime @default(now())
+  uppdatedAt  DateTime @updatedAt
+  tracks      Track[]
+  Account     Account  @relation(fields: [accountId], references: [id])
+}
+
+model Playlist {
+  id         Int      @id @default(autoincrement())
+  title      String
+  hash       Int      @unique
+  accountId  Int
+  user       Account  @relation(fields: [accountId], references: [id])
+  createdAt  DateTime @default(now())
+  uppdatedAt DateTime @updatedAt
+
+  tracks PlaylistTracks[]
+}
+
+model PlaylistTracks {
+  track      Track    @relation(fields: [trackId], references: [id])
+  trackId    Int
+  playlist   Playlist @relation(fields: [playlistId], references: [id])
+  playlistId Int
+  createdAt  DateTime @default(now())
+
+  @@id([trackId, playlistId])
+}
+
+enum ACCOUNT_TYPE {
+  artist
+  user
+}

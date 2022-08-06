@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { CSSProperties, FC } from 'react'
 import { useCallback } from 'react'
 import Avatar from '@mui/material/Avatar'
 import { NavLink } from '@remix-run/react'
@@ -7,10 +7,12 @@ import AlbumIcon from '@mui/icons-material/Album'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import LogoutIcon from '@mui/icons-material/Logout'
 
 import AppRoutes from '~/app-routes'
 import { sidebarStyles as styles } from '~/styles/sidebar-styles'
-import { useAuth } from '~/hooks/useAuth'
+import { useApp } from '~/hooks/useApp'
 
 const CreateMenu = [
   {
@@ -32,18 +34,18 @@ const CreateMenu = [
 ]
 
 const libraryMenu = [
-  { name: 'Tracks', to: AppRoutes.manage.tracks, icon: <MusicNoteIcon /> },
+  { name: 'Your Tracks', to: AppRoutes.manage.tracks, icon: <MusicNoteIcon /> },
   {
-    name: 'PlayLists',
+    name: 'Your PlayLists',
     to: AppRoutes.manage.playlists,
     icon: <PlaylistAddIcon />,
   },
   {
-    name: 'Artists',
+    name: 'Your Artists',
     to: AppRoutes.manage.artists,
     icon: <PersonPinCircleIcon />,
   },
-  { name: 'Albums', to: AppRoutes.manage.albums, icon: <AlbumIcon /> },
+  { name: 'Your Albums', to: AppRoutes.manage.albums, icon: <AlbumIcon /> },
 ]
 
 type Props = {
@@ -51,7 +53,11 @@ type Props = {
 }
 
 const Right: FC<Props> = ({ closeDrawerRight }) => {
-  const { currentUser } = useAuth()
+  const {
+    currentUser,
+    isLoggedIn,
+    context: { openAccountBox, logout },
+  } = useApp()
 
   const closeDrawer = useCallback(() => {
     if (closeDrawerRight) {
@@ -62,67 +68,73 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
   return (
     <Box sx={styles.container}>
       <Box sx={styles.menuList}>
-        <Box sx={styles.mainMenu}>
-          <NavLink
-            to={AppRoutes.user.account}
-            prefetch="intent"
-            style={({ isActive }) => ({
-              ...styles.link,
-              ...styles.mainMenuLink,
-              ...(isActive ? styles.activeClassName : {}),
-            })}
-            onClick={closeDrawer}
-          >
-            <Box component="span" sx={styles.linkIcon}>
-              <Avatar
-                style={{ width: 20, height: 20 }}
-                alt={currentUser.name}
-                src={currentUser.avatar_url || ''}
-              />
-            </Box>
-            <Box component="span" sx={styles.linkText}>
-              Account
-            </Box>
-          </NavLink>
-        </Box>
-
-        <Box>
-          <p>
-            <NavLink
-              prefetch="intent"
-              to={AppRoutes.manage.home}
-              style={({ isActive }) => ({
-                ...styles.yourLibraryLink,
-                ...(isActive ? styles.activeClassName : {}),
-              })}
-              onClick={closeDrawer}
-            >
-              Your Library
-            </NavLink>
-          </p>
-          {libraryMenu.map((menuItem, index) => (
-            <NavLink
-              prefetch="intent"
-              key={index}
-              to={menuItem.to}
-              style={({ isActive }) => ({
-                ...styles.link,
-                ...styles.libraryLink,
-                ...(isActive ? styles.activeClassName : {}),
-              })}
-              onClick={closeDrawer}
+        {isLoggedIn && (
+          <>
+            <Button
+              variant="text"
+              style={
+                {
+                  ...styles.link,
+                  ...styles.mainMenuLink,
+                } as CSSProperties
+              }
+              sx={styles.account}
+              onClick={() => {
+                closeDrawer()
+                openAccountBox()
+              }}
             >
               <Box component="span" sx={styles.linkIcon}>
-                {menuItem.icon}
+                <Avatar
+                  alt={currentUser.name}
+                  src={currentUser.avatarUrl || ''}
+                />
               </Box>
-              <Box component="span" sx={styles.linkText}>
-                {menuItem.name}
+              <Box component="span" sx={styles.linkText} textTransform="none">
+                Account
               </Box>
-            </NavLink>
-          ))}
+            </Button>
 
-          <br />
+            <Box mb="2rem">
+              <Box mb="1rem">
+                <NavLink
+                  prefetch="intent"
+                  to={AppRoutes.manage.home}
+                  style={({ isActive }) => ({
+                    ...styles.yourLibraryLink,
+                    ...(isActive ? styles.activeClassName : {}),
+                  })}
+                  onClick={closeDrawer}
+                >
+                  Your Library
+                </NavLink>
+              </Box>
 
+              {libraryMenu.map((menuItem, index) => (
+                <NavLink
+                  prefetch="intent"
+                  key={index}
+                  to={menuItem.to}
+                  style={({ isActive }) => ({
+                    ...styles.link,
+                    ...styles.libraryLink,
+                    ...(isActive ? styles.activeClassName : {}),
+                  })}
+                  onClick={closeDrawer}
+                >
+                  <Box component="span" sx={styles.linkIcon}>
+                    {menuItem.icon}
+                  </Box>
+                  <Box component="span" sx={styles.linkText}>
+                    {menuItem.name}
+                  </Box>
+                </NavLink>
+              ))}
+            </Box>
+          </>
+        )}
+
+        <Box>
           {CreateMenu.map((menuItem, index) => (
             <NavLink
               prefetch="intent"
@@ -145,6 +157,19 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
           ))}
         </Box>
       </Box>
+
+      <Button
+        size="large"
+        variant="outlined"
+        onClick={() => {
+          logout()
+          closeDrawer()
+        }}
+        startIcon={<LogoutIcon />}
+        sx={styles.account}
+      >
+        Log out
+      </Button>
     </Box>
   )
 }

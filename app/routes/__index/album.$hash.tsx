@@ -5,6 +5,11 @@ import {
   WhatsappShareButton,
   EmailShareButton,
 } from 'react-share'
+import type {
+  LoaderArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { useDispatch, useSelector } from 'react-redux'
 import Grid from '@mui/material/Grid'
@@ -12,9 +17,8 @@ import Button from '@mui/material/Button'
 import InfoIcon from '@mui/icons-material/Info'
 import ShareIcon from '@mui/icons-material/Share'
 import EmailIcon from '@mui/icons-material/Email'
-import { Box, darken, Hidden } from '@mui/material'
+import { Box, darken } from '@mui/material'
 import TwitterIcon from '@mui/icons-material/Twitter'
-import type { LoaderFunction } from '@remix-run/node'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsappIcon from '@mui/icons-material/WhatsApp'
@@ -34,25 +38,24 @@ import {
   APP_NAME,
   SEO_ALBUM_TYPE,
   TWITTER_HANDLE,
-  FETCH_ALBUMS_NUMBER,
 } from '../../utils/constants'
 import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
 import More from '~/components/More'
 import Tabs from '~/components/Tabs'
-import Image from '~/components/Image'
+import { PhotonImage } from '~/components/PhotonImage'
 import Heart from '~/components/Heart'
 import colors from '../../utils/colors'
 import type { TabItem } from '~/components/Tabs'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
-import type { BoxStyles } from '~/interfaces/types'
-import { apiClient } from '~/graphql/requests.server'
+import type { AlbumDetail, BoxStyles } from '~/interfaces/types'
 import AlbumTracksTable from '~/components/AlbumTracksTable'
 import type ListInterface from '../../interfaces/ListInterface'
-import type { AlbumDetailQuery } from '~/graphql/generated-types'
 import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 import type AppStateInterface from '../../interfaces/AppStateInterface'
+import { fetchAlbumDetail } from '~/database/requests.server'
+import { DOMAIN } from '~/utils/constants.server'
 
 const styles: BoxStyles = {
   row: {
@@ -113,10 +116,10 @@ const styles: BoxStyles = {
     textTransform: 'uppercase',
   },
   listName: {
-    fontSize: '36px',
+    fontSize: '2.5rem',
     fontWeight: 'bold',
-    [theme.breakpoints.down('xs')]: {
-      fontSize: '32px',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2rem',
     },
   },
   ctaButtons: {
@@ -124,30 +127,51 @@ const styles: BoxStyles = {
   },
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
+  if (!data) {
+    return {
+      title: `Album not found!`,
+    }
+  }
+
+  const album = data.album as AlbumDetail
+
+  const title = `${album.title} (album) by ${album.artist.stageName}`
+  const url = `${DOMAIN}/album/${album.hash}`
+  const description = `Listen to ${album.title} by ${album.artist.stageName} on ${APP_NAME}`
+  const type = { SEO_ALBUM_TYPE }
+  const image = album.coverUrl
+
+  return {
+    title,
+    'og:title': title,
+    'og:url': url,
+    'og:description': description,
+    'og:type': type,
+    'og:image': image,
+  }
+}
+
+export const loader = async ({ params }: LoaderArgs) => {
   const { hash } = params as { hash: string }
 
-  const data = await apiClient.fetchAlbumDetail({
-    hash,
-    input: { first: FETCH_ALBUMS_NUMBER, hash },
-  })
+  const album = await fetchAlbumDetail(parseInt(hash))
 
-  return json(data)
+  return json({ album })
 }
 
 export default function AlbumDetailPage() {
   const dispatch = useDispatch()
-  const { isPlaying, currentTime, playingListHash } = useSelector(
+  const navigate = useNavigate()
+  const { isPlaying, playingListHash } = useSelector(
     ({ player }: AppStateInterface) => ({
       playingListHash: player?.list?.hash,
       isPlaying: player.isPlaying,
-      currentTime: player.currentTime,
     })
   )
+  const { album } = useLoaderData<typeof loader>()
 
-  const navigate = useNavigate()
-  const { randomAlbums, album: albumData } = useLoaderData<AlbumDetailQuery>()
-  const album = albumData as NonNullable<AlbumDetailQuery['album']>
+  if (!album) return null
 
   const makeList = () => {
     const { hash } = album
@@ -161,13 +185,13 @@ export default function AlbumDetailPage() {
   }
 
   const makeSoundList = () => {
-    return album.tracks.map(({ hash, title, poster_url, audio_url }) => ({
+    return album.tracks.map(({ hash, title, posterUrl, audioUrl }) => ({
       hash,
       title,
-      image: poster_url,
-      author_name: album.artist.stage_name,
-      author_hash: album.artist.hash,
-      play_url: audio_url,
+      image: posterUrl,
+      authorName: album.artist.stageName,
+      authorHash: album.artist.hash,
+      playUrl: audioUrl,
       type: 'track',
     }))
   }
@@ -188,7 +212,7 @@ export default function AlbumDetailPage() {
 
   const getTabs = () => {
     const url = window.location.href
-    const title = `Listen to ${album.title} by ${album.artist.stage_name}`
+    const title = `Listen to ${album.title} by ${album.artist.stageName}`
     const hashtags = `${APP_NAME} music album share`
     const tabs: TabItem[] = []
 
@@ -315,8 +339,8 @@ export default function AlbumDetailPage() {
     <Box>
       <Grid container spacing={2}>
         <Grid item sm={4} xs={12} sx={styles.imageContainer}>
-          <Image
-            src={album.cover_url}
+          <PhotonImage
+            src={album.coverUrl}
             alt={album.title}
             sx={styles.image}
             photon={{
@@ -349,25 +373,21 @@ export default function AlbumDetailPage() {
                 to={AppRoutes.artist.detailPage(album.artist.hash)}
                 sx={styles.listAuthor}
               >
-                {album.artist.stage_name}
+                {album.artist.stageName}
               </Box>
-              <br />
-              <Box component="span" sx={styles.listBy}>
-                Released In{' '}
+
+              <Box mb="1rem">
+                <Box component="span" sx={styles.listBy}>
+                  Released In{' '}
+                </Box>
+                <Box component="span" sx={styles.listAuthor}>
+                  {album.releaseYear}
+                </Box>
               </Box>
-              <Box
-                component="span"
-                sx={styles.listAuthor}
-                style={{ textDecoration: 'none' }}
-              >
-                {album.release_year}
-              </Box>
-            </Box>
-            <Grid sx={styles.ctaButtons} container spacing={2}>
-              <Grid item xs={2} implementation="css" smUp component={Hidden} />
-              <Grid item>
+
+              <Box>
                 <Button
-                  style={{ width: '100px' }}
+                  sx={{ minWidth: '100px', mr: '1rem' }}
                   onClick={togglePlay}
                   variant="contained"
                 >
@@ -376,13 +396,11 @@ export default function AlbumDetailPage() {
                   {!isPlaying && playingListHash === album.hash && 'Resume'}
                   {/* todo // using currentTime > 0  to display rsesume or replay */}
                 </Button>
-              </Grid>
-              <Grid item>
                 <Heart border />
                 &nbsp; &nbsp;
                 <More border options={getMoreOptions()} />
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </Box>
         </Grid>
       </Grid>
@@ -394,22 +412,13 @@ export default function AlbumDetailPage() {
       <br />
       <br />
 
-      {randomAlbums ? (
+      {album.relatedAlbums.length > 0 ? (
         <AlbumScrollingList
           category="Other Albums Your Might Like"
-          albums={randomAlbums}
+          albums={album.relatedAlbums}
           browse={AppRoutes.browse.albums}
         />
       ) : null}
-      {/* handling SEO */}
-      {/* <SEO
-        title={`${album.title} (album) by ${album.artist.stage_name}`}
-        url={`${DOMAIN}/album/${album.hash}`}
-        description={`Listen to ${album.title} by ${album.artist.stage_name} on ${APP_NAME}`}
-        type={SEO_ALBUM_TYPE}
-        image={album.cover_url}
-        artist={`${DOMAIN}/artist/${album.artist.hash}`}
-      /> */}
     </Box>
   ) : (
     <>

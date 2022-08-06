@@ -1,9 +1,10 @@
 import Slider from '@mui/material/Slider'
+import { makeStyles } from '@mui/styles'
 import type { BoxStyles } from '~/interfaces/types'
 
 import colors from '../utils/colors'
 
-const styles: BoxStyles = {
+const styles = makeStyles({
   root: {
     color: colors.grey,
   },
@@ -14,7 +15,7 @@ const styles: BoxStyles = {
   rail: {
     height: '4px',
   },
-}
+})
 
 const CustomSlider = (props: any) => {
   return <Slider classes={styles} {...props} />

@@ -1,6 +1,8 @@
-import { PlayCircleOutline, PauseCircleOutline } from '@mui/icons-material'
+import type { FC } from 'react'
 import IconButton from '@mui/material/IconButton'
 import { useDispatch, useSelector } from 'react-redux'
+import PlayCircleOutline from '@mui/icons-material/PlayCircleOutline'
+import PauseCircleOutline from '@mui/icons-material/PauseCircleOutline'
 
 import {
   playListAction,
@@ -10,15 +12,14 @@ import {
   resumeSoundAction,
   playSoundAction,
 } from '~/redux/actions/playerActions'
-import type { FC } from 'react'
 import colors from '../utils/colors'
 import type { BoxStyles } from '~/interfaces/types'
-import type AppStateInterface from '../interfaces/AppStateInterface'
 import type { SoundInterface } from '../interfaces/ListInterface'
+import type AppStateInterface from '../interfaces/AppStateInterface'
 
 const styles: BoxStyles = {
   icon: {
-    fontSize: 18,
+    fontSize: '18px',
     color: colors.grey,
     '&:hover': {
       color: colors.white,
@@ -26,10 +27,10 @@ const styles: BoxStyles = {
   },
   border: {
     color: colors.white,
-    padding: 5,
+    padding: '5px',
     border: '1px solid white',
     borderRadius: '50%',
-    marginLeft: 15,
+    marginLeft: '15px',
   },
   button: {
     padding: 0,

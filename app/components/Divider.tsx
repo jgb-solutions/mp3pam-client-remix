@@ -4,66 +4,61 @@ import type { CSSProperties, FC } from 'react'
 import colors from '../utils/colors'
 import type { BoxStyles } from '~/interfaces/types'
 
-
 export const styles: BoxStyles = {
   divider: {
-    fontSize: 16,
+    fontSize: '16px',
     fontWeight: 400,
-    // borderTop: '1px solid #d9dadc',
     lineHeight: '1px',
-    marginTop: "30px",
-    marginBottom: "30px",
+    marginTop: '30px',
+    marginBottom: '30px',
     marginLeft: 0,
     marginRight: 0,
     position: 'relative',
     textAlign: 'center',
-    height: 6,
+    height: '6px',
     border: 0,
-    background:
-      `
+    background: `
       linear-gradient(
         to right,
         ${colors.black} 0%,
         ${colors.primary} 55%,
         ${colors.primary} 55%,
         ${colors.black} 100%)
-      `
+      `,
   },
   title: {
     background: colors.black,
-    fontSize: 12,
-    letterSpacing: 1,
+    fontSize: '12px',
+    letterSpacing: '1px',
     paddingTop: 0,
-    paddingRight: 20,
+    px: '20px',
     paddingBottom: 0,
-    paddingLeft: 20,
     textTransform: 'uppercase',
   },
   hr: {
-    marginTop: "30px",
-    marginBottom: "30px",
-    height: 6,
+    marginTop: '30px',
+    marginBottom: '30px',
+    height: '6px',
     border: 0,
-    background:
-      `
+    background: `
     linear-gradient(
       to right,
       ${colors.black} 0%,
       ${colors.primary} 55%,
       ${colors.primary} 55%,
       ${colors.black} 100%)
-    `
-  }
+    `,
+  },
 }
 
-type Props = {
-}
+type Props = {}
 
 const Divider: FC<Props> = ({ children }) => {
-
   return (
     <Box sx={styles.divider}>
-      <Box component="strong" sx={styles.title}>{children}</Box>
+      <Box component="strong" sx={styles.title}>
+        {children}
+      </Box>
     </Box>
   )
 }
