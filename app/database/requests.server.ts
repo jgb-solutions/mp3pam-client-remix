@@ -93,7 +93,7 @@ import {
 } from '~/utils/constants'
 import { db } from './db.server'
 import { graphQLClient as client } from '~/graphql/client.server'
-import { getSignedUrl } from '~/services/s3.server'
+import { getSignedDownloadUrl, getSignedUrl } from '~/services/s3.server'
 import type { Credentials } from '~/interfaces/types'
 import { Account, Prisma } from '@prisma/client'
 import { PhotonImage } from '~/components/PhotonImage'
@@ -867,13 +867,50 @@ export async function deleteTrack(trackHash: string) {
   )
 }
 
-export async function download(downloadInput: DownloadInput) {
-  return client.request<DownloadQuery, DownloadQueryVariables>(
-    fetchDownloadUrlDocument,
-    {
-      input: downloadInput,
+export async function getTrackDownload(hash: number) {
+  const track = await db.track.findFirst({
+    where: { hash },
+    select: {
+      title: true,
+      audioBucket: true,
+      audioName: true,
+      imgBucket: true,
+      poster: true,
+      artist: {
+        select: {
+          stageName: true,
+        },
+      },
+    },
+  })
+
+  if (track) {
+    await db.track.update({
+      where: { hash },
+      data: {
+        downloadCount: {
+          increment: 1,
+        },
+      },
+    })
+
+    const { audioBucket, audioName, title, imgBucket, poster, artist } = track
+    const downloadUrl = getSignedDownloadUrl({
+      bucket: audioBucket,
+      resource: audioName,
+      trackTitle: title,
+    })
+
+    return {
+      downloadUrl,
+      title,
+      posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
+      artist,
+      hash,
     }
-  )
+  }
+
+  return null
 }
 
 export async function fetchGenres() {

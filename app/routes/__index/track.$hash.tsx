@@ -304,28 +304,6 @@ export default function TrackDetailPage() {
       },
     ]
 
-    if (track.allowDownload) {
-      tabs.push({
-        icon: <GetAppIcon />,
-        label: 'Download',
-        value: (
-          <>
-            <Box component="p">File Size: {track.audioFileSize}</Box>
-            <Button
-              component={Link}
-              prefetch="intent"
-              variant="contained"
-              size="large"
-              style={{ minWidth: '150px`' }}
-              to={AppRoutes.download.trackPage(track.hash)}
-            >
-              Download
-            </Button>
-          </>
-        ),
-      })
-    }
-
     if (track.detail) {
       tabs.push({
         icon: <InfoIcon />,
@@ -359,7 +337,7 @@ export default function TrackDetailPage() {
     setOpenAddTrackToPlaylistPopup(true)
   }
 
-  const getMoreOptions = () => {
+  const getMoreOptions = useCallback(() => {
     let options = [
       {
         name: 'Play Next',
@@ -398,7 +376,14 @@ export default function TrackDetailPage() {
     })
 
     return options
-  }
+  }, [
+    dispatch,
+    isLoggedIn,
+    makeSoundList,
+    navigate,
+    track.album,
+    track.artist.hash,
+  ])
 
   return (
     <Box>
@@ -479,7 +464,19 @@ export default function TrackDetailPage() {
               </Button>
               <Heart border />
               &nbsp; &nbsp;
-              <More border options={getMoreOptions()} />
+              <More options={getMoreOptions()} sx={{ mr: '1rem' }} />
+              <Button
+                component={Link}
+                prefetch="intent"
+                variant="contained"
+                size="large"
+                sx={{ minWidth: 'fit-content' }}
+                startIcon={<GetAppIcon />}
+                color="success"
+                to={AppRoutes.download(track.hash)}
+              >
+                Download
+              </Button>
             </Box>
           </Box>
         </Grid>

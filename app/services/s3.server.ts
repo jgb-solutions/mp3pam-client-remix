@@ -59,3 +59,26 @@ export const putSignedUrl = ({
 
   return url
 }
+
+type GetDownloadParams = {
+  bucket: string
+  resource: string
+  trackTitle: string
+}
+
+export const getSignedDownloadUrl = ({
+  bucket,
+  resource,
+  trackTitle,
+}: GetDownloadParams) => {
+  const url = s3
+    .getSignedUrl('getObject', {
+      Bucket: bucket,
+      Key: resource,
+      Expires: 10 * 60,
+      ResponseContentDisposition: `attachment; filename="${trackTitle}.mp3"`,
+    })
+    .replace(endpoint, 'https:/')
+
+  return url
+}

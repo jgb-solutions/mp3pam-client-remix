@@ -40,10 +40,7 @@ const AppRoutes = {
     goToAuthorDetail: (authorID: string) => `/author/${authorID}`,
     editPage: (hash: number) => `/manage/playlists/${hash}`,
   },
-  download: {
-    audio: `/download/:type/:hash`,
-    trackPage: (hash: number) => `/download/track/${hash}`,
-  },
+  download: (hash: number) => `/download/${hash}`,
   user: {
     detailPage: (userHash: number) => `/user/${userHash}`,
     account: `/account`,

@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem'
 
 import colors from '../utils/colors'
 import type { BoxStyles } from '~/interfaces/types'
+import type { ButtonProps } from '@mui/material'
 
 const styles: BoxStyles = {
   icon: {
@@ -35,11 +36,11 @@ type Option = {
 }
 
 type Props = {
-  border?: boolean
+  sx?: ButtonProps['sx']
   options: Option[]
 }
 
-function More(props: Props) {
+function More({ sx = {}, options }: Props) {
   const [anchorEl, listAnchorEl] = useState(null)
 
   const handleMenu = (event: any) => {
@@ -61,7 +62,7 @@ function More(props: Props) {
         aria-controls="context-menu"
         aria-haspopup="true"
         onClick={handleMenu}
-        sx={props.border ? styles.border : {}}
+        sx={[styles.border, sx] as ButtonProps['sx']}
       >
         <MoreHorizOutlined sx={styles.icon} />
       </IconButton>
@@ -78,7 +79,7 @@ function More(props: Props) {
           },
         }}
       >
-        {props.options.map((option, index) => (
+        {options.map((option, index) => (
           <MenuItem
             key={index}
             onClick={() => handleClick(option.method)}

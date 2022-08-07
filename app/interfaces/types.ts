@@ -1,6 +1,5 @@
 import type { BoxProps, GridProps } from '@mui/material'
 import type {
-  doLogin,
   fetchTracks,
   fetchAlbums,
   fetchGenres,
@@ -12,14 +11,19 @@ import type {
   fetchPlaylistDetail,
   fetchAlbumDetail,
   getSessionDataFromAccount,
+  getTrackDownload,
 } from '~/database/requests.server'
 
-export type BoxStyles = { [key: string]: BoxProps['sx'] }
+export type BoxStyles = { [key: string]: Required<BoxProps['sx']> }
 
 export type GridStyles = { [key: string]: GridProps['sx'] }
 
 export type TrackDetail = NonNullable<
   Awaited<ReturnType<typeof fetchTrackDetail>>
+>
+
+export type DownloadTrack = NonNullable<
+  Awaited<ReturnType<typeof getTrackDownload>>
 >
 
 export type ArtistDetail = NonNullable<
