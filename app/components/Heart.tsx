@@ -1,5 +1,6 @@
 import { Favorite, FavoriteBorder } from '@mui/icons-material'
 import IconButton from '@mui/material/IconButton'
+import { useApp } from '~/hooks/useApp'
 
 import type { BoxStyles } from '~/interfaces/types'
 
@@ -25,7 +26,10 @@ type Props = {
 }
 
 function Heart(props: Props) {
+  const { isLoggedIn } = useApp()
   const { toggleFavorite, isFavorite } = props
+
+  if (!isLoggedIn) return null
 
   return (
     <IconButton onClick={toggleFavorite} sx={props.border ? styles.border : {}}>

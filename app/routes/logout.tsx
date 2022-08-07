@@ -7,6 +7,7 @@ import {
   getCookieSession,
   updateCookieSessionHeader,
 } from '~/auth/sessions.server'
+import { getSearchParams } from '~/utils/helpers.server'
 
 export const loader: LoaderFunction = (context) =>
   withAuth(context, async ({ request }) => {
@@ -23,7 +24,11 @@ export const loader: LoaderFunction = (context) =>
 
 export const action: ActionFunction = (context) =>
   withAuth(context, async ({ request }) => {
+    const searchParams = getSearchParams(request)
+
+    const returnTo = searchParams.get('returnTo') || '/'
+
     await authenticator.logout(request, {
-      redirectTo: '/',
+      redirectTo: returnTo,
     })
   })

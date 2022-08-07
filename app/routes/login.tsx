@@ -30,6 +30,7 @@ import TextIcon from '~/components/TextIcon'
 import PlainLayout from '~/components/layouts/Plain'
 import { authenticator, AuthenticatorOptions } from '~/auth/auth.server'
 import type { BoxStyles, Credentials } from '~/interfaces/types'
+import { getSearchParams } from '~/utils/helpers.server'
 
 const styles: BoxStyles = {
   facebookButton: {
@@ -96,12 +97,16 @@ export const loader = async ({ request }: LoaderArgs) => {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+  const searchParams = getSearchParams(request)
+
+  const returnTo = searchParams.get('returnTo') || '/'
+
   try {
     await authenticator.authenticate(
       AuthenticatorOptions.Credentials,
       request,
       {
-        successRedirect: '/',
+        successRedirect: returnTo,
       }
     )
   } catch (error) {
@@ -163,7 +168,10 @@ export default function LoginPage() {
   const handleLogin = useCallback(
     async (credentials: Credentials) => {
       if (formRef.current) {
-        submit(formRef.current, { method: 'post' })
+        submit(formRef.current, {
+          method: 'post',
+          action: window.location.href,
+        })
       }
     },
     [submit]

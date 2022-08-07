@@ -2,7 +2,7 @@ import type { FC } from 'react'
 import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Menu from '@mui/material/Menu'
-import { Link } from '@remix-run/react'
+import { Link, useLocation } from '@remix-run/react'
 import AppBar from '@mui/material/AppBar'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
@@ -86,6 +86,7 @@ const styles: BoxStyles = {
 }
 
 const Header: FC = () => {
+  const location = useLocation()
   const [drawerLeftOPen, setDrawerLeftOpen] = useState(false)
   const [drawerRightOPen, setDrawerRightOpen] = useState(false)
   const {
@@ -149,7 +150,7 @@ const Header: FC = () => {
             <Box
               component={Link}
               prefetch="intent"
-              to={AppRoutes.pages.login}
+              to={`${AppRoutes.pages.login}?returnTo=${location.pathname}`}
               sx={{ textDecoration: 'none' }}
             >
               <Button

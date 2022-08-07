@@ -23,6 +23,7 @@ import {
   Outlet,
   useCatch,
   useLoaderData,
+  useLocation,
   useSubmit,
 } from '@remix-run/react'
 
@@ -44,7 +45,6 @@ import HeaderTitle from './components/HeaderTitle'
 import { authenticator } from './auth/auth.server'
 import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
 import { useApp } from './hooks/useApp'
-import AccountModal from './components/AccountModal'
 
 export const links: LinksFunction = () => [
   {
@@ -145,6 +145,7 @@ export type AppOutletContext = {
 
 export default function App() {
   const submit = useSubmit()
+  const location = useLocation()
   const { isLoggedIn, currentUser } = useApp()
   const { pathname } = useLoaderData<typeof loader>()
   let [socket, setSocket] =
@@ -168,8 +169,10 @@ export default function App() {
   }, [socket])
 
   const logout = useCallback(() => {
-    submit(null, { method: 'post', action: '/logout' })
-  }, [submit])
+    const returnTo = location.pathname
+
+    submit(null, { method: 'post', action: `/logout?returnTo=${returnTo}` })
+  }, [location.pathname, submit])
 
   // Chat box
   const handleCloseChatBox = useCallback(() => {
@@ -214,8 +217,6 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.log(error)
-
   return (
     <Document title="Error!">
       <Box

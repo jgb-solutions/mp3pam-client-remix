@@ -9,6 +9,7 @@ import { createCookieSessionStorage, redirect } from '@remix-run/node'
 import { fetchFacebookLoginUrl } from '~/database/requests.server'
 
 import type { SessionAccount } from '~/interfaces/types'
+import { getUrl } from '~/utils/helpers.server'
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -73,7 +74,9 @@ export const withAuth = async (
       ...(await updateCookieSessionHeader(session)),
     }
 
-    return redirect(options.redirectTo || '/login', {
+    const url = getUrl(request)
+
+    return redirect(options.redirectTo || `/login?returnTo=${url.pathname}`, {
       headers: updatedHeaders,
     })
   }
