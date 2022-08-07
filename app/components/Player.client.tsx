@@ -1,4 +1,4 @@
-import { useNavigate, Link } from '@remix-run/react'
+import { useNavigate, Link, useFetcher } from '@remix-run/react'
 import LoopIcon from '@mui/icons-material/Loop'
 import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
@@ -16,7 +16,7 @@ import VolumeDownOutlinedIcon from '@mui/icons-material/VolumeDownOutlined'
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline'
 import VolumeMuteOutlinedIcon from '@mui/icons-material/VolumeMuteOutlined'
 import PlaylistPlayOutlinedIcon from '@mui/icons-material/PlaylistPlayOutlined'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Slider from './Slider'
@@ -154,6 +154,7 @@ const styles: BoxStyles = {
 }
 
 export default function Player() {
+  const playFetcher = useFetcher()
   const audio = useRef<HTMLAudioElement>(new Audio()).current
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -162,8 +163,10 @@ export default function Player() {
   const storePlayerData = useSelector(
     (appState: AppStateInterface) => appState.player
   )
-  const syncState = (state: Partial<PlayerInterface>) =>
-    dispatch(syncStateAction(state))
+  const syncState = useCallback(
+    (state: Partial<PlayerInterface>) => dispatch(syncStateAction(state)),
+    [dispatch]
+  )
   const [state, setState] = useState<PlayerInterface>({
     ...storePlayerData,
     isPlaying: false,
@@ -186,259 +189,6 @@ export default function Player() {
     }
     // eslint-disable-next-line
   }, [])
-
-  const onPlay = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isPlaying: true,
-    }))
-  }
-
-  const onPause = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isPlaying: false,
-    }))
-  }
-
-  const onTimeUpdate = () => {
-    const currentTime = audio.currentTime
-    let duration = audio.duration
-    setState((prevState) => ({
-      ...prevState,
-      position: (currentTime / duration) * 100,
-      elapsed: formatTime(currentTime),
-      duration: duration > 0 ? formatTime(duration) : '',
-      currentTime,
-    }))
-  }
-
-  const onEnded = () => {
-    const sounds = state.queueList
-    const { repeat } = state
-
-    const currentSound = state.currentSound
-    if (!currentSound) return
-
-    const currentSoundIndex = findIndex(currentSound, sounds)
-    const totalSoundsIndexes = sounds.length - 1
-
-    if (sounds.length > 1 && repeat === ALL) {
-      playNext()
-    }
-
-    if (
-      sounds.length > 1 &&
-      repeat === NONE &&
-      currentSoundIndex < totalSoundsIndexes
-    ) {
-      playNext()
-    }
-  }
-
-  const togglePlay = () => {
-    if (state.isPlaying) {
-      pause()
-    } else {
-      playOrResume()
-    }
-  }
-
-  const playOrResume = () => {
-    if (audio.paused && audio.currentTime > 0) {
-      resume()
-    } else {
-      play()
-    }
-  }
-
-  const play = () => {
-    if (!state.currentSound) return
-
-    setSoundLoading(true)
-
-    setLoggedHash(undefined)
-
-    const currentPlayingIndex = findIndex(state?.currentSound, state.queueList)
-
-    syncState({ currentPlayingIndex })
-
-    setState((prevState) => ({
-      ...prevState,
-      isPlaying: true,
-    }))
-
-    prepareAudio()
-
-    audio.play().then(
-      () => {
-        // console.log("started playing...");
-        setSoundLoading(false)
-      },
-      (error) => {
-        console.log('failed because ' + error)
-        setSoundLoading(false)
-        setState((prevState) => ({
-          ...prevState,
-          isPlaying: false,
-        }))
-      }
-    )
-  }
-
-  const prepareAudio = () => {
-    if (!state.currentSound) return
-    audio.src = state.currentSound.playUrl
-    // audio.load();
-  }
-
-  const resume = () => {
-    audio.play()
-
-    if (state.currentTime < SECONDS_TO_UPDATE_PLAY_COUNT) {
-      setLoggedHash(undefined)
-    }
-
-    setState((prevState) => ({
-      ...prevState,
-      isPlaying: true,
-      action: RESUME,
-    }))
-  }
-
-  const pause = () => {
-    audio.pause()
-    setState((prevState) => ({
-      ...prevState,
-      isPlaying: false,
-      action: PAUSE,
-    }))
-  }
-
-  const playPrevious = () => {
-    const sounds = state.queueList
-    if (state.isShuffled) {
-      getRandomSound(sounds)
-      play()
-    } else {
-      if (sounds.length > 1) {
-        let indexToPlay: number
-        let totalSoundsIndexes = state.queueList?.length - 1
-
-        if (!state.currentSound) return
-        let currentIndex = findIndex(state.currentSound, sounds)
-        if (currentIndex > 0) {
-          indexToPlay = currentIndex - 1
-        } else {
-          indexToPlay = totalSoundsIndexes
-        }
-
-        setState((prevState) => ({
-          ...prevState,
-          currentSound: sounds[indexToPlay],
-        }))
-      } else {
-        play()
-      }
-    }
-  }
-
-  const playNext = () => {
-    const sounds = state.queueList
-    if (state.isShuffled) {
-      getRandomSound(sounds)
-      play()
-    } else {
-      if (sounds.length > 1) {
-        let indexToPlay: number
-        let totalSoundsIndexes = sounds.length - 1
-
-        if (!state.currentSound) return
-        let currentIndex = findIndex(state.currentSound, sounds)
-
-        if (currentIndex < totalSoundsIndexes) {
-          indexToPlay = currentIndex + 1
-        } else {
-          indexToPlay = 0
-        }
-
-        setState((prevState) => ({
-          ...prevState,
-          currentSound: sounds[indexToPlay],
-        }))
-      } else {
-        play()
-      }
-    }
-  }
-
-  const findIndex = (sound: any, soundList: any[]): number => {
-    return soundList?.findIndex(
-      (item: SoundInterface) => item.hash === sound.hash
-    )
-  }
-
-  const getRandomSound = (sounds: SoundInterface[]) => {
-    const randomSound = sounds[Math.floor(Math.random() * sounds.length)]
-
-    setState((prevState) => ({
-      ...prevState,
-      currentSound: randomSound,
-    }))
-  }
-
-  const formatTime = (seconds: number) => {
-    let minutes: number = Math.floor(seconds / 60)
-    let sMinutes = minutes >= 10 ? minutes : '0' + minutes
-    seconds = Math.floor(seconds % 60)
-    let sSeconds = seconds >= 10 ? seconds : '0' + seconds
-    return sMinutes + ':' + sSeconds
-  }
-
-  const handleSeekChange = (event: any, newPosition: number) => {
-    audio.currentTime = (newPosition * audio.duration) / 100
-    setState((prevState) => ({
-      ...prevState,
-      position: newPosition,
-    }))
-  }
-
-  const handleVolumeChange = (event: any, newVolume: number) => {
-    // update the audio native player volume and also update the state
-    audio.volume = newVolume / 100
-
-    setState((prevState) => ({
-      ...prevState,
-      volume: newVolume,
-    }))
-  }
-
-  const toggleRepeat = () => {
-    setState((prevState) => {
-      let newRepeatVal
-
-      switch (prevState.repeat) {
-        case NONE:
-          newRepeatVal = ALL
-          break
-        case ALL:
-          newRepeatVal = ONE
-          break
-        case ONE:
-          newRepeatVal = NONE
-          break
-      }
-
-      return { ...prevState, repeat: newRepeatVal }
-    })
-  }
-
-  const toggleShuffle = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isShuffled: !prevState.isShuffled,
-    }))
-  }
 
   // update playing when the store state changes
   useEffect(() => {
@@ -552,7 +302,7 @@ export default function Player() {
   // update the store state when some local states change
   useEffect(() => {
     if (state.currentSound) {
-      const { hash, type } = state.currentSound
+      const { hash } = state.currentSound
 
       if (
         state.isPlaying &&
@@ -560,7 +310,7 @@ export default function Player() {
         Math.floor(state.currentTime) === SECONDS_TO_UPDATE_PLAY_COUNT
       ) {
         setLoggedHash(hash)
-        // updatePlayCount({ hash, type })
+        updatePlayCount(hash)
       }
     }
     // eslint-disable-next-line
@@ -617,6 +367,299 @@ export default function Player() {
     syncState({ isShuffled: state.isShuffled })
     // eslint-disable-next-line
   }, [state.isShuffled])
+
+  const updatePlayCount = useCallback(
+    (hash: number) => {
+      const form = new FormData()
+      form.append('hash', hash.toString())
+
+      playFetcher.submit(form, {
+        method: 'post',
+        action: '/api/track',
+      })
+    },
+    [playFetcher]
+  )
+
+  const onPlay = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      isPlaying: true,
+    }))
+  }, [])
+
+  const onPause = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      isPlaying: false,
+    }))
+  }, [])
+
+  const formatTime = useCallback((seconds: number) => {
+    let minutes: number = Math.floor(seconds / 60)
+    let sMinutes = minutes >= 10 ? minutes : '0' + minutes
+    seconds = Math.floor(seconds % 60)
+    let sSeconds = seconds >= 10 ? seconds : '0' + seconds
+    return sMinutes + ':' + sSeconds
+  }, [])
+
+  const onTimeUpdate = useCallback(() => {
+    const currentTime = audio.currentTime
+    let duration = audio.duration
+    setState((prevState) => ({
+      ...prevState,
+      position: (currentTime / duration) * 100,
+      elapsed: formatTime(currentTime),
+      duration: duration > 0 ? formatTime(duration) : '',
+      currentTime,
+    }))
+  }, [audio.currentTime, audio.duration, formatTime])
+
+  const togglePlay = () => {
+    if (state.isPlaying) {
+      pause()
+    } else {
+      playOrResume()
+    }
+  }
+
+  const findIndex = useCallback((sound: any, soundList: any[]): number => {
+    return soundList?.findIndex(
+      (item: SoundInterface) => item.hash === sound.hash
+    )
+  }, [])
+
+  const prepareAudio = useCallback(() => {
+    if (!state.currentSound) return
+    audio.src = state.currentSound.playUrl
+    // audio.load();
+  }, [audio, state.currentSound])
+
+  const play = useCallback(() => {
+    if (!state.currentSound) return
+
+    setSoundLoading(true)
+
+    setLoggedHash(undefined)
+
+    const currentPlayingIndex = findIndex(state?.currentSound, state.queueList)
+
+    syncState({ currentPlayingIndex })
+
+    setState((prevState) => ({
+      ...prevState,
+      isPlaying: true,
+    }))
+
+    prepareAudio()
+
+    audio.play().then(
+      () => {
+        // console.log("started playing...");
+        setSoundLoading(false)
+      },
+      (error) => {
+        console.log('failed because ' + error)
+        setSoundLoading(false)
+        setState((prevState) => ({
+          ...prevState,
+          isPlaying: false,
+        }))
+      }
+    )
+  }, [
+    audio,
+    findIndex,
+    prepareAudio,
+    state.currentSound,
+    state.queueList,
+    syncState,
+  ])
+
+  const resume = useCallback(() => {
+    audio.play()
+
+    if (state.currentTime < SECONDS_TO_UPDATE_PLAY_COUNT) {
+      setLoggedHash(undefined)
+    }
+
+    setState((prevState) => ({
+      ...prevState,
+      isPlaying: true,
+      action: RESUME,
+    }))
+  }, [audio, state.currentTime])
+
+  const pause = useCallback(() => {
+    audio.pause()
+    setState((prevState) => ({
+      ...prevState,
+      isPlaying: false,
+      action: PAUSE,
+    }))
+  }, [audio])
+
+  const getRandomSound = useCallback((sounds: SoundInterface[]) => {
+    const randomSound = sounds[Math.floor(Math.random() * sounds.length)]
+
+    setState((prevState) => ({
+      ...prevState,
+      currentSound: randomSound,
+    }))
+  }, [])
+
+  const playOrResume = useCallback(() => {
+    if (audio.paused && audio.currentTime > 0) {
+      resume()
+    } else {
+      play()
+    }
+  }, [audio.currentTime, audio.paused, play, resume])
+
+  const playPrevious = useCallback(() => {
+    const sounds = state.queueList
+    if (state.isShuffled) {
+      getRandomSound(sounds)
+      play()
+    } else {
+      if (sounds.length > 1) {
+        let indexToPlay: number
+        let totalSoundsIndexes = state.queueList?.length - 1
+
+        if (!state.currentSound) return
+        let currentIndex = findIndex(state.currentSound, sounds)
+        if (currentIndex > 0) {
+          indexToPlay = currentIndex - 1
+        } else {
+          indexToPlay = totalSoundsIndexes
+        }
+
+        setState((prevState) => ({
+          ...prevState,
+          currentSound: sounds[indexToPlay],
+        }))
+      } else {
+        play()
+      }
+    }
+  }, [
+    findIndex,
+    getRandomSound,
+    play,
+    state.currentSound,
+    state.isShuffled,
+    state.queueList,
+  ])
+
+  const playNext = useCallback(() => {
+    const sounds = state.queueList
+    if (state.isShuffled) {
+      getRandomSound(sounds)
+      play()
+    } else {
+      if (sounds.length > 1) {
+        let indexToPlay: number
+        let totalSoundsIndexes = sounds.length - 1
+
+        if (!state.currentSound) return
+        let currentIndex = findIndex(state.currentSound, sounds)
+
+        if (currentIndex < totalSoundsIndexes) {
+          indexToPlay = currentIndex + 1
+        } else {
+          indexToPlay = 0
+        }
+
+        setState((prevState) => ({
+          ...prevState,
+          currentSound: sounds[indexToPlay],
+        }))
+      } else {
+        play()
+      }
+    }
+  }, [
+    findIndex,
+    getRandomSound,
+    play,
+    state.currentSound,
+    state.isShuffled,
+    state.queueList,
+  ])
+
+  const onEnded = useCallback(() => {
+    const sounds = state.queueList
+    const { repeat } = state
+
+    const currentSound = state.currentSound
+    if (!currentSound) return
+
+    const currentSoundIndex = findIndex(currentSound, sounds)
+    const totalSoundsIndexes = sounds.length - 1
+
+    if (sounds.length > 1 && repeat === ALL) {
+      playNext()
+    }
+
+    if (
+      sounds.length > 1 &&
+      repeat === NONE &&
+      currentSoundIndex < totalSoundsIndexes
+    ) {
+      playNext()
+    }
+  }, [findIndex, playNext, state])
+
+  const handleSeekChange = useCallback(
+    (event: any, newPosition: number) => {
+      audio.currentTime = (newPosition * audio.duration) / 100
+      setState((prevState) => ({
+        ...prevState,
+        position: newPosition,
+      }))
+    },
+    [audio]
+  )
+
+  const handleVolumeChange = useCallback(
+    (event: any, newVolume: number) => {
+      // update the audio native player volume and also update the state
+      audio.volume = newVolume / 100
+
+      setState((prevState) => ({
+        ...prevState,
+        volume: newVolume,
+      }))
+    },
+    [audio]
+  )
+
+  const toggleRepeat = useCallback(() => {
+    setState((prevState) => {
+      let newRepeatVal
+
+      switch (prevState.repeat) {
+        case NONE:
+          newRepeatVal = ALL
+          break
+        case ALL:
+          newRepeatVal = ONE
+          break
+        case ONE:
+          newRepeatVal = NONE
+          break
+      }
+
+      return { ...prevState, repeat: newRepeatVal }
+    })
+  }, [])
+
+  const toggleShuffle = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      isShuffled: !prevState.isShuffled,
+    }))
+  }, [])
 
   return (
     <Slide

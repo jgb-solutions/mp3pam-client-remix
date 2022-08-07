@@ -1,6 +1,5 @@
 import Slider from '@mui/material/Slider'
 import { makeStyles } from '@mui/styles'
-import type { BoxStyles } from '~/interfaces/types'
 
 import colors from '../utils/colors'
 
