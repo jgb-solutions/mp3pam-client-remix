@@ -1,15 +1,19 @@
-import { Favorite, FavoriteBorder } from '@mui/icons-material'
+import { useCallback } from 'react'
+import { useFetcher } from '@remix-run/react'
+import type { ButtonProps } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
-import { useApp } from '~/hooks/useApp'
-
-import type { BoxStyles } from '~/interfaces/types'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
 import colors from '../utils/colors'
+import { useApp } from '~/hooks/useApp'
+import type { BoxStyles } from '~/interfaces/types'
+import { TrackAction } from '~/routes/api/track'
 
 const styles: BoxStyles = {
   icon: {
     fontSize: '18px',
-    color: colors.grey,
+    color: colors.primary,
   },
   border: {
     color: colors.white,
@@ -20,21 +24,36 @@ const styles: BoxStyles = {
 }
 
 type Props = {
-  toggleFavorite?: () => void
   isFavorite?: boolean
-  border?: boolean
+  hash: number
 }
 
-function Heart(props: Props) {
+function Heart({ isFavorite, hash }: Props) {
   const { isLoggedIn } = useApp()
-  const { toggleFavorite, isFavorite } = props
+  const fetcher = useFetcher()
+
+  const handleToggleFavorite = useCallback(() => {
+    const form = new FormData()
+    form.append('hash', hash.toString())
+
+    fetcher.submit(form, {
+      method: 'post',
+      action: `/api/track?action=${TrackAction.UPDATE_FAVORITE}`,
+    })
+  }, [fetcher, hash])
 
   if (!isLoggedIn) return null
 
   return (
-    <IconButton onClick={toggleFavorite} sx={props.border ? styles.border : {}}>
-      {isFavorite && <Favorite sx={styles.icon} />}
-      {!isFavorite && <FavoriteBorder sx={styles.icon} />}
+    <IconButton
+      onClick={handleToggleFavorite}
+      sx={[styles.border] as ButtonProps['sx']}
+    >
+      {isFavorite ? (
+        <FavoriteIcon sx={styles.icon} />
+      ) : (
+        <FavoriteBorderIcon sx={styles.icon} />
+      )}
     </IconButton>
   )
 }

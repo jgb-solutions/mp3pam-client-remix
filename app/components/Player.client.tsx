@@ -47,6 +47,7 @@ import type { SoundInterface } from '../interfaces/ListInterface'
 import type PlayerInterface from '../interfaces/PlayerInterface'
 import type AppStateInterface from '../interfaces/AppStateInterface'
 import { syncStateAction } from '~/redux/actions/playerActions'
+import { TrackAction } from '~/routes/api/track'
 
 let syncStateTimeoutId: number
 
@@ -375,7 +376,7 @@ export default function Player() {
 
       playFetcher.submit(form, {
         method: 'post',
-        action: '/api/track',
+        action: `/api/track?action=${TrackAction.UPDATE_PLAY_COUNT}`,
       })
     },
     [playFetcher]
@@ -800,7 +801,7 @@ export default function Player() {
             </Grid>
           </Box>
           <Box sx={styles.playlistVolume}>
-            <Link prefetch="intent" to={AppRoutes.user.library.queue}>
+            <Link prefetch="intent" to={AppRoutes.account.queue}>
               <IconButton>
                 <PlaylistPlayOutlinedIcon sx={styles.icon} />
               </IconButton>

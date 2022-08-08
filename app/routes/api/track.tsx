@@ -1,35 +1,94 @@
 import { json, redirect } from '@remix-run/node'
-import type { LoaderArgs } from '@remix-run/node'
-import type { ActionFunction } from '@remix-run/node'
+import type { ActionArgs, LoaderFunction } from '@remix-run/node'
 
 import { db } from '~/database/db.server'
-import { withAuth } from '~/auth/sessions.server'
+import { getSearchParams } from '~/utils/helpers.server'
+import { authenticator } from '~/auth/auth.server'
 
-export const loader = (context: LoaderArgs) =>
-  withAuth(context, async () => {
-    return redirect('/')
-  })
+export enum TrackAction {
+  UPDATE_PLAY_COUNT = 'UPDATE_PLAY_COUNT',
+  UPDATE_FAVORITE = 'UPDATE_FAVORITE',
+}
 
-export const action: ActionFunction = (context) =>
-  withAuth(context, async ({ request }) => {
-    const form = await request.formData()
+export const loader: LoaderFunction = async () => {
+  return redirect('/')
+}
 
-    const hash = form.get('hash') as string
+export const action = async ({ request }: ActionArgs) => {
+  const form = await request.formData()
+  const searchParams = getSearchParams(request)
+  const action = searchParams.get('action') as TrackAction
 
-    if (!hash) return json({})
+  const hash = form.get('hash') as string
 
-    try {
-      await db.track.update({
-        where: { hash: +hash },
-        data: {
-          playCount: {
-            increment: 1,
+  if (!hash) return json({})
+
+  switch (action) {
+    case TrackAction.UPDATE_PLAY_COUNT:
+      try {
+        await db.track.update({
+          where: { hash: +hash },
+          data: {
+            playCount: {
+              increment: 1,
+            },
           },
-        },
-      })
-    } catch (e) {
-      console.error(e)
-    }
+        })
+      } catch (e) {
+        console.error(e)
+      }
+      break
+    case TrackAction.UPDATE_FAVORITE:
+      const currentUser = await authenticator.isAuthenticated(request)
 
-    return json({})
-  })
+      if (!currentUser) throw new Error('Not authenticated')
+
+      try {
+        const trackWithFans = await db.track.findFirstOrThrow({
+          where: { hash: +hash },
+          select: {
+            fans: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        })
+
+        const isAFan = trackWithFans.fans.find(
+          (fan) => fan.id === currentUser.id
+        )
+
+        if (isAFan) {
+          await db.track.update({
+            where: { hash: +hash },
+            data: {
+              fans: {
+                disconnect: {
+                  id: currentUser.id,
+                },
+              },
+            },
+          })
+        } else {
+          await db.track.update({
+            where: { hash: +hash },
+            data: {
+              fans: {
+                connect: {
+                  id: currentUser.id,
+                },
+              },
+            },
+          })
+        }
+      } catch (e) {
+        console.error(e)
+      }
+      break
+    default:
+      if (!action) return json({ error: 'No action specified' }, 400)
+  }
+
+  return json({})
+}

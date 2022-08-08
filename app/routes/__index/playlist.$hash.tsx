@@ -119,9 +119,9 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
 
   const playlist = data.playlist as PlaylistDetail
 
-  const title = `${playlist.title} by ${playlist.user.name}`
+  const title = `${playlist.title} by ${playlist.account.name}`
   const url = `${DOMAIN}/playlist/${playlist?.hash}`
-  const description = `Listen to ${playlist.title} by ${playlist.user.name} on ${APP_NAME}`
+  const description = `Listen to ${playlist.title} by ${playlist.account.name} on ${APP_NAME}`
   const type = SEO_PLAYLIST_TYPE
   const image = playlist.coverUrl
 
@@ -201,7 +201,7 @@ const PlaylistDetailPage = () => {
 
   const getTabs = () => {
     const url = window.location.href
-    const title = `Listen to ${playlist.title} (playlist) by ${playlist.user.name}`
+    const title = `Listen to ${playlist.title} (playlist) by ${playlist.account.name}`
     const hashtags = `${APP_NAME} music playlist share`
     const tabs: TabItem[] = []
 
@@ -339,7 +339,7 @@ const PlaylistDetailPage = () => {
               <Box component={'span'} sx={styles.listBy}>
                 By{' '}
               </Box>{' '}
-              {playlist.user.name}
+              {playlist.account.name}
             </Box>
             <Box>
               <Button
@@ -352,9 +352,7 @@ const PlaylistDetailPage = () => {
                 {!isPlaying && playingListHash === playlist.hash && 'Resume'}
                 {/* todo // using currentTime > 0  to display rsesume or replay */}
               </Button>
-              <Heart border />
-              &nbsp; &nbsp;
-              <More border options={getMoreOptions()} />
+              <More options={getMoreOptions()} />
             </Box>
           </Box>
         </Grid>

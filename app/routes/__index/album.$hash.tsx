@@ -396,9 +396,7 @@ export default function AlbumDetailPage() {
                   {!isPlaying && playingListHash === album.hash && 'Resume'}
                   {/* todo // using currentTime > 0  to display rsesume or replay */}
                 </Button>
-                <Heart border />
-                &nbsp; &nbsp;
-                <More border options={getMoreOptions()} />
+                <More options={getMoreOptions()} />
               </Box>
             </Box>
           </Box>

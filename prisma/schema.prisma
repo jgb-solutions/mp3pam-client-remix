@@ -41,10 +41,11 @@ model Account {
   rememberToken String?
   createdAt     DateTime     @default(now())
   uppdatedAt    DateTime     @updatedAt
-  tracks        Track[]
+  tracks        Track[] @relation("Owner")
   albums        Album[]
   artists       Artist[]
   playlists     Playlist[]
+  favorites    Track[] @relation("Favorites")
 }
 
 model Artist {
@@ -81,7 +82,7 @@ model Track {
   lyrics        String?
   audioFileSize Int?
   accountId     Int
-  account       Account  @relation(fields: [accountId], references: [id])
+  account       Account  @relation("Owner", fields: [accountId], references: [id])
   artistId      Int
   artist        Artist   @relation(fields: [artistId], references: [id])
   albumId       Int?
@@ -97,6 +98,7 @@ model Track {
   uppdatedAt    DateTime @updatedAt
 
   playlists PlaylistTracks[]
+  fans Account[] @relation("Favorites")
 }
 
 model Album {
@@ -121,7 +123,7 @@ model Playlist {
   title      String
   hash       Int      @unique
   accountId  Int
-  user       Account  @relation(fields: [accountId], references: [id])
+  account       Account  @relation(fields: [accountId], references: [id])
   createdAt  DateTime @default(now())
   uppdatedAt DateTime @updatedAt
 

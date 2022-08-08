@@ -95,7 +95,7 @@ import { db } from './db.server'
 import { graphQLClient as client } from '~/graphql/client.server'
 import { getSignedDownloadUrl, getSignedUrl } from '~/services/s3.server'
 import type { Credentials } from '~/interfaces/types'
-import { Account, Prisma } from '@prisma/client'
+import type { Account } from '@prisma/client'
 import { PhotonImage } from '~/components/PhotonImage'
 
 export async function fetchHomepage() {
@@ -292,7 +292,7 @@ export async function fetchTracksByGenre({
   return genre
 }
 
-export async function fetchTrackDetail(hash: number) {
+export async function fetchTrackDetail(hash: number, accountId?: number) {
   const [track, relatedTracks] = await db.$transaction([
     db.track.findUnique({
       where: { hash },
@@ -313,6 +313,11 @@ export async function fetchTrackDetail(hash: number) {
         genre: { select: { name: true, slug: true } },
         artist: { select: { stageName: true, hash: true } },
         album: { select: { title: true, hash: true } },
+        fans: {
+          select: {
+            id: true,
+          },
+        },
       },
     }),
     db.track.findMany({
@@ -338,12 +343,15 @@ export async function fetchTrackDetail(hash: number) {
   ])
 
   if (track) {
-    const { audioBucket, audioName, poster, imgBucket, ...data } = track
+    const { audioBucket, audioName, poster, imgBucket, fans, ...data } = track
 
     return {
       ...data,
       audioUrl: getSignedUrl({ bucket: audioBucket, resource: audioName }),
       posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
+      ...(accountId && {
+        isFavorite: !!fans.find((fan) => fan.id === accountId),
+      }),
       relatedTracks: relatedTracks.map(({ poster, imgBucket, ...data }) => ({
         ...data,
         posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
@@ -1054,7 +1062,7 @@ export async function fetchPlaylistDetail(hash: number) {
       select: {
         title: true,
         hash: true,
-        user: {
+        account: {
           select: {
             name: true,
           },
@@ -1256,6 +1264,34 @@ export async function fetchTracks({
       total,
     },
   }
+}
+export async function fetchFavoriteTracks(accountId: number) {
+  const { favorites } = await db.account.findUniqueOrThrow({
+    where: {
+      id: accountId,
+    },
+    select: {
+      favorites: {
+        select: {
+          hash: true,
+          title: true,
+          poster: true,
+          imgBucket: true,
+          artist: {
+            select: {
+              stageName: true,
+              hash: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return favorites.map(({ imgBucket, poster, ...track }) => ({
+    ...track,
+    posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
+  }))
 }
 
 export const getResourceUrl = ({

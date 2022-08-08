@@ -3,6 +3,7 @@ import type {
   MetaFunction,
   HtmlMetaDescriptor,
   LoaderArgs,
+  ActionArgs,
 } from '@remix-run/node'
 import {
   EmailShareButton,
@@ -59,6 +60,8 @@ import {
   resumeListAction,
 } from '~/redux/actions/playerActions'
 import { fetchTrackDetail } from '~/database/requests.server'
+import { db } from '~/database/db.server'
+import { authenticator } from '~/auth/auth.server'
 
 const styles: BoxStyles = {
   row: {
@@ -158,16 +161,41 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
   }
 }
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderArgs) => {
   const { hash } = params as { hash: string }
 
-  const track = await fetchTrackDetail(parseInt(hash))
+  const currentUser = await authenticator.isAuthenticated(request)
+
+  const track = await fetchTrackDetail(parseInt(hash), currentUser?.id)
 
   if (!track) {
     throw new Response('Track not found', { status: 404 })
   }
 
   return json({ track })
+}
+
+export const action = async ({ request }: ActionArgs) => {
+  const form = await request.formData()
+
+  const hash = form.get('hash') as string
+
+  if (!hash) return json({})
+
+  try {
+    await db.track.update({
+      where: { hash: +hash },
+      data: {
+        playCount: {
+          increment: 1,
+        },
+      },
+    })
+  } catch (e) {
+    console.error(e)
+  }
+
+  return json({})
 }
 
 export default function TrackDetailPage() {
@@ -462,7 +490,7 @@ export default function TrackDetailPage() {
                 {!isPlaying && playingListHash === track.hash && 'Resume'}
                 {/* todo // using currentTime > 0  to display rsesume or replay */}
               </Button>
-              <Heart border />
+              <Heart hash={track.hash} isFavorite={track.isFavorite} />
               &nbsp; &nbsp;
               <More options={getMoreOptions()} sx={{ mr: '1rem' }} />
               <Button

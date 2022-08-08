@@ -1,18 +1,16 @@
-import Box from "@mui/material/Box"
-import { Link } from "@remix-run/react"
+import Box from '@mui/material/Box'
+import { Link } from '@remix-run/react'
 
-import AppRoutes from "~/app-routes"
-import type { BoxStyles } from "~/interfaces/types"
+import AppRoutes from '~/app-routes'
+import type { BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   logo: {
-    maxWidth: "100%",
-    width: "200px",
-    marginBottom: 2,
+    maxWidth: '100%',
+    width: '200px',
     display: 'inline-block',
   },
 }
-
 
 export default function Logo({ size }: { size?: number }) {
   let sizes = undefined
@@ -20,14 +18,15 @@ export default function Logo({ size }: { size?: number }) {
   if (size) {
     sizes = {
       width: size,
-      height: 'auto'
+      height: 'auto',
     }
   }
 
   return (
     <>
       <Link prefetch="intent" to={AppRoutes.pages.home}>
-        <Box component="img"
+        <Box
+          component="img"
           sx={styles.logo}
           width={`${sizes?.width}px`}
           height={`${sizes?.height}`}

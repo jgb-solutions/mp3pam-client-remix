@@ -34,7 +34,7 @@ export default function UsersPage() {
       <ul>
         {data &&
           data.users.data.map((user: UserData, index: number) => (
-            <li key={index}>{user.name}</li>
+            <li key={index}>{account.name}</li>
           ))}
       </ul>
     </>

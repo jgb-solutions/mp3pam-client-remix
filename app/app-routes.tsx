@@ -5,7 +5,7 @@ const AppRoutes = {
     search: `/search`,
     about: `/about`,
     upload: `/upload`,
-    users: `/users`,
+    accounts: `/accounts`,
     login: `/login`,
     library: `/favorites`,
   },
@@ -41,17 +41,17 @@ const AppRoutes = {
     editPage: (hash: number) => `/manage/playlists/${hash}`,
   },
   download: (hash: number) => `/download/${hash}`,
-  user: {
-    detailPage: (userHash: number) => `/user/${userHash}`,
+  account: {
+    detailPage: (accountHash: number) => `/account/${accountHash}`,
     account: `/account`,
-    library: {
-      tracks: `/your/tracks`,
-      albums: `/your/albums`,
-      artists: `/your/artists`,
-      playlists: `/your/playlists`,
-      shows: `/your/shows`,
-      queue: `/queue`,
+    favorites: {
+      all: `/favorites`,
+      tracks: `/favorite/tracks`,
+      albums: `/favorite/albums`,
+      artists: `/favorite/artists`,
+      playlists: `/favorite/playlists`,
     },
+    queue: `/queue`,
   },
   manage: {
     home: `/manage`,
@@ -68,7 +68,7 @@ const AppRoutes = {
     },
   },
   browse: {
-    users: `/users`,
+    accounts: `/accounts`,
     tracks: `/tracks`,
     albums: `/albums`,
     artists: `/artists`,

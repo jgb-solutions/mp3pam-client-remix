@@ -1,8 +1,9 @@
-import Box from '@mui/material/Box'
+import Box, { BoxProps } from '@mui/material/Box'
 import { NavLink } from '@remix-run/react'
 import type { CSSProperties } from 'react'
 import HomeIcon from '@mui/icons-material/Home'
 import InfoIcon from '@mui/icons-material/Info'
+import Typography from '@mui/material/Typography'
 import AlbumIcon from '@mui/icons-material/Album'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
@@ -15,15 +16,12 @@ import SafetyCheckIcon from '@mui/icons-material/SafetyCheck'
 
 import Logo from './Logo'
 import AppRoutes from '~/app-routes'
-import { sidebarStyles as styles } from '~/styles/sidebar-styles'
 import { useApp } from '~/hooks/useApp'
-
-const mainMenu = [
-  { name: 'Home', to: AppRoutes.pages.home, icon: <HomeIcon /> },
-  { name: 'About', to: AppRoutes.pages.about, icon: <InfoIcon /> },
-]
+import { sidebarStyles as styles } from '~/styles/sidebar-styles'
 
 const pagesMenu = [
+  { name: 'Home', to: AppRoutes.pages.home, icon: <HomeIcon /> },
+  { name: 'About', to: AppRoutes.pages.about, icon: <InfoIcon /> },
   { name: 'Privacy', to: '/privacy', icon: <PrivacyTipIcon /> },
   { name: 'Terms', to: '/terms', icon: <SafetyCheckIcon /> },
   { name: 'Your Data', to: '/account-deletion', icon: <SecurityIcon /> },
@@ -45,11 +43,19 @@ const browsingMenu = [
 ]
 
 const favoriteMenu = [
-  // { name: "Tracks", to: AppRoutes.user.library.tracks, icon: <MusicNoteIcon /> },
-  // { name: "Artists", to: AppRoutes.user.library.artists, icon: <PersonPinCircleIcon /> },
-  // { name: "Albums", to: AppRoutes.user.library.albums, icon: <AlbumIcon /> },
-  // { name: "PlayLists", to: AppRoutes.user.library.playlists, icon: <PlaylistAddIcon /> },
-  { name: 'Queue', to: AppRoutes.user.library.queue, icon: <QueueMusicIcon /> },
+  {
+    name: 'Tracks',
+    to: AppRoutes.account.favorites.tracks,
+    icon: <MusicNoteIcon />,
+  },
+  // { name: "Artists", to: AppRoutes.account.favorites.artists, icon: <PersonPinCircleIcon /> },
+  // { name: "Albums", to: AppRoutes.account.favorites.albums, icon: <AlbumIcon /> },
+  // { name: "PlayLists", to: AppRoutes.account.favorites.playlists, icon: <PlaylistAddIcon /> },
+  {
+    name: 'Queue',
+    to: AppRoutes.account.queue,
+    icon: <QueueMusicIcon />,
+  },
 ]
 
 type Props = {
@@ -59,6 +65,7 @@ type Props = {
 const Left = (props: Props) => {
   const {
     context: { isChatBoxOpen, openChatBox },
+    isLoggedIn,
   } = useApp()
 
   const closeDrawer = () => {
@@ -70,31 +77,9 @@ const Left = (props: Props) => {
   return (
     <>
       <Logo />
-      <Box sx={styles.mainMenu}>
-        {mainMenu.map((menuItem, index) => (
-          <NavLink
-            prefetch="intent"
-            style={({ isActive }) => ({
-              ...styles.link,
-              ...styles.mainMenuLink,
-              ...(isActive ? styles.activeClassName : {}),
-            })}
-            key={index}
-            to={menuItem.to}
-            onClick={closeDrawer}
-          >
-            <Box component="span" sx={styles.linkIcon}>
-              {menuItem.icon}
-            </Box>
-            <Box component="span" sx={styles.linkText}>
-              {menuItem.name}
-            </Box>
-          </NavLink>
-        ))}
-      </Box>
 
       {/* Browse Menu */}
-      <Box sx={styles.browseMenu}>
+      <Box>
         <p>
           <NavLink
             prefetch="intent"
@@ -131,39 +116,39 @@ const Left = (props: Props) => {
       </Box>
 
       {/* Favorite Menu */}
-      <Box mb="1rem">
-        {/* <p>
-					<NavLink prefetch="intent"
-						activesx={styles.activeClassName}
-						exact
-						to={AppRoutes.pages.library}
-						sx={styles.yourLibraryLink}
-						onClick={closeDrawer}>
-						What You Like
-					</NavLink>
-				</p> */}
-        {favoriteMenu.map((menuItem, index) => (
-          <NavLink
-            prefetch="intent"
-            style={({ isActive }) => ({
-              ...styles.link,
-              ...styles.libraryLink,
-              ...(isActive ? styles.activeClassName : {}),
-            })}
-            key={index}
-            to={menuItem.to}
-            onClick={closeDrawer}
-          >
-            <Box component="span" sx={styles.linkIcon}>
-              {menuItem.icon}
-            </Box>
-            <Box component="span" sx={styles.linkText}>
-              {menuItem.name}
-            </Box>
-          </NavLink>
-        ))}
+      {isLoggedIn && (
+        <Box mb="1rem">
+          <p>
+            <Typography
+              sx={[styles.link, styles.library] as BoxProps['sx']}
+              onClick={closeDrawer}
+            >
+              Your Favorites
+            </Typography>
+          </p>
 
-        {/* <Box
+          {favoriteMenu.map((menuItem, index) => (
+            <NavLink
+              prefetch="intent"
+              style={({ isActive }) => ({
+                ...styles.link,
+                ...styles.libraryLink,
+                ...(isActive ? styles.activeClassName : {}),
+              })}
+              key={index}
+              to={menuItem.to}
+              onClick={closeDrawer}
+            >
+              <Box component="span" sx={styles.linkIcon}>
+                {menuItem.icon}
+              </Box>
+              <Box component="span" sx={styles.linkText}>
+                {menuItem.name}
+              </Box>
+            </NavLink>
+          ))}
+
+          {/* <Box
           style={
             {
               ...styles.link,
@@ -185,9 +170,18 @@ const Left = (props: Props) => {
             Chat
           </Box>
         </Box> */}
-      </Box>
+        </Box>
+      )}
 
-      <Box sx={styles.mainMenu}>
+      <Box>
+        <p>
+          <Typography
+            sx={[styles.link, styles.library] as BoxProps['sx']}
+            onClick={closeDrawer}
+          >
+            Pages
+          </Typography>
+        </p>
         {pagesMenu.map((menuItem, index) => (
           <NavLink
             prefetch="intent"

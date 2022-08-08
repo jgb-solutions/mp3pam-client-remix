@@ -12,12 +12,6 @@ export const sidebarStyles: BoxStyles = {
   menuList: {
     flex: 1,
   },
-  mainMenu: {
-    marginBottom: 4,
-  },
-  browseMenu: {
-    marginBottom: 4,
-  },
   mainMenuLink: {
     marginBottom: 2,
   },
@@ -45,7 +39,7 @@ export const sidebarStyles: BoxStyles = {
     fontSize: 15,
   },
   libraryLink: {
-    marginBottom: 4,
+    marginBottom: '4px',
   },
   activeClassName: {
     color: colors.primary,
