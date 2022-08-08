@@ -343,7 +343,7 @@ const PlaylistDetailPage = () => {
             </Box>
             <Box>
               <Button
-                sx={{ minWidth: '100px', mr: '1rem' }}
+                sx={{ minWidth: 'fit-content', mr: '1rem' }}
                 onClick={togglePlay}
                 variant="contained"
               >

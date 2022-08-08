@@ -481,7 +481,14 @@ export default function TrackDetailPage() {
             <Box>
               <Button
                 variant="contained"
-                sx={{ minWidth: '100px', mr: '1rem' }}
+                sx={{
+                  minWidth: 'fit-content',
+                  mr: '1rem',
+                  fontSize: {
+                    xs: '.8rem',
+                    sm: '1rem',
+                  },
+                }}
                 onClick={togglePlay}
                 size="large"
               >
@@ -498,7 +505,13 @@ export default function TrackDetailPage() {
                 prefetch="intent"
                 variant="contained"
                 size="large"
-                sx={{ minWidth: 'fit-content' }}
+                sx={{
+                  minWidth: 'fit-content',
+                  fontSize: {
+                    xs: '.8rem',
+                    sm: '1rem',
+                  },
+                }}
                 startIcon={<GetAppIcon />}
                 color="success"
                 to={AppRoutes.download(track.hash)}
