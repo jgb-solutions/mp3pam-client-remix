@@ -2,38 +2,32 @@ const path = require('path')
 const express = require('express')
 const morgan = require('morgan')
 const { createRequestHandler } = require('@remix-run/express')
-const { createServer } = require('http') // add this require
-const { Server } = require('socket.io') // and also require the socket.io module
+// const { createServer } = require('http') // add this require
+// const { Server } = require('socket.io') // and also require the socket.io module
 
 const BUILD_DIR = path.join(process.cwd(), 'build')
 
 const app = express()
 
 // create an httpServer from the Express app
-const httpServer = createServer(app)
+// const httpServer = createServer(app)
 
 // and create the socket.io server from the httpServer
-const io = new Server(httpServer)
+// const io = new Server(httpServer)
 
 // then list to the connection event and get a socket object
-io.on('connection', (socket) => {
-  // here you can do whatever you want with the socket of the client, in this
-  // example I'm logging the socket.id of the client
-  console.log(socket.id, 'connected')
-  // and I emit an event to the client called `event` with a simple message
-  socket.emit('event', 'connected!')
-  // and I start listening for the event `something`
-  socket.on('something', (data) => {
-    // log the data together with the socket.id who send it
-    console.log(socket.id, data)
-    // and emeit the event again with the message pong
-    socket.emit('event', 'pong')
-  })
+// io.on('connection', (socket) => {
+//   console.log(socket.id, 'connected')
+//   socket.emit('event', 'connected!')
+//   socket.on('something', (data) => {
+//     console.log(socket.id, data)
+//     socket.emit('event', 'pong')
+//   })
 
-  socket.on('disconnect', () => {
-    console.log(socket.id, 'disconnected')
-  })
-})
+//   socket.on('disconnect', () => {
+//     console.log(socket.id, 'disconnected')
+//   })
+// })
 
 app.disable('x-powered-by')
 
@@ -61,7 +55,7 @@ app.all(
           // loaders and actions. This is where you can bridge the gap between Remix
           // and your server
           getLoadContext(req, res) {
-            return { io }
+            return {}
           },
         })(req, res, next)
       }
@@ -69,14 +63,14 @@ app.all(
         build: require(BUILD_DIR),
         mode: process.env.NODE_ENV,
         getLoadContext(req, res) {
-          return { io }
+          return {}
         },
       })
 )
 const port = process.env.PORT || 3000
 
 // instead of using `app.listen` we use `httpServer.listen`
-httpServer.listen(port, () => {
+app.listen(port, () => {
   console.log(`Express server listening on port ${port}`)
 })
 

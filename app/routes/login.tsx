@@ -195,7 +195,7 @@ export default function LoginPage() {
       )}
 
       <Box sx={{ width: '100%', textAlign: 'center' }}>
-        <Box>
+        <Box mb="2rem">
           <Logo size={300} />
         </Box>
 
