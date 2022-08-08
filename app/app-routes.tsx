@@ -11,23 +11,19 @@ const AppRoutes = {
   },
   album: {
     show: `/album/:hash`,
-    edit: `/manage/album/:hash`,
+    edit: `/library/album/:hash`,
     detailPage: (hash: number) => `/album/${hash}`,
-    editPage: (hash: number) => `/manage/album/${hash}`,
+    editPage: (hash: number) => `/library/album/${hash}`,
   },
   artist: {
     show: `/artist/:hash`,
     detailPage: (hash: number) => `/artist/${hash}`,
-    editPage: (hash: number) => `/manage/artists/${hash}`,
+    editPage: (hash: number) => `/library/artists/${hash}`,
   },
   track: {
     show: `/track/:hash`,
     detailPage: (hash: number) => `/track/${hash}`,
-    editPage: (hash: number) => `/manage/tracks/${hash}`,
-  },
-  episode: {
-    show: `/episode/:hash`,
-    detailPage: (hash: number) => `/episode/${hash}`,
+    editPage: (hash: number) => `/library/tracks/${hash}`,
   },
   genre: {
     show: `/browse/:slug/tracks`,
@@ -35,10 +31,10 @@ const AppRoutes = {
   },
   playlist: {
     show: `/playlist/:hash`,
-    edit: `/manage/playlists/:hash`,
+    edit: `/library/playlists/:hash`,
     detailPage: (hash: number) => `/playlist/${hash}`,
     goToAuthorDetail: (authorID: string) => `/author/${authorID}`,
-    editPage: (hash: number) => `/manage/playlists/${hash}`,
+    editPage: (hash: number) => `/library/playlists/${hash}`,
   },
   download: (hash: number) => `/download/${hash}`,
   account: {
@@ -53,18 +49,17 @@ const AppRoutes = {
     },
     queue: `/queue`,
   },
-  manage: {
-    home: `/manage`,
-    tracks: `/manage/tracks`,
-    albums: `/manage/albums`,
-    artists: `/manage/artists`,
-    playlists: `/manage/playlists`,
+  library: {
+    home: `/library`,
+    tracks: `/library/tracks`,
+    albums: `/library/albums`,
+    artists: `/library/artists`,
+    playlists: `/library/playlists`,
     create: {
-      track: `/manage/add-track`,
-      album: `/manage/add-album`,
-      artist: `/manage/add-artist`,
-      playlist: `/manage/add-playlist`,
-      shows: `/manage/add-show`,
+      track: `/library/add-track`,
+      album: `/library/add-album`,
+      artist: `/library/add-artist`,
+      playlist: `/library/add-playlist`,
     },
   },
   browse: {

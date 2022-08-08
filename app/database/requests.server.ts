@@ -1,65 +1,38 @@
 import bcrypt from 'bcrypt'
+import type { Account } from '@prisma/client'
 
 import {
   searchDocument,
-  fetchManagementDocument,
-  fetchDownloadUrlDocument,
   fetchMyAlbumsDocument,
   fetchMyPlaylistsDocument,
-  fetchMyTracksDocument,
   fetchMyArtistsDocument,
-  facebookLoginUrlDocument,
 } from '~/graphql/queries'
 
 import type {
-  PlayInput,
   AlbumInput,
   TrackInput,
   ArtistInput,
   SearchQuery,
-  DownloadQuery,
-  DownloadInput,
-  UpdateUserInput,
   AddTrackMutation,
   AddArtistMutation,
-  UpdateUserMutation,
-  ManagePageDataQuery,
-  UpdatePlayCountMutation,
   AddTrackToAlbumMutation,
   AddTrackToAlbumInput,
   AddTrackToPlaylistMutation,
   CreateAlbumMutation,
-  DownloadQueryVariables,
   CreateAlbumMutationVariables,
   CreatePlaylistMutation,
   SearchQueryVariables,
-  DeleteAlbumMutation,
-  DeletePlaylistMutation,
-  DeleteTrackMutation,
-  DeleteArtistMutation,
   AddArtistMutationVariables,
   AddTrackMutationVariables,
-  DeleteAlbumMutationVariables,
-  DeleteArtistMutationVariables,
-  DeletePlaylistMutationVariables,
-  DeleteTrackMutationVariables,
-  ManagePageDataQueryVariables,
-  UpdateUserMutationVariables,
   CreatePlaylistMutationVariables,
-  UpdatePlayCountMutationVariables,
   AddTrackToAlbumMutationVariables,
   AddTrackToPlaylistMutationVariables,
   MyAlbumsDataQuery,
   MyAlbumsDataQueryVariables,
   MyPlaylistsDataQueryVariables,
   MyPlaylistsDataQuery,
-  MyTracksDataQuery,
-  MyTracksDataQueryVariables,
   MyArtistDataQuery,
   MyArtistDataQueryVariables,
-  FacebookLoginUrlQuery,
-  FacebookLoginMutation,
-  FacebookLoginMutationVariables,
 } from '~/graphql/generated-types'
 
 import {
@@ -69,15 +42,6 @@ import {
   AddTrackToPlaylistDocument,
   CreateAlbumDocument,
   CreatePlaylistDocument,
-  DeleteAlbumDocument,
-  DeleteAlbumTrackDocument,
-  DeleteArtistDocument,
-  DeletePlaylistDocument,
-  DeletePlaylistTrackDocument,
-  DeleteTrackDocument,
-  UpdateUserDocument,
-  UpdatePlayCountDocument,
-  facebookLoginDocument,
 } from '~/graphql/mutations'
 import {
   FETCH_ALBUMS_NUMBER,
@@ -92,11 +56,11 @@ import {
   RANDOM_ALBUMS_NUMBER,
 } from '~/utils/constants'
 import { db } from './db.server'
+import type { Credentials } from '~/interfaces/types'
+import { PhotonImage } from '~/components/PhotonImage'
 import { graphQLClient as client } from '~/graphql/client.server'
 import { getSignedDownloadUrl, getSignedUrl } from '~/services/s3.server'
-import type { Credentials } from '~/interfaces/types'
-import type { Account } from '@prisma/client'
-import { PhotonImage } from '~/components/PhotonImage'
+import { ARTIST_DEFAULT_POSTER } from '~/utils/constants.server'
 
 export async function fetchHomepage() {
   const [tracks, artists, albums, playlists] = await db.$transaction([
@@ -821,58 +785,96 @@ export async function createPlaylist(playlistTitle: string) {
   })
 }
 
-export async function deleteAlbum(albumHash: string) {
-  return client.request<DeleteAlbumMutation, DeleteAlbumMutationVariables>(
-    DeleteAlbumDocument,
-    {
-      hash: albumHash,
-    }
-  )
+export async function deleteAlbum(hash: number) {
+  const album = await db.album.delete({
+    where: {
+      hash,
+    },
+  })
+
+  return album
 }
 
-export async function deleteAlbumTrack(albumTrackHash: string) {
-  return client.request<DeleteAlbumMutation, DeleteAlbumMutationVariables>(
-    DeleteAlbumTrackDocument,
-    {
+export async function deleteAlbumTrack(albumTrackHash: number) {
+  const track = await db.track.update({
+    where: {
       hash: albumTrackHash,
-    }
-  )
-}
-
-export async function deleteArtist(artistHash: string) {
-  return client.request<DeleteArtistMutation, DeleteArtistMutationVariables>(
-    DeleteArtistDocument,
-    {
-      hash: artistHash,
-    }
-  )
-}
-
-export async function deletePlaylist(playlistHash: string) {
-  return client.request<
-    DeletePlaylistMutation,
-    DeletePlaylistMutationVariables
-  >(DeletePlaylistDocument, {
-    hash: playlistHash,
+    },
+    data: {
+      album: {
+        disconnect: true,
+      },
+    },
   })
+
+  return track
 }
 
-export async function deletePlaylistTrack(playlistTrackHash: string) {
-  return client.request<
-    DeletePlaylistMutation,
-    DeletePlaylistMutationVariables
-  >(DeletePlaylistTrackDocument, {
-    hash: playlistTrackHash,
+export async function deleteArtist(hash: number) {
+  const artist = await db.artist.delete({
+    where: {
+      hash,
+    },
   })
+
+  return artist
 }
 
-export async function deleteTrack(trackHash: string) {
-  return client.request<DeleteTrackMutation, DeleteTrackMutationVariables>(
-    DeleteTrackDocument,
-    {
-      hash: trackHash,
-    }
-  )
+export async function deletePlaylist(playlistHash: number) {
+  const playlist = await db.playlist.update({
+    where: {
+      hash: playlistHash,
+    },
+    data: {
+      tracks: {
+        set: [],
+      },
+    },
+  })
+
+  await db.playlist.delete({ where: { hash: playlistHash } })
+
+  return playlist
+}
+
+export async function deletePlaylistTrack(playlistTrackHash: number) {
+  const track = await db.track.update({
+    where: {
+      hash: playlistTrackHash,
+    },
+    data: {
+      playlists: {
+        set: [],
+      },
+    },
+  })
+
+  return track
+}
+
+export async function deleteTrack(hash: number) {
+  const [track] = await db.$transaction([
+    db.track.update({
+      where: {
+        hash,
+      },
+      data: {
+        album: {
+          disconnect: true,
+        },
+        playlists: {
+          deleteMany: {},
+        },
+      },
+    }),
+    db.track.delete({
+      where: {
+        hash,
+      },
+    }),
+  ])
+
+  return track
 }
 
 export async function getTrackDownload(hash: number) {
@@ -979,50 +981,115 @@ export async function doLogin({ email, password }: Credentials) {
   return null
 }
 
-export async function fetchManage({
-  first = MANAGE_PAGE_PER_PAGE_NUMBER,
-  page = 1,
-}: ManagePageDataQueryVariables = {}) {
-  return client.request<ManagePageDataQuery, ManagePageDataQueryVariables>(
-    fetchManagementDocument,
-    {
-      first,
-      page,
-    }
-  )
-}
+export async function fetchManage(accountId: number) {
+  const [tracks, artists, albums, playlists] = await db.$transaction([
+    db.track.findMany({
+      take: MANAGE_PAGE_PER_PAGE_NUMBER,
+      where: {
+        accountId,
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      select: {
+        hash: true,
+        title: true,
+        poster: true,
+        imgBucket: true,
+        artist: {
+          select: {
+            stageName: true,
+            hash: true,
+          },
+        },
+      },
+    }),
+    db.artist.findMany({
+      take: MANAGE_PAGE_PER_PAGE_NUMBER,
+      where: {
+        accountId,
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      select: {
+        hash: true,
+        stageName: true,
+        poster: true,
+        imgBucket: true,
+      },
+    }),
+    db.album.findMany({
+      take: MANAGE_PAGE_PER_PAGE_NUMBER,
+      where: {
+        accountId,
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      select: {
+        hash: true,
+        title: true,
+        cover: true,
+        imgBucket: true,
+        artist: {
+          select: {
+            stageName: true,
+            hash: true,
+          },
+        },
+      },
+    }),
+    db.playlist.findMany({
+      take: MANAGE_PAGE_PER_PAGE_NUMBER,
+      where: {
+        accountId,
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      select: {
+        hash: true,
+        title: true,
+        tracks: {
+          take: 1,
+          orderBy: [{ createdAt: 'desc' }],
+          select: {
+            track: {
+              select: {
+                imgBucket: true,
+                poster: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+  ])
 
-export async function fetchFacebookLoginUrl() {
-  return client.request<FacebookLoginUrlQuery>(facebookLoginUrlDocument)
-}
+  return {
+    tracks: tracks.map(({ imgBucket, poster, ...track }) => ({
+      ...track,
+      posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
+    })),
+    artists: artists.map(({ imgBucket, poster, ...artist }) => {
+      const artistPosterUrl = getResourceUrl({
+        bucket: imgBucket,
+        resource: poster,
+      })
 
-export async function loginWithFacebook(
-  variables: FacebookLoginMutationVariables
-) {
-  return client.request<FacebookLoginMutation, FacebookLoginMutationVariables>(
-    facebookLoginDocument,
-    variables
-  )
-}
+      return {
+        ...artist,
+        posterUrl: !poster ? ARTIST_DEFAULT_POSTER : artistPosterUrl,
+      }
+    }),
+    albums: albums.map(({ imgBucket, cover, ...album }) => ({
+      ...album,
+      coverUrl: getResourceUrl({ bucket: imgBucket, resource: cover }),
+    })),
+    playlists: playlists.map(({ tracks, ...playlist }) => {
+      const {
+        track: { imgBucket, poster },
+      } = tracks[0]
 
-export async function updateUser(updateUserInput: UpdateUserInput) {
-  // has the password first before inserting into db
-
-  return client.request<UpdateUserMutation, UpdateUserMutationVariables>(
-    UpdateUserDocument,
-    {
-      input: updateUserInput,
-    }
-  )
-}
-
-export async function updatePlayCount(playInput: PlayInput) {
-  return client.request<
-    UpdatePlayCountMutation,
-    UpdatePlayCountMutationVariables
-  >(UpdatePlayCountDocument, {
-    input: playInput,
-  })
+      return {
+        ...playlist,
+        coverUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
+      }
+    }),
+  }
 }
 
 export async function fetchMyAlbums(variables: MyAlbumsDataQueryVariables) {
@@ -1041,11 +1108,24 @@ export async function fetchMyPlaylists(
   )
 }
 
-export async function fetchMyTracks(variables: MyTracksDataQueryVariables) {
-  return client.request<MyTracksDataQuery, MyTracksDataQueryVariables>(
-    fetchMyTracksDocument,
-    variables
-  )
+export async function fetchMyTracks(accountId: number) {
+  const tracks = await db.track.findMany({
+    where: {
+      accountId,
+    },
+    orderBy: [{ createdAt: 'desc' }],
+    select: {
+      hash: true,
+      title: true,
+      account: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  })
+
+  return tracks
 }
 
 export async function fetchMyArtists(variables: MyArtistDataQueryVariables) {

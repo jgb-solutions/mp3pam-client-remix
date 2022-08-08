@@ -6,10 +6,8 @@ import type {
 } from '@remix-run/node'
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 
-import { fetchFacebookLoginUrl } from '~/database/requests.server'
-
-import type { SessionAccount } from '~/interfaces/types'
 import { getUrl } from '~/utils/helpers.server'
+import type { SessionAccount } from '~/interfaces/types'
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -43,12 +41,6 @@ export const shouldLoginWithFacebook = (request: Request) => {
   const url = new URL(request.url)
 
   return url.searchParams.has('facebook')
-}
-
-export const redirectToFacebookLogin = async () => {
-  const { facebookLoginUrl } = await fetchFacebookLoginUrl()
-
-  return redirect(facebookLoginUrl.url)
 }
 
 type WithAuthOptions = {

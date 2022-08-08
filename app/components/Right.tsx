@@ -17,35 +17,39 @@ import { useApp } from '~/hooks/useApp'
 const CreateMenu = [
   {
     name: 'Add Track',
-    to: AppRoutes.manage.create.track,
+    to: AppRoutes.library.create.track,
     icon: <MusicNoteIcon />,
   },
-  // { name: "Create PlayList", to: AppRoutes.manage.create.playlist, icon: <PlaylistAddIcon /> },
+  // { name: "Create PlayList", to: AppRoutes.library.create.playlist, icon: <PlaylistAddIcon /> },
   {
     name: 'Add Artist',
-    to: AppRoutes.manage.create.artist,
+    to: AppRoutes.library.create.artist,
     icon: <PersonPinCircleIcon />,
   },
   {
     name: 'Add Album',
-    to: AppRoutes.manage.create.album,
+    to: AppRoutes.library.create.album,
     icon: <AlbumIcon />,
   },
 ]
 
 const libraryMenu = [
-  { name: 'Your Tracks', to: AppRoutes.manage.tracks, icon: <MusicNoteIcon /> },
   {
-    name: 'Your PlayLists',
-    to: AppRoutes.manage.playlists,
+    name: 'Tracks',
+    to: AppRoutes.library.tracks,
+    icon: <MusicNoteIcon />,
+  },
+  {
+    name: 'PlayLists',
+    to: AppRoutes.library.playlists,
     icon: <PlaylistAddIcon />,
   },
   {
-    name: 'Your Artists',
-    to: AppRoutes.manage.artists,
+    name: 'Artists',
+    to: AppRoutes.library.artists,
     icon: <PersonPinCircleIcon />,
   },
-  { name: 'Your Albums', to: AppRoutes.manage.albums, icon: <AlbumIcon /> },
+  { name: 'Albums', to: AppRoutes.library.albums, icon: <AlbumIcon /> },
 ]
 
 type Props = {
@@ -99,7 +103,7 @@ const Right: FC<Props> = ({ closeDrawerRight }) => {
               <Box mb="1rem">
                 <NavLink
                   prefetch="intent"
-                  to={AppRoutes.manage.home}
+                  to={AppRoutes.library.home}
                   style={({ isActive }) => ({
                     ...styles.yourLibraryLink,
                     ...(isActive ? styles.activeClassName : {}),

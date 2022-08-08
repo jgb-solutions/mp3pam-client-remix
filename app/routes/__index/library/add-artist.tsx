@@ -91,7 +91,7 @@ export default function AddArtistPage() {
   const [openArtistSuccessDialog, setOpenArtistSuccessDialog] = useState(false)
   const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
 
-  const goToArtistsLibrary = () => history.push(AppRoutes.manage.artists)
+  const goToArtistsLibrary = () => history.push(AppRoutes.library.artists)
 
   const handleArtistSucessDialogClose = () => setOpenArtistSuccessDialog(false)
 

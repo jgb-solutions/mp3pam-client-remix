@@ -251,9 +251,9 @@ function Edit({ account, handleClose }: EditProps) {
           variant="contained"
           type="submit"
           size="large"
-          disabled={profileFetcher.state === 'loading' || !profileIsValid}
+          disabled={profileFetcher.state === 'submitting' || !profileIsValid}
         >
-          {profileFetcher.state === 'loading'
+          {profileFetcher.state === 'submitting'
             ? 'Updating...'
             : 'Update Profile'}
         </Button>
@@ -320,9 +320,9 @@ function Edit({ account, handleClose }: EditProps) {
           variant="contained"
           type="submit"
           size="large"
-          disabled={passwordFetcher.state === 'loading' || !passwordIsValid}
+          disabled={passwordFetcher.state === 'submitting' || !passwordIsValid}
         >
-          {passwordFetcher.state === 'loading'
+          {passwordFetcher.state === 'submitting'
             ? 'Updating...'
             : 'Update Password'}
         </Button>
@@ -509,7 +509,7 @@ export default function AccountModal() {
                       border: `1px solid ${colors.newBlack}`,
                     }}
                     onClick={handleSelectAvatar}
-                    disabled={uploading || avatarFetcher.state === 'loading'}
+                    disabled={uploading || avatarFetcher.state === 'submitting'}
                   >
                     <EditIcon />
                   </IconButton>

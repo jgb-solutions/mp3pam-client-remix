@@ -13,6 +13,8 @@ import type {
   getSessionDataFromAccount,
   getTrackDownload,
   fetchFavoriteTracks,
+  fetchManage,
+  fetchMyTracks,
 } from '~/database/requests.server'
 
 export type BoxStyles = { [key: string]: Required<BoxProps['sx']> }
@@ -46,6 +48,7 @@ export type ArtistThumbnailData = HomePage['artists'][0]
 export type PlaylistThumbnailData = HomePage['playlists'][0]
 
 export type AllTracks = NonNullable<Awaited<ReturnType<typeof fetchTracks>>>
+export type MyTracks = NonNullable<Awaited<ReturnType<typeof fetchMyTracks>>>
 export type AllFavoriteTracks = NonNullable<
   Awaited<ReturnType<typeof fetchFavoriteTracks>>
 >
@@ -56,6 +59,7 @@ export type GenreWithTracks = NonNullable<
 >
 
 export type HomePage = Awaited<ReturnType<typeof fetchHomepage>>
+export type ManagePage = Awaited<ReturnType<typeof fetchManage>>
 export type PlaylistDetail = NonNullable<
   Awaited<ReturnType<typeof fetchPlaylistDetail>>
 >

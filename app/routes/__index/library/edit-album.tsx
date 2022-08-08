@@ -518,7 +518,7 @@ export default function AlbumEditPage() {
         <Button
           size="small"
           onClick={() =>
-            navigate(AppAppRoutes.manage.create.track, {
+            navigate(AppAppRoutes.library.create.track, {
               album_id: album.id,
               track_number: trackNumber,
             })

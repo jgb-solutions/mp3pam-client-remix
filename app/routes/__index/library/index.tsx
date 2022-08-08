@@ -1,6 +1,6 @@
 import { json } from '@remix-run/node'
 import { Box, Typography } from '@mui/material'
-import type { LoaderFunction } from '@remix-run/node'
+import type { LoaderArgs } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
 import GroupWorkIcon from '@mui/icons-material/GroupWork'
 import type { HtmlMetaDescriptor, MetaFunction } from '@remix-run/node'
@@ -9,6 +9,7 @@ import AppRoutes from '~/app-routes'
 import { withAccount } from '~/auth/sessions.server'
 import HeaderTitle from '~/components/HeaderTitle'
 import type { BoxStyles } from '~/interfaces/types'
+import { fetchManage } from '~/database/requests.server'
 import { AlbumScrollingList } from '~/components/AlbumScrollingList'
 import { TrackScrollingList } from '~/components/TrackScrollingList'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
@@ -22,27 +23,25 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => ({
   title: 'Your Library',
 })
 
-export const loader: LoaderFunction = (context) =>
-  withAccount(context, async ({ sessionAccount }) => {
-    const data = await apiClient.setToken(sessionAccount.token).fetchManage()
+export const loader = (args: LoaderArgs) =>
+  withAccount(args, async ({ sessionAccount }) => {
+    const manage = await fetchManage(sessionAccount.id!)
 
-    return json(data)
+    return json(manage)
   })
 
-export default function ManagePage() {
-  const {
-    me: { latestTracks, latestArtists, latestAlbums, latestPlaylists },
-  } = useLoaderData()
+export default function LibraryPage() {
+  const { tracks, artists, playlists, albums } = useLoaderData<typeof loader>()
 
   return (
     <>
       <HeaderTitle icon={<GroupWorkIcon />} text="Your Library" />
 
-      {latestTracks.length ? (
+      {tracks.length ? (
         <TrackScrollingList
           category="Your Latest Tracks"
-          tracks={latestTracks}
-          browse={AppRoutes.manage.tracks}
+          tracks={tracks}
+          browse={AppRoutes.library.tracks}
         />
       ) : (
         <Typography variant="h3">
@@ -51,7 +50,7 @@ export default function ManagePage() {
             component={Link}
             prefetch="intent"
             sx={styles.link}
-            to={AppRoutes.manage.create.track}
+            to={AppRoutes.library.create.track}
           >
             Add a new track
           </Box>
@@ -59,11 +58,11 @@ export default function ManagePage() {
         </Typography>
       )}
 
-      {latestPlaylists.length ? (
+      {playlists.length ? (
         <PlaylistScrollingList
           category="Your Latest Playlists"
-          playlists={latestPlaylists}
-          browse={AppRoutes.manage.playlists}
+          playlists={playlists}
+          browse={AppRoutes.library.playlists}
         />
       ) : (
         <Typography variant="h3">
@@ -72,7 +71,7 @@ export default function ManagePage() {
             component={Link}
             prefetch="intent"
             sx={styles.link}
-            to={AppRoutes.manage.create.playlist}
+            to={AppRoutes.library.create.playlist}
           >
             Create a new playlist
           </Box>
@@ -80,11 +79,11 @@ export default function ManagePage() {
         </Typography>
       )}
 
-      {latestArtists.length ? (
+      {artists.length ? (
         <ArtistScrollingList
           category="Your Latest Artists"
-          artists={latestArtists}
-          browse={AppRoutes.manage.artists}
+          artists={artists}
+          browse={AppRoutes.library.artists}
         />
       ) : (
         <Typography variant="h3">
@@ -93,7 +92,7 @@ export default function ManagePage() {
             component={Link}
             prefetch="intent"
             sx={styles.link}
-            to={AppRoutes.manage.create.artist}
+            to={AppRoutes.library.create.artist}
           >
             Add a new artist
           </Box>
@@ -101,11 +100,11 @@ export default function ManagePage() {
         </Typography>
       )}
 
-      {latestAlbums.length ? (
+      {albums.length ? (
         <AlbumScrollingList
           category="Your Latest Albums"
-          albums={latestAlbums}
-          browse={AppRoutes.manage.albums}
+          albums={albums}
+          browse={AppRoutes.library.albums}
         />
       ) : (
         <Typography variant="h3">
@@ -114,7 +113,7 @@ export default function ManagePage() {
             component={Link}
             prefetch="intent"
             sx={styles.link}
-            to={AppRoutes.manage.create.album}
+            to={AppRoutes.library.create.album}
           >
             Create a new album
           </Box>

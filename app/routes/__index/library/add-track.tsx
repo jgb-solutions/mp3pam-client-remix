@@ -294,7 +294,7 @@ export default function AddTrackPage() {
   const watchGenreValue = watch('genreId')
 
   const goToTracksLibrary = () => {
-    history.push(AppRoutes.manage.tracks)
+    history.push(AppRoutes.library.tracks)
   }
 
   const handleTrackSucessDialogClose = () => setOpenTrackSuccessDialog(false)

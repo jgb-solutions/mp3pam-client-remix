@@ -49,7 +49,7 @@ import { Box, Button, darken, Grid } from '@mui/material'
 import type { BoxStyles, TrackDetail } from '~/interfaces/types'
 import theme from '~/mui/theme'
 import Heart from '~/components/Heart'
-import { AddTrackToPlaylist } from '~/routes/__index/manage/edit-playlist'
+import { AddTrackToPlaylist } from '~/routes/__index/library/edit-playlist'
 import { DOMAIN } from '~/utils/constants.server'
 import { useAuth } from '~/hooks/useAuth'
 import {
