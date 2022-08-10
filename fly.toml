@@ -1,12 +1,12 @@
-# fly.toml file generated for mp3pam-client-remix on 2022-06-30T22:42:09-04:00
+# fly.toml file generated for mp3pam on 2022-08-10T02:24:46-04:00
 
-app = "mp3pam-client-remix"
+app = "mp3pam"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
 [env]
-  PORT = "8080"
+PORT = "8080"
   API_URL = "https://mp3pam-api-laravel.fly.dev/graphql"
 
   # Wasabi
