@@ -1,49 +1,44 @@
-import webStorage from "redux-persist/lib/storage"
-import { createStore } from "redux"
-import { persistStore, persistReducer } from "redux-persist"
-import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2"
+import webStorage from 'redux-persist/lib/storage'
+import { createStore } from 'redux'
+import { persistStore, persistReducer } from 'redux-persist'
+import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 
-import { combineReducers } from "redux"
-import searchReducer from "./reducers/searchReducer"
-import playerReducer from "./reducers/playerReducer"
+import { combineReducers } from 'redux'
+import playerReducer from './reducers/playerReducer'
 
 const createNoopStorage = () => {
-	return {
-		getItem(_key: string) {
-			return Promise.resolve(null)
-		},
-		setItem(_key: string, value: string) {
-			return Promise.resolve(value)
-		},
-		removeItem(_key: string) {
-			return Promise.resolve()
-		},
-	}
+  return {
+    getItem(_key: string) {
+      return Promise.resolve(null)
+    },
+    setItem(_key: string, value: string) {
+      return Promise.resolve(value)
+    },
+    removeItem(_key: string) {
+      return Promise.resolve()
+    },
+  }
 }
 
-const storage =
-	typeof window === "undefined" ? createNoopStorage() : webStorage
-
+const storage = typeof window === 'undefined' ? createNoopStorage() : webStorage
 
 const rootReducer = combineReducers({
-	search: searchReducer,
-	player: playerReducer,
+  player: playerReducer,
 })
 
-
 const persistConfig = {
-	key: `v_01_01_2022_001`,
-	storage,
-	whitelist: ["player", "search", "currentUser"],
-	// stateReconciler: autoMergeLevel2
+  key: `v_01_01_2022_001`,
+  storage,
+  whitelist: ['player'],
+  // stateReconciler: autoMergeLevel2
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const persistedStore = () => {
-	let store = createStore(persistedReducer)
-	let persistor = persistStore(store)
-	return { store, persistor }
+  let store = createStore(persistedReducer)
+  let persistor = persistStore(store)
+  return { store, persistor }
 }
 
 // import logger from 'redux-logger'
@@ -87,8 +82,6 @@ export const persistedStore = () => {
 // 		}).concat(middleware),
 // })
 // export const persistor = persistStore(adminSore)
-
-
 
 // import { UpdateEligibilityQueryDocument } from './../../graphql/mutations'
 // import { AdminRootState } from './../../interfaces/AdminInterfaces'

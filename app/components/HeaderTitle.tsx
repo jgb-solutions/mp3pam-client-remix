@@ -4,10 +4,6 @@ import type { CSSProperties, ReactNode } from 'react'
 import type { BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-  },
   text: {
     textTransform: 'capitalize',
   },
@@ -30,9 +26,14 @@ export default function HeaderTitle(props: Props) {
 
   return (
     <Box sx={styles.container} style={propStyles} onClick={props.onClick}>
-      <Box component="h1" sx={styles.text} style={props.textStyle}>
-        {' '}
-        {props.icon} {props.text}
+      <Box
+        component="h1"
+        sx={styles.text}
+        style={props.textStyle}
+        display="flex"
+        alignItems={'center'}
+      >
+        {props.icon} <span>{props.text}</span>
       </Box>
     </Box>
   )

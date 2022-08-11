@@ -1,60 +1,87 @@
-import { useEffect, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import type {
+  LoaderArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import Grid from '@mui/material/Grid'
+import { json } from '@remix-run/node'
 import SearchIcon from '@mui/icons-material/Search'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
 
-import Spinner from '~/components/Spinner'
 import HeaderTitle from '~/components/HeaderTitle'
 import TrackThumbnail from '~/components/TrackThumbnail'
-import type { SearchData } from '~/interfaces/SearchInterface'
 import ArtistThumbnail from '~/components/ArtistThumbnail'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
-import type { AlbumThumbnailData } from '~/components/AlbumScrollingList'
-import type { ArtistThumbnailData } from '~/components/ArtistScrollingList'
+import { doSearch } from '~/database/requests.server'
+import { useLoaderData } from '@remix-run/react'
+import { getSearchParams } from '~/utils/helpers.server'
+import type { SearchResults } from '~/interfaces/types'
+
+export const getSearchTerm = () => {
+  const searchParams = new URLSearchParams(window.location.search)
+
+  return (searchParams.get('query') as string) || ''
+}
+
+const getTitle = (
+  searchTerm: string,
+  { tracks, albums, artists }: SearchResults
+) =>
+  tracks.length || artists.length || albums.length
+    ? `
+          ${tracks.length} track${tracks.length !== 1 ? 's' : ''},
+            ${artists.length} artist${artists.length !== 1 ? 's' : ''}
+            and ${albums.length} album${albums.length !== 1 ? 's' : ''}
+            found ${
+              searchTerm.length ? `for *${searchTerm}*` : 'from last search'
+            }
+          `
+    : `No results found ${searchTerm.length ? `for *${searchTerm}*` : ''}`
+
+export const meta: MetaFunction = (params): HtmlMetaDescriptor => {
+  let title = ''
+  let description = ''
+
+  if (params.data) {
+    const data = params.data as { results: SearchResults; query: string }
+    title = getTitle(data.query, data.results)
+    description = `${title}`
+  } else {
+    title = 'Search'
+    description = 'Search for music'
+  }
+
+  return {
+    title,
+    'og:title': title,
+    'og:description': description,
+  }
+}
+
+export const loader = async ({ request }: LoaderArgs) => {
+  const query = (getSearchParams(request).get('query') as string) || ''
+
+  let results = {
+    tracks: [],
+    artists: [],
+    albums: [],
+  } as SearchResults
+
+  if (query.length > 1) {
+    results = await doSearch(query)
+  }
+
+  return json({ results, query })
+}
 
 export default function SearchPage() {
-  const dispatch = useDispatch()
-  const { search, data: resultData, loading, error } = useSearch()
-  const debounceSearch = debounce(search, 300)
-  const { term, data: storeData } = useSelector(
-    ({ search }: AppStateInterface) => search
-  )
-  const [state, setState] = useState<SearchData>(storeData)
-  const [lastSearchTerm, setLastSearchTerm] = useState(term)
+  const {
+    results: { tracks, artists, albums },
+    query: searchTerm,
+  } = useLoaderData<typeof loader>()
 
-  // fetch home data
-  useEffect(() => {
-    if (resultData) {
-      const { tracks, albums, artists } = resultData.search
-      const data = resultData.search
-      setState(data)
-      if (tracks.length || artists.length || albums.length) {
-        dispatch({ type: SAVE_SEARCH, payload: { term, data } })
-      }
-    }
-    // eslint-disable-next-line
-  }, [resultData])
+  const title = getTitle(searchTerm, { tracks, artists, albums })
 
-  useEffect(() => {
-    const searchTerm = term.trim()
-    if (searchTerm.length >= 2 && searchTerm !== lastSearchTerm) {
-      debounceSearch(term)
-      setLastSearchTerm(searchTerm)
-    }
-    // eslint-disable-next-line
-  }, [term])
-
-  const { tracks, albums, artists } = state
-  const title =
-    tracks.length || artists.length || albums.length
-      ? `
-					${tracks.length} track${tracks.length !== 1 ? 's' : ''},
-						${artists.length} artist${artists.length !== 1 ? 's' : ''}
-						and ${albums.length} album${albums.length !== 1 ? 's' : ''}
-						found ${term.length ? `for *${term}*` : 'from last search'}
-					`
-      : `No results found ${term.length ? `for *${term}*` : ''}`
   return (
     <>
       <HeaderTitle
@@ -62,7 +89,6 @@ export default function SearchPage() {
         textStyle={{ fontSize: 16, textTransform: 'none' }}
         text={title}
       />
-      {/* <SEO title={title} /> */}
 
       {tracks.length ? (
         <>
@@ -72,7 +98,7 @@ export default function SearchPage() {
             textStyle={{ fontSize: 20 }}
           />
           <Grid container spacing={2}>
-            {tracks.map((track: TrackWithArtistThumbnailData) => (
+            {tracks.map((track) => (
               <Grid item xs={4} md={3} sm={4} key={track.hash}>
                 <TrackThumbnail track={track} />
               </Grid>
@@ -90,7 +116,7 @@ export default function SearchPage() {
             textStyle={{ fontSize: 20 }}
           />
           <Grid container spacing={2}>
-            {artists.map((artist: ArtistThumbnailData) => (
+            {artists.map((artist) => (
               <Grid item xs={4} md={3} sm={4} key={artist.hash}>
                 <ArtistThumbnail artist={artist} />
               </Grid>
@@ -108,7 +134,7 @@ export default function SearchPage() {
             textStyle={{ fontSize: 20 }}
           />
           <Grid container spacing={2}>
-            {albums.map((album: AlbumThumbnailData) => (
+            {albums.map((album) => (
               <Grid item xs={4} md={3} sm={4} key={album.hash}>
                 <AlbumThumbnail album={album} />
               </Grid>

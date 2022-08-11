@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt'
 import type { Account } from '@prisma/client'
 
 import {
-  searchDocument,
   fetchMyAlbumsDocument,
   fetchMyPlaylistsDocument,
   fetchMyArtistsDocument,
@@ -12,7 +11,6 @@ import type {
   AlbumInput,
   TrackInput,
   ArtistInput,
-  SearchQuery,
   AddTrackMutation,
   AddArtistMutation,
   AddTrackToAlbumMutation,
@@ -21,7 +19,6 @@ import type {
   CreateAlbumMutation,
   CreateAlbumMutationVariables,
   CreatePlaylistMutation,
-  SearchQueryVariables,
   AddArtistMutationVariables,
   AddTrackMutationVariables,
   CreatePlaylistMutationVariables,
@@ -1299,9 +1296,106 @@ export async function fetchPlaylists({
 }
 
 export async function doSearch(searchTerm: string) {
-  return client.request<SearchQuery, SearchQueryVariables>(searchDocument, {
-    query: searchTerm,
-  })
+  const query = `%${searchTerm}%`
+
+  const [trackIds, artistIds, albumIds] = await Promise.all([
+    db.$queryRaw<{ id: number }[]>`
+    SELECT id FROM "public"."Track"
+    WHERE LOWER(title) LIKE LOWER(${query})
+    OR LOWER(detail) LIKE LOWER(${query})
+    OR LOWER(lyrics) LIKE LOWER(${query})
+  ;`,
+    db.$queryRaw<{ id: number }[]>`
+    SELECT id FROM "public"."Artist"
+    WHERE LOWER(name) LIKE LOWER(${query})
+    OR LOWER("stageName") LIKE LOWER(${query})
+    OR LOWER(bio) LIKE LOWER(${query})
+  ;`,
+    db.$queryRaw<{ id: number }[]>`
+    SELECT id FROM "public"."Album"
+    WHERE LOWER(title) LIKE LOWER(${query})
+    OR LOWER(detail) LIKE LOWER(${query})
+  ;`,
+  ])
+
+  const [tracks, artists, albums] = await db.$transaction([
+    db.track.findMany({
+      where: {
+        id: {
+          in: trackIds.map(({ id }) => id),
+        },
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      select: {
+        hash: true,
+        title: true,
+        poster: true,
+        imgBucket: true,
+        artist: {
+          select: {
+            stageName: true,
+            hash: true,
+          },
+        },
+      },
+    }),
+    db.artist.findMany({
+      where: {
+        id: {
+          in: artistIds.map(({ id }) => id),
+        },
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      select: {
+        hash: true,
+        stageName: true,
+        poster: true,
+        imgBucket: true,
+      },
+    }),
+    db.album.findMany({
+      where: {
+        id: {
+          in: albumIds.map(({ id }) => id),
+        },
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      select: {
+        hash: true,
+        title: true,
+        cover: true,
+        imgBucket: true,
+        artist: {
+          select: {
+            stageName: true,
+            hash: true,
+          },
+        },
+      },
+    }),
+  ])
+
+  return {
+    tracks: tracks.map(({ imgBucket, poster, ...track }) => ({
+      ...track,
+      posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
+    })),
+    artists: artists.map(({ imgBucket, poster, ...artist }) => {
+      const artistPosterUrl = getResourceUrl({
+        bucket: imgBucket,
+        resource: poster,
+      })
+
+      return {
+        ...artist,
+        posterUrl: !poster ? ARTIST_DEFAULT_POSTER : artistPosterUrl,
+      }
+    }),
+    albums: albums.map(({ imgBucket, cover, ...album }) => ({
+      ...album,
+      coverUrl: getResourceUrl({ bucket: imgBucket, resource: cover }),
+    })),
+  }
 }
 
 export async function fetchTracks({
