@@ -818,18 +818,19 @@ export async function deleteArtist(hash: number) {
 }
 
 export async function deletePlaylist(playlistHash: number) {
-  const playlist = await db.playlist.update({
-    where: {
-      hash: playlistHash,
-    },
-    data: {
-      tracks: {
-        set: [],
+  const [playlist] = await db.$transaction([
+    db.playlist.update({
+      where: {
+        hash: playlistHash,
       },
-    },
-  })
-
-  await db.playlist.delete({ where: { hash: playlistHash } })
+      data: {
+        tracks: {
+          deleteMany: {},
+        },
+      },
+    }),
+    db.playlist.delete({ where: { hash: playlistHash } }),
+  ])
 
   return playlist
 }
@@ -1134,6 +1135,57 @@ export async function fetchMyPlaylists(accountId: number) {
   })
 
   return playlists
+}
+
+export async function fetchMyPlaylist({
+  accountId,
+  playlistHash,
+}: {
+  accountId: number
+  playlistHash: number
+}) {
+  const playlist = await db.playlist.findFirst({
+    where: {
+      accountId,
+      hash: playlistHash,
+    },
+    select: {
+      hash: true,
+      title: true,
+      account: {
+        select: {
+          id: true,
+        },
+      },
+      tracks: {
+        select: {
+          track: {
+            select: {
+              hash: true,
+              title: true,
+              artist: {
+                select: {
+                  stageName: true,
+                  hash: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  if (playlist) {
+    const { tracks, ...playlistData } = playlist
+
+    return {
+      ...playlistData,
+      tracks: tracks.map(({ track }) => track),
+    }
+  }
+
+  return playlist
 }
 
 export async function fetchMyArtists(variables: MyArtistDataQueryVariables) {

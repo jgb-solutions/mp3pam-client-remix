@@ -12,56 +12,58 @@ import {
   FacebookShareButton,
   WhatsappShareButton,
 } from 'react-share'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
-import { useDispatch, useSelector } from 'react-redux'
+import { darken } from '@mui/material'
+import Button from '@mui/material/Button'
 import InfoIcon from '@mui/icons-material/Info'
-import LineWeightIcon from '@mui/icons-material/LineWeight'
-import GetAppIcon from '@mui/icons-material/GetApp'
 import ShareIcon from '@mui/icons-material/Share'
+import EmailIcon from '@mui/icons-material/Email'
+import GetAppIcon from '@mui/icons-material/GetApp'
+import { useDispatch, useSelector } from 'react-redux'
+import LineWeightIcon from '@mui/icons-material/LineWeight'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsappIcon from '@mui/icons-material/WhatsApp'
-import EmailIcon from '@mui/icons-material/Email'
 import HeadsetIcon from '@mui/icons-material/Headset'
 import { Link, useCatch, useLoaderData, useNavigate } from '@remix-run/react'
 
-import AppRoutes from '~/app-routes'
-import colors from '~/utils/colors'
-import More from '~/components/More'
-import Tabs from '~/components/Tabs'
-import type { TabItem } from '~/components/Tabs'
-import type ListInterface from '~/interfaces/ListInterface'
-import type AppStateInterface from '~/interfaces/AppStateInterface'
 import {
   SMALL_SCREEN_SIZE,
   APP_NAME,
   SEO_TRACK_TYPE,
   TWITTER_HANDLE,
 } from '~/utils/constants'
+import {
+  playNextAction,
+  pauseListAction,
+  playListAction,
+  resumeListAction,
+  addToQueueAction,
+} from '~/redux/actions/playerActions'
+import theme from '~/mui/theme'
+import AppRoutes from '~/app-routes'
+import colors from '~/utils/colors'
+import More from '~/components/More'
+import Tabs from '~/components/Tabs'
+import Heart from '~/components/Heart'
+import { db } from '~/database/db.server'
+import { useAuth } from '~/hooks/useAuth'
+import { DOMAIN } from '~/utils/constants.server'
+import { authenticator } from '~/auth/auth.server'
+import type { TabItem } from '~/components/Tabs'
+import type ListInterface from '~/interfaces/ListInterface'
+import type AppStateInterface from '~/interfaces/AppStateInterface'
 import { TrackScrollingList } from '~/components/TrackScrollingList'
-
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import { PhotonImage } from '~/components/PhotonImage'
-import { Box, Button, darken, Grid } from '@mui/material'
-import type { BoxStyles, TrackDetail } from '~/interfaces/types'
-import theme from '~/mui/theme'
-import Heart from '~/components/Heart'
-import { AddTrackToPlaylist } from '~/routes/__index/library/playlists/$hash.edit'
-import { DOMAIN } from '~/utils/constants.server'
-import { useAuth } from '~/hooks/useAuth'
-import {
-  addToQueueAction,
-  pauseListAction,
-  playListAction,
-  playNextAction,
-  resumeListAction,
-} from '~/redux/actions/playerActions'
 import { fetchTrackDetail } from '~/database/requests.server'
-import { db } from '~/database/db.server'
-import { authenticator } from '~/auth/auth.server'
+import type { BoxStyles, TrackDetail } from '~/interfaces/types'
+import { AddTrackToPlaylist } from '~/components/AddTrackToPlaylist'
 
 const styles: BoxStyles = {
   row: {

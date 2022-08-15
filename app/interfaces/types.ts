@@ -17,6 +17,7 @@ import type {
   fetchMyTracks,
   doSearch,
   fetchMyPlaylists,
+  fetchMyPlaylist,
 } from '~/database/requests.server'
 
 export type BoxStyles = { [key: string]: Required<BoxProps['sx']> }
@@ -44,6 +45,9 @@ export type AllTracks = NonNullable<Awaited<ReturnType<typeof fetchTracks>>>
 export type MyTracks = NonNullable<Awaited<ReturnType<typeof fetchMyTracks>>>
 export type MyPlaylists = NonNullable<
   Awaited<ReturnType<typeof fetchMyPlaylists>>
+>
+export type MyPlaylist = NonNullable<
+  Awaited<ReturnType<typeof fetchMyPlaylist>>
 >
 export type AllFavoriteTracks = NonNullable<
   Awaited<ReturnType<typeof fetchFavoriteTracks>>
