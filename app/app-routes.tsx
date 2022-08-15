@@ -34,7 +34,7 @@ const AppRoutes = {
     edit: `/library/playlists/:hash`,
     detailPage: (hash: number) => `/playlist/${hash}`,
     goToAuthorDetail: (authorID: string) => `/author/${authorID}`,
-    editPage: (hash: number) => `/library/playlists/${hash}`,
+    editPage: (hash: number) => `/library/playlists/${hash}/edit`,
   },
   download: (hash: number) => `/download/${hash}`,
   account: {

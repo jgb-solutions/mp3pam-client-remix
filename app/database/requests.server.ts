@@ -1096,15 +1096,6 @@ export async function fetchMyAlbums(variables: MyAlbumsDataQueryVariables) {
   )
 }
 
-export async function fetchMyPlaylists(
-  variables: MyPlaylistsDataQueryVariables
-) {
-  return client.request<MyPlaylistsDataQuery, MyPlaylistsDataQueryVariables>(
-    fetchMyPlaylistsDocument,
-    variables
-  )
-}
-
 export async function fetchMyTracks(accountId: number) {
   const tracks = await db.track.findMany({
     where: {
@@ -1123,6 +1114,26 @@ export async function fetchMyTracks(accountId: number) {
   })
 
   return tracks
+}
+
+export async function fetchMyPlaylists(accountId: number) {
+  const playlists = await db.playlist.findMany({
+    where: {
+      accountId,
+    },
+    orderBy: [{ createdAt: 'desc' }],
+    select: {
+      hash: true,
+      title: true,
+      account: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  })
+
+  return playlists
 }
 
 export async function fetchMyArtists(variables: MyArtistDataQueryVariables) {

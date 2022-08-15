@@ -15,7 +15,6 @@ import TextField from '@mui/material/TextField'
 import AppRoutes from '~/app-routes'
 import colors from '~/utils/colors'
 import Button from '@mui/material/Button'
-import type { PlaylistTrackInterface } from '~/interfaces/PlaylistInterface'
 import { SMALL_SCREEN_SIZE } from '~/utils/constants'
 import Spinner from '~/components/Spinner'
 import FourOrFour from '~/components/FourOrFour'
@@ -26,7 +25,7 @@ import AlertDialog from '~/components/AlertDialog'
 
 import { useForm } from 'react-hook-form'
 import { Box, darken, Grid } from '@mui/material'
-import { BoxStyles } from '~/interfaces/types'
+import type { BoxStyles } from '~/interfaces/types'
 import theme from '~/mui/theme'
 
 const styles: BoxStyles = {
@@ -312,7 +311,7 @@ export default function PlaylistEditPage() {
   // }, [deletePlaylistTrackResponse, errorDeletingPlaylistTrack])
 
   return (
-    <Box sx="react-transition flip-in-x-reverse">
+    <Box>
       {/* <SEO title={`Edit Playlist`} /> */}
 
       {/* {playlist ? (
