@@ -70,8 +70,8 @@ export const action = (args: ActionArgs) =>
       accountId: string
     }
 
-    if (!action && !hash && !accountId) {
-      throw new Error('Missing action or hash')
+    if (!action || !hash || !accountId) {
+      throw new Error('Missing action or hash or accountId')
     }
 
     switch (action) {

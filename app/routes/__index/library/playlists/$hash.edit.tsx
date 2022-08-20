@@ -27,10 +27,6 @@ const styles: BoxStyles = {
     width: '100%',
     overflowX: 'auto',
   },
-  link: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
   errorColor: { color: colors.error },
 }
 
@@ -63,8 +59,10 @@ export const action = (args: ActionArgs) =>
       accountId: string
     }
 
-    if (!action && !hash && !accountId) {
-      throw new Error('Missing action or hash')
+    console.log(hash, action, accountId)
+
+    if (!action || !hash || !accountId) {
+      throw new Error('Missing action or hash or accountId')
     }
 
     switch (action) {
@@ -85,10 +83,23 @@ export default function PlaylistEditPage() {
   const fetcher = useFetcher()
   const navigate = useNavigate()
   const [trackHashToDelete, setTrackHashToDelete] = useState<number>()
-
-  const handleDeletePlaylistTrack = useCallback(() => {}, [])
-
   const { playlist } = useLoaderData() as { playlist: MyPlaylist }
+
+  const handleDeletePlaylistTrack = useCallback(() => {
+    if (!trackHashToDelete) {
+      return
+    }
+
+    const form = new FormData()
+
+    form.append('hash', trackHashToDelete.toString())
+    form.append('action', PlaylistAction.Delete)
+    form.append('accountId', playlist.account.id.toString())
+
+    fetcher.submit(form, {
+      method: 'post',
+    })
+  }, [fetcher, playlist.account.id, trackHashToDelete])
 
   const confirmDelete = (hash: number) => {
     setTrackHashToDelete(hash)
@@ -96,8 +107,6 @@ export default function PlaylistEditPage() {
 
   return (
     <Box>
-      {/* <SEO title={`Edit Playlist`} /> */}
-
       <HeaderTitle
         onClick={() => navigate(AppRoutes.playlist.detailPage(playlist.hash))}
         icon={<PlaylistAddIcon />}
@@ -136,7 +145,6 @@ export default function PlaylistEditPage() {
                       <Link
                         prefetch="intent"
                         to={AppRoutes.track.detailPage(track.hash)}
-                        sx={styles.link}
                       >
                         {track.title}
                       </Link>
@@ -145,16 +153,15 @@ export default function PlaylistEditPage() {
                       <Link
                         prefetch="intent"
                         to={AppRoutes.artist.detailPage(track.artist.hash)}
-                        sx={styles.link}
                       >
                         {track.artist.stageName}
                       </Link>
                     </StyledTableCell>
                     <StyledTableCell style={{ width: '10%' }}>
                       <Button
-                        variant="outlined"
+                        variant="contained"
+                        color="error"
                         onClick={() => confirmDelete(track.hash)}
-                        sx={styles.link}
                       >
                         Delete
                       </Button>
@@ -204,8 +211,8 @@ export default function PlaylistEditPage() {
           <Button
             size="small"
             onClick={handleDeletePlaylistTrack}
-            variant="outlined"
-            sx={styles.link}
+            variant="contained"
+            color="error"
             disabled={fetcher.state === 'submitting'}
           >
             Delete
