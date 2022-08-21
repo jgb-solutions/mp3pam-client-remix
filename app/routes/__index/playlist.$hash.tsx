@@ -54,7 +54,6 @@ import HeaderTitle from '~/components/HeaderTitle'
 import type { BoxStyles, PlaylistDetail } from '~/interfaces/types'
 import type ListInterface from '~/interfaces/ListInterface'
 import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
-import Heart from '~/components/Heart'
 import { DOMAIN } from '~/utils/constants.server'
 import { fetchPlaylistDetail } from '~/database/requests.server'
 

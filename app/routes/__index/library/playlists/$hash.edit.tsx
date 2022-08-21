@@ -2,17 +2,21 @@ import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import Table from '@mui/material/Table'
 import Button from '@mui/material/Button'
+import { useCallback, useState } from 'react'
 import TableRow from '@mui/material/TableRow'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogActions from '@mui/material/DialogActions'
-import { useCallback, useState } from 'react'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import type { ActionArgs, LoaderArgs } from '@remix-run/node'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import { Link, useNavigate, useLoaderData, useFetcher } from '@remix-run/react'
 
+import {
+  fetchMyPlaylist,
+  deletePlaylistTrack,
+} from '~/database/requests.server'
 import colors from '~/utils/colors'
 import AppRoutes from '~/app-routes'
 import HeaderTitle from '~/components/HeaderTitle'
@@ -20,7 +24,6 @@ import AlertDialog from '~/components/AlertDialog'
 import { withAccount } from '~/auth/sessions.server'
 import type { BoxStyles, MyPlaylist } from '~/interfaces/types'
 import { StyledTableCell } from '~/components/PlaylistTracksTable'
-import { deletePlaylist, fetchMyPlaylist } from '~/database/requests.server'
 
 const styles: BoxStyles = {
   table: {
@@ -53,16 +56,17 @@ export const loader = (args: LoaderArgs) =>
 export const action = (args: ActionArgs) =>
   withAccount(args, async ({ sessionAccount }, { request }) => {
     const form = await request.formData()
-    const { hash, action, accountId } = Object.fromEntries(form) as {
-      hash: string
+    const { trackId, action, accountId, playlistId } = Object.fromEntries(
+      form
+    ) as {
+      trackId: string
       action: PlaylistAction
       accountId: string
+      playlistId: string
     }
 
-    console.log(hash, action, accountId)
-
-    if (!action || !hash || !accountId) {
-      throw new Error('Missing action or hash or accountId')
+    if (!action || !trackId || !accountId || !playlistId) {
+      throw new Error('Missing action or hash or accountId or playlistId')
     }
 
     switch (action) {
@@ -71,7 +75,10 @@ export const action = (args: ActionArgs) =>
           throw new Error('You can only delete your own playlists.')
         }
 
-        const playlist = await deletePlaylist(parseInt(hash))
+        const playlist = await deletePlaylistTrack({
+          trackId: parseInt(trackId),
+          playlistId: parseInt(playlistId),
+        })
 
         return json({ playlist })
       default:
@@ -82,27 +89,30 @@ export const action = (args: ActionArgs) =>
 export default function PlaylistEditPage() {
   const fetcher = useFetcher()
   const navigate = useNavigate()
-  const [trackHashToDelete, setTrackHashToDelete] = useState<number>()
+  const [trackIdToDelete, setTrackIdToDelete] = useState<number>()
   const { playlist } = useLoaderData() as { playlist: MyPlaylist }
 
   const handleDeletePlaylistTrack = useCallback(() => {
-    if (!trackHashToDelete) {
+    if (!trackIdToDelete) {
       return
     }
 
     const form = new FormData()
 
-    form.append('hash', trackHashToDelete.toString())
+    form.append('trackId', trackIdToDelete.toString())
     form.append('action', PlaylistAction.Delete)
     form.append('accountId', playlist.account.id.toString())
+    form.append('playlistId', playlist.id.toString())
 
     fetcher.submit(form, {
       method: 'post',
     })
-  }, [fetcher, playlist.account.id, trackHashToDelete])
 
-  const confirmDelete = (hash: number) => {
-    setTrackHashToDelete(hash)
+    setTrackIdToDelete(undefined)
+  }, [fetcher, playlist.account.id, playlist.id, trackIdToDelete])
+
+  const confirmDelete = (trackId: number) => {
+    setTrackIdToDelete(trackId)
   }
 
   return (
@@ -161,7 +171,7 @@ export default function PlaylistEditPage() {
                       <Button
                         variant="contained"
                         color="error"
-                        onClick={() => confirmDelete(track.hash)}
+                        onClick={() => confirmDelete(track.id)}
                       >
                         Delete
                       </Button>
@@ -192,8 +202,8 @@ export default function PlaylistEditPage() {
       )}
 
       <AlertDialog
-        open={!!trackHashToDelete}
-        handleClose={() => setTrackHashToDelete(undefined)}
+        open={!!trackIdToDelete}
+        handleClose={() => setTrackIdToDelete(undefined)}
       >
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
@@ -203,7 +213,7 @@ export default function PlaylistEditPage() {
         <DialogActions>
           <Button
             size="small"
-            onClick={() => setTrackHashToDelete(undefined)}
+            onClick={() => setTrackIdToDelete(undefined)}
             variant="contained"
           >
             Cancel

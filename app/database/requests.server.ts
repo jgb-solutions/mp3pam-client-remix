@@ -57,7 +57,10 @@ import type { Credentials } from '~/interfaces/types'
 import { PhotonImage } from '~/components/PhotonImage'
 import { graphQLClient as client } from '~/graphql/client.server'
 import { getSignedDownloadUrl, getSignedUrl } from '~/services/s3.server'
-import { ARTIST_DEFAULT_POSTER } from '~/utils/constants.server'
+import {
+  ARTIST_DEFAULT_POSTER,
+  TRACK_DEFAULT_POSTER,
+} from '~/utils/constants.server'
 
 export async function fetchHomepage() {
   const [tracks, artists, albums, playlists] = await db.$transaction([
@@ -835,19 +838,27 @@ export async function deletePlaylist(playlistHash: number) {
   return playlist
 }
 
-export async function deletePlaylistTrack(playlistTrackHash: number) {
-  const track = await db.track.update({
+export async function deletePlaylistTrack({
+  trackId,
+  playlistId,
+}: {
+  trackId: number
+  playlistId: number
+}) {
+  const playlist = await db.playlist.update({
     where: {
-      hash: playlistTrackHash,
+      id: playlistId,
     },
     data: {
-      playlists: {
-        set: [],
+      tracks: {
+        deleteMany: {
+          trackId,
+        },
       },
     },
   })
 
-  return track
+  return playlist
 }
 
 export async function deleteTrack(hash: number) {
@@ -1150,6 +1161,7 @@ export async function fetchMyPlaylist({
       hash: playlistHash,
     },
     select: {
+      id: true,
       hash: true,
       title: true,
       account: {
@@ -1161,6 +1173,7 @@ export async function fetchMyPlaylist({
         select: {
           track: {
             select: {
+              id: true,
               hash: true,
               title: true,
               artist: {
@@ -1271,16 +1284,21 @@ export async function fetchPlaylistDetail(hash: number) {
 
   if (playlist) {
     const { tracks, ...playlistData } = playlist
-    const {
-      track: { imgBucket: playlistImgBucket, poster: playlistPoster },
-    } = tracks[0]
+    let coverUrl = TRACK_DEFAULT_POSTER
+
+    if (tracks.length) {
+      const {
+        track: { imgBucket: playlistImgBucket, poster: playlistPoster },
+      } = tracks[0]
+      coverUrl = getResourceUrl({
+        bucket: playlistImgBucket,
+        resource: playlistPoster,
+      })
+    }
 
     return {
       ...playlistData,
-      coverUrl: getResourceUrl({
-        bucket: playlistImgBucket,
-        resource: playlistPoster,
-      }),
+      coverUrl,
       tracks: tracks.map(
         ({
           track: { audioBucket, audioName, imgBucket, poster, ...track },

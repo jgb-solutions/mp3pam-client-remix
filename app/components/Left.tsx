@@ -1,8 +1,8 @@
-import Box, { BoxProps } from '@mui/material/Box'
+import Box from '@mui/material/Box'
 import { NavLink } from '@remix-run/react'
-import type { CSSProperties } from 'react'
 import HomeIcon from '@mui/icons-material/Home'
 import InfoIcon from '@mui/icons-material/Info'
+import type { BoxProps } from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import AlbumIcon from '@mui/icons-material/Album'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
@@ -30,16 +30,16 @@ const pagesMenu = [
 const browsingMenu = [
   { name: 'Tracks', to: AppRoutes.browse.tracks, icon: <MusicNoteIcon /> },
   {
-    name: 'PlayLists',
-    to: AppRoutes.browse.playlists,
-    icon: <PlaylistAddIcon />,
-  },
-  {
     name: 'Artists',
     to: AppRoutes.browse.artists,
     icon: <PersonPinCircleIcon />,
   },
   { name: 'Albums', to: AppRoutes.browse.albums, icon: <AlbumIcon /> },
+  {
+    name: 'PlayLists',
+    to: AppRoutes.browse.playlists,
+    icon: <PlaylistAddIcon />,
+  },
 ]
 
 const favoriteMenu = [
