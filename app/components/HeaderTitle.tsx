@@ -11,7 +11,7 @@ const styles: BoxStyles = {
 
 type Props = {
   icon: ReactNode
-  text: string
+  text: string | JSX.Element
   style?: CSSProperties
   textStyle?: CSSProperties
   onClick?: () => void

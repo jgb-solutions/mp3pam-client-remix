@@ -12,10 +12,10 @@ import { makeSoundFromTrack } from '../utils/helpers'
 import type ListInterface from '../interfaces/ListInterface'
 import type { AlbumDetail, BoxStyles } from '~/interfaces/types'
 import theme from '~/mui/theme'
-import { withStyles } from '@mui/styles'
 import PlayPause from './PlayPause'
 import AppRoutes from '~/app-routes'
 import { Link } from '@remix-run/react'
+import { withStyles } from '@mui/styles'
 
 const styles: BoxStyles = {
   table: {

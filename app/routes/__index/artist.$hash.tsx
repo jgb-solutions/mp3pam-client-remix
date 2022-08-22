@@ -146,15 +146,15 @@ export const meta: MetaFunction = ({ data }): HtmlMetaDescriptor => {
 export const loader = async ({ params }: LoaderArgs) => {
   const { hash } = params as { hash: string }
 
-  try {
-    const artist = await fetchArtistDetail(parseInt(hash))
+  const artist = await fetchArtistDetail(parseInt(hash))
 
-    return json({ artist })
-  } catch (error) {
+  if (!artist) {
     throw new Response('Artist Not Found', {
       status: 404,
     })
   }
+
+  return json({ artist })
 }
 
 export default function ArtistDetailPage() {

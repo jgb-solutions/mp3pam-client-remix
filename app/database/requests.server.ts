@@ -636,21 +636,28 @@ export async function fetchArtistDetail(hash: number) {
       albums,
       ...data
     } = artist
-    const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
 
-    const artistPosterUrl = getResourceUrl({
-      bucket: artistBucket,
-      resource: artistPoster,
-    })
+    let trackPosterUrl = TRACK_DEFAULT_POSTER
+    let artistPosterUrl = ARTIST_DEFAULT_POSTER
 
-    const trackPosterUrl = getResourceUrl({
-      bucket: trackBucket,
-      resource: trackPoster,
-    })
+    if (tracks.length) {
+      const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
+      trackPosterUrl = getResourceUrl({
+        bucket: trackBucket,
+        resource: trackPoster,
+      })
+    }
+
+    if (artistBucket && artistPoster) {
+      artistPosterUrl = getResourceUrl({
+        bucket: artistBucket,
+        resource: artistPoster,
+      })
+    }
 
     return {
       ...data,
-      posterUrl: !artistPoster ? trackPosterUrl : artistPosterUrl,
+      posterUrl: tracks.length ? trackPosterUrl : artistPosterUrl,
       tracks: tracks.map(({ imgBucket, poster, ...data }) => ({
         ...data,
         posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
@@ -811,11 +818,56 @@ export async function deleteAlbumTrack(albumTrackHash: number) {
 }
 
 export async function deleteArtist(hash: number) {
-  const artist = await db.artist.delete({
-    where: {
-      hash,
+  const artist = await db.artist.findUnique({
+    where: { hash },
+    select: {
+      id: true,
+      tracks: {
+        select: {
+          id: true,
+        },
+      },
+      albums: {
+        select: {
+          id: true,
+        },
+      },
     },
   })
+
+  if (artist) {
+    const trackIds = artist.tracks.map((t) => t.id)
+    const albumIds = artist.albums.map((a) => a.id)
+
+    await db.$transaction([
+      db.playlistTracks.deleteMany({
+        where: {
+          trackId: {
+            in: trackIds,
+          },
+        },
+      }),
+      db.track.deleteMany({
+        where: {
+          id: {
+            in: trackIds,
+          },
+        },
+      }),
+      db.album.deleteMany({
+        where: {
+          id: {
+            in: albumIds,
+          },
+        },
+      }),
+      db.artist.delete({
+        where: {
+          id: artist.id,
+        },
+      }),
+    ])
+  }
 
   return artist
 }
@@ -1201,11 +1253,25 @@ export async function fetchMyPlaylist({
   return playlist
 }
 
-export async function fetchMyArtists(variables: MyArtistDataQueryVariables) {
-  return client.request<MyArtistDataQuery, MyArtistDataQueryVariables>(
-    fetchMyArtistsDocument,
-    variables
-  )
+export async function fetchMyArtists(accountId: number) {
+  const artists = await db.artist.findMany({
+    where: {
+      accountId,
+    },
+    orderBy: [{ stageName: 'asc' }],
+    select: {
+      hash: true,
+      stageName: true,
+      account: {
+        select: {
+          id: true,
+        },
+      },
+      _count: true,
+    },
+  })
+
+  return artists
 }
 
 export async function fetchPlaylistDetail(hash: number) {
