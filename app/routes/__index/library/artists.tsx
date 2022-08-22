@@ -1,12 +1,13 @@
 import type {
   ActionArgs,
-  HtmlMetaDescriptor,
   LoaderArgs,
   MetaFunction,
+  HtmlMetaDescriptor,
 } from '@remix-run/node'
 import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import Table from '@mui/material/Table'
+import Button from '@mui/material/Button'
 import { useState, useEffect } from 'react'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
@@ -14,16 +15,15 @@ import TableHead from '@mui/material/TableHead'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogActions from '@mui/material/DialogActions'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 
+import AppRoutes from '~/app-routes'
+import colors from '~/utils/colors'
 import AlertDialog from '~/components/AlertDialog'
 import HeaderTitle from '~/components/HeaderTitle'
-import { StyledTableCell } from '~/components/AlbumTracksTable'
-import { Link, useFetcher, useLoaderData } from '@remix-run/react'
-import AppRoutes from '~/app-routes'
-import Button from '@mui/material/Button'
-import colors from '~/utils/colors'
-import type { BoxStyles, MyArtists } from '~/interfaces/types'
 import { withAccount } from '~/auth/sessions.server'
+import type { BoxStyles, MyArtists } from '~/interfaces/types'
+import { StyledTableCell } from '~/components/AlbumTracksTable'
 import { deleteArtist, fetchMyArtists } from '~/database/requests.server'
 
 const styles: BoxStyles = {
@@ -36,13 +36,9 @@ const styles: BoxStyles = {
     fontWeight: 'bold',
   },
   errorColor: { color: colors.error },
-  noBgButton: {
-    backgroundColor: colors.contentGrey,
-    border: `1px solid ${colors.primary}`,
-  },
 }
 
-enum TrackAction {
+enum ArtistAction {
   Delete = 'delete',
 }
 
@@ -67,7 +63,7 @@ export const action = (args: ActionArgs) =>
     const form = await request.formData()
     const { hash, action, accountId } = Object.fromEntries(form) as {
       hash: string
-      action: TrackAction
+      action: ArtistAction
       accountId: string
     }
 
@@ -76,14 +72,14 @@ export const action = (args: ActionArgs) =>
     }
 
     switch (action) {
-      case TrackAction.Delete:
+      case ArtistAction.Delete:
         if (accountId != sessionAccount.id?.toString()) {
-          throw new Error('You can only delete your own tracks.')
+          throw new Error('You can only delete your own artists.')
         }
 
-        const track = await deleteArtist(parseInt(hash))
+        const artist = await deleteArtist(parseInt(hash))
 
-        return json({ track })
+        return json({ artist })
       default:
         return json({})
     }
@@ -187,7 +183,7 @@ export default function ManageArtistsPage() {
 
           <fetcher.Form method="delete">
             <input type="hidden" name="hash" value={artistHashToDelete} />
-            <input type="hidden" name="action" value={TrackAction.Delete} />
+            <input type="hidden" name="action" value={ArtistAction.Delete} />
             <input
               type="hidden"
               name="accountId"

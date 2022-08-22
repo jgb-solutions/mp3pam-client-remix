@@ -115,7 +115,7 @@ model Album {
   createdAt   DateTime @default(now())
   uppdatedAt  DateTime @updatedAt
   tracks      Track[]
-  Account     Account  @relation(fields: [accountId], references: [id])
+  account     Account  @relation(fields: [accountId], references: [id])
 }
 
 model Playlist {

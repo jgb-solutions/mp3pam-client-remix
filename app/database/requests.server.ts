@@ -793,11 +793,41 @@ export async function createPlaylist(playlistTitle: string) {
 }
 
 export async function deleteAlbum(hash: number) {
-  const album = await db.album.delete({
+  const album = await db.album.findUnique({
     where: {
       hash,
     },
+    select: {
+      id: true,
+      tracks: {
+        select: {
+          id: true,
+        },
+      },
+    },
   })
+
+  if (album) {
+    const trackIds = album.tracks.map((t) => t.id)
+
+    await db.$transaction([
+      db.playlistTracks.deleteMany({
+        where: {
+          trackId: {
+            in: trackIds,
+          },
+        },
+      }),
+      db.track.deleteMany({
+        where: {
+          id: {
+            in: trackIds,
+          },
+        },
+      }),
+      db.album.delete({ where: { id: album.id } }),
+    ])
+  }
 
   return album
 }
@@ -1153,11 +1183,24 @@ export async function fetchManage(accountId: number) {
   }
 }
 
-export async function fetchMyAlbums(variables: MyAlbumsDataQueryVariables) {
-  return client.request<MyAlbumsDataQuery, MyAlbumsDataQueryVariables>(
-    fetchMyAlbumsDocument,
-    variables
-  )
+export async function fetchMyAlbums(accountId: number) {
+  const albums = await db.album.findMany({
+    where: {
+      accountId,
+    },
+    select: {
+      account: {
+        select: {
+          id: true,
+        },
+      },
+      title: true,
+      hash: true,
+      _count: true,
+    },
+  })
+
+  return albums
 }
 
 export async function fetchMyTracks(accountId: number) {

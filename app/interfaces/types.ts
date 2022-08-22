@@ -19,6 +19,7 @@ import type {
   fetchMyPlaylists,
   fetchMyPlaylist,
   fetchMyArtists,
+  fetchMyAlbums,
 } from '~/database/requests.server'
 
 export type BoxStyles = { [key: string]: Required<BoxProps['sx']> }
@@ -48,6 +49,7 @@ export type MyPlaylists = NonNullable<
   Awaited<ReturnType<typeof fetchMyPlaylists>>
 >
 export type MyArtists = NonNullable<Awaited<ReturnType<typeof fetchMyArtists>>>
+export type MyAlbums = NonNullable<Awaited<ReturnType<typeof fetchMyAlbums>>>
 export type MyPlaylist = NonNullable<
   Awaited<ReturnType<typeof fetchMyPlaylist>>
 >
