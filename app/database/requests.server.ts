@@ -373,6 +373,7 @@ export async function fetchAlbumDetail(hash: number) {
         imgBucket: true,
         detail: true,
         releaseYear: true,
+        accountId: true,
         tracks: {
           orderBy: [{ number: 'asc' }],
           select: {

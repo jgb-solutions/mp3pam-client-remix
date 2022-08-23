@@ -13,7 +13,7 @@ const AppRoutes = {
     show: `/album/:hash`,
     edit: `/library/album/:hash`,
     detailPage: (hash: number) => `/album/${hash}`,
-    editPage: (hash: number) => `/library/album/${hash}`,
+    editPage: (hash: number) => `/library/albums/${hash}/edit`,
   },
   artist: {
     show: `/artist/:hash`,

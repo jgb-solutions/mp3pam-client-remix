@@ -1,36 +1,35 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from '@remix-run/react'
-
-import FindReplaceIcon from '@mui/icons-material/FindReplace'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
-import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import { darken } from '@mui/material'
+import { json } from '@remix-run/node'
 import Table from '@mui/material/Table'
+import Avatar from '@mui/material/Avatar'
+import { useForm } from 'react-hook-form'
+import Button from '@mui/material/Button'
+import { useCallback, useEffect, useState } from 'react'
+import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import DialogActions from '@mui/material/DialogActions'
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
-import ErrorIcon from '@mui/icons-material/Error'
-import { useForm } from 'react-hook-form'
-
 import TextField from '@mui/material/TextField'
-import AppRoutes from '~/app-routes'
+import ErrorIcon from '@mui/icons-material/Error'
+import DialogActions from '@mui/material/DialogActions'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import type { LoaderArgs, ActionArgs } from '@remix-run/node'
+import FindReplaceIcon from '@mui/icons-material/FindReplace'
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
+import { Link, useNavigate, useLoaderData, useFetcher } from '@remix-run/react'
+
+import theme from '~/mui/theme'
 import colors from '~/utils/colors'
-import Button from '@mui/material/Button'
-import { AlbumTrackInterface } from '~/interfaces/AlbumInterface'
-import { SMALL_SCREEN_SIZE } from '~/utils/constants'
-import Spinner from '~/components/Spinner'
+import AppRoutes from '~/app-routes'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import AlertDialog from '~/components/AlertDialog'
-
-import type AlbumInterface from '~/interfaces/AlbumInterface'
+import { withAccount } from '~/auth/sessions.server'
+import { SMALL_SCREEN_SIZE } from '~/utils/constants'
 import { StyledTableCell } from '~/components/AlbumTracksTable'
-
-import Grid from '@mui/material/Grid'
-import type { BoxStyles } from '~/interfaces/types'
-import theme from '~/mui/theme'
-import { darken } from '@mui/material'
+import type { AlbumDetail, BoxStyles } from '~/interfaces/types'
+import { deleteTrack, fetchAlbumDetail } from '~/database/requests.server'
 
 const styles: BoxStyles = {
   row: {
@@ -45,12 +44,12 @@ const styles: BoxStyles = {
     textAlign: 'center',
   },
   image: {
-    width: 250,
+    width: '250px',
     height: 'auto',
     maxWidth: '100%',
   },
   listByAuthor: {
-    fontSize: 14,
+    fontSize: '14px',
     fontWeight: 'bold',
   },
   link: {
@@ -59,7 +58,7 @@ const styles: BoxStyles = {
   },
   listBy: {
     color: darken(colors.white, 0.5),
-    fontSize: 12,
+    fontSize: '12px',
   },
   listAuthor: {
     textDecoration: 'none',
@@ -80,7 +79,7 @@ const styles: BoxStyles = {
   listDetails: {
     [theme.breakpoints.up(SMALL_SCREEN_SIZE)]: {
       position: 'absolute',
-      bottom: 4,
+      bottom: '4px',
     },
     '& > *': {
       padding: 0,
@@ -91,19 +90,19 @@ const styles: BoxStyles = {
     },
   },
   listType: {
-    fontSize: 12,
+    fontSize: '12px',
     fontWeight: 400,
     textTransform: 'uppercase',
   },
   listName: {
-    fontSize: 36,
+    fontSize: '36px',
     fontWeight: 'bold',
     [theme.breakpoints.down('xs')]: {
-      fontSize: 32,
+      fontSize: '32px',
     },
   },
   ctaButtons: {
-    marginTop: 10,
+    marginTop: '10px',
   },
   errorColor: { color: colors.error },
   noBgButton: {
@@ -116,25 +115,25 @@ export const AskTrackNumberForm = ({
   onNumberChange,
   tracks,
 }: {
-  onNumberChange: (value: { track_number: number }) => void
-  tracks: AlbumTrackInterface[]
+  onNumberChange: (value: { trackNumber: number }) => void
+  tracks: AlbumDetail['tracks']
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ track_number: number }>({
+  } = useForm<{ trackNumber: number }>({
     mode: 'onBlur',
-    defaultValues: { track_number: tracks.length + 1 },
+    defaultValues: { trackNumber: tracks.length + 1 },
   })
 
   return (
     <>
-      <form onSubmit={handleSubmit(onNumberChange)} noValidate>
+      <Box component="form" onSubmit={handleSubmit(onNumberChange)} noValidate>
         <Grid container direction="row" spacing={2}>
           <Grid item xs={8}>
             <TextField
-              {...register('track_number', {
+              {...register('trackNumber', {
                 required: 'The track number is required.',
                 validate: {
                   positive_number: (value) =>
@@ -142,29 +141,27 @@ export const AskTrackNumberForm = ({
                   should_not_already_exists: (value) =>
                     !tracks
                       .map((track) => track.number)
-                      .find((number) => number === parseInt(value)) ||
+                      .find((number) => number === value) ||
                     `The track number already exists.`,
                 },
               })}
-              id="track_number"
+              id="trackNumber"
               type="number"
-              error={!!errors.track_number}
+              error={!!errors.trackNumber}
               helperText={
-                errors.track_number && (
-                  <Box sx={styles.errorColor}>
-                    {errors.track_number.message}
-                  </Box>
+                errors.trackNumber && (
+                  <Box sx={styles.errorColor}>{errors.trackNumber.message}</Box>
                 )
               }
             />
           </Grid>
           <Grid item xs={4}>
-            <Button size="small" type="submit">
+            <Button size="small" type="submit" variant="contained">
               Set
             </Button>
           </Grid>
         </Grid>
-      </form>
+      </Box>
     </>
   )
 }
@@ -198,20 +195,8 @@ const AddTrackToAlbum = ({
     addTrackToAlbum({
       album_id: album.id,
       track_hash: trackHash,
-      track_number: trackNumber,
+      trackNumber: trackNumber,
     })
-  }
-
-  if (loading) return <Spinner.Full />
-
-  if (addingTrackToAlbum) return <Spinner.Full />
-
-  if (error) {
-    return <h3>Error loading your tracks. Please reload page.</h3>
-  }
-
-  if (errorAddingTrackToAlbum) {
-    return <h3>Error adding the track to the album.</h3>
   }
 
   return (
@@ -223,8 +208,8 @@ const AddTrackToAlbum = ({
           <Table sx={styles.table} size="small">
             <TableHead>
               <TableRow>
-                {/* <StyledTableCell>Title</StyledTableCell>
-                <StyledTableCell>&nbsp;</StyledTableCell> */}
+                <StyledTableCell>Title</StyledTableCell>
+                <StyledTableCell>&nbsp;</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -238,19 +223,22 @@ const AddTrackToAlbum = ({
                           tracks.length - 1 === index ? '' : '1px solid white',
                       }}
                     >
-                      {/* <StyledTableCell style={{ width: '80%' }}>
-                      {track.title}
-                    </StyledTableCell>
-                    <StyledTableCell style={{ width: '10%' }}>
-                      <Box
-                        onClick={() => {
-                          if (addingTrackToAlbum) return
+                      <StyledTableCell style={{ width: '80%' }}>
+                        {track.title}
+                      </StyledTableCell>
+                      <StyledTableCell style={{ width: '10%' }}>
+                        <Box
+                          onClick={() => {
+                            if (addingTrackToAlbum) return
 
-                          handleAddTrackToAlbum(track.hash)
-                        }}
-                        sx={styles.link}
-                        style={{ cursor: 'pointer' }}>Add</Box>
-                    </StyledTableCell> */}
+                            handleAddTrackToAlbum(track.hash)
+                          }}
+                          sx={styles.link}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          Add
+                        </Box>
+                      </StyledTableCell>
                     </TableRow>
                   )
                 }
@@ -268,65 +256,98 @@ const AddTrackToAlbum = ({
   )
 }
 
+enum AlbumAction {
+  Delete = 'delete',
+}
+
+export const loader = (args: LoaderArgs) =>
+  withAccount(args, async ({ sessionAccount }, { params }) => {
+    const { hash } = params as { hash: string }
+
+    const album = await fetchAlbumDetail(parseInt(hash))
+
+    if (!album) {
+      throw new Response('Album not found', { status: 404 })
+    }
+
+    return json({ album })
+  })
+
+export const action = (args: ActionArgs) =>
+  withAccount(args, async ({ sessionAccount }, { request }) => {
+    const form = await request.formData()
+    const { trackHash, action, accountId } = Object.fromEntries(form) as {
+      trackHash: string
+      action: AlbumAction
+      accountId: string
+    }
+
+    if (!action || !trackHash || !accountId) {
+      throw new Error('Missing action or hash or accountId')
+    }
+
+    switch (action) {
+      case AlbumAction.Delete:
+        if (accountId != sessionAccount.id?.toString()) {
+          throw new Error('You can only delete your own album tracks.')
+        }
+
+        const track = await deleteTrack(parseInt(trackHash))
+
+        return json({ track })
+      default:
+        return json({})
+    }
+  })
+
 export default function AlbumEditPage() {
-  const params = useParams()
+  const fetcher = useFetcher()
   const navigate = useNavigate()
-  const hash = params?.hash
-  const [trackHashToDelete, setTrackHashToDelete] = useState('')
+  const [trackHashToDelete, setTrackHashToDelete] = useState<number>()
   const [openAskTrackNumberPopup, setOpenAskTrackNumberPopup] = useState(false)
   const [openChooseOptionsToAddPopup, setOpenChooseOptionsToAddPopup] =
     useState(false)
   const [openChooseExistingTracksPopup, setOpenChooseExistingTracksPopup] =
     useState(false)
   const [trackNumber, setTrackNumber] = useState(0)
-  const {
-    deleteAlbumTrack,
-    deleteAlbumTrackResponse,
-    deletingAlbumTrack,
-    errorDeletingAlbumTrack,
-  } = useDeleteAlbumTrack()
 
-  const { data, loading, error, refetch } = useAlbumDetail(hash)
-  const album = data?.album
+  const { album } = useLoaderData() as { album: AlbumDetail }
 
-  const confirmDelete = (hash: string) => {
+  const confirmDelete = useCallback(() => {
+    if (!trackHashToDelete) {
+      return
+    }
+
+    const form = new FormData()
+
+    form.append('trackHash', trackHashToDelete.toString())
+    form.append('action', AlbumAction.Delete)
+    form.append('accountId', album.accountId.toString())
+
+    fetcher.submit(form, {
+      method: 'post',
+    })
+
+    setTrackHashToDelete(undefined)
+  }, [album.accountId, fetcher, trackHashToDelete])
+
+  const handleDeleteAlbumTrack = (hash: number) => {
     setTrackHashToDelete(hash)
   }
 
-  const handleDeleteAlbum = (hash: string) => {
-    deleteAlbumTrack(hash)
-  }
-
-  const handleNumberChange = ({ track_number }: { track_number: number }) => {
-    setTrackNumber(track_number)
+  const handleNumberChange = ({ trackNumber }: { trackNumber: number }) => {
+    setTrackNumber(trackNumber)
 
     setOpenAskTrackNumberPopup(false)
     setOpenChooseOptionsToAddPopup(true)
   }
 
-  useEffect(() => {
-    if (deleteAlbumTrackResponse || errorDeletingAlbumTrack) {
-      setTrackHashToDelete('')
-
-      if (deleteAlbumTrackResponse) {
-        refetch()
-      }
-    }
-    // eslint-disable-next-line
-  }, [deleteAlbumTrackResponse, errorDeletingAlbumTrack])
-
   const addTrackToAlbum = () => {
     setOpenAskTrackNumberPopup(true)
   }
 
-  if (loading) return <Spinner.Full />
-
-  if (error) {
-    return <h1>Error loading album detail. Please reload page.</h1>
-  }
-
   return (
-    <Box sx="react-transition flip-in-x-reverse">
+    <Box>
       {/* <SEO title={`Edit Album`} /> */}
 
       {album ? (
@@ -337,7 +358,7 @@ export default function AlbumEditPage() {
               <Avatar
                 style={{ width: 75, height: 75 }}
                 alt={album.title}
-                src={album.cover_url}
+                src={album.coverUrl}
               />
             }
             textStyle={{ paddingLeft: 10 }}
@@ -345,15 +366,15 @@ export default function AlbumEditPage() {
           />
 
           <p>
-            <i>Artist</i>: <b>{album.artist.stage_name}</b>
+            <i>Artist</i>: <b>{album.artist.stageName}</b>
           </p>
 
           <p>
-            <i>Release Year</i>: <b>{album.release_year}</b>
+            <i>Release Year</i>: <b>{album.releaseYear}</b>
           </p>
 
           <p>
-            <Button size="large" onClick={addTrackToAlbum}>
+            <Button size="large" onClick={addTrackToAlbum} variant="contained">
               Add a New Track to This Album
             </Button>
           </p>
@@ -365,43 +386,51 @@ export default function AlbumEditPage() {
               <Table sx={styles.table} size="small">
                 <TableHead>
                   <TableRow>
-                    {/* <StyledTableCell>#</StyledTableCell>
-                    <StyledTableCell>Title</StyledTableCell> */}
+                    <StyledTableCell>#</StyledTableCell>
+                    <StyledTableCell>Title</StyledTableCell>
 
-                    {/* <StyledTableCell>&nbsp;</StyledTableCell> */}
+                    <StyledTableCell>&nbsp;</StyledTableCell>
 
-                    {/* <StyledTableCell>&nbsp;</StyledTableCell> */}
+                    <StyledTableCell>&nbsp;</StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {album.tracks.map(
-                    (track: AlbumTrackInterface, index: number) => {
-                      return (
-                        <TableRow
-                          key={index}
-                          style={{
-                            borderBottom:
-                              album.tracks.length - 1 === index
-                                ? ''
-                                : '1px solid white',
-                          }}
-                        >
-                          {/* <StyledTableCell style={{ width: '5%' }}>
+                  {album.tracks.map((track, index: number) => {
+                    return (
+                      <TableRow
+                        key={index}
+                        style={{
+                          borderBottom:
+                            album.tracks.length - 1 === index
+                              ? ''
+                              : '1px solid white',
+                        }}
+                      >
+                        <StyledTableCell style={{ width: '5%' }}>
                           {track.number}
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '80%' }}>
-                          <Link prefetch="intent" to={AppRoutes.track.detailPage(track.hash)} sx={styles.link}>{track.title}</Link>
+                          <Link
+                            prefetch="intent"
+                            to={AppRoutes.track.detailPage(track.hash)}
+                          >
+                            {track.title}
+                          </Link>
                         </StyledTableCell>
                         <StyledTableCell style={{ width: '10%' }}>
-                          <Box
-                            onClick={() => confirmDelete(track.hash)}
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => handleDeleteAlbumTrack(track.hash)}
                             sx={styles.link}
-                            style={{ cursor: 'pointer' }}>Delete</Box>
-                        </StyledTableCell> */}
-                        </TableRow>
-                      )
-                    }
-                  )}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            Delete
+                          </Button>
+                        </StyledTableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </>
@@ -446,7 +475,7 @@ export default function AlbumEditPage() {
       {/* Deletion confirmation */}
       <AlertDialog
         open={!!trackHashToDelete}
-        handleClose={() => setTrackHashToDelete('')}
+        handleClose={() => setTrackHashToDelete(undefined)}
       >
         <HeaderTitle
           textStyle={{ fontSize: 13 }}
@@ -454,14 +483,19 @@ export default function AlbumEditPage() {
           text={`Are you sure you want to delete this track?`}
         />
         <DialogActions>
-          <Button size="small" onClick={() => setTrackHashToDelete('')}>
+          <Button
+            size="small"
+            onClick={() => setTrackHashToDelete(undefined)}
+            variant="contained"
+          >
             Cancel
           </Button>
           <Button
+            variant="contained"
             size="small"
-            onClick={() => handleDeleteAlbum(trackHashToDelete)}
-            sx={styles.noBgButton}
-            disabled={deletingAlbumTrack}
+            color="error"
+            onClick={confirmDelete}
+            disabled={fetcher.state === 'submitting'}
           >
             Delete
           </Button>
@@ -479,20 +513,24 @@ export default function AlbumEditPage() {
           text={`Set the track number on the album`}
         />
 
-        <AskTrackNumberForm
-          onNumberChange={handleNumberChange}
-          tracks={album.tracks}
-        />
+        <Grid container>
+          <Grid item>
+            <AskTrackNumberForm
+              onNumberChange={handleNumberChange}
+              tracks={album.tracks}
+            />
+          </Grid>
 
-        <DialogActions>
-          <Button
-            size="small"
-            onClick={() => setOpenAskTrackNumberPopup(false)}
-            sx={styles.noBgButton}
-          >
-            Cancel
-          </Button>
-        </DialogActions>
+          <Grid item>
+            <Button
+              size="small"
+              onClick={() => setOpenAskTrackNumberPopup(false)}
+              variant="contained"
+            >
+              Cancel
+            </Button>
+          </Grid>
+        </Grid>
       </AlertDialog>
 
       {/* Choose from existing tracks or add a new one */}
@@ -520,7 +558,7 @@ export default function AlbumEditPage() {
           onClick={() =>
             navigate(AppAppRoutes.library.create.track, {
               album_id: album.id,
-              track_number: trackNumber,
+              trackNumber: trackNumber,
             })
           }
         >
