@@ -342,15 +342,34 @@ export async function addTrack(trackInput: TrackInput) {
   )
 }
 
-export async function addTrackToAlbum(
-  addTrackToAlbumInput: AddTrackToAlbumInput
-) {
-  return client.request<
-    AddTrackToAlbumMutation,
-    AddTrackToAlbumMutationVariables
-  >(AddTrackToAlbumDocument, {
-    input: addTrackToAlbumInput,
-  })
+export async function addTrackToAlbum({
+  trackNumber,
+  trackHash,
+  albumId,
+}: {
+  trackHash: number
+  albumId: number
+  trackNumber: number
+}) {
+  let success = false
+
+  try {
+    await db.track.update({
+      where: {
+        hash: trackHash,
+      },
+      data: {
+        albumId,
+        number: trackNumber,
+      },
+    })
+
+    success = true
+  } catch (e) {
+    console.log(e)
+  }
+
+  return success
 }
 
 export async function addTrackToPlaylist(
@@ -367,6 +386,7 @@ export async function fetchAlbumDetail(hash: number) {
     db.album.findUnique({
       where: { hash },
       select: {
+        id: true,
         hash: true,
         title: true,
         cover: true,
