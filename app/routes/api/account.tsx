@@ -48,6 +48,7 @@ export const loader = (context: LoaderArgs) =>
     const type = searchParams.get('type') as ResourceType
     const mimeType = searchParams.get('mimeType') as string
     const isPublic = shouldBePublic === 'true'
+
     if (!filename || !type || !mimeType) {
       throw new Error(routeError)
     }

@@ -19,9 +19,15 @@ import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import { Link, useNavigate, useLoaderData, useFetcher } from '@remix-run/react'
 
+import {
+  addTrackToAlbum,
+  deleteAlbumTrack,
+  fetchAlbumDetail,
+} from '~/database/requests.server'
 import theme from '~/mui/theme'
 import colors from '~/utils/colors'
 import AppRoutes from '~/app-routes'
+import { notEmpty } from '~/utils/helpers'
 import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import AlertDialog from '~/components/AlertDialog'
@@ -29,14 +35,6 @@ import { withAccount } from '~/auth/sessions.server'
 import { SMALL_SCREEN_SIZE } from '~/utils/constants'
 import { StyledTableCell } from '~/components/AlbumTracksTable'
 import type { AlbumDetail, BoxStyles, MyTracks } from '~/interfaces/types'
-import {
-  addTrack,
-  addTrackToAlbum,
-  deleteAlbumTrack,
-  deleteTrack,
-  fetchAlbumDetail,
-} from '~/database/requests.server'
-import { notEmpty } from '~/utils/helpers'
 
 const styles: BoxStyles = {
   row: {
@@ -600,7 +598,7 @@ export default function AlbumEditPage() {
         </Button>
         &nbsp;
         <Link
-          to={`${AppRoutes.library.create.track}?albumId=${album.id}&trackNumber=${trackNumber}&albumHash=${album.hash}`}
+          to={`${AppRoutes.library.create.track}?albumId=${album.id}&trackNumber=${trackNumber}&albumHash=${album.hash}&artistId=${album.artist.id}`}
           style={{ textDecoration: 'none' }}
         >
           <Button variant="contained" size="small">

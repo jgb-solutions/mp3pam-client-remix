@@ -313,8 +313,14 @@ export async function fetchTrackDetail(hash: number, accountId?: number) {
 
 export async function addArtist(
   artistInput: Pick<
-    Prisma.ArtistCreateInput,
-    'name' | 'stageName' | 'account' | 'hash' | 'imgBucket' | 'poster'
+    Prisma.ArtistUncheckedCreateInput,
+    | 'name'
+    | 'stageName'
+    | 'accountId'
+    | 'hash'
+    | 'imgBucket'
+    | 'poster'
+    | 'verified'
   >
 ) {
   return await db.artist.create({
@@ -337,13 +343,32 @@ export async function addGenre(name: string) {
   })
 }
 
-export async function addTrack(trackInput: TrackInput) {
-  return client.request<AddTrackMutation, AddTrackMutationVariables>(
-    AddTrackDocument,
-    {
-      input: trackInput,
-    }
-  )
+export async function addTrack(
+  trackInput: Pick<
+    Prisma.TrackUncheckedCreateInput,
+    | 'poster'
+    | 'audioName'
+    | 'audioFileSize'
+    | 'title'
+    | 'artistId'
+    | 'genreId'
+    | 'detail'
+    | 'lyrics'
+    | 'accountId'
+    | 'imgBucket'
+    | 'audioBucket'
+    | 'hash'
+    | 'number'
+    | 'albumId'
+  >
+) {
+  return await db.track.create({
+    data: trackInput,
+    select: {
+      id: true,
+      hash: true,
+    },
+  })
 }
 
 export async function addTrackToAlbum({
@@ -414,6 +439,7 @@ export async function fetchAlbumDetail(hash: number) {
         },
         artist: {
           select: {
+            id: true,
             stageName: true,
             hash: true,
           },
@@ -1240,14 +1266,14 @@ export async function fetchMyAlbums(accountId: number) {
       accountId,
     },
     select: {
+      title: true,
+      hash: true,
+      _count: true,
       account: {
         select: {
           id: true,
         },
       },
-      title: true,
-      hash: true,
-      _count: true,
     },
   })
 

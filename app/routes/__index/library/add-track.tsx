@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 import type { ActionArgs, LoaderArgs } from '@remix-run/node'
 import { json } from '@remix-run/node'
@@ -12,6 +13,7 @@ import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import type {
   AddArtist,
@@ -44,25 +46,11 @@ import ProgressBar from '~/components/ProgressBar'
 import UploadButton from '~/components/UploadButton'
 import { withAccount } from '~/auth/sessions.server'
 import { getSearchParams } from '~/utils/helpers.server'
-import type { ResourceType } from '~/services/s3.server'
+import { audioBucket, imageBucket, ResourceType } from '~/services/s3.server'
 
 export const styles: BoxStyles = {
   successColor: { color: colors.success },
   errorColor: { color: colors.error },
-}
-
-export interface TrackForm {
-  title: string
-  genreId: string
-  detail: string
-  lyrics: string
-  artistId: string
-}
-
-export interface TrackData extends TrackForm {
-  poster: string
-  audioName: string
-  audioFileSize: number
 }
 
 type AddArtistFormProps = {
@@ -83,6 +71,45 @@ enum TrackAction {
   AddGenre = 'addGenre',
 }
 
+export const trackSchema = z.object({
+  action: z.nativeEnum(TrackAction, {
+    required_error: 'The action of the track is required.',
+  }),
+
+  title: z.string().min(1, {
+    message: 'The title of the track is required.',
+  }),
+  genreId: z.string().min(1, {
+    message: 'You must choose a genre.',
+  }),
+  artistId: z.string().min(1, {
+    message: 'You must choose an artist.',
+  }),
+  albumId: z.string().optional(),
+  trackNumber: z.string().optional(),
+  poster: z.string().min(1, {
+    message: 'You must choose a poster.',
+  }),
+  audioName: z.string().min(1, {
+    message: 'You must choose a track.',
+  }),
+  audioFileSize: z.string().min(1, {
+    message: 'You must choose a track.',
+  }),
+  detail: z
+    .string()
+    // .min(MIN_TRACK_DETAIL_LENGTH, {
+    //   message: `The detail must be at least ${MIN_TRACK_DETAIL_LENGTH} characters.`,
+    // })
+    .optional(),
+  lyrics: z
+    .string()
+    // .min(MIN_TRACK_LYRICS_LENGTH, {
+    //   message: `The lyrics must be at least ${MIN_TRACK_LYRICS_LENGTH} characters.`,
+    // })
+    .optional(),
+})
+
 export function AddArtistForm({
   open,
   handleClose,
@@ -94,7 +121,7 @@ export function AddArtistForm({
     trigger,
     formState: { isSubmitting, errors, isValid },
   } = useForm<AddArtistFormData>({
-    mode: 'onBlur',
+    mode: 'onChange',
     defaultValues: {
       action: TrackAction.AddArtist,
     },
@@ -206,7 +233,7 @@ export function AddGenreForm({
     trigger,
     formState: { isSubmitting, errors, isValid },
   } = useForm<AddGenreFormData>({
-    mode: 'onBlur',
+    mode: 'onChange',
     defaultValues: {
       action: TrackAction.AddGenre,
     },
@@ -279,6 +306,9 @@ export const loader = (args: LoaderArgs) =>
     const searchParams = getSearchParams(request)
 
     const albumId = searchParams.get('albumId') as string | null
+    const trackNumber = searchParams.get('trackNumber') as string | null
+    const artistId = searchParams.get('artistId') as string | null
+    const albumHash = searchParams.get('albumHash') as string | null
 
     const [artists, genres] = await Promise.all([
       fetchMyArtists(account.id!),
@@ -288,105 +318,133 @@ export const loader = (args: LoaderArgs) =>
     let data = { artists, genres } as Record<string, any>
 
     if (albumId) {
-      data.albumId = parseInt(albumId)
+      data.albumId = albumId
+
+      if (albumHash) {
+        data.albumPath = AppRoutes.album.editPage(Number(albumHash))
+      }
+    }
+
+    if (trackNumber) {
+      data.trackNumber = trackNumber
+    }
+
+    if (artistId) {
+      data.artistId = parseInt(artistId)
     }
 
     return json(data)
   })
 
 export const action = (args: ActionArgs) =>
-  withAccount(
-    args,
-    async ({ sessionAccount: account }, { request, params }) => {
-      const searchParams = getSearchParams(request)
-      const albumId = searchParams.get('albumId') as string | null
-      const albumHash = searchParams.get('albumHash') as string | null
-      const trackNumber = searchParams.get('trackNumber') as string | null
+  withAccount(args, async ({ sessionAccount: account }, { request }) => {
+    const form = await request.formData()
+    const action = form.get('action') as TrackAction
 
-      const form = await request.formData()
-      const action = form.get('action') as TrackAction
-      const formData = Object.fromEntries(form)
-      console.log(formData)
+    if (!action) throw new Error('Missing action ')
 
-      if (!action) throw new Error('Missing action ')
+    switch (action) {
+      case TrackAction.AddArtist:
+        const { name: artistName, stageName } = Object.fromEntries(form) as {
+          name: string
+          stageName: string
+        }
 
-      switch (action) {
-        case TrackAction.AddArtist:
-          const { name: artistName, stageName } = Object.fromEntries(form) as {
-            name: string
-            stageName: string
-          }
+        if (!artistName || !stageName) {
+          throw new Error('Missing name or stage name')
+        }
 
-          if (!artistName || !stageName) {
-            throw new Error('Missing name or stage name')
-          }
+        const artist = await addArtist({
+          name: artistName,
+          stageName,
+          accountId: account.id!,
+          hash: getHash(),
+        })
 
-          const artist = await addArtist({
-            name: artistName,
-            stageName,
-            account: {
-              connect: { id: account.id! },
-            },
-            hash: getHash(),
-          })
+        return json(artist)
+      case TrackAction.AddGenre:
+        const { name: genreName } = Object.fromEntries(form) as {
+          name: string
+        }
 
-          return json(artist)
-        case TrackAction.AddGenre:
-          const { name: genreName } = Object.fromEntries(form) as {
-            name: string
-          }
+        if (!genreName) {
+          throw new Error('Missing genre name')
+        }
 
-          if (!genreName) {
-            throw new Error('Missing genre name')
-          }
+        const genre = await addGenre(genreName)
+        return json(genre)
+      case TrackAction.AddTrack:
+        const parsed = trackSchema.safeParse(Object.fromEntries(form))
 
-          const genre = await addGenre(genreName)
-          return json(genre)
-        case TrackAction.AddTrack:
-          // if (!trackHash || !albumId || !trackNumber) {
-          //   throw new Error(
-          //     'Missing action or track hash or album id or track number'
-          //   )
-          // }
+        if (!parsed.success) {
+          console.error(parsed.error)
+          throw new Error(JSON.stringify(parsed.error))
+        }
 
-          // await addTrack({
-          //   trackHash: parseInt(trackHash),
-          //   albumId: parseInt(albumId),
-          //   trackNumber: parseInt(trackNumber),
-          // })
+        const {
+          data: {
+            action,
+            audioFileSize,
+            artistId,
+            genreId,
+            albumId,
+            trackNumber,
+            ...trackDataInput
+          },
+        } = parsed
 
-          return json({})
+        const track = await addTrack({
+          ...trackDataInput,
+          audioFileSize: parseInt(audioFileSize),
+          artistId: parseInt(artistId),
+          genreId: parseInt(genreId),
+          accountId: account.id!,
+          imgBucket: imageBucket,
+          audioBucket,
+          hash: getHash(),
+          ...(albumId &&
+            trackNumber && {
+              albumId: parseInt(albumId),
+              number: parseInt(trackNumber),
+            }),
+        })
 
-        default:
-          return json({})
-      }
+        return json({ track })
+
+      default:
+        return json({})
     }
-  )
+  })
 
 export default function AddTrackPage() {
   const trackFether = useFetcher()
 
   const {
     register,
-    handleSubmit,
-    formState: { isSubmitted, errors },
+    formState: { errors, isValid },
     watch,
+    trigger,
     setError,
     clearErrors,
     setValue,
-  } = useForm<TrackForm>({ mode: 'onBlur' })
-  const { artists, genres, albumId } = useLoaderData() as {
-    artists: MyArtists
-    genres: AllGenres
-    albumId?: number
-  }
+  } = useForm({
+    mode: 'onChange',
+    resolver: zodResolver(trackSchema),
+  })
+  const { artists, genres, albumId, artistId, albumPath, trackNumber } =
+    useLoaderData() as {
+      artists: MyArtists
+      genres: AllGenres
+      albumId?: string
+      trackNumber?: string
+      albumPath?: string
+      artistId?: number
+    }
   const {
     upload: uploadImg,
     uploading: imgUploading,
     isUploaded: imgageUploaded,
     percentUploaded: imgPercentUploaded,
-    isValid: imgValid,
-    errorMessage: imgErrorMessage,
   } = useFileUpload({
     message: 'You must choose a poster.',
     headers: { public: true },
@@ -398,8 +456,6 @@ export default function AddTrackPage() {
     uploading: audioUploading,
     isUploaded: audioUploaded,
     percentUploaded: audioPercentUploaded,
-    isValid: audioValid,
-    errorMessage: audioErrorMessage,
   } = useFileUpload({
     message: 'You must choose a track.',
   })
@@ -407,9 +463,10 @@ export default function AddTrackPage() {
   const [openAddArtistDialog, setOpenAddArtistDialog] = useState(false)
   const [openAddGenreDialog, setOpenAddGenreDialog] = useState(false)
   const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
-  const [chosenArtistId, setChosenArtistId] = useState<number>()
+  const [chosenArtistId, setChosenArtistId] = useState<number | undefined>(
+    artistId
+  )
   const [chosenGenreId, setChosenGenreId] = useState<number>()
-  const [filePath, setFilePath] = useState<string>()
   const watchArtistValue = watch('artistId')
   const watchGenreValue = watch('genreId')
 
@@ -474,33 +531,14 @@ export default function AddTrackPage() {
     }
   }, [watchGenreValue])
 
-  // useEffect(() => {
-  //   if (image && filePath) {
-  //     const formData = new FormData()
-
-  //     formData.append('avatar', filePath!)
-
-  //     trackFether.submit(formData, {
-  //       method: 'post',
-  //       action: '/api/account?action=avatar',
-  //     })
-
-  //     setFilePath(undefined)
-  //   }
-  // }, [trackFetcher, filePath, imgageUploaded])
+  useEffect(() => {
+    if (audioSize) {
+      setValue('audioFileSize', audioSize.toString())
+      clearErrors('audioFileSize')
+    }
+  }, [audioSize, clearErrors, setValue])
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = getFile(event)
-
-    if (!file) {
-      alert('Please choose an MP3 file')
-      return
-    }
-
-    // uploadImg({ file })
-  }
-
-  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = getFile(event)
 
     if (!file) {
@@ -515,8 +553,30 @@ export default function AddTrackPage() {
     fetch(`/api/account?${query}`)
       .then((res) => res.json())
       .then(({ signedUrl, filePath }) => {
+        uploadImg({ file, signedUrl })
+        setValue('poster', filePath)
+        clearErrors('poster')
+      })
+  }
+
+  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = getFile(event)
+
+    if (!file) {
+      alert('Please choose an MP3 file')
+      return
+    }
+
+    const type: ResourceType = 'audio'
+
+    const query = `filename=${file.name}&type=${type}&mimeType=${file.type}`
+
+    fetch(`/api/account?${query}`)
+      .then((res) => res.json())
+      .then(({ signedUrl, filePath }) => {
         uploadAudio({ file, signedUrl })
-        setFilePath(filePath)
+        setValue('audioName', filePath)
+        clearErrors('audioName')
       })
   }
 
@@ -535,31 +595,16 @@ export default function AddTrackPage() {
 
   const handleInvalidImageSize = (filesize: number) => {
     setOpenInvalidFileSize(`
-  	The file size exceeds 1 MB. <br />
+  	The file size exceeds 10 MB. <br />
   	Choose another one or reduce the size to upload.
   `)
   }
 
-  const handleAddTrack = (values: TrackForm) => {
-    // if (!poster && !audioName) return
-    // const track = {
-    //   ...values,
-    //   poster: poster || '',
-    //   audioName: audioName || '',
-    //   audioFileSize: audioSize,
-    //   img_bucket: IMG_BUCKET,
-    //   audio_bucket: AUDIO_BUCKET,
-    //   album_id: album_id || null,
-    //   number: track_number || null,
-    // }
-    // addTrack(track)
-  }
-
-  // useEffect(() => {
-  //   if (uploadedTrack) {
-  //     setOpenTrackSuccessDialog(true)
-  //   }
-  // }, [uploadedTrack])
+  useEffect(() => {
+    if (trackFether.data) {
+      setOpenTrackSuccessDialog(true)
+    }
+  }, [trackFether])
 
   const styles: BoxStyles = {
     uploadButton: {
@@ -575,12 +620,23 @@ export default function AddTrackPage() {
       <HeaderTitle icon={<MusicNoteIcon />} text={`Add a new track`} />
       {/* <SEO title={`Add a new track`} /> */}
 
-      <Box component="form" onSubmit={handleSubmit(handleAddTrack)} noValidate>
+      <Box component={trackFether.Form} method="post">
+        <input
+          type="hidden"
+          {...register('action', { value: TrackAction.AddTrack })}
+        />
+        <input type="hidden" {...register('albumId', { value: albumId })} />
+        <input
+          type="hidden"
+          {...register('trackNumber', { value: trackNumber })}
+        />
+        <input type="hidden" {...register('poster')} />
+        <input type="hidden" {...register('audioName')} />
+        <input type="hidden" {...register('audioFileSize')} />
+
         <TextField
           fullWidth
-          {...register('title', {
-            required: 'The title of the track is required.',
-          })}
+          {...register('title')}
           id="title"
           label="Title *"
           type="text"
@@ -604,9 +660,7 @@ export default function AddTrackPage() {
               fullWidth
               id="artist"
               select
-              {...register('artistId', {
-                required: 'You must choose an artist.',
-              })}
+              {...register('artistId')}
               SelectProps={{ native: true }}
               error={!!errors.artistId}
               margin="normal"
@@ -642,9 +696,7 @@ export default function AddTrackPage() {
               fullWidth
               id="genre"
               select
-              {...register('genreId', {
-                required: 'You must choose a genre.',
-              })}
+              {...register('genreId')}
               SelectProps={{ native: true }}
               error={!!errors.genreId}
               margin="normal"
@@ -699,12 +751,12 @@ export default function AddTrackPage() {
                   disabled={audioUploaded}
                   fullWidth
                 />
-                {isSubmitted && !audioValid && (
+                {errors.audioName && (
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
                       <Box component="span" sx={styles.errorColor}>
-                        {audioErrorMessage}
+                        {errors.audioName.message}
                       </Box>
                     }
                   />
@@ -718,7 +770,7 @@ export default function AddTrackPage() {
             {audioUploading && (
               <ProgressBar
                 variant="determinate"
-                color="secondary"
+                color="primary"
                 value={audioPercentUploaded}
               />
             )}
@@ -733,7 +785,7 @@ export default function AddTrackPage() {
             >
               <Grid item xs={9}>
                 <UploadButton
-                  allowedFileSize={MAX_IMG_FILE_SIZE()}
+                  allowedFileSize={MAX_IMG_FILE_SIZE(10)}
                   onFileSizeInvalid={handleInvalidImageSize}
                   buttonSize="large"
                   accept="image/*"
@@ -742,12 +794,12 @@ export default function AddTrackPage() {
                   disabled={imgageUploaded}
                   fullWidth
                 />
-                {isSubmitted && !imgValid && (
+                {errors.poster && (
                   <TextIcon
                     icon={<ErrorIcon sx={styles.errorColor} />}
                     text={
                       <Box component="span" sx={styles.errorColor}>
-                        {imgErrorMessage}
+                        {errors.poster.message}
                       </Box>
                     }
                   />
@@ -770,54 +822,53 @@ export default function AddTrackPage() {
 
         <TextField
           fullWidth
-          {...register('detail', {
-            minLength: {
-              value: MIN_TRACK_DETAIL_LENGTH,
-              message: `The detail must be at least ${MIN_TRACK_DETAIL_LENGTH} characters.`,
-            },
-          })}
+          {...register('detail')}
           id="detail"
           label="Detail"
           multiline
           rows={4}
           margin="normal"
           error={!!errors.detail}
-          helperText={
-            errors.detail && (
-              <TextIcon
-                icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{errors.detail.message}</Box>}
-              />
-            )
-          }
         />
+        {errors.detail && (
+          <TextIcon
+            icon={<ErrorIcon sx={styles.errorColor} />}
+            text={
+              <Box component="span" sx={styles.errorColor}>
+                {errors.detail.message}
+              </Box>
+            }
+          />
+        )}
 
         <TextField
           fullWidth
-          {...register('lyrics', {
-            minLength: {
-              value: MIN_TRACK_LYRICS_LENGTH,
-              message: `The lyrics must be at least ${MIN_TRACK_LYRICS_LENGTH} characters.`,
-            },
-          })}
+          {...register('lyrics')}
           id="lyrics"
           label="Lyrics"
           multiline
-          rows={10}
+          rows={5}
           margin="normal"
           error={!!errors.lyrics}
-          helperText={
-            errors.lyrics && (
-              <TextIcon
-                icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{errors.lyrics.message}</Box>}
-              />
-            )
-          }
         />
+        {errors.lyrics && (
+          <TextIcon
+            icon={<ErrorIcon sx={styles.errorColor} />}
+            text={
+              <Box component="span" sx={styles.errorColor}>
+                {errors.lyrics.message}
+              </Box>
+            }
+          />
+        )}
 
         <Button
-          type="submit"
+          type={isValid ? 'submit' : 'button'}
+          onClick={() => {
+            if (!isValid) {
+              trigger()
+            }
+          }}
           size="large"
           sx={{ marginTop: '15px' }}
           variant="contained"
@@ -845,7 +896,7 @@ export default function AddTrackPage() {
           <br />
           <br />
           {albumId ? (
-            <Link to=".." style={{ textDecoration: 'none' }}>
+            <Link to={albumPath || '..'} style={{ textDecoration: 'none' }}>
               <Button size="small" variant="contained">
                 Go Back To Album
               </Button>
