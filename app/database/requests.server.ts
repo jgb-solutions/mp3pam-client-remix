@@ -32,9 +32,11 @@ import {
   RANDOM_PLAYLISTS_NUMBER,
   RANDOM_ARTISTS_NUMBER,
   RANDOM_ALBUMS_NUMBER,
+  APP_NAME,
 } from '~/utils/constants'
 import {
   ARTIST_DEFAULT_POSTER,
+  DOMAIN,
   TRACK_DEFAULT_POSTER,
 } from '~/utils/constants.server'
 import { db } from './db.server'
@@ -1057,7 +1059,7 @@ export async function getTrackDownload(hash: number) {
     const downloadUrl = getSignedDownloadUrl({
       bucket: audioBucket,
       resource: audioName,
-      trackTitle: title,
+      trackTitle: `${title} by ${artist.stageName} | Downloaded from ${APP_NAME} (${DOMAIN})`,
     })
 
     return {
