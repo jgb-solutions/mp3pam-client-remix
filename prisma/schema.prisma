@@ -53,15 +53,15 @@ model Artist {
   name       String
   stageName  String
   hash       Int      @unique
-  poster     String
-  imgBucket  String
+  poster     String?
+  imgBucket  String?
   accountId  Int
   bio        String?
   facebook   String?
   twitter    String?
   instagram  String?
   youtube    String?
-  verified   Boolean
+  verified   Boolean @default(false)
   createdAt  DateTime @default(now())
   uppdatedAt DateTime @updatedAt
   albums     Album[]

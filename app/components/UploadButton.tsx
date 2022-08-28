@@ -112,6 +112,7 @@ const UploadButton = ({
   return (
     <Box>
       <Button
+        variant="contained"
         onClick={triggerInput}
         size={buttonSize}
         disabled={disabled}

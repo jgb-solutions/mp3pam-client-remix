@@ -44,7 +44,8 @@ export const makeSoundFromTrack = ({
   type: 'track',
 })
 
-export const getHash = (size = 10) =>
-  parseInt(Date.now().toString().slice(-size).replace('0', '9'))
+export const getHash = (size = 10) => {
+  return parseInt(Date.now().toString().slice(-size).replace('0', '9'))
+}
 
 export const notEmpty = (array: any[]) => array.length > 0

@@ -43,9 +43,11 @@ export const loader = (context: LoaderArgs) =>
     const searchParams = getSearchParams(request)
 
     const filename = searchParams.get('filename') as string
+    const shouldBePublic = (searchParams.get('shouldBePublic') ||
+      'false') as string
     const type = searchParams.get('type') as ResourceType
     const mimeType = searchParams.get('mimeType') as string
-
+    const isPublic = shouldBePublic === 'true'
     if (!filename || !type || !mimeType) {
       throw new Error(routeError)
     }
@@ -58,7 +60,7 @@ export const loader = (context: LoaderArgs) =>
     const signedUrl = putSignedUrl({
       resource: filePath,
       type,
-      isPublic: true,
+      isPublic,
       mimeType,
     })
 

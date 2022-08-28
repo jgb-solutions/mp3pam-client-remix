@@ -45,15 +45,15 @@ CREATE TABLE "Artist" (
     "name" TEXT NOT NULL,
     "stageName" TEXT NOT NULL,
     "hash" INTEGER NOT NULL,
-    "poster" TEXT NOT NULL,
-    "imgBucket" TEXT NOT NULL,
+    "poster" TEXT,
+    "imgBucket" TEXT,
     "accountId" INTEGER NOT NULL,
     "bio" TEXT,
     "facebook" TEXT,
     "twitter" TEXT,
     "instagram" TEXT,
     "youtube" TEXT,
-    "verified" BOOLEAN NOT NULL,
+    "verified" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "uppdatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -126,6 +126,12 @@ CREATE TABLE "PlaylistTracks" (
     CONSTRAINT "PlaylistTracks_pkey" PRIMARY KEY ("trackId","playlistId")
 );
 
+-- CreateTable
+CREATE TABLE "_Favorites" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Artist_hash_key" ON "Artist"("hash");
 
@@ -137,6 +143,12 @@ CREATE UNIQUE INDEX "Album_hash_key" ON "Album"("hash");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Playlist_hash_key" ON "Playlist"("hash");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_Favorites_AB_unique" ON "_Favorites"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_Favorites_B_index" ON "_Favorites"("B");
 
 -- AddForeignKey
 ALTER TABLE "Artist" ADD CONSTRAINT "Artist_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -167,3 +179,9 @@ ALTER TABLE "PlaylistTracks" ADD CONSTRAINT "PlaylistTracks_trackId_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "PlaylistTracks" ADD CONSTRAINT "PlaylistTracks_playlistId_fkey" FOREIGN KEY ("playlistId") REFERENCES "Playlist"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Favorites" ADD CONSTRAINT "_Favorites_A_fkey" FOREIGN KEY ("A") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Favorites" ADD CONSTRAINT "_Favorites_B_fkey" FOREIGN KEY ("B") REFERENCES "Track"("id") ON DELETE CASCADE ON UPDATE CASCADE;

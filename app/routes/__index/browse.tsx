@@ -6,7 +6,7 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
 import HeaderTitle from '~/components/HeaderTitle'
 import GenreThumbnail from '~/components/GenreThumbnail'
-import { fetchGenres } from '~/database/requests.server'
+import { fetchGenresWithTracks } from '~/database/requests.server'
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
   const title = 'Browse All The Genres'
@@ -22,7 +22,7 @@ export const meta: MetaFunction = (): HtmlMetaDescriptor => {
 }
 
 export const loader = async () => {
-  const genres = await fetchGenres()
+  const genres = await fetchGenresWithTracks()
 
   return json({ genres })
 }

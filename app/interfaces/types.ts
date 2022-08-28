@@ -2,7 +2,7 @@ import type { BoxProps, GridProps } from '@mui/material'
 import type {
   fetchTracks,
   fetchAlbums,
-  fetchGenres,
+  fetchAllGenres,
   fetchArtists,
   fetchHomepage,
   fetchTrackDetail,
@@ -20,6 +20,9 @@ import type {
   fetchMyPlaylist,
   fetchMyArtists,
   fetchMyAlbums,
+  fetchGenresWithTracks,
+  addArtist,
+  addGenre,
 } from '~/database/requests.server'
 
 export type BoxStyles = { [key: string]: Required<BoxProps['sx']> }
@@ -36,7 +39,10 @@ export type ArtistDetail = NonNullable<
 export type AlbumDetail = NonNullable<
   Awaited<ReturnType<typeof fetchAlbumDetail>>
 >
-export type AllGenres = NonNullable<Awaited<ReturnType<typeof fetchGenres>>>
+export type AllGenres = NonNullable<Awaited<ReturnType<typeof fetchAllGenres>>>
+export type GenresWithTracks = NonNullable<
+  Awaited<ReturnType<typeof fetchGenresWithTracks>>
+>
 export type AllAlbums = NonNullable<Awaited<ReturnType<typeof fetchAlbums>>>
 export type ThumbnailGenre = AllGenres[0]
 export type AlbumThumbnailData = HomePage['albums'][0]
@@ -73,3 +79,5 @@ export type Credentials = {
 
 export type SessionAccount = ReturnType<typeof getSessionDataFromAccount>
 export type SearchResults = Awaited<ReturnType<typeof doSearch>>
+export type AddArtist = Awaited<ReturnType<typeof addArtist>>
+export type AddGenre = Awaited<ReturnType<typeof addGenre>>

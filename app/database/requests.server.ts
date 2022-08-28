@@ -1,41 +1,22 @@
+import slugify from 'slugify'
 import bcrypt from 'bcrypt'
 import type { Account } from '@prisma/client'
-
-import {
-  fetchMyAlbumsDocument,
-  fetchMyPlaylistsDocument,
-  fetchMyArtistsDocument,
-} from '~/graphql/queries'
 
 import type {
   AlbumInput,
   TrackInput,
-  ArtistInput,
   AddTrackMutation,
-  AddArtistMutation,
-  AddTrackToAlbumMutation,
-  AddTrackToAlbumInput,
   AddTrackToPlaylistMutation,
   CreateAlbumMutation,
   CreateAlbumMutationVariables,
   CreatePlaylistMutation,
-  AddArtistMutationVariables,
   AddTrackMutationVariables,
   CreatePlaylistMutationVariables,
-  AddTrackToAlbumMutationVariables,
   AddTrackToPlaylistMutationVariables,
-  MyAlbumsDataQuery,
-  MyAlbumsDataQueryVariables,
-  MyPlaylistsDataQueryVariables,
-  MyPlaylistsDataQuery,
-  MyArtistDataQuery,
-  MyArtistDataQueryVariables,
 } from '~/graphql/generated-types'
 
 import {
-  AddArtistDocument,
   AddTrackDocument,
-  AddTrackToAlbumDocument,
   AddTrackToPlaylistDocument,
   CreateAlbumDocument,
   CreatePlaylistDocument,
@@ -52,15 +33,16 @@ import {
   RANDOM_ARTISTS_NUMBER,
   RANDOM_ALBUMS_NUMBER,
 } from '~/utils/constants'
-import { db } from './db.server'
-import type { Credentials } from '~/interfaces/types'
-import { PhotonImage } from '~/components/PhotonImage'
-import { graphQLClient as client } from '~/graphql/client.server'
-import { getSignedDownloadUrl, getSignedUrl } from '~/services/s3.server'
 import {
   ARTIST_DEFAULT_POSTER,
   TRACK_DEFAULT_POSTER,
 } from '~/utils/constants.server'
+import { db } from './db.server'
+import type { Prisma } from './db.server'
+import type { Credentials } from '~/interfaces/types'
+import { PhotonImage } from '~/components/PhotonImage'
+import { graphQLClient as client } from '~/graphql/client.server'
+import { getSignedDownloadUrl, getSignedUrl } from '~/services/s3.server'
 
 export async function fetchHomepage() {
   const [tracks, artists, albums, playlists] = await db.$transaction([
@@ -164,10 +146,13 @@ export async function fetchHomepage() {
         resource: trackPoster,
       })
 
-      const artistPosterUrl = getResourceUrl({
-        bucket: imgBucket,
-        resource: poster,
-      })
+      const artistPosterUrl =
+        imgBucket && poster
+          ? getResourceUrl({
+              bucket: imgBucket,
+              resource: poster,
+            })
+          : ARTIST_DEFAULT_POSTER
 
       return {
         ...artist,
@@ -326,11 +311,30 @@ export async function fetchTrackDetail(hash: number, accountId?: number) {
   return track
 }
 
-export async function addArtist(artistInput: ArtistInput) {
-  return client.request<AddArtistMutation, AddArtistMutationVariables>(
-    AddArtistDocument,
-    { input: artistInput }
-  )
+export async function addArtist(
+  artistInput: Pick<
+    Prisma.ArtistCreateInput,
+    'name' | 'stageName' | 'account' | 'hash' | 'imgBucket' | 'poster'
+  >
+) {
+  return await db.artist.create({
+    data: artistInput,
+    select: {
+      id: true,
+    },
+  })
+}
+
+export async function addGenre(name: string) {
+  return await db.genre.create({
+    data: {
+      name,
+      slug: slugify(name),
+    },
+    select: {
+      id: true,
+    },
+  })
 }
 
 export async function addTrack(trackInput: TrackInput) {
@@ -712,10 +716,13 @@ export async function fetchArtistDetail(hash: number) {
         }) => {
           const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
 
-          const artistPosterUrl = getResourceUrl({
-            bucket: artistBucket,
-            resource: artistPoster,
-          })
+          const artistPosterUrl =
+            artistBucket && artistPoster
+              ? getResourceUrl({
+                  bucket: artistBucket,
+                  resource: artistPoster,
+                })
+              : ARTIST_DEFAULT_POSTER
 
           const trackPosterUrl = getResourceUrl({
             bucket: trackBucket,
@@ -776,7 +783,11 @@ export async function fetchArtists({
     data: artists.map(({ imgBucket, poster, tracks, ...artist }) => {
       const { poster: trackPoster, imgBucket: trackImgBucket } = tracks[0]
 
-      const posterUrl = getResourceUrl({ bucket: imgBucket, resource: poster })
+      const artistPosterUrl =
+        imgBucket && poster
+          ? getResourceUrl({ bucket: imgBucket, resource: poster })
+          : ARTIST_DEFAULT_POSTER
+
       const trackPosterUrl = getResourceUrl({
         bucket: trackImgBucket,
         resource: trackPoster,
@@ -784,7 +795,7 @@ export async function fetchArtists({
 
       return {
         ...artist,
-        posterUrl: !poster ? trackPosterUrl : posterUrl,
+        posterUrl: !poster ? trackPosterUrl : artistPosterUrl,
       }
     }),
     paginatorInfo: {
@@ -1035,7 +1046,7 @@ export async function getTrackDownload(hash: number) {
   return null
 }
 
-export async function fetchGenres() {
+export async function fetchGenresWithTracks() {
   return db.genre.findMany({
     select: {
       name: true,
@@ -1052,6 +1063,22 @@ export async function fetchGenres() {
         some: {},
       },
     },
+  })
+}
+
+export async function fetchAllGenres() {
+  return db.genre.findMany({
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      _count: true,
+    },
+    orderBy: [
+      {
+        name: 'asc',
+      },
+    ],
   })
 }
 
@@ -1177,10 +1204,13 @@ export async function fetchManage(accountId: number) {
       posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
     })),
     artists: artists.map(({ imgBucket, poster, ...artist }) => {
-      const artistPosterUrl = getResourceUrl({
-        bucket: imgBucket,
-        resource: poster,
-      })
+      const artistPosterUrl =
+        imgBucket && poster
+          ? getResourceUrl({
+              bucket: imgBucket,
+              resource: poster,
+            })
+          : ARTIST_DEFAULT_POSTER
 
       return {
         ...artist,
@@ -1324,6 +1354,7 @@ export async function fetchMyArtists(accountId: number) {
     },
     orderBy: [{ stageName: 'asc' }],
     select: {
+      id: true,
       hash: true,
       stageName: true,
       account: {
@@ -1592,10 +1623,13 @@ export async function doSearch(searchTerm: string) {
       posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
     })),
     artists: artists.map(({ imgBucket, poster, ...artist }) => {
-      const artistPosterUrl = getResourceUrl({
-        bucket: imgBucket,
-        resource: poster,
-      })
+      const artistPosterUrl =
+        imgBucket && poster
+          ? getResourceUrl({
+              bucket: imgBucket,
+              resource: poster,
+            })
+          : ARTIST_DEFAULT_POSTER
 
       return {
         ...artist,

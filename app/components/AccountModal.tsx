@@ -27,6 +27,7 @@ import { useApp } from '~/hooks/useApp'
 import TextIcon from '~/components/TextIcon'
 import useFileUpload from '~/hooks/useFileUpload'
 import HeaderTitle from '~/components/HeaderTitle'
+import type { ResourceType } from '~/services/s3.server'
 import type { BoxStyles, SessionAccount } from '~/interfaces/types'
 
 export type AccountAction = 'avatar' | 'profile' | 'password'
@@ -424,7 +425,9 @@ export default function AccountModal() {
 
       if (!file) return
 
-      const query = `filename=${file.name}&type=image&mimeType=${file.type}`
+      const type: ResourceType = 'image'
+
+      const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
 
       fetch(`/api/account?${query}`)
         .then((res) => res.json())

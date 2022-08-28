@@ -1,3 +1,6 @@
+import { Link, useFetcher, useLoaderData } from '@remix-run/react'
+import type { ActionArgs, LoaderArgs } from '@remix-run/node'
+import { json } from '@remix-run/node'
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
@@ -5,73 +8,79 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
-import { Grid, FormControlLabel, Checkbox, Box, Button } from '@mui/material'
+import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 
-import ProgressBar from '~/components/ProgressBar'
-import UploadButton from '~/components/UploadButton'
-import HeaderTitle from '~/components/HeaderTitle'
-import useFileUpload from '~/hooks/useFileUpload'
-import TextIcon from '~/components/TextIcon'
-import AppRoutes from '~/app-routes'
-import AlertDialog from '~/components/AlertDialog'
-import { ADD_GENRE_MUTATION } from '~/graphql/mutations'
+import type {
+  AddArtist,
+  AddGenre,
+  AllGenres,
+  BoxStyles,
+  MyArtists,
+} from '~/interfaces/types'
 import {
-  MAX_AUDIO_FILE_SIZE,
+  addArtist,
+  addGenre,
+  addTrack,
+  fetchAllGenres,
+  fetchMyArtists,
+} from '~/database/requests.server'
+import {
   MAX_IMG_FILE_SIZE,
+  MAX_AUDIO_FILE_SIZE,
   MIN_TRACK_LYRICS_LENGTH,
   MIN_TRACK_DETAIL_LENGTH,
 } from '~/utils/constants'
-import { getFile } from '~/utils/helpers'
-import type { BoxStyles } from '~/interfaces/types'
+import AppRoutes from '~/app-routes'
 import colors from '~/utils/colors'
+import TextIcon from '~/components/TextIcon'
+import { getFile, getHash } from '~/utils/helpers'
+import useFileUpload from '~/hooks/useFileUpload'
+import HeaderTitle from '~/components/HeaderTitle'
+import AlertDialog from '~/components/AlertDialog'
+import ProgressBar from '~/components/ProgressBar'
+import UploadButton from '~/components/UploadButton'
+import { withAccount } from '~/auth/sessions.server'
+import { getSearchParams } from '~/utils/helpers.server'
+import type { ResourceType } from '~/services/s3.server'
 
-export const addTrackPageStyles: BoxStyles = {
-  uploadButton: {
-    marginTop: 10,
-    marginBottom: 5,
-  },
+export const styles: BoxStyles = {
   successColor: { color: colors.success },
   errorColor: { color: colors.error },
 }
 
-export interface FormData {
+export interface TrackForm {
   title: string
   genreId: string
   detail: string
   lyrics: string
   artistId: string
-  allowDownload: boolean
 }
 
-export interface ArtistData {
-  id: string
-  stage_name: string
-}
-
-export interface GenreData {
-  id: string
-  name: string
-}
-
-export interface TrackData extends FormData {
+export interface TrackData extends TrackForm {
   poster: string
   audioName: string
   audioFileSize: number
-  img_bucket: string
-  audio_bucket: string
 }
 
 type AddArtistFormProps = {
   open: boolean
   handleClose: () => void
-  onArtistCreated: (values: ArtistData) => void
+  onArtistCreated: (artist: AddArtist) => void
 }
 
 type AddArtistFormData = {
   name: string
-  stage_name: string
-  img_bucket: string
+  stageName: string
+  action: string
+}
+
+enum TrackAction {
+  AddTrack = 'addTrack',
+  AddArtist = 'addArtist',
+  AddGenre = 'addGenre',
 }
 
 export function AddArtistForm({
@@ -79,21 +88,24 @@ export function AddArtistForm({
   handleClose,
   onArtistCreated,
 }: AddArtistFormProps) {
-  const { register, handleSubmit, errors, formState } =
-    useForm<AddArtistFormData>({ mode: 'onBlur' })
-  // const { addArtist, data: artistData } = useAddArtist()
-
-  const handleAddArtist = (artist: AddArtistFormData) => {
-    addArtist({ ...artist, img_bucket: IMG_BUCKET })
-  }
+  const artistFetcher = useFetcher<AddArtist>()
+  const {
+    register,
+    trigger,
+    formState: { isSubmitting, errors, isValid },
+  } = useForm<AddArtistFormData>({
+    mode: 'onBlur',
+    defaultValues: {
+      action: TrackAction.AddArtist,
+    },
+  })
 
   useEffect(() => {
-    if (artistData) {
+    if (artistFetcher.data) {
       handleClose()
-      onArtistCreated(artistData.addArtist)
+      onArtistCreated(artistFetcher.data)
     }
-    // eslint-disable-next-line
-  }, [artistData])
+  }, [artistFetcher, handleClose, onArtistCreated])
 
   return (
     <AlertDialog open={open} handleClose={handleClose} maxWidth="xs">
@@ -104,58 +116,73 @@ export function AddArtistForm({
         text={`Add a New Artist`}
       />
 
-      <form onSubmit={handleSubmit(handleAddArtist)} noValidate>
-        <TextField
-          style={{ marginTop: 0 }}
-          {...register('name', {
-            required: 'The name is required.',
-          })}
-          autoFocus
-          id="name"
-          label="Name *"
-          type="text"
-          margin="normal"
-          error={!!errors.name}
-          helperText={
-            errors.name && (
-              <TextIcon
-                icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{errors.name.message}</Box>}
-              />
-            )
-          }
-        />
-
-        <TextField
-          {...register('stage_name', {
-            required: 'The stage name is required.',
-          })}
-          id="stage_name"
-          label="Stage Name *"
-          type="text"
-          margin="normal"
-          error={!!errors.stage_name}
-          helperText={
-            errors.stage_name && (
+      <Box component={artistFetcher.Form} method="post" noValidate>
+        <input type="hidden" {...register('action', {})} />
+        <Grid container spacing={2}>
+          <Grid item sm xs={12}>
+            <TextField
+              fullWidth
+              {...register('name', {
+                required: 'The name is required.',
+              })}
+              autoFocus
+              id="name"
+              label="Name *"
+              type="text"
+              margin="normal"
+              error={!!errors.name}
+            />
+            {errors.name && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
                 text={
-                  <Box sx={styles.errorColor}>{errors.stage_name.message}</Box>
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.name.message}
+                  </Box>
                 }
               />
-            )
-          }
-        />
+            )}
+          </Grid>
+          <Grid item sm xs={12}>
+            <TextField
+              fullWidth
+              {...register('stageName', {
+                required: 'The stage name is required.',
+              })}
+              id="stageName"
+              label="Stage Name *"
+              type="text"
+              margin="normal"
+              error={!!errors.stageName}
+            />
+            {errors.stageName && (
+              <TextIcon
+                icon={<ErrorIcon sx={styles.errorColor} />}
+                text={
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.stageName.message}
+                  </Box>
+                }
+              />
+            )}
+          </Grid>
+        </Grid>
 
         <Button
-          type="submit"
+          type={isValid ? 'submit' : 'button'}
+          onClick={() => {
+            if (!isValid) {
+              trigger()
+            }
+          }}
           size="large"
-          style={{ marginTop: 15, marginBottom: 15 }}
-          disabled={formState.isSubmitting}
+          variant="contained"
+          sx={{ mt: '15px', mb: '15px' }}
+          disabled={isSubmitting}
         >
           Add Artist
         </Button>
-      </form>
+      </Box>
     </AlertDialog>
   )
 }
@@ -163,31 +190,34 @@ export function AddArtistForm({
 type AddGenreFormProps = {
   open: boolean
   handleClose: () => void
-  onGenreCreated: (values: GenreData) => void
+  onGenreCreated: (genre: AddGenre) => void
 }
-type AddGenreFormData = { name: string }
+
+type AddGenreFormData = { name: string; action: TrackAction }
+
 export function AddGenreForm({
   open,
   handleClose,
   onGenreCreated,
 }: AddGenreFormProps) {
-  const { register, handleSubmit, errors, formState } =
-    useForm<AddGenreFormData>({ mode: 'onBlur' })
-  const [addGenreMutation, { data: genreData }] =
-    useMutation(ADD_GENRE_MUTATION)
-  const styles: BoxStyles = addTrackPageStyles()
-
-  const handleAddGenre = (genre: AddGenreFormData) => {
-    addGenreMutation({ variables: { input: genre } })
-  }
+  const genreFetcher = useFetcher()
+  const {
+    register,
+    trigger,
+    formState: { isSubmitting, errors, isValid },
+  } = useForm<AddGenreFormData>({
+    mode: 'onBlur',
+    defaultValues: {
+      action: TrackAction.AddGenre,
+    },
+  })
 
   useEffect(() => {
-    if (genreData) {
+    if (genreFetcher.data) {
       handleClose()
-      onGenreCreated(genreData.addGenre)
+      onGenreCreated(genreFetcher.data)
     }
-    // eslint-disable-next-line
-  }, [genreData])
+  }, [genreFetcher, handleClose, onGenreCreated])
 
   return (
     <AlertDialog open={open} handleClose={handleClose} maxWidth="xs">
@@ -198,73 +228,166 @@ export function AddGenreForm({
         text={`Add a New Genre`}
       />
 
-      <form onSubmit={handleSubmit(handleAddGenre)} noValidate>
-        <TextField
-          style={{ marginTop: 0 }}
-          {...register('name', {
-            required: 'The name is required.',
-          })}
-          autoFocus
-          id="name"
-          label="Name *"
-          type="text"
-          margin="normal"
-          error={!!errors.name}
-          helperText={
-            errors.name && (
-              <TextIcon
-                icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{errors.name.message}</Box>}
-              />
-            )
-          }
-        />
+      <Box component={genreFetcher.Form} method="post">
+        <input type="hidden" {...register('action', {})} />
+        <Box>
+          <TextField
+            fullWidth
+            {...register('name', {
+              required: 'The name is required.',
+            })}
+            autoFocus
+            id="name"
+            label="Name *"
+            type="text"
+            margin="normal"
+            error={!!errors.name}
+          />
+          {errors.name && (
+            <TextIcon
+              icon={<ErrorIcon sx={styles.errorColor} />}
+              text={
+                <Box component="span" sx={styles.errorColor}>
+                  {errors.name.message}
+                </Box>
+              }
+            />
+          )}
+        </Box>
 
         <Button
-          type="submit"
+          type={isValid ? 'submit' : 'button'}
+          onClick={() => {
+            if (!isValid) {
+              trigger()
+            }
+          }}
           size="large"
-          style={{ marginTop: 15, marginBottom: 15 }}
-          disabled={formState.isSubmitting}
+          sx={{ mt: '15px', mb: '15px' }}
+          disabled={isSubmitting}
+          variant="contained"
         >
           Add Genre
         </Button>
-      </form>
+      </Box>
     </AlertDialog>
   )
 }
 
-export default function AddTrackPage() {
-  const history = useHistory()
-  const location = useLocation()
+export const loader = (args: LoaderArgs) =>
+  withAccount(args, async ({ sessionAccount: account }, { request }) => {
+    const searchParams = getSearchParams(request)
 
-  const album_id = location.state.album_id
-  const track_number = location.state.track_number
+    const albumId = searchParams.get('albumId') as string | null
+
+    const [artists, genres] = await Promise.all([
+      fetchMyArtists(account.id!),
+      fetchAllGenres(),
+    ])
+
+    let data = { artists, genres } as Record<string, any>
+
+    if (albumId) {
+      data.albumId = parseInt(albumId)
+    }
+
+    return json(data)
+  })
+
+export const action = (args: ActionArgs) =>
+  withAccount(
+    args,
+    async ({ sessionAccount: account }, { request, params }) => {
+      const searchParams = getSearchParams(request)
+      const albumId = searchParams.get('albumId') as string | null
+      const albumHash = searchParams.get('albumHash') as string | null
+      const trackNumber = searchParams.get('trackNumber') as string | null
+
+      const form = await request.formData()
+      const action = form.get('action') as TrackAction
+      const formData = Object.fromEntries(form)
+      console.log(formData)
+
+      if (!action) throw new Error('Missing action ')
+
+      switch (action) {
+        case TrackAction.AddArtist:
+          const { name: artistName, stageName } = Object.fromEntries(form) as {
+            name: string
+            stageName: string
+          }
+
+          if (!artistName || !stageName) {
+            throw new Error('Missing name or stage name')
+          }
+
+          const artist = await addArtist({
+            name: artistName,
+            stageName,
+            account: {
+              connect: { id: account.id! },
+            },
+            hash: getHash(),
+          })
+
+          return json(artist)
+        case TrackAction.AddGenre:
+          const { name: genreName } = Object.fromEntries(form) as {
+            name: string
+          }
+
+          if (!genreName) {
+            throw new Error('Missing genre name')
+          }
+
+          const genre = await addGenre(genreName)
+          return json(genre)
+        case TrackAction.AddTrack:
+          // if (!trackHash || !albumId || !trackNumber) {
+          //   throw new Error(
+          //     'Missing action or track hash or album id or track number'
+          //   )
+          // }
+
+          // await addTrack({
+          //   trackHash: parseInt(trackHash),
+          //   albumId: parseInt(albumId),
+          //   trackNumber: parseInt(trackNumber),
+          // })
+
+          return json({})
+
+        default:
+          return json({})
+      }
+    }
+  )
+
+export default function AddTrackPage() {
+  const trackFether = useFetcher()
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    formState,
+    formState: { isSubmitted, errors },
     watch,
     setError,
     clearErrors,
     setValue,
-  } = useForm<FormData>({ mode: 'onBlur' })
-  register({ name: 'allowDownload' })
-  const { data: trackUploadInfo } = useQuery(TRACK_UPLOAD_DATA_QUERY, {
-    fetchPolicy: 'network-only',
-  })
-  const { addTrack, loading: formWorking, data: uploadedTrack } = useAddTrack()
+  } = useForm<TrackForm>({ mode: 'onBlur' })
+  const { artists, genres, albumId } = useLoaderData() as {
+    artists: MyArtists
+    genres: AllGenres
+    albumId?: number
+  }
   const {
     upload: uploadImg,
     uploading: imgUploading,
-    isUploaded: imgUploaded,
+    isUploaded: imgageUploaded,
     percentUploaded: imgPercentUploaded,
     isValid: imgValid,
     errorMessage: imgErrorMessage,
-    filename: poster,
   } = useFileUpload({
-    bucket: IMG_BUCKET,
     message: 'You must choose a poster.',
     headers: { public: true },
   })
@@ -277,32 +400,27 @@ export default function AddTrackPage() {
     percentUploaded: audioPercentUploaded,
     isValid: audioValid,
     errorMessage: audioErrorMessage,
-    filename: audioName,
   } = useFileUpload({
-    bucket: AUDIO_BUCKET,
     message: 'You must choose a track.',
   })
   const [openTrackSuccessDialog, setOpenTrackSuccessDialog] = useState(false)
   const [openAddArtistDialog, setOpenAddArtistDialog] = useState(false)
   const [openAddGenreDialog, setOpenAddGenreDialog] = useState(false)
   const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
-  const [artistList, setArtistList] = useState<ArtistData[]>([])
-  const [genreList, setGenreList] = useState<GenreData[]>([])
-  const [chosenArtistId, setChosenArtistId] = useState('')
-  const [chosenGenreId, setChosenGenreId] = useState('')
+  const [chosenArtistId, setChosenArtistId] = useState<number>()
+  const [chosenGenreId, setChosenGenreId] = useState<number>()
+  const [filePath, setFilePath] = useState<string>()
   const watchArtistValue = watch('artistId')
   const watchGenreValue = watch('genreId')
 
-  const goToTracksLibrary = () => {
-    history.push(AppRoutes.library.tracks)
-  }
-
   const handleTrackSucessDialogClose = () => setOpenTrackSuccessDialog(false)
-
   const handleAddArtistDialogClose = () => {
     if (!watchArtistValue || watchArtistValue === 'add-artist') {
       setValue('artistId', '')
-      setError('artistId', 'required', 'You must choose an artist.')
+      setError('artistId', {
+        type: 'required',
+        message: 'You must choose an artist.',
+      })
     }
 
     setOpenAddArtistDialog(false)
@@ -311,7 +429,10 @@ export default function AddTrackPage() {
   const handleAddGenreDialogClose = () => {
     if (!watchGenreValue || watchGenreValue === 'add-genre') {
       setValue('genreId', '')
-      setError('genreId', 'required', 'You must choose an genre.')
+      setError('genreId', {
+        type: 'required',
+        message: 'You must choose a genre.',
+      })
     }
 
     setOpenAddGenreDialog(false)
@@ -319,59 +440,27 @@ export default function AddTrackPage() {
 
   const handleOpenInvalidFileSizeClose = () => setOpenInvalidFileSize('')
 
-  const handleOnArtistCreated = ({ id, stage_name }: ArtistData) => {
-    const artistExist = artistList.find((artist) => artist.id === id)
-
-    if (!artistExist) {
-      setArtistList((artistList) => [{ id, stage_name }, ...artistList])
-    }
-
+  const handleOnArtistCreated = ({ id }: AddArtist) => {
     setChosenArtistId(id)
   }
 
-  const handleOnGenreCreated = ({ id, name }: GenreData) => {
-    const genreExist = genreList.find((genre) => genre.id === id)
-
-    if (!genreExist) {
-      setGenreList((genreList) => [{ id, name }, ...genreList])
-    }
-
+  const handleOnGenreCreated = ({ id }: AddGenre) => {
     setChosenGenreId(id)
   }
 
   useEffect(() => {
-    const artists = trackUploadInfo?.me.artists_by_stage_name_asc.data
-    if (artists) {
-      setArtistList(
-        artists.map(({ id, stage_name }: ArtistData) => ({ id, stage_name }))
-      )
-    }
-    // eslint-disable-next-line
-  }, [trackUploadInfo?.me.artists_by_stage_name_asc.data])
-
-  useEffect(() => {
-    const genres = trackUploadInfo?.genres
-    if (genres) {
-      setGenreList(genres.map(({ id, name }: GenreData) => ({ id, name })))
-    }
-    // eslint-disable-next-line
-  }, [trackUploadInfo?.genres])
-
-  useEffect(() => {
     if (chosenArtistId) {
-      setValue('artistId', chosenArtistId)
+      setValue('artistId', chosenArtistId.toString())
       clearErrors('artistId')
     }
-    // eslint-disable-next-line
-  }, [chosenArtistId])
+  }, [chosenArtistId, clearErrors, setValue])
 
   useEffect(() => {
     if (chosenGenreId) {
-      setValue('genreId', chosenGenreId)
+      setValue('genreId', chosenGenreId.toString())
       clearErrors('genreId')
     }
-    // eslint-disable-next-line
-  }, [chosenGenreId])
+  }, [chosenGenreId, clearErrors, setValue])
 
   useEffect(() => {
     if (watchArtistValue === 'add-artist') {
@@ -385,61 +474,92 @@ export default function AddTrackPage() {
     }
   }, [watchGenreValue])
 
-  const handleAllowDownload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue('allowDownload', event.target.checked)
-  }
+  // useEffect(() => {
+  //   if (image && filePath) {
+  //     const formData = new FormData()
+
+  //     formData.append('avatar', filePath!)
+
+  //     trackFether.submit(formData, {
+  //       method: 'post',
+  //       action: '/api/account?action=avatar',
+  //     })
+
+  //     setFilePath(undefined)
+  //   }
+  // }, [trackFetcher, filePath, imgageUploaded])
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    uploadImg(getFile(event))
+    const file = getFile(event)
+
+    if (!file) {
+      alert('Please choose an MP3 file')
+      return
+    }
+
+    // uploadImg({ file })
   }
 
   const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    uploadAudio(getFile(event))
+    const file = getFile(event)
+
+    if (!file) {
+      alert('Please choose an MP3 file')
+      return
+    }
+
+    const type: ResourceType = 'image'
+
+    const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
+
+    fetch(`/api/account?${query}`)
+      .then((res) => res.json())
+      .then(({ signedUrl, filePath }) => {
+        uploadAudio({ file, signedUrl })
+        setFilePath(filePath)
+      })
   }
 
   const handleInvalidAudioSize = (filesize: number) => {
     setOpenInvalidFileSize(`
-		The file size exceeds 128 MB. <br />
-		Choose another one or reduce the size to upload.
-	`)
+  	The file size exceeds 128 MB. <br />
+  	Choose another one or reduce the size to upload.
+  `)
   }
 
   const handleInvalidAudioType = (filetype: string) => {
     setOpenInvalidFileSize(`
-		You must choose an MP3 file.
-	`)
+  	You must choose an MP3 file.
+  `)
   }
 
   const handleInvalidImageSize = (filesize: number) => {
     setOpenInvalidFileSize(`
-		The file size exceeds 1 MB. <br />
-		Choose another one or reduce the size to upload.
-	`)
+  	The file size exceeds 1 MB. <br />
+  	Choose another one or reduce the size to upload.
+  `)
   }
 
-  const handleAddTrack = (values: FormData) => {
-    if (!poster && !audioName) return
-
-    const track = {
-      ...values,
-      poster: poster || '',
-      audioName: audioName || '',
-      audioFileSize: audioSize,
-      img_bucket: IMG_BUCKET,
-      audio_bucket: AUDIO_BUCKET,
-      album_id: album_id || null,
-      number: track_number || null,
-    }
-
-    // console.table(track)
-    addTrack(track)
+  const handleAddTrack = (values: TrackForm) => {
+    // if (!poster && !audioName) return
+    // const track = {
+    //   ...values,
+    //   poster: poster || '',
+    //   audioName: audioName || '',
+    //   audioFileSize: audioSize,
+    //   img_bucket: IMG_BUCKET,
+    //   audio_bucket: AUDIO_BUCKET,
+    //   album_id: album_id || null,
+    //   number: track_number || null,
+    // }
+    // addTrack(track)
   }
 
-  useEffect(() => {
-    if (uploadedTrack) {
-      setOpenTrackSuccessDialog(true)
-    }
-  }, [uploadedTrack])
+  // useEffect(() => {
+  //   if (uploadedTrack) {
+  //     setOpenTrackSuccessDialog(true)
+  //   }
+  // }, [uploadedTrack])
 
   const styles: BoxStyles = {
     uploadButton: {
@@ -455,8 +575,9 @@ export default function AddTrackPage() {
       <HeaderTitle icon={<MusicNoteIcon />} text={`Add a new track`} />
       {/* <SEO title={`Add a new track`} /> */}
 
-      <form onSubmit={handleSubmit(handleAddTrack)} noValidate>
+      <Box component="form" onSubmit={handleSubmit(handleAddTrack)} noValidate>
         <TextField
+          fullWidth
           {...register('title', {
             required: 'The title of the track is required.',
           })}
@@ -465,19 +586,22 @@ export default function AddTrackPage() {
           type="text"
           margin="normal"
           error={!!errors.title}
-          helperText={
-            errors.title && (
-              <TextIcon
-                icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{errors.title.message}</Box>}
-              />
-            )
-          }
-          style={{ marginBottom: 15 }}
+          sx={{ marginBottom: '15px' }}
         />
-        <Grid container direction="row" spacing={2}>
+        {errors.title && (
+          <TextIcon
+            icon={<ErrorIcon sx={styles.errorColor} />}
+            text={
+              <Box component="span" sx={styles.errorColor}>
+                {errors.title.message}
+              </Box>
+            }
+          />
+        )}
+        <Grid container spacing={2}>
           <Grid item xs={12} sm>
             <TextField
+              fullWidth
               id="artist"
               select
               {...register('artistId', {
@@ -485,80 +609,75 @@ export default function AddTrackPage() {
               })}
               SelectProps={{ native: true }}
               error={!!errors.artistId}
-              helperText={
-                errors.artistId && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={styles.errorColor} />}
-                    text={
-                      <Box sx={styles.errorColor}>
-                        {errors.artistId.message}
-                      </Box>
-                    }
-                  />
-                )
-              }
               margin="normal"
               value={watchArtistValue}
             >
               <optgroup>
                 <option value="">Choose an Artist *</option>
               </optgroup>
-              {artistList.length && (
-                <optgroup label="------">
-                  {artistList.map(({ id, stage_name }: ArtistData) => (
-                    <option key={id} value={id}>
-                      {stage_name}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
+              <optgroup label="------">
+                {artists.map(({ id, stageName }) => (
+                  <option key={id} value={id}>
+                    {stageName}
+                  </option>
+                ))}
+              </optgroup>
               <optgroup label="------">
                 <option value="add-artist">+ Add an Artist</option>
               </optgroup>
             </TextField>
+            {errors.artistId && (
+              <TextIcon
+                icon={<ErrorIcon sx={styles.errorColor} />}
+                text={
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.artistId.message}
+                  </Box>
+                }
+              />
+            )}
           </Grid>
           <Grid item xs={12} sm>
             <TextField
+              fullWidth
               id="genre"
               select
               {...register('genreId', {
-                required: 'You must choose an genre.',
+                required: 'You must choose a genre.',
               })}
               SelectProps={{ native: true }}
               error={!!errors.genreId}
-              helperText={
-                errors.genreId && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={styles.errorColor} />}
-                    text={
-                      <Box sx={styles.errorColor}>{errors.genreId.message}</Box>
-                    }
-                  />
-                )
-              }
               margin="normal"
               value={watchGenreValue}
             >
               <optgroup>
-                <option value="">Choose an Genre *</option>
+                <option value="">Choose A Genre *</option>
               </optgroup>
-              {genreList.length && (
-                <optgroup label="------">
-                  {genreList.map(({ id, name }: GenreData) => (
-                    <option key={id} value={id}>
-                      {name}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
+              <optgroup label="------">
+                {genres.map(({ id, name }) => (
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
+                ))}
+              </optgroup>
               <optgroup label="------">
                 <option value="add-genre">+ Add a Genre</option>
               </optgroup>
             </TextField>
+            {errors.genreId && (
+              <TextIcon
+                icon={<ErrorIcon sx={styles.errorColor} />}
+                text={
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.genreId.message}
+                  </Box>
+                }
+              />
+            )}
           </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={2}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm>
             <Grid
               container
@@ -580,18 +699,21 @@ export default function AddTrackPage() {
                   disabled={audioUploaded}
                   fullWidth
                 />
+                {isSubmitted && !audioValid && (
+                  <TextIcon
+                    icon={<ErrorIcon sx={styles.errorColor} />}
+                    text={
+                      <Box component="span" sx={styles.errorColor}>
+                        {audioErrorMessage}
+                      </Box>
+                    }
+                  />
+                )}
               </Grid>
               <Grid item xs={3}>
                 {audioUploaded && <CheckCircleIcon sx={styles.successColor} />}
               </Grid>
             </Grid>
-
-            {formState.isSubmitted && !audioValid && (
-              <TextIcon
-                icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{audioErrorMessage}</Box>}
-              />
-            )}
 
             {audioUploading && (
               <ProgressBar
@@ -617,21 +739,24 @@ export default function AddTrackPage() {
                   accept="image/*"
                   onChange={handleImageUpload}
                   title="Choose a Poster *"
-                  disabled={imgUploaded}
+                  disabled={imgageUploaded}
                   fullWidth
                 />
+                {isSubmitted && !imgValid && (
+                  <TextIcon
+                    icon={<ErrorIcon sx={styles.errorColor} />}
+                    text={
+                      <Box component="span" sx={styles.errorColor}>
+                        {imgErrorMessage}
+                      </Box>
+                    }
+                  />
+                )}
               </Grid>
               <Grid item xs={3}>
-                {imgUploaded && <CheckCircleIcon sx={styles.successColor} />}
+                {imgageUploaded && <CheckCircleIcon sx={styles.successColor} />}
               </Grid>
             </Grid>
-
-            {formState.isSubmitted && !imgValid && (
-              <TextIcon
-                icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{imgErrorMessage}</Box>}
-              />
-            )}
 
             {imgPercentUploaded > 0 && imgPercentUploaded < 100 && (
               <ProgressBar
@@ -644,6 +769,7 @@ export default function AddTrackPage() {
         </Grid>
 
         <TextField
+          fullWidth
           {...register('detail', {
             minLength: {
               value: MIN_TRACK_DETAIL_LENGTH,
@@ -653,7 +779,7 @@ export default function AddTrackPage() {
           id="detail"
           label="Detail"
           multiline
-          rows="4"
+          rows={4}
           margin="normal"
           error={!!errors.detail}
           helperText={
@@ -667,6 +793,7 @@ export default function AddTrackPage() {
         />
 
         <TextField
+          fullWidth
           {...register('lyrics', {
             minLength: {
               value: MIN_TRACK_LYRICS_LENGTH,
@@ -676,7 +803,7 @@ export default function AddTrackPage() {
           id="lyrics"
           label="Lyrics"
           multiline
-          rows="50"
+          rows={10}
           margin="normal"
           error={!!errors.lyrics}
           helperText={
@@ -689,22 +816,16 @@ export default function AddTrackPage() {
           }
         />
 
-        <Box style={{ marginTop: 15, marginBottom: 15 }}>
-          <FormControlLabel
-            control={<Checkbox onChange={handleAllowDownload} />}
-            label="Allow Download"
-          />
-        </Box>
-
         <Button
           type="submit"
           size="large"
-          style={{ marginTop: 15 }}
-          disabled={imgUploading || audioUploading || formWorking}
+          sx={{ marginTop: '15px' }}
+          variant="contained"
+          disabled={imgUploading || audioUploading}
         >
           Add Track
         </Button>
-      </form>
+      </Box>
 
       {/* Success Dialog */}
       <AlertDialog
@@ -723,18 +844,21 @@ export default function AddTrackPage() {
           <Box>Track successfully added!</Box>
           <br />
           <br />
-          {album_id ? (
-            <Button
-              size="small"
-              onClick={() => history.goBack()}
-              color="primary"
-            >
-              Go Back To Album
-            </Button>
+          {albumId ? (
+            <Link to=".." style={{ textDecoration: 'none' }}>
+              <Button size="small" variant="contained">
+                Go Back To Album
+              </Button>
+            </Link>
           ) : (
-            <Button size="small" onClick={goToTracksLibrary} color="primary">
-              Go To Your Tracks
-            </Button>
+            <Link
+              to={AppRoutes.library.tracks}
+              style={{ textDecoration: 'none' }}
+            >
+              <Button size="small" variant="contained">
+                Go To Your Tracks
+              </Button>
+            </Link>
           )}
         </DialogContentText>
       </AlertDialog>
@@ -745,6 +869,7 @@ export default function AddTrackPage() {
         handleClose={handleAddArtistDialogClose}
         onArtistCreated={handleOnArtistCreated}
       />
+
       {/* Add Genre Dialog */}
       <AddGenreForm
         open={openAddGenreDialog}

@@ -3000,9 +3000,17 @@ async function run() {
     }),
   ])
 
-  // await prisma.$queryRawUnsafe(
-  //   "SELECT setval(pg_get_serial_sequence('\"Account\"', 'id'), coalesce(max(id)+1, 1), false) FROM \"Account\""
-  // )
+  await prisma.$transaction(
+    ['Artist', 'Track', 'Album', 'Playlist', 'Genre'].map((table) => {
+      return prisma.$queryRawUnsafe(
+        'SELECT setval(pg_get_serial_sequence(\'"' +
+          table +
+          "\"', 'id'), coalesce(max(id)+1, 1), false) FROM \"" +
+          table +
+          '"'
+      )
+    })
+  )
 }
 
 run()

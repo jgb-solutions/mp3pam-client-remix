@@ -599,18 +599,14 @@ export default function AlbumEditPage() {
           Choose Track
         </Button>
         &nbsp;
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() =>
-            navigate(AppRoutes.library.create.track, {
-              album_id: album.id,
-              trackNumber: trackNumber,
-            })
-          }
+        <Link
+          to={`${AppRoutes.library.create.track}?albumId=${album.id}&trackNumber=${trackNumber}&albumHash=${album.hash}`}
+          style={{ textDecoration: 'none' }}
         >
-          Add a new Track
-        </Button>
+          <Button variant="contained" size="small">
+            Add a new Track
+          </Button>
+        </Link>
         &nbsp;
         <Button
           variant="contained"
