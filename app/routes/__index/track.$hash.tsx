@@ -352,9 +352,9 @@ export default function TrackDetailPage() {
         icon: <LineWeightIcon />,
         label: 'Lyrics',
         value: (
-          <p
+          <Box
             dangerouslySetInnerHTML={{ __html: track.lyrics }}
-            style={{ wordWrap: 'normal' }}
+            sx={{ wordWrap: 'normal' }}
           />
         ),
       })
@@ -512,6 +512,10 @@ export default function TrackDetailPage() {
                   fontSize: {
                     xs: '.8rem',
                     sm: '1rem',
+                  },
+                  mt: {
+                    xs: '1rem',
+                    sm: 0,
                   },
                 }}
                 startIcon={<GetAppIcon />}

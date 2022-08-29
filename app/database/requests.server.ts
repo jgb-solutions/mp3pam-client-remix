@@ -323,6 +323,11 @@ export async function addArtist(
     | 'imgBucket'
     | 'poster'
     | 'verified'
+    | 'bio'
+    | 'facebook'
+    | 'twitter'
+    | 'instagram'
+    | 'youtube'
   >
 ) {
   return await db.artist.create({
@@ -710,7 +715,8 @@ export async function fetchArtistDetail(hash: number) {
 
     return {
       ...data,
-      posterUrl: tracks.length ? trackPosterUrl : artistPosterUrl,
+      posterUrl:
+        tracks.length === 0 || artistPoster ? artistPosterUrl : trackPosterUrl,
       tracks: tracks.map(({ imgBucket, poster, ...data }) => ({
         ...data,
         posterUrl: getResourceUrl({ bucket: imgBucket, resource: poster }),
@@ -1267,6 +1273,7 @@ export async function fetchMyAlbums(accountId: number) {
     where: {
       accountId,
     },
+    orderBy: [{ createdAt: 'desc' }],
     select: {
       title: true,
       hash: true,
@@ -1380,7 +1387,7 @@ export async function fetchMyArtists(accountId: number) {
     where: {
       accountId,
     },
-    orderBy: [{ stageName: 'asc' }],
+    orderBy: [{ createdAt: 'desc' }],
     select: {
       id: true,
       hash: true,

@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { Link, useFetcher, useLoaderData } from '@remix-run/react'
-import type { ActionArgs, LoaderArgs } from '@remix-run/node'
+import type {
+  ActionArgs,
+  LoaderArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -46,7 +51,8 @@ import ProgressBar from '~/components/ProgressBar'
 import UploadButton from '~/components/UploadButton'
 import { withAccount } from '~/auth/sessions.server'
 import { getSearchParams } from '~/utils/helpers.server'
-import { audioBucket, imageBucket, ResourceType } from '~/services/s3.server'
+import { audioBucket, imageBucket } from '~/services/s3.server'
+import type { ResourceType } from '~/services/s3.server'
 
 export const styles: BoxStyles = {
   successColor: { color: colors.success },
@@ -301,6 +307,15 @@ export function AddGenreForm({
   )
 }
 
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = 'Add New Track'
+
+  return {
+    title,
+    'og:title': title,
+  }
+}
+
 export const loader = (args: LoaderArgs) =>
   withAccount(args, async ({ sessionAccount: account }, { request }) => {
     const searchParams = getSearchParams(request)
@@ -389,6 +404,7 @@ export const action = (args: ActionArgs) =>
             genreId,
             albumId,
             trackNumber,
+            lyrics,
             ...trackDataInput
           },
         } = parsed
@@ -401,6 +417,7 @@ export const action = (args: ActionArgs) =>
           accountId: account.id!,
           imgBucket: imageBucket,
           audioBucket,
+          lyrics: lyrics?.replace(/\n/g, '<br />'),
           hash: getHash(),
           ...(albumId &&
             trackNumber && {
@@ -542,7 +559,7 @@ export default function AddTrackPage() {
     const file = getFile(event)
 
     if (!file) {
-      alert('Please choose an MP3 file')
+      alert('Please choose a poster')
       return
     }
 
@@ -608,8 +625,7 @@ export default function AddTrackPage() {
 
   const styles: BoxStyles = {
     uploadButton: {
-      marginTop: 10,
-      marginBottom: 5,
+      my: '12px',
     },
     successColor: { color: colors.success },
     errorColor: { color: colors.error },
@@ -872,7 +888,9 @@ export default function AddTrackPage() {
           size="large"
           sx={{ marginTop: '15px' }}
           variant="contained"
-          disabled={imgUploading || audioUploading}
+          disabled={
+            imgUploading || audioUploading || trackFether.state === 'submitting'
+          }
         >
           Add Track
         </Button>

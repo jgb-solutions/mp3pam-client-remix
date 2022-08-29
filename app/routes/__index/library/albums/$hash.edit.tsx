@@ -1,3 +1,9 @@
+import type {
+  LoaderArgs,
+  ActionArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { darken } from '@mui/material'
@@ -14,7 +20,6 @@ import TextField from '@mui/material/TextField'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogActions from '@mui/material/DialogActions'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
-import type { LoaderArgs, ActionArgs } from '@remix-run/node'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import { Link, useNavigate, useLoaderData, useFetcher } from '@remix-run/react'
@@ -280,6 +285,15 @@ const AddTrackToAlbum = ({
       )}
     </>
   )
+}
+
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = 'Edit Album'
+
+  return {
+    title,
+    'og:title': title,
+  }
 }
 
 export const loader = (args: LoaderArgs) =>
