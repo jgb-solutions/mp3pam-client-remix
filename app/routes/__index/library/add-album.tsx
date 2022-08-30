@@ -1,3 +1,9 @@
+import type {
+  LoaderArgs,
+  ActionArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import { z } from 'zod'
 import { useState, useEffect } from 'react'
 import { json } from '@remix-run/node'
@@ -12,7 +18,6 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import UploadButton from '~/components/UploadButton'
 import Box from '@mui/material/Box'
-import type { LoaderArgs, ActionArgs } from '@remix-run/node'
 import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 
 import colors from '~/utils/colors'
@@ -69,6 +74,15 @@ export const albumSchema = z.object({
   cover: z.string().optional(),
   detail: z.string().optional(),
 })
+
+export const meta: MetaFunction = (): HtmlMetaDescriptor => {
+  const title = 'Add New Album'
+
+  return {
+    title,
+    'og:title': title,
+  }
+}
 
 export const loader = (args: LoaderArgs) =>
   withAccount(args, async ({ sessionAccount: account }) => {
