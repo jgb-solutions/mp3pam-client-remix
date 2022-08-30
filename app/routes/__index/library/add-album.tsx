@@ -1,108 +1,186 @@
+import { z } from 'zod'
 import { useState, useEffect } from 'react'
-
+import { json } from '@remix-run/node'
 import { useForm } from 'react-hook-form'
 import AlbumIcon from '@mui/icons-material/Album'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogContentText from '@mui/material/DialogContentText'
 import Grid from '@mui/material/Grid'
-
 import ProgressBar from '~/components/ProgressBar'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import UploadButton from '~/components/UploadButton'
-
-import HeaderTitle from '~/components/HeaderTitle'
-import useFileUpload from '../../../hooks/useFileUpload'
-import TextIcon from '~/components/TextIcon'
-import AppRoutes from '~/app-routes'
-import AlertDialog from '~/components/AlertDialog'
-import { MAX_IMG_FILE_SIZE, CURRENT_YEAR } from '~/utils/constants'
-import { getFile } from '~/utils/helpers'
-import colors from '~/utils/colors'
-import type { BoxStyles } from '~/interfaces/types'
 import Box from '@mui/material/Box'
+import type { LoaderArgs, ActionArgs } from '@remix-run/node'
+import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 
-export interface FormData {
-  title: string
-  release_year: string
-  artist_id: string
-  detail: string
-}
+import colors from '~/utils/colors'
+import AppRoutes from '~/app-routes'
+import { AddArtistForm } from './add-track'
+import HeaderTitle from '~/components/HeaderTitle'
+import useFileUpload from '~/hooks/useFileUpload'
+import TextIcon from '~/components/TextIcon'
+import AlertDialog from '~/components/AlertDialog'
+import { getFile, getHash, notEmpty } from '~/utils/helpers'
+import { withAccount } from '~/auth/sessions.server'
+import { imageBucket } from '~/services/s3.server'
+import type { ResourceType } from '~/services/s3.server'
+import { addAlbum, addArtist, fetchMyArtists } from '~/database/requests.server'
+import { MAX_IMG_FILE_SIZE, CURRENT_YEAR } from '~/utils/constants'
+import type { AddArtist, BoxStyles, MyArtists } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   uploadButton: {
-    marginTop: 10,
-    marginBottom: 5,
+    marginTop: '10px',
+    marginBottom: '5px',
   },
   successColor: { color: colors.success },
   errorColor: { color: colors.error },
 }
 
-export interface ArtistData {
-  id: string
-  stage_name: string
+enum AlbumAction {
+  AddArtist = 'addArtist',
+  AddAlbum = 'addAlbum',
 }
 
-export interface AlbumData extends FormData {
+export interface FormData {
+  action: AlbumAction
+  title: string
+  releaseYear: string
   cover: string
-  img_bucket: string
+  artistId: string
+  detail: string
 }
+
+export const albumSchema = z.object({
+  action: z.nativeEnum(AlbumAction, {
+    required_error: 'The action of the album is required.',
+  }),
+  title: z.string().min(1, {
+    message: 'The title of the album is required.',
+  }),
+  releaseYear: z.string().min(1, {
+    message: 'The release year of the album is required.',
+  }),
+  artistId: z.string().min(1, {
+    message: 'You must choose an artist.',
+  }),
+  cover: z.string().optional(),
+  detail: z.string().optional(),
+})
+
+export const loader = (args: LoaderArgs) =>
+  withAccount(args, async ({ sessionAccount: account }) => {
+    const artists = (await fetchMyArtists(account.id!)).sort((a, b) =>
+      a.stageName < b.stageName ? -1 : 1
+    )
+
+    return json({ artists })
+  })
+
+export const action = (args: ActionArgs) =>
+  withAccount(args, async ({ sessionAccount: account }, { request }) => {
+    const form = await request.formData()
+    const action = form.get('action') as AlbumAction
+
+    if (!action) throw new Error('Missing action ')
+
+    switch (action) {
+      case AlbumAction.AddArtist:
+        const { name: artistName, stageName } = Object.fromEntries(form) as {
+          name: string
+          stageName: string
+        }
+
+        if (!artistName || !stageName) {
+          throw new Error('Missing name or stage name')
+        }
+
+        const artist = await addArtist({
+          name: artistName,
+          stageName,
+          accountId: account.id!,
+          hash: getHash(),
+        })
+
+        return json(artist)
+
+      case AlbumAction.AddAlbum:
+        const parsed = albumSchema.safeParse(Object.fromEntries(form))
+
+        if (!parsed.success) {
+          console.error(parsed.error)
+          throw new Error(JSON.stringify(parsed.error))
+        }
+
+        const {
+          data: { action: _, artistId, detail, releaseYear, cover, title },
+        } = parsed
+
+        const album = await addAlbum({
+          title,
+          artistId: parseInt(artistId),
+          accountId: account.id!,
+          hash: getHash(),
+          releaseYear: parseInt(releaseYear),
+          ...(detail && {
+            detail: detail?.replace(/\n/g, '<br />'),
+          }),
+          ...(cover && {
+            imgBucket: imageBucket,
+            cover,
+          }),
+        })
+
+        return json({ album })
+
+      default:
+        return json({})
+    }
+  })
 
 export default function AddAlbumPage() {
-  const history = useHistory()
+  const albumFetcher = useFetcher()
+  const { artists } = useLoaderData() as {
+    artists: MyArtists
+  }
   const {
     register,
-    handleSubmit,
-    errors,
-    formState,
+    formState: { errors, isValid },
     watch,
     setError,
-    clearError,
+    clearErrors,
     setValue,
+    trigger,
   } = useForm<FormData>({
-    mode: 'onBlur',
-    defaultValues: { release_year: `${CURRENT_YEAR}` },
+    mode: 'onChange',
+    defaultValues: { releaseYear: `${CURRENT_YEAR}` },
   })
-  const { data: trackUploadInfo } = useQuery(TRACK_UPLOAD_DATA_QUERY, {
-    fetchPolicy: 'network-only',
-  })
-  const {
-    createAlbum,
-    loading: formWorking,
-    data: uploadedAlbum,
-  } = useCreateAlbum()
   const {
     upload: uploadImg,
     uploading: imgUploading,
     isUploaded: imgUploaded,
     percentUploaded: imgPercentUploaded,
-    isValid: imgValid,
-    errorMessage: imgErrorMessage,
-    filename: cover,
   } = useFileUpload({
-    bucket: IMG_BUCKET,
     message: 'You must choose a cover.',
     headers: { public: true },
   })
-
   const [openAlbumSuccessDialog, setOpenAlbumSuccessDialog] = useState(false)
   const [openAddArtistDialog, setOpenAddArtistDialog] = useState(false)
   const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
-  const [artistList, setArtistList] = useState<ArtistData[]>([])
   const [chosenArtistId, setChosenArtistId] = useState('')
-  const watchArtistValue = watch('artist_id')
-
-  const goToAlbumsLibrary = () => {
-    history.push(AppRoutes.library.albums)
-  }
+  const watchArtistValue = watch('artistId')
 
   const handleAlbumSucessDialogClose = () => setOpenAlbumSuccessDialog(false)
 
   const handleAddArtistDialogClose = () => {
     if (!watchArtistValue || watchArtistValue === 'add-artist') {
-      setValue('artist_id', '')
-      setError('artist_id', 'required', 'You must choose an artist.')
+      setValue('artistId', '')
+      setError('artistId', {
+        type: 'required',
+        message: 'You must choose an artist.',
+      })
     }
 
     setOpenAddArtistDialog(false)
@@ -110,33 +188,16 @@ export default function AddAlbumPage() {
 
   const handleOpenInvalidFileSizeClose = () => setOpenInvalidFileSize('')
 
-  const handleOnArtistCreated = ({ id, stage_name }: ArtistData) => {
-    const artistExist = artistList.find((artist) => artist.id === id)
-
-    if (!artistExist) {
-      setArtistList((artistList) => [{ id, stage_name }, ...artistList])
-    }
-
-    setChosenArtistId(id)
+  const handleOnArtistCreated = ({ id }: AddArtist) => {
+    setChosenArtistId(id.toString())
   }
 
   useEffect(() => {
-    const artists = trackUploadInfo?.me.artists_by_stage_name_asc.data
-    if (artists) {
-      setArtistList(
-        artists.map(({ id, stage_name }: ArtistData) => ({ id, stage_name }))
-      )
-    }
-    // eslint-disable-next-line
-  }, [trackUploadInfo?.me.artists_by_stage_name_asc.data])
-
-  useEffect(() => {
     if (chosenArtistId) {
-      setValue('artist_id', chosenArtistId)
-      clearError('artist_id')
+      setValue('artistId', chosenArtistId)
+      clearErrors('artistId')
     }
-    // eslint-disable-next-line
-  }, [chosenArtistId])
+  }, [chosenArtistId, clearErrors, setValue])
 
   useEffect(() => {
     if (watchArtistValue === 'add-artist') {
@@ -145,7 +206,24 @@ export default function AddAlbumPage() {
   }, [watchArtistValue])
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    uploadImg(getFile(event))
+    const file = getFile(event)
+
+    if (!file) {
+      alert('Please choose a cover')
+      return
+    }
+
+    const type: ResourceType = 'image'
+
+    const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
+
+    fetch(`/api/account?${query}`)
+      .then((res) => res.json())
+      .then(({ signedUrl, filePath }) => {
+        uploadImg({ file, signedUrl })
+        setValue('cover', filePath)
+        clearErrors('cover')
+      })
   }
 
   const handleInvalidImageSize = (filesize: number) => {
@@ -155,36 +233,27 @@ export default function AddAlbumPage() {
 	`)
   }
 
-  const handleCreateAlbum = (values: FormData) => {
-    if (!cover) return
-
-    const album = {
-      ...values,
-      cover: cover || '',
-      img_bucket: IMG_BUCKET,
-    }
-
-    // console.table(album)
-    createAlbum(album)
-  }
-
   useEffect(() => {
-    if (uploadedAlbum) {
+    if (albumFetcher.data) {
       setOpenAlbumSuccessDialog(true)
     }
-  }, [uploadedAlbum])
-
-  const styles: BoxStyles = createAlbumPageStyles()
+  }, [albumFetcher])
 
   return (
-    <Box sx="react-transition scale-in">
+    <Box>
       <HeaderTitle icon={<AlbumIcon />} text={`Create a new Album`} />
       {/* <SEO title={`Create a new album`} /> */}
 
-      <form onSubmit={handleSubmit(handleCreateAlbum)} noValidate>
+      <Box component={albumFetcher.Form} method="post">
+        <input
+          type="hidden"
+          {...register('action', { value: AlbumAction.AddAlbum })}
+        />
+        <input type="hidden" {...register('cover')} />
         <Grid container direction="row" spacing={2}>
           <Grid item xs={12} sm>
             <TextField
+              fullWidth
               {...register('title', {
                 required: 'The title of the album is required.',
               })}
@@ -193,86 +262,72 @@ export default function AddAlbumPage() {
               type="text"
               margin="normal"
               error={!!errors.title}
-              helperText={
-                errors.title && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={styles.errorColor} />}
-                    text={
-                      <Box sx={styles.errorColor}>{errors.title.message}</Box>
-                    }
-                  />
-                )
-              }
-              style={{ marginBottom: 15 }}
             />
+            {errors.title && (
+              <TextIcon
+                icon={<ErrorIcon sx={styles.errorColor} />}
+                text={
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.title.message}
+                  </Box>
+                }
+              />
+            )}
           </Grid>
           <Grid item xs={12} sm>
             <TextField
-              {...register('release_year', {
+              fullWidth
+              {...register('releaseYear', {
                 required: 'The release year of the album is required.',
                 validate: {
                   length: (value) =>
                     value.length === 4 ||
                     'The release year must be exactly 4 characters long.',
-                  release_year: (value) =>
+                  releaseYear: (value) =>
                     Number(value) <= CURRENT_YEAR ||
                     `The release year must be ${CURRENT_YEAR} or less.`,
                 },
               })}
-              id="release_year"
+              id="releaseYear"
               label="Release Year *"
               type="number"
               margin="normal"
-              error={!!errors.release_year}
-              helperText={
-                errors.release_year && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={styles.errorColor} />}
-                    text={
-                      <Box sx={styles.errorColor}>
-                        {errors.release_year.message}
-                      </Box>
-                    }
-                  />
-                )
-              }
-              style={{ marginBottom: 15 }}
+              error={!!errors.releaseYear}
             />
+            {errors.releaseYear && (
+              <TextIcon
+                icon={<ErrorIcon sx={styles.errorColor} />}
+                text={
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.releaseYear.message}
+                  </Box>
+                }
+              />
+            )}
           </Grid>
         </Grid>
         <Grid container direction="row" spacing={2}>
           <Grid item xs={12} sm>
             <TextField
+              fullWidth
               id="artist"
               select
-              {...register('artist_id', {
+              {...register('artistId', {
                 required: 'You must choose an artist.',
               })}
               SelectProps={{ native: true }}
-              error={!!errors.artist_id}
-              helperText={
-                errors.artist_id && (
-                  <TextIcon
-                    icon={<ErrorIcon sx={styles.errorColor} />}
-                    text={
-                      <Box sx={styles.errorColor}>
-                        {errors.artist_id.message}
-                      </Box>
-                    }
-                  />
-                )
-              }
+              error={!!errors.artistId}
               margin="normal"
               value={watchArtistValue}
             >
               <optgroup>
                 <option value="">Choose an Artist *</option>
               </optgroup>
-              {artistList.length && (
+              {notEmpty(artists) && (
                 <optgroup label="------">
-                  {artistList.map(({ id, stage_name }: ArtistData) => (
+                  {artists.map(({ id, stageName }) => (
                     <option key={id} value={id}>
-                      {stage_name}
+                      {stageName}
                     </option>
                   ))}
                 </optgroup>
@@ -281,6 +336,16 @@ export default function AddAlbumPage() {
                 <option value="add-artist">+ Add an Artist</option>
               </optgroup>
             </TextField>
+            {errors.artistId && (
+              <TextIcon
+                icon={<ErrorIcon sx={styles.errorColor} />}
+                text={
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.artistId.message}
+                  </Box>
+                }
+              />
+            )}
           </Grid>
           <Grid item xs={12} sm>
             <Grid
@@ -307,10 +372,14 @@ export default function AddAlbumPage() {
               </Grid>
             </Grid>
 
-            {formState.isSubmitted && !imgValid && (
+            {errors.cover && (
               <TextIcon
                 icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{imgErrorMessage}</Box>}
+                text={
+                  <Box component="span" sx={styles.errorColor}>
+                    {errors.cover.message}
+                  </Box>
+                }
               />
             )}
 
@@ -325,6 +394,7 @@ export default function AddAlbumPage() {
         </Grid>
 
         <TextField
+          fullWidth
           {...register('detail', {
             minLength: {
               value: 20,
@@ -337,25 +407,33 @@ export default function AddAlbumPage() {
           rows={4}
           margin="normal"
           error={!!errors.detail}
-          helperText={
-            errors.detail && (
-              <TextIcon
-                icon={<ErrorIcon sx={styles.errorColor} />}
-                text={<Box sx={styles.errorColor}>{errors.detail.message}</Box>}
-              />
-            )
-          }
         />
+        {errors.detail && (
+          <TextIcon
+            icon={<ErrorIcon sx={styles.errorColor} />}
+            text={
+              <Box component="span" sx={styles.errorColor}>
+                {errors.detail.message}
+              </Box>
+            }
+          />
+        )}
 
         <Button
-          type="submit"
+          type={isValid ? 'submit' : 'button'}
+          onClick={() => {
+            if (!isValid) {
+              trigger()
+            }
+          }}
           size="large"
-          style={{ marginTop: 15 }}
-          disabled={imgUploading || formWorking}
+          variant="contained"
+          style={{ marginTop: '15px' }}
+          disabled={imgUploading || albumFetcher.state === 'submitting'}
         >
           Add Album
         </Button>
-      </form>
+      </Box>
 
       {/* Success Dialog */}
       <AlertDialog
@@ -366,7 +444,7 @@ export default function AddAlbumPage() {
         <DialogContentText id="alert-dialog-description" align="center">
           <Box>
             <CheckCircleIcon
-              style={{ fontSize: 64 }}
+              style={{ fontSize: '64px' }}
               sx={styles.successColor}
             />
           </Box>
@@ -374,9 +452,14 @@ export default function AddAlbumPage() {
           <Box>Album successfully createed!</Box>
           <br />
           <br />
-          <Button size="small" onClick={goToAlbumsLibrary} color="primary">
-            Go To Your Albums
-          </Button>
+          <Link
+            to={AppRoutes.library.albums}
+            style={{ textDecoration: 'none' }}
+          >
+            <Button size="small" variant="contained">
+              Go To Your Albums
+            </Button>
+          </Link>
         </DialogContentText>
       </AlertDialog>
 
@@ -395,7 +478,7 @@ export default function AddAlbumPage() {
       >
         <DialogContentText id="alert-dialog-description" align="center">
           <Box>
-            <ErrorIcon style={{ fontSize: 64 }} sx={styles.errorColor} />
+            <ErrorIcon style={{ fontSize: '64px' }} sx={styles.errorColor} />
           </Box>
           <br />
           <Box dangerouslySetInnerHTML={{ __html: openInvalidFileSize }} />

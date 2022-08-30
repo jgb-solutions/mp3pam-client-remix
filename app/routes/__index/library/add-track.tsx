@@ -405,6 +405,7 @@ export const action = (args: ActionArgs) =>
             albumId,
             trackNumber,
             lyrics,
+            detail,
             ...trackDataInput
           },
         } = parsed
@@ -418,6 +419,7 @@ export const action = (args: ActionArgs) =>
           imgBucket: imageBucket,
           audioBucket,
           lyrics: lyrics?.replace(/\n/g, '<br />'),
+          detail: detail?.replace(/\n/g, '<br />'),
           hash: getHash(),
           ...(albumId &&
             trackNumber && {

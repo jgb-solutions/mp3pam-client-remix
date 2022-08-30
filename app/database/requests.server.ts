@@ -1,43 +1,36 @@
-import slugify from 'slugify'
 import bcrypt from 'bcrypt'
+import slugify from 'slugify'
 import type { Account } from '@prisma/client'
 
 import type {
-  AlbumInput,
-  TrackInput,
-  AddTrackMutation,
-  AddTrackToPlaylistMutation,
-  CreateAlbumMutation,
-  CreateAlbumMutationVariables,
   CreatePlaylistMutation,
-  AddTrackMutationVariables,
+  AddTrackToPlaylistMutation,
   CreatePlaylistMutationVariables,
   AddTrackToPlaylistMutationVariables,
 } from '~/graphql/generated-types'
 
 import {
-  AddTrackDocument,
-  AddTrackToPlaylistDocument,
-  CreateAlbumDocument,
   CreatePlaylistDocument,
+  AddTrackToPlaylistDocument,
 } from '~/graphql/mutations'
 import {
+  APP_NAME,
   FETCH_ALBUMS_NUMBER,
   FETCH_TRACKS_NUMBER,
   FETCH_ARTISTS_NUMBER,
+  RANDOM_ALBUMS_NUMBER,
   RELATED_TRACKS_NUMBER,
+  RANDOM_ARTISTS_NUMBER,
   FETCH_PLAYLISTS_NUMBER,
+  RANDOM_PLAYLISTS_NUMBER,
   HOMEPAGE_PER_PAGE_NUMBER,
   MANAGE_PAGE_PER_PAGE_NUMBER,
-  RANDOM_PLAYLISTS_NUMBER,
-  RANDOM_ARTISTS_NUMBER,
-  RANDOM_ALBUMS_NUMBER,
-  APP_NAME,
 } from '~/utils/constants'
 import {
-  ARTIST_DEFAULT_POSTER,
   DOMAIN,
   TRACK_DEFAULT_POSTER,
+  ARTIST_DEFAULT_POSTER,
+  ALBUM_DEFAULT_POSTER,
 } from '~/utils/constants.server'
 import { db } from './db.server'
 import type { Prisma } from './db.server'
@@ -45,6 +38,7 @@ import type { Credentials } from '~/interfaces/types'
 import { PhotonImage } from '~/components/PhotonImage'
 import { graphQLClient as client } from '~/graphql/client.server'
 import { getSignedDownloadUrl, getSignedUrl } from '~/services/s3.server'
+import { notEmpty } from '~/utils/helpers'
 
 export async function fetchHomepage() {
   const [tracks, artists, albums, playlists] = await db.$transaction([
@@ -161,10 +155,20 @@ export async function fetchHomepage() {
         posterUrl: !poster ? trackPosterUrl : artistPosterUrl,
       }
     }),
-    albums: albums.map(({ imgBucket, cover, ...album }) => ({
-      ...album,
-      coverUrl: getResourceUrl({ bucket: imgBucket, resource: cover }),
-    })),
+    albums: albums.map(({ imgBucket, cover, ...album }) => {
+      const albumCoverUrl =
+        imgBucket && cover
+          ? getResourceUrl({
+              bucket: imgBucket,
+              resource: cover,
+            })
+          : ALBUM_DEFAULT_POSTER
+
+      return {
+        ...album,
+        coverUrl: albumCoverUrl,
+      }
+    }),
     playlists: playlists.map(({ tracks, ...playlist }) => {
       const {
         track: { imgBucket, poster },
@@ -338,6 +342,29 @@ export async function addArtist(
   })
 }
 
+export async function addAlbum(
+  albumInput: Pick<
+    Prisma.AlbumUncheckedCreateInput,
+    | 'artistId'
+    | 'cover'
+    | 'detail'
+    | 'imgBucket'
+    | 'releaseYear'
+    | 'title'
+    | 'accountId'
+    | 'hash'
+  >
+) {
+  return await db.album.create({
+    data: albumInput,
+    select: {
+      id: true,
+      hash: true,
+      title: true,
+    },
+  })
+}
+
 export async function addGenre(name: string) {
   return await db.genre.create({
     data: {
@@ -495,21 +522,18 @@ export async function fetchAlbumDetail(hash: number) {
 
   if (album) {
     const { cover: albumCover, imgBucket: albumBucket, tracks, ...data } = album
-    const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
 
-    const albumCoverUrl = getResourceUrl({
-      bucket: albumBucket,
-      resource: albumCover,
-    })
-
-    const trackPosterUrl = getResourceUrl({
-      bucket: trackBucket,
-      resource: trackPoster,
-    })
+    const albumCoverUrl =
+      albumBucket && albumCover
+        ? getResourceUrl({
+            bucket: albumBucket,
+            resource: albumCover,
+          })
+        : ALBUM_DEFAULT_POSTER
 
     return {
       ...data,
-      coverUrl: !albumCover ? trackPosterUrl : albumCoverUrl,
+      coverUrl: albumCoverUrl,
       tracks: tracks.map(
         ({ imgBucket, poster, audioBucket, audioName, ...data }) => ({
           ...data,
@@ -519,21 +543,17 @@ export async function fetchAlbumDetail(hash: number) {
       ),
       relatedAlbums: relatedAlbums.map(
         ({ cover: albumCover, imgBucket: albumBucket, tracks, ...data }) => {
-          const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
-
-          const artistPosterUrl = getResourceUrl({
-            bucket: albumBucket,
-            resource: albumCover,
-          })
-
-          const trackPosterUrl = getResourceUrl({
-            bucket: trackBucket,
-            resource: trackPoster,
-          })
+          const albumCoverUrl =
+            albumBucket && albumCover
+              ? getResourceUrl({
+                  bucket: albumBucket,
+                  resource: albumCover,
+                })
+              : ALBUM_DEFAULT_POSTER
 
           return {
             ...data,
-            coverUrl: !albumCover ? trackPosterUrl : artistPosterUrl,
+            coverUrl: albumCoverUrl,
           }
         }
       ),
@@ -585,21 +605,17 @@ export async function fetchAlbums({
   return {
     data: albums.map(
       ({ tracks, imgBucket: albumBucket, cover: albumCover, ...album }) => {
-        const { imgBucket: trackBucket, poster: trackPoster } = tracks[0]
-
-        const albumCoverUrl = getResourceUrl({
-          bucket: albumBucket,
-          resource: albumCover,
-        })
-
-        const trackPosterUrl = getResourceUrl({
-          bucket: trackBucket,
-          resource: trackPoster,
-        })
+        const albumCoverUrl =
+          albumBucket && albumCover
+            ? getResourceUrl({
+                bucket: albumBucket,
+                resource: albumCover,
+              })
+            : ALBUM_DEFAULT_POSTER
 
         return {
           ...album,
-          coverUrl: !albumCover ? trackPosterUrl : albumCoverUrl,
+          coverUrl: albumCoverUrl,
         }
       }
     ),
@@ -723,21 +739,17 @@ export async function fetchArtistDetail(hash: number) {
       })),
       albums: albums.map(
         ({ imgBucket: albumBucket, cover: albumCover, tracks, ...data }) => {
-          const { poster: trackPoster, imgBucket: trackBucket } = tracks[0]
-
-          const albumCoverUrl = getResourceUrl({
-            bucket: albumBucket,
-            resource: albumCover,
-          })
-
-          const trackPosterUrl = getResourceUrl({
-            bucket: trackBucket,
-            resource: trackPoster,
-          })
+          const albumCoverUrl =
+            albumBucket && albumCover
+              ? getResourceUrl({
+                  bucket: albumBucket,
+                  resource: albumCover,
+                })
+              : ALBUM_DEFAULT_POSTER
 
           return {
             ...data,
-            coverUrl: !albumCover ? trackPosterUrl : albumCoverUrl,
+            coverUrl: albumCoverUrl,
           }
         }
       ),
@@ -838,15 +850,6 @@ export async function fetchArtists({
       total,
     },
   }
-}
-
-export async function createAlbum(albumInput: AlbumInput) {
-  return client.request<CreateAlbumMutation, CreateAlbumMutationVariables>(
-    CreateAlbumDocument,
-    {
-      input: albumInput,
-    }
-  )
 }
 
 export async function createPlaylist(playlistTitle: string) {
@@ -1251,10 +1254,20 @@ export async function fetchManage(accountId: number) {
         posterUrl: !poster ? ARTIST_DEFAULT_POSTER : artistPosterUrl,
       }
     }),
-    albums: albums.map(({ imgBucket, cover, ...album }) => ({
-      ...album,
-      coverUrl: getResourceUrl({ bucket: imgBucket, resource: cover }),
-    })),
+    albums: albums.map(({ imgBucket, cover, ...album }) => {
+      const albumCoverUrl =
+        imgBucket && cover
+          ? getResourceUrl({
+              bucket: imgBucket,
+              resource: cover,
+            })
+          : ALBUM_DEFAULT_POSTER
+
+      return {
+        ...album,
+        coverUrl: albumCoverUrl,
+      }
+    }),
     playlists: playlists.map(({ tracks, ...playlist }) => {
       const {
         track: { imgBucket, poster },
@@ -1671,10 +1684,20 @@ export async function doSearch(searchTerm: string) {
         posterUrl: !poster ? ARTIST_DEFAULT_POSTER : artistPosterUrl,
       }
     }),
-    albums: albums.map(({ imgBucket, cover, ...album }) => ({
-      ...album,
-      coverUrl: getResourceUrl({ bucket: imgBucket, resource: cover }),
-    })),
+    albums: albums.map(({ imgBucket, cover, ...album }) => {
+      const albumCoverUrl =
+        imgBucket && cover
+          ? getResourceUrl({
+              bucket: imgBucket,
+              resource: cover,
+            })
+          : ALBUM_DEFAULT_POSTER
+
+      return {
+        ...album,
+        coverUrl: albumCoverUrl,
+      }
+    }),
   }
 }
 

@@ -247,33 +247,39 @@ const AddTrackToAlbum = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {tracks.map((track, index) => {
-                return (
-                  <TableRow
-                    key={index}
-                    style={{
-                      borderBottom:
-                        tracks.length - 1 === index ? '' : '1px solid white',
-                    }}
-                  >
-                    <StyledTableCell style={{ width: '80%' }}>
-                      {track.title}
-                    </StyledTableCell>
-                    <StyledTableCell style={{ width: '10%' }}>
-                      <Button
-                        variant="contained"
-                        onClick={() => {
-                          handleAddTrackToAlbum(track.hash)
-                        }}
-                        disabled={addTrackToAlbumFetcher.state === 'submitting'}
-                        sx={styles.link}
-                      >
-                        Add
-                      </Button>
-                    </StyledTableCell>
-                  </TableRow>
+              {tracks
+                .filter(
+                  (t) => !album.tracks.map((t) => t.hash).includes(t.hash)
                 )
-              })}
+                .map((track, index) => {
+                  return (
+                    <TableRow
+                      key={index}
+                      style={{
+                        borderBottom:
+                          tracks.length - 1 === index ? '' : '1px solid white',
+                      }}
+                    >
+                      <StyledTableCell style={{ width: '80%' }}>
+                        {track.title}
+                      </StyledTableCell>
+                      <StyledTableCell style={{ width: '10%' }}>
+                        <Button
+                          variant="contained"
+                          onClick={() => {
+                            handleAddTrackToAlbum(track.hash)
+                          }}
+                          disabled={
+                            addTrackToAlbumFetcher.state === 'submitting'
+                          }
+                          sx={styles.link}
+                        >
+                          Add
+                        </Button>
+                      </StyledTableCell>
+                    </TableRow>
+                  )
+                })}
             </TableBody>
           </Table>
         </>

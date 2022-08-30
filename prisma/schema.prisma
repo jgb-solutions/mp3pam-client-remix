@@ -105,8 +105,8 @@ model Album {
   id          Int      @id @default(autoincrement())
   title       String
   hash        Int      @unique
-  cover       String
-  imgBucket   String
+  cover       String?
+  imgBucket   String?
   detail      String?
   accountId   Int
   artistId    Int
