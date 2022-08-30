@@ -1176,7 +1176,6 @@ const genres = [
   { id: 30, name: 'Slam', slug: 'slam' },
   { id: 31, name: 'Trap', slug: 'trap' },
   { id: 32, name: 'Pop', slug: 'pop' },
-  { id: 33, name: 'Genre', slug: 'genre' },
 ]
 
 const playlistTracks = [
