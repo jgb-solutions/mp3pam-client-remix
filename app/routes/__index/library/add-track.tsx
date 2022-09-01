@@ -902,7 +902,6 @@ export default function AddTrackPage() {
       <AlertDialog
         open={openTrackSuccessDialog}
         handleClose={handleTrackSucessDialogClose}
-        disableBackdropClick
       >
         <DialogContentText id="alert-dialog-description" align="center">
           <Box>

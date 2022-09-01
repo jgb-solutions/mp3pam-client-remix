@@ -15,15 +15,15 @@ import TableHead from '@mui/material/TableHead'
 import AlbumIcon from '@mui/icons-material/Album'
 import ErrorIcon from '@mui/icons-material/Error'
 import DialogActions from '@mui/material/DialogActions'
+import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 
+import colors from '~/utils/colors'
+import AppRoutes from '~/app-routes'
 import AlertDialog from '~/components/AlertDialog'
 import HeaderTitle from '~/components/HeaderTitle'
-import { StyledTableCell } from '~/components/AlbumTracksTable'
-import { Link, useFetcher, useLoaderData } from '@remix-run/react'
-import AppRoutes from '~/app-routes'
-import colors from '~/utils/colors'
-import type { BoxStyles, MyAlbums } from '~/interfaces/types'
 import { withAccount } from '~/auth/sessions.server'
+import type { BoxStyles, MyAlbums } from '~/interfaces/types'
+import { StyledTableCell } from '~/components/AlbumTracksTable'
 import { deleteAlbum, fetchMyAlbums } from '~/database/requests.server'
 
 const styles: BoxStyles = {
@@ -99,10 +99,6 @@ export default function ManageAlbumsPage() {
     setAlbumHashToDelete(hash)
   }
 
-  const handleDeleteAlbum = (hash: number) => {
-    deleteAlbum(hash)
-  }
-
   return (
     <>
       {albums.length ? (
@@ -132,7 +128,6 @@ export default function ManageAlbumsPage() {
                       <Link
                         prefetch="intent"
                         to={AppRoutes.album.detailPage(album.hash)}
-                        sx={styles.link}
                       >
                         {album.title}
                       </Link>
@@ -197,7 +192,7 @@ export default function ManageAlbumsPage() {
               type="hidden"
               name="accountId"
               value={
-                albums.find((a) => a.hash === albumHashToDelete)?.account.id
+                albums.find((a) => a.hash === albumHashToDelete)?.accountId
               }
             />
 

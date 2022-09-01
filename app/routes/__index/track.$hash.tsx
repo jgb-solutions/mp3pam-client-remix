@@ -384,13 +384,6 @@ export default function TrackDetailPage() {
       })
     }
 
-    options.push({
-      name: 'Go To Artist',
-      method: () => {
-        navigate(AppRoutes.artist.detailPage(track.artist.hash))
-      },
-    })
-
     if (track.album) {
       options.push({
         name: 'Go To Album',
@@ -406,14 +399,7 @@ export default function TrackDetailPage() {
     })
 
     return options
-  }, [
-    dispatch,
-    isLoggedIn,
-    makeSoundList,
-    navigate,
-    track.album,
-    track.artist.hash,
-  ])
+  }, [dispatch, isLoggedIn, makeSoundList, navigate, track.album])
 
   return (
     <Box>
@@ -545,7 +531,7 @@ export default function TrackDetailPage() {
 
       {openAddTrackToPlaylistPopup && (
         <AddTrackToPlaylist
-          trackHash={track.hash}
+          trackId={track.id}
           onRequestClose={() => {
             setOpenAddTrackToPlaylistPopup(false)
           }}

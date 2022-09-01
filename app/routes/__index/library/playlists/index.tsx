@@ -188,8 +188,8 @@ export default function MyPlaylistsPageIndex() {
               type="hidden"
               name="accountId"
               value={
-                playlists.find((t) => t.hash === playlistHashToDelete)?.account
-                  .id
+                playlists.find((t) => t.hash === playlistHashToDelete)
+                  ?.accountId
               }
             />
 

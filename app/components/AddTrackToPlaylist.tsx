@@ -1,34 +1,19 @@
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import { json } from '@remix-run/node'
-import { darken } from '@mui/material'
 import Table from '@mui/material/Table'
-import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
-import { useForm } from 'react-hook-form'
-import TableRow from '@mui/material/TableRow'
-import TableHead from '@mui/material/TableHead'
-import TableBody from '@mui/material/TableBody'
-import TextField from '@mui/material/TextField'
-import ErrorIcon from '@mui/icons-material/Error'
-import DialogActions from '@mui/material/DialogActions'
 import { useCallback, useEffect, useState } from 'react'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
-import type { ActionArgs, LoaderArgs } from '@remix-run/node'
-import FindReplaceIcon from '@mui/icons-material/FindReplace'
+import TableRow from '@mui/material/TableRow'
+import { useFetcher } from '@remix-run/react'
+import TableBody from '@mui/material/TableBody'
+import DialogActions from '@mui/material/DialogActions'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
-import { Link, useNavigate, useLoaderData, useFetcher } from '@remix-run/react'
 
-import theme from '~/mui/theme'
-import colors from '~/utils/colors'
-import AppRoutes from '~/app-routes'
-import FourOrFour from '~/components/FourOrFour'
+import { notEmpty } from '~/utils/helpers'
 import HeaderTitle from '~/components/HeaderTitle'
 import AlertDialog from '~/components/AlertDialog'
-import type { BoxStyles, MyPlaylist } from '~/interfaces/types'
-import { withAccount } from '~/auth/sessions.server'
-import { SMALL_SCREEN_SIZE } from '~/utils/constants'
-import { fetchMyPlaylist } from '~/database/requests.server'
+import { PlaylistAction } from '~/routes/api/playlist'
+import { CreatePlaylistForm } from './CreatePlaylistForm'
+import type { BoxStyles, MyPlaylists } from '~/interfaces/types'
 import { StyledTableCell } from '~/components/PlaylistTracksTable'
 
 const styles: BoxStyles = {
@@ -43,35 +28,41 @@ const styles: BoxStyles = {
 }
 
 export const AddTrackToPlaylist = ({
-  trackHash,
+  trackId,
   onRequestClose,
 }: {
-  trackHash: number
+  trackId: number
   onRequestClose: () => void
 }) => {
+  const playlistsFetcher = useFetcher<{ playlists: MyPlaylists }>()
+  const addTrackToPlaylistFetcher = useFetcher()
+  const [playlists, setPlaylists] = useState<MyPlaylists>([])
   const [openCreatePlaylistPopup, setOpenCreatePlaylistPopup] = useState(false)
-  const {
-    addTrackToPlaylist,
-    data: addTrackToPlaylistResponse,
-    loading: addingTrackToPlaylist,
-    error: errorAddingTrackToPlaylist,
-  } = useAddTrackToPlaylist()
-  const { loading, error, data } = useMyPlaylists()
-  const playlists = data?.me.playlists.data
+
+  const fetchMyPlaylists = useCallback(() => {
+    playlistsFetcher.load('/library/playlists?index')
+  }, [playlistsFetcher])
 
   useEffect(() => {
-    if (addTrackToPlaylistResponse) {
+    if (playlistsFetcher.type === 'init') {
+      fetchMyPlaylists()
+    }
+
+    if (playlistsFetcher.data) {
+      setPlaylists(playlistsFetcher.data.playlists)
+    }
+  }, [fetchMyPlaylists, playlistsFetcher])
+
+  useEffect(() => {
+    if (addTrackToPlaylistFetcher.data) {
       onRequestClose()
     }
-  }, [addTrackToPlaylistResponse, onRequestClose])
+  }, [onRequestClose, addTrackToPlaylistFetcher])
 
-  const handleAddTrackToPlaylist = (playlistHash: string) => {
-    addTrackToPlaylist(playlistHash, trackHash)
-  }
-
-  if (errorAddingTrackToPlaylist) {
-    return <h3>Error adding the track to the playlist.</h3>
-  }
+  const handleClosePlaylistForm = useCallback(() => {
+    setOpenCreatePlaylistPopup(false)
+    fetchMyPlaylists()
+  }, [fetchMyPlaylists])
 
   return (
     <AlertDialog open={true} handleClose={onRequestClose}>
@@ -82,7 +73,11 @@ export const AddTrackToPlaylist = ({
       />
 
       <p>
-        <Button size="large" onClick={() => setOpenCreatePlaylistPopup(true)}>
+        <Button
+          size="large"
+          onClick={() => setOpenCreatePlaylistPopup(true)}
+          variant="contained"
+        >
           Create a new playlist
         </Button>
       </p>
@@ -90,15 +85,11 @@ export const AddTrackToPlaylist = ({
       {openCreatePlaylistPopup && (
         <CreatePlaylistForm
           playlists={playlists}
-          onPlaylistCreate={handleAddTrackToPlaylist}
+          onRequestClose={handleClosePlaylistForm}
         />
       )}
 
-      {/* {!openCreatePlaylistPopup ? (
-
-      ) : null } */}
-
-      {playlists ? (
+      {notEmpty(playlists) ? (
         <>
           <HeaderTitle
             icon={<FormatListNumberedIcon />}
@@ -107,38 +98,49 @@ export const AddTrackToPlaylist = ({
 
           <Table sx={styles.table} size="small">
             <TableBody>
-              {playlists.map(
-                (playlist: { hash: string; title: string }, index: number) => {
-                  return (
-                    <TableRow
-                      key={index}
-                      style={{
-                        borderBottom:
-                          playlists.length - 1 === index
-                            ? ''
-                            : '1px solid white',
-                      }}
-                    >
-                      <StyledTableCell style={{ width: '80%' }}>
-                        {playlist.title}
-                      </StyledTableCell>
-                      <StyledTableCell style={{ width: '10%' }}>
-                        <Box
-                          onClick={() => {
-                            if (addingTrackToPlaylist) return
-
-                            handleAddTrackToPlaylist(playlist.hash)
-                          }}
-                          sx={styles.link}
-                          style={{ cursor: 'pointer' }}
+              {playlists.map((playlist, index) => {
+                return (
+                  <TableRow
+                    key={index}
+                    style={{
+                      borderBottom:
+                        playlists.length - 1 === index ? '' : '1px solid white',
+                    }}
+                  >
+                    <StyledTableCell style={{ width: '80%' }}>
+                      {playlist.title}
+                    </StyledTableCell>
+                    <StyledTableCell style={{ width: '10%' }}>
+                      <Box
+                        component={addTrackToPlaylistFetcher.Form}
+                        method="post"
+                        action="/api/playlist"
+                      >
+                        <input
+                          type="hidden"
+                          name="action"
+                          value={PlaylistAction.AddTrackToPlaylist}
+                        />
+                        <input type="hidden" name="trackId" value={trackId} />
+                        <input
+                          type="hidden"
+                          name="playlistId"
+                          value={playlist.id}
+                        />
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          disabled={
+                            addTrackToPlaylistFetcher.state === 'submitting'
+                          }
                         >
                           Add
-                        </Box>
-                      </StyledTableCell>
-                    </TableRow>
-                  )
-                }
-              )}
+                        </Button>
+                      </Box>
+                    </StyledTableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </>
@@ -150,7 +152,12 @@ export const AddTrackToPlaylist = ({
       )}
 
       <DialogActions>
-        <Button size="small" onClick={onRequestClose} variant="outlined">
+        <Button
+          size="small"
+          onClick={onRequestClose}
+          variant="contained"
+          color="warning"
+        >
           Cancel
         </Button>
       </DialogActions>

@@ -675,17 +675,9 @@ export default function Player() {
           <Box
             sx={styles.posterTitle}
             onClick={() => {
-              const type = state?.currentSound?.type
               const hash = state?.currentSound?.hash as number
 
-              switch (type) {
-                case 'track':
-                  navigate(AppRoutes.track.detailPage(hash))
-                  break
-                case 'episode':
-                  navigate(AppRoutes.episode.detailPage(hash))
-                  break
-              }
+              navigate(AppRoutes.track.detailPage(hash))
             }}
           >
             {state.currentSound ? (

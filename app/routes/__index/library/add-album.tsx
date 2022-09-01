@@ -453,7 +453,6 @@ export default function AddAlbumPage() {
       <AlertDialog
         open={openAlbumSuccessDialog}
         handleClose={handleAlbumSucessDialogClose}
-        disableBackdropClick
       >
         <DialogContentText id="alert-dialog-description" align="center">
           <Box>

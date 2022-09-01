@@ -169,7 +169,7 @@ export default function MyTracksPage() {
               type="hidden"
               name="accountId"
               value={
-                tracks.find((t) => t.hash === trackHashToDelete)?.account.id
+                tracks.find((t) => t.hash === trackHashToDelete)?.accountId
               }
             />
 

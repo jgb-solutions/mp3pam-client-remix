@@ -31,6 +31,3 @@ export const SEO_TRACK_TYPE = `music.song`
 export const SEO_ARTIST_TYPE = `music:musician`
 export const SEO_ALBUM_TYPE = `music:album`
 export const SEO_PLAYLIST_TYPE = `music.playlist`
-
-// Google Adsense
-export const GOOGLE_ADS_CLIENT = `ca-pub-3793163111580068`

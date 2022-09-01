@@ -2,17 +2,6 @@ import bcrypt from 'bcrypt'
 import slugify from 'slugify'
 import type { Account } from '@prisma/client'
 
-import type {
-  CreatePlaylistMutation,
-  AddTrackToPlaylistMutation,
-  CreatePlaylistMutationVariables,
-  AddTrackToPlaylistMutationVariables,
-} from '~/graphql/generated-types'
-
-import {
-  CreatePlaylistDocument,
-  AddTrackToPlaylistDocument,
-} from '~/graphql/mutations'
 import {
   APP_NAME,
   FETCH_ALBUMS_NUMBER,
@@ -36,9 +25,7 @@ import { db } from './db.server'
 import type { Prisma } from './db.server'
 import type { Credentials } from '~/interfaces/types'
 import { PhotonImage } from '~/components/PhotonImage'
-import { graphQLClient as client } from '~/graphql/client.server'
 import { getSignedDownloadUrl, getSignedUrl } from '~/services/s3.server'
-import { notEmpty } from '~/utils/helpers'
 
 export async function fetchHomepage() {
   const [tracks, artists, albums, playlists] = await db.$transaction([
@@ -252,6 +239,7 @@ export async function fetchTrackDetail(hash: number, accountId?: number) {
     db.track.findUnique({
       where: { hash },
       select: {
+        id: true,
         title: true,
         hash: true,
         allowDownload: true,
@@ -435,13 +423,23 @@ export async function addTrackToAlbum({
   return success
 }
 
-export async function addTrackToPlaylist(
-  addTrackToPlaylistVariables: AddTrackToPlaylistMutationVariables
-) {
-  return client.request<
-    AddTrackToPlaylistMutation,
-    AddTrackToPlaylistMutationVariables
-  >(AddTrackToPlaylistDocument, addTrackToPlaylistVariables)
+export async function addTrackToPlaylist({
+  playlistId,
+  trackId,
+}: {
+  playlistId: number
+  trackId: number
+}) {
+  await db.playlistTracks.create({
+    data: {
+      trackId,
+      playlistId,
+    },
+  })
+
+  return {
+    success: true,
+  }
 }
 
 export async function fetchAlbumDetail(hash: number) {
@@ -852,12 +850,11 @@ export async function fetchArtists({
   }
 }
 
-export async function createPlaylist(playlistTitle: string) {
-  return client.request<
-    CreatePlaylistMutation,
-    CreatePlaylistMutationVariables
-  >(CreatePlaylistDocument, {
-    title: playlistTitle,
+export async function addPlaylist(
+  playlistInput: Prisma.PlaylistUncheckedCreateInput
+) {
+  return db.playlist.create({
+    data: playlistInput,
   })
 }
 
@@ -1086,6 +1083,7 @@ export async function getTrackDownload(hash: number) {
 export async function fetchGenresWithTracks() {
   return db.genre.findMany({
     select: {
+      id: true,
       name: true,
       slug: true,
       _count: true,
@@ -1291,11 +1289,7 @@ export async function fetchMyAlbums(accountId: number) {
       title: true,
       hash: true,
       _count: true,
-      account: {
-        select: {
-          id: true,
-        },
-      },
+      accountId: true,
     },
   })
 
@@ -1311,11 +1305,7 @@ export async function fetchMyTracks(accountId: number) {
     select: {
       hash: true,
       title: true,
-      account: {
-        select: {
-          id: true,
-        },
-      },
+      accountId: true,
     },
   })
 
@@ -1329,13 +1319,10 @@ export async function fetchMyPlaylists(accountId: number) {
     },
     orderBy: [{ createdAt: 'desc' }],
     select: {
+      id: true,
       hash: true,
       title: true,
-      account: {
-        select: {
-          id: true,
-        },
-      },
+      accountId: true,
     },
   })
 
@@ -1358,11 +1345,7 @@ export async function fetchMyPlaylist({
       id: true,
       hash: true,
       title: true,
-      account: {
-        select: {
-          id: true,
-        },
-      },
+      accountId: true,
       tracks: {
         select: {
           track: {
@@ -1405,11 +1388,7 @@ export async function fetchMyArtists(accountId: number) {
       id: true,
       hash: true,
       stageName: true,
-      account: {
-        select: {
-          id: true,
-        },
-      },
+      accountId: true,
       _count: true,
     },
   })

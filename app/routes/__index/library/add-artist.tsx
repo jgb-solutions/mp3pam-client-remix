@@ -467,7 +467,6 @@ export default function AddArtistPage() {
       <AlertDialog
         open={openArtistSuccessDialog}
         handleClose={handleArtistSucessDialogClose}
-        disableBackdropClick
       >
         <DialogContentText id="alert-dialog-description" align="center">
           <Box>

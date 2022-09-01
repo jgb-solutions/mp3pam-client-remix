@@ -101,7 +101,7 @@ export default function PlaylistEditPage() {
 
     form.append('trackId', trackIdToDelete.toString())
     form.append('action', PlaylistAction.Delete)
-    form.append('accountId', playlist.account.id.toString())
+    form.append('accountId', playlist.accountId.toString())
     form.append('playlistId', playlist.id.toString())
 
     fetcher.submit(form, {
@@ -109,7 +109,7 @@ export default function PlaylistEditPage() {
     })
 
     setTrackIdToDelete(undefined)
-  }, [fetcher, playlist.account.id, playlist.id, trackIdToDelete])
+  }, [fetcher, playlist.accountId, playlist.id, trackIdToDelete])
 
   const confirmDelete = (trackId: number) => {
     setTrackIdToDelete(trackId)

@@ -84,6 +84,8 @@ const UploadButton = ({
     return
   }
 
+  type PhotonImageDimensions = { width: number; height: number }
+
   const getImageDimensions = (file: File): Promise<PhotonImageDimensions> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()

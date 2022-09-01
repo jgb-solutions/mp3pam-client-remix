@@ -189,7 +189,7 @@ export default function ManageArtistsPage() {
               name="accountId"
               value={
                 artists.find((artist) => artist.hash === artistHashToDelete)
-                  ?.account.id
+                  ?.accountId
               }
             />
 

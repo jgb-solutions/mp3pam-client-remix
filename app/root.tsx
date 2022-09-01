@@ -5,19 +5,6 @@ import type {
   HeadersFunction,
   HtmlMetaDescriptor,
 } from '@remix-run/node'
-import Box from '@mui/material/Box'
-import { json } from '@remix-run/node'
-import { Provider } from 'react-redux'
-import Dialog from '@mui/material/Dialog'
-import type { Socket } from 'socket.io-client'
-import Typography from '@mui/material/Typography'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import { useCallback, useEffect, useState } from 'react'
-import FindReplaceIcon from '@mui/icons-material/FindReplace'
-import { PersistGate } from 'redux-persist/integration/react'
-import type { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import {
   Link,
   Outlet,
@@ -26,6 +13,17 @@ import {
   useLocation,
   useSubmit,
 } from '@remix-run/react'
+import Box from '@mui/material/Box'
+import { json } from '@remix-run/node'
+import { Provider } from 'react-redux'
+import Dialog from '@mui/material/Dialog'
+import { useCallback, useState } from 'react'
+import Typography from '@mui/material/Typography'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import FindReplaceIcon from '@mui/icons-material/FindReplace'
+import { PersistGate } from 'redux-persist/integration/react'
 
 import {
   shouldCache,
@@ -34,7 +32,6 @@ import {
 } from './auth/sessions.server'
 import theme from './mui/theme'
 import AppRoutes from './app-routes'
-import { connect } from './ws/client'
 import appStyles from '~/styles/app.css'
 import { persistedStore } from './redux/store'
 import { Document } from './components/Document'
@@ -44,7 +41,6 @@ import RootLayout from './components/layouts/Root'
 import HeaderTitle from './components/HeaderTitle'
 import { authenticator } from './auth/auth.server'
 import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
-import { useApp } from './hooks/useApp'
 
 export const links: LinksFunction = () => [
   {
@@ -134,7 +130,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 }
 
 export type AppOutletContext = {
-  socket?: Socket
   openChatBox: () => void
   openAccountBox: () => void
   isChatBoxOpen: boolean
@@ -146,27 +141,9 @@ export type AppOutletContext = {
 export default function App() {
   const submit = useSubmit()
   const location = useLocation()
-  const { isLoggedIn, currentUser } = useApp()
   const { pathname } = useLoaderData<typeof loader>()
-  let [socket, setSocket] =
-    useState<Socket<DefaultEventsMap, DefaultEventsMap>>()
   const [isChatBoxOpen, setIsChatBoxOpen] = useState(false)
   const [isAccountBoxOpen, setIsAccountBoxOpen] = useState(false)
-
-  useEffect(() => {
-    // let connection = connect()
-    // setSocket(connection)
-    // return () => {
-    //   connection.close()
-    // }
-  }, [])
-
-  useEffect(() => {
-    // if (!socket) return
-    // socket.on('event', (data) => {
-    //   console.log(data)
-    // })
-  }, [socket])
 
   const logout = useCallback(() => {
     const returnTo = location.pathname
@@ -193,7 +170,6 @@ export default function App() {
   }, [])
 
   const context: AppOutletContext = {
-    socket,
     openChatBox: handleOpenChatBox,
     openAccountBox: handleOpenAccountBox,
     closeAccountBox: handleCloseAccountBox,

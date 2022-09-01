@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box'
+
 type Props = {
   size?: number
   className?: string
@@ -10,7 +12,7 @@ function Spinner({ size = 100, className }: Props) {
       style={{ background: 'none' }}
       width={size}
       height={size}
-      sx={className}
+      className={className}
       preserveAspectRatio="xMidYMid"
       viewBox="0 0 100 100"
     >
@@ -48,7 +50,7 @@ export const SpinnerFull = ({
       paddingTop: 70,
     }}
   >
-    <Spinner size={size} sx={className} />
+    <Spinner size={size} className={className} />
   </Box>
 )
 
