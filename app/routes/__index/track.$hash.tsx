@@ -490,7 +490,6 @@ export default function TrackDetailPage() {
               <More options={getMoreOptions()} sx={{ mr: '1rem' }} />
               <Button
                 component={Link}
-                prefetch="intent"
                 variant="contained"
                 size="large"
                 sx={{

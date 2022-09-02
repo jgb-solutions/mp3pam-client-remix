@@ -344,7 +344,7 @@ export default function ArtistDetailPage() {
             <Grid container spacing={2}>
               {artist.facebook && (
                 <Grid item>
-                  <Link to={artist.facebook} target="_blank">
+                  <a href={artist.facebook} target="_blank" rel="noreferrer">
                     <FacebookIcon
                       style={{
                         fontSize: '48px',
@@ -352,34 +352,34 @@ export default function ArtistDetailPage() {
                         color: colors.facebook,
                       }}
                     />
-                  </Link>
+                  </a>
                 </Grid>
               )}
               {artist.twitter && (
                 <Grid item>
-                  <Link to={artist.twitter} target="_blank">
+                  <a href={artist.twitter} target="_blank" rel="noreferrer">
                     <TwitterIcon
                       style={{ fontSize: '48px', color: colors.twitter }}
                     />
-                  </Link>
+                  </a>
                 </Grid>
               )}
               {artist.instagram && (
                 <Grid item>
-                  <Link to={artist.instagram} target="_blank">
+                  <a href={artist.instagram} target="_blank" rel="noreferrer">
                     <InstagramIcon
                       style={{ fontSize: '48px', color: colors.instagram }}
                     />
-                  </Link>
+                  </a>
                 </Grid>
               )}
               {artist.youtube && (
                 <Grid item>
-                  <Link to={artist.youtube} target="_blank">
+                  <a href={artist.youtube} target="_blank" rel="noreferrer">
                     <YouTubeIcon
                       style={{ fontSize: '48px', color: colors.youtube }}
                     />
-                  </Link>
+                  </a>
                 </Grid>
               )}
             </Grid>

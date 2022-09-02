@@ -59,10 +59,22 @@ export const artistSchema = z.object({
   }),
   poster: z.string().optional(),
   bio: z.string().optional(),
-  facebook: z.string().optional(),
-  twitter: z.string().optional(),
-  instagram: z.string().optional(),
-  youtube: z.string().optional(),
+  facebook: z
+    .string()
+    // .url({ message: 'The facebook link must be valid.' })
+    .optional(),
+  twitter: z
+    .string()
+    // .url({ message: 'The twitter link must be valid.' })
+    .optional(),
+  instagram: z
+    .string()
+    // .url({ message: 'The instagram link must be valid.' })
+    .optional(),
+  youtube: z
+    .string()
+    // .url({ message: 'The youtube link must be valid.' })
+    .optional(),
 })
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {
@@ -287,11 +299,12 @@ export default function AddArtistPage() {
               {...register('facebook', {
                 // minLength: {
                 //   value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-                //   message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters."`,
+                //   message: ` link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters."`,
                 // },
               })}
               id="facebook"
-              label="Facebook Username or Link"
+              type="url"
+              label="Facebook  Link"
               margin="normal"
               error={!!errors.facebook}
               helperText={
@@ -321,11 +334,12 @@ export default function AddArtistPage() {
               {...register('twitter', {
                 // minLength: {
                 //   value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-                //   message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
+                //   message: ` link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                 // },
               })}
+              type="url"
               id="twitter"
-              label="Twitter Username or Link"
+              label="Twitter  Link"
               margin="normal"
               error={!!errors.twitter}
               helperText={
@@ -355,11 +369,12 @@ export default function AddArtistPage() {
               {...register('instagram', {
                 // minLength: {
                 //   value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-                //   message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
+                //   message: ` link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                 // },
               })}
               id="instagram"
-              label="Instagram Username or Link"
+              type="url"
+              label="Instagram  Link"
               margin="normal"
               error={!!errors.instagram}
               helperText={
@@ -389,11 +404,12 @@ export default function AddArtistPage() {
               {...register('youtube', {
                 // minLength: {
                 //   value: MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-                //   message: `Username or link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
+                //   message: ` link must be at least ${MIN_SOCIAL_MEDIA_USERNAME_LENGTH} characters.`,
                 // },
               })}
               id="youtube"
-              label="YouTube Username or Link"
+              type="url"
+              label="YouTube  Link"
               margin="normal"
               error={!!errors.youtube}
               helperText={
