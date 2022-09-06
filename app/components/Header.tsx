@@ -154,6 +154,7 @@ const Header: FC = () => {
               sx={{ textDecoration: 'none' }}
             >
               <Button
+                // size="small"
                 variant="outlined"
                 color="inherit"
                 startIcon={<LoginIcon />}
@@ -161,7 +162,17 @@ const Header: FC = () => {
                   textTransform: 'none',
                 }}
               >
-                Log In
+                <Box
+                  component="span"
+                  sx={{
+                    [theme.breakpoints.only('xs')]: {
+                      fontSize: '12px',
+                      // display: 'none',
+                    },
+                  }}
+                >
+                  Log In
+                </Box>
               </Button>
             </Box>
           )}

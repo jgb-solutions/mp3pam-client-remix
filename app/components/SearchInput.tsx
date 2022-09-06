@@ -12,6 +12,9 @@ import { getSearchTerm } from '~/routes/__index/search'
 const styles: BoxStyles = {
   search: {
     position: 'relative',
+    [theme.breakpoints.only('xs')]: {
+      width: '110px',
+    },
     borderRadius: 25,
     backgroundColor: alpha(theme.palette.common.white, 0.95),
     '&:hover': {
