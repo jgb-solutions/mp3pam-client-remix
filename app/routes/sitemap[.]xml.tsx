@@ -67,7 +67,7 @@ export const loader: LoaderFunction = async () => {
     return [
       `<url>`,
       `<loc>${DOMAIN}/${single.type}/${single.hash}</loc>`,
-      `<lastmod>${dayjs(single.uppdatedAt, 'yyyy-MM-dd')}</lastmod>`,
+      `<lastmod>${dayjs(single.uppdatedAt).format('YYYY-MM-DD')}</lastmod>`,
       `</url>`,
     ].join('')
   })
@@ -79,7 +79,7 @@ export const loader: LoaderFunction = async () => {
     // index page, or /blog page
     `<url>`,
     `<loc>${DOMAIN}</loc>`,
-    `<lastmod>${dayjs(allData[0].uppdatedAt, 'yyyy-MM-dd')}</lastmod>`,
+    `<lastmod>${dayjs(allData[0].uppdatedAt).format('YYYY-MM-DD')}</lastmod>`,
     `</url>`,
 
     ...allItems,
