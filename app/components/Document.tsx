@@ -65,6 +65,15 @@ export const Document = withEmotionCache(
             name="emotion-insertion-point"
             content="emotion-insertion-point"
           />
+          {['track', 'artist', 'album', 'playlist'].map((type) => (
+            <link
+              key={type}
+              rel="alternate"
+              type="application/rss+xml"
+              href={`${DOMAIN}/feed/${type}.xml`}
+              title={`${type.toUpperCase()}'s XML Feed`}
+            />
+          ))}
         </head>
 
         <Box component="body" sx={{ bgcolor: 'black' }}>

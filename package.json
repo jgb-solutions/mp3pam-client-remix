@@ -38,6 +38,7 @@
     "dayjs": "^1.11.4",
     "eventemitter2": "^6.4.6",
     "express": "^4.18.1",
+    "feed": "^4.2.2",
     "install": "^0.13.0",
     "morgan": "^1.10.0",
     "nanoid": "^3.3.4",
