@@ -28,7 +28,7 @@ const buildFeed = ({
     language: `en`,
     image: `${DOMAIN}/assets/images/social-media-share.png`,
     favicon: `${DOMAIN}/favicon.ico`,
-    copyright: `All rights reserved 2013, John Doe`,
+    copyright: `All rights reserved 2022, Jean Gérard`,
     updated: data[0].date,
     // feedLinks: {
     //   json: `https://example.com/json`,
@@ -92,7 +92,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       feed = buildFeed({
         data: tracks.map((track) => ({
           title: track.title,
-          id: track.hash.toString(),
+          id: `${DOMAIN}/track/${track.hash}`,
           link: `${DOMAIN}/track/${track.hash}`,
           description: `Listen to ${track?.title} by ${track.artist.stageName} on ${APP_NAME}`,
           content: `Listen to ${track?.title} by ${track.artist.stageName} on ${APP_NAME}`,
@@ -138,7 +138,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       feed = buildFeed({
         data: albums.map((album) => ({
           title: album.title,
-          id: album.hash.toString(),
+          id: `${DOMAIN}/album/${album.hash}`,
           link: `${DOMAIN}/album/${album.hash}`,
           description: `Listen to album ${album?.title} by ${album.artist.stageName} on ${APP_NAME}`,
           content: `Listen to album ${album?.title} by ${album.artist.stageName} on ${APP_NAME}`,
@@ -187,7 +187,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       feed = buildFeed({
         data: artist.map((artist) => ({
           title: artist.name,
-          id: artist.hash.toString(),
+          id: `${DOMAIN}/artist/${artist.hash}`,
           link: `${DOMAIN}/artist/${artist.hash}`,
           description: `Listen to artist ${artist.name} posted by ${artist.account.name} on ${APP_NAME}`,
           content: `Listen to artist ${artist.name} posted by ${artist.account.name} on ${APP_NAME}`,
@@ -234,7 +234,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       feed = buildFeed({
         data: playlists.map((playlist) => ({
           title: playlist.title,
-          id: playlist.hash.toString(),
+          id: `${DOMAIN}/playlist/${playlist.hash}`,
           link: `${DOMAIN}/playlist/${playlist.hash}`,
           description: `Listen to playlist ${playlist.title} posted by ${playlist.account.name} on ${APP_NAME}`,
           content: `Listen to playlist ${playlist.title} posted by ${playlist.account.name} on ${APP_NAME}`,
