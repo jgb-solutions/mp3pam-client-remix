@@ -29,7 +29,7 @@ import TextIcon from '~/components/TextIcon'
 import AlertDialog from '~/components/AlertDialog'
 import { getFile, getHash, notEmpty } from '~/utils/helpers'
 import { withAccount } from '~/auth/sessions.server'
-import { imageBucket } from '~/services/s3.server'
+import { bucket } from '~/services/s3.server'
 import type { ResourceType } from '~/services/s3.server'
 import { addAlbum, addArtist, fetchMyArtists } from '~/database/requests.server'
 import { MAX_IMG_FILE_SIZE, CURRENT_YEAR } from '~/utils/constants'
@@ -142,7 +142,7 @@ export const action = (args: ActionArgs) =>
             detail: detail?.replace(/\n/g, '<br />'),
           }),
           ...(cover && {
-            imgBucket: imageBucket,
+            imgBucket: bucket,
             cover,
           }),
         })

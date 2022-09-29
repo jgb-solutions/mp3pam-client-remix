@@ -1,30 +1,38 @@
-import AWS from 'aws-sdk'
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
+import { getSignedUrl as signUurl } from '@aws-sdk/s3-request-presigner'
 
-const endpoint = process.env.WASABI_ENDPOINT as string
+const accessKeyId = process.env.S3_KEY as string
+const secretAccessKey = process.env.S3_SECRET as string
+const endpoint = process.env.S3_ENDPOINT as string
+export const cdnUrl = process.env.S3_CDN as string
+export const publicUrl = process.env.S3_PUBLIC_URL as string
+export const bucket = process.env.S3_BUCKET as string
 
-AWS.config.update({
-  accessKeyId: process.env.WASABI_KEY,
-  secretAccessKey: process.env.WASABI_SECRET,
-  region: process.env.WASABI_REGION,
+const s3 = new S3Client({
+  region: 'auto',
+  endpoint,
+  credentials: {
+    accessKeyId,
+    secretAccessKey,
+  },
 })
-
-export const imageBucket = process.env.IMAGE_BUCKET as string
-export const audioBucket = process.env.AUDIO_BUCKET as string
-
-const s3 = new AWS.S3({ endpoint })
-const getSignedUrlExpireSeconds = 30 * 24 * 60 * 60
+const getSignedUrlExpireSeconds = 7 * 24 * 60 * 60
 const putSignedUrlExpireSeconds = 30 * 60
 
-type GetURLParams = { bucket: string; resource: string }
+type GetURLParams = { bucket?: string; resource: string }
 
-export const getSignedUrl = ({ bucket, resource }: GetURLParams) => {
-  const url = s3
-    .getSignedUrl('getObject', {
-      Bucket: bucket,
-      Key: resource,
-      Expires: getSignedUrlExpireSeconds,
-    })
-    .replace(endpoint, 'https:/')
+export const getSignedUrl = async ({ resource }: GetURLParams) => {
+  const command = new GetObjectCommand({
+    Bucket: bucket,
+    Key: resource,
+  })
+  const url = await signUurl(s3, command, {
+    expiresIn: getSignedUrlExpireSeconds,
+  })
 
   return url
 }
@@ -38,24 +46,20 @@ type PostURLParams = {
   mimeType: string
 }
 
-export const putSignedUrl = ({
+export const putSignedUrl = async ({
   resource,
   isPublic = false,
-  type,
   mimeType,
 }: PostURLParams) => {
-  let options: Record<string, any> = {
-    Bucket: type === 'image' ? imageBucket : audioBucket,
+  const command = new PutObjectCommand({
+    Bucket: bucket,
     Key: resource,
-    Expires: putSignedUrlExpireSeconds,
     ContentType: mimeType,
-  }
-
-  if (isPublic) {
-    options.ACL = 'public-read'
-  }
-
-  const url = s3.getSignedUrl('putObject', options)
+    ...(isPublic && { ACL: 'public-read' }),
+  })
+  const url = await signUurl(s3, command, {
+    expiresIn: putSignedUrlExpireSeconds,
+  })
 
   return url
 }
@@ -66,19 +70,18 @@ type GetDownloadParams = {
   trackTitle: string
 }
 
-export const getSignedDownloadUrl = ({
-  bucket,
+export const getSignedDownloadUrl = async ({
   resource,
   trackTitle,
 }: GetDownloadParams) => {
-  const url = s3
-    .getSignedUrl('getObject', {
-      Bucket: bucket,
-      Key: resource,
-      Expires: 10 * 60,
-      ResponseContentDisposition: `attachment; filename="${trackTitle}.mp3"`,
-    })
-    .replace(endpoint, 'https:/')
+  const command = new GetObjectCommand({
+    Bucket: bucket,
+    Key: resource,
+    ResponseContentDisposition: `attachment; filename="${trackTitle}.mp3"`,
+  })
+  const url = await signUurl(s3, command, {
+    expiresIn: getSignedUrlExpireSeconds,
+  })
 
   return url
 }

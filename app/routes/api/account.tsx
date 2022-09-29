@@ -14,7 +14,7 @@ import {
 } from '~/database/requests.server'
 import { db } from '~/database/db.server'
 import { authenticator } from '~/auth/auth.server'
-import { imageBucket, putSignedUrl } from '~/services/s3.server'
+import { bucket, putSignedUrl } from '~/services/s3.server'
 import type { ResourceType } from '~/services/s3.server'
 import type { AccountAction } from '~/components/AccountModal'
 import { getFilePath, getSearchParams } from '~/utils/helpers.server'
@@ -58,7 +58,7 @@ export const loader = (context: LoaderArgs) =>
       accountId: account.id,
     })
 
-    const signedUrl = putSignedUrl({
+    const signedUrl = await putSignedUrl({
       resource: filePath,
       type,
       isPublic,
@@ -87,7 +87,7 @@ export const action: ActionFunction = (context) =>
 
       const updatedAccount = await db.account.update({
         where: { id: account.id },
-        data: { avatar: avatarName, imgBucket: imageBucket },
+        data: { avatar: avatarName, imgBucket: bucket },
       })
 
       return await updateSessionAndReturn(request, updatedAccount)

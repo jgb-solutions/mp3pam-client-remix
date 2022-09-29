@@ -51,7 +51,7 @@ import ProgressBar from '~/components/ProgressBar'
 import UploadButton from '~/components/UploadButton'
 import { withAccount } from '~/auth/sessions.server'
 import { getSearchParams } from '~/utils/helpers.server'
-import { audioBucket, imageBucket } from '~/services/s3.server'
+import { bucket } from '~/services/s3.server'
 import type { ResourceType } from '~/services/s3.server'
 
 export const styles: BoxStyles = {
@@ -416,8 +416,8 @@ export const action = (args: ActionArgs) =>
           artistId: parseInt(artistId),
           genreId: parseInt(genreId),
           accountId: account.id!,
-          imgBucket: imageBucket,
-          audioBucket,
+          imgBucket: bucket,
+          audioBucket: bucket,
           lyrics: lyrics?.replace(/\n/g, '<br />'),
           detail: detail?.replace(/\n/g, '<br />'),
           hash: getHash(),

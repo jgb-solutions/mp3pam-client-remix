@@ -17,6 +17,8 @@
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.179.0",
+    "@aws-sdk/s3-request-presigner": "^3.179.0",
     "@builder.io/partytown": "^0.6.4",
     "@emotion/cache": "^11.9.3",
     "@emotion/react": "^11.9.3",
@@ -30,7 +32,6 @@
     "@remix-run/express": "^1.6.7",
     "@remix-run/node": "^1.6.7",
     "@remix-run/react": "^1.6.7",
-    "aws-sdk": "^2.1181.0",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "chat-ui-react": "^0.3.0",

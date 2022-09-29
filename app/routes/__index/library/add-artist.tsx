@@ -38,7 +38,7 @@ import HeaderTitle from '~/components/HeaderTitle'
 import useFileUpload from '~/hooks/useFileUpload'
 import AlertDialog from '~/components/AlertDialog'
 import { withAccount } from '~/auth/sessions.server'
-import { imageBucket } from '~/services/s3.server'
+import { bucket } from '~/services/s3.server'
 import type { ResourceType } from '~/services/s3.server'
 import type { AddArtist, BoxStyles } from '~/interfaces/types'
 import { addArtist } from '~/database/requests.server'
@@ -108,7 +108,7 @@ export const action = (args: ActionArgs) =>
           ...artistData,
           accountId: account.id!,
           hash: getHash(),
-          ...(poster && { poster, imgBucket: imageBucket }),
+          ...(poster && { poster, imgBucket: bucket }),
           ...(bio && { bio: bio.replace(/\n/g, '<br />') }),
         })
 

@@ -9,10 +9,6 @@ processes = []
 PORT = "8080"
   API_URL = "https://mp3pam-api-laravel.fly.dev/graphql"
 
-  # Wasabi
-  WASABI_REGION = "us-west-1"
-  WASABI_ENDPOINT = "https://s3.us-west-1.wasabisys.com"
-
   # Social Login
   # Facebook
   FACEBOOK_CLIENT_ID = "2586789314943948"
@@ -20,9 +16,14 @@ PORT = "8080"
 
   SOCIAL_REDIRECT_URL = "https://mp3pam.com/auth"
 
-  # Buckets
-  IMAGE_BUCKET = "img-storage-prod.mp3pam.com"
-  AUDIO_BUCKET = "audio-storage-prod.mp3pam.com"
+  # R2 / E2
+  S3_BUCKET = "files-mp3pam"
+  S3_REGION = "auto"
+  S3_CDN = "https://e2.mp3pam.com"
+  #S3_PUBLIC_URL = "https://pub-fd5a73e891074ad6b02da4ecdf7f9d72.r2.dev"
+  S3_PUBLIC_URL = "https://e2.mp3pam.com"
+  S3_ENDPOINT = "https://p0l8.mi.idrivee2-21.com"
+
 
 [experimental]
   allowed_public_ports = []

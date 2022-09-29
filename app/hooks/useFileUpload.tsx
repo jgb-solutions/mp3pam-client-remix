@@ -70,7 +70,7 @@ export default function useFileUpload({ message, headers }: Params) {
 
       try {
         setIsValid(true)
-        await axios.put(signedUrl, file, options)
+        await axios.put(signedUrl, file, { ...options })
       } catch (error) {
         const e = error as AxiosError
         setError(e)

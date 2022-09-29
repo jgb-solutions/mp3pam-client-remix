@@ -9,7 +9,7 @@ import {
 } from '~/utils/constants.server'
 import { db } from '~/database/db.server'
 import { APP_NAME } from '~/utils/constants'
-import { getResourceUrl } from '~/database/requests.server'
+import { getImageUrl } from '~/database/requests.server'
 
 type FeedType = 'track' | 'artist' | 'playlist' | 'album'
 
@@ -103,7 +103,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
             },
           ],
           date: track.createdAt,
-          image: getResourceUrl({
+          image: getImageUrl({
             bucket: track.imgBucket,
             resource: track.poster,
           }),
@@ -151,7 +151,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           date: album.createdAt,
           image:
             album.cover && album.imgBucket
-              ? getResourceUrl({
+              ? getImageUrl({
                   bucket: album.imgBucket,
                   resource: album.cover,
                 })
@@ -200,7 +200,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           date: artist.createdAt,
           image:
             artist.imgBucket && artist.poster
-              ? getResourceUrl({
+              ? getImageUrl({
                   bucket: artist.imgBucket,
                   resource: artist.poster,
                 })
