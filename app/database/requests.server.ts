@@ -538,7 +538,7 @@ export async function fetchAlbumDetail(hash: number) {
       ...data,
       coverUrl: albumCoverUrl,
       tracks: tracks.map(
-        async ({ imgBucket, poster, audioBucket, audioName, ...data }) => ({
+        ({ imgBucket, poster, audioBucket, audioName, ...data }) => ({
           ...data,
           posterUrl: getImageUrl({ bucket: imgBucket, resource: poster }),
           audioUrl: getAudioUrl(audioName),
@@ -1493,7 +1493,7 @@ export async function fetchPlaylistDetail(hash: number) {
       ...playlistData,
       coverUrl,
       tracks: tracks.map(
-        async ({
+        ({
           track: { audioBucket, audioName, imgBucket, poster, ...track },
         }) => ({
           ...track,
