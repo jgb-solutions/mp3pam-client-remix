@@ -295,7 +295,7 @@ export async function fetchTrackDetail(hash: number, accountId?: number) {
 
     return {
       ...data,
-      audioUrl: await getAudioUrl(audioName),
+      audioUrl: getAudioUrl(audioName),
       posterUrl: getImageUrl({ bucket: imgBucket, resource: poster }),
       ...(accountId && {
         isFavorite: !!fans.find((fan) => fan.id === accountId),
@@ -537,14 +537,12 @@ export async function fetchAlbumDetail(hash: number) {
     return {
       ...data,
       coverUrl: albumCoverUrl,
-      tracks: await Promise.all(
-        tracks.map(
-          async ({ imgBucket, poster, audioBucket, audioName, ...data }) => ({
-            ...data,
-            posterUrl: getImageUrl({ bucket: imgBucket, resource: poster }),
-            audioUrl: await getAudioUrl(audioName),
-          })
-        )
+      tracks: tracks.map(
+        async ({ imgBucket, poster, audioBucket, audioName, ...data }) => ({
+          ...data,
+          posterUrl: getImageUrl({ bucket: imgBucket, resource: poster }),
+          audioUrl: getAudioUrl(audioName),
+        })
       ),
       relatedAlbums: relatedAlbums.map(
         ({ cover: albumCover, imgBucket: albumBucket, tracks, ...data }) => {
@@ -1494,16 +1492,14 @@ export async function fetchPlaylistDetail(hash: number) {
     return {
       ...playlistData,
       coverUrl,
-      tracks: await Promise.all(
-        tracks.map(
-          async ({
-            track: { audioBucket, audioName, imgBucket, poster, ...track },
-          }) => ({
-            ...track,
-            audioUrl: await getAudioUrl(audioName),
-            posterUrl: getImageUrl({ bucket: imgBucket, resource: poster }),
-          })
-        )
+      tracks: tracks.map(
+        async ({
+          track: { audioBucket, audioName, imgBucket, poster, ...track },
+        }) => ({
+          ...track,
+          audioUrl: getAudioUrl(audioName),
+          posterUrl: getImageUrl({ bucket: imgBucket, resource: poster }),
+        })
       ),
       randomPlaylists: randomPlaylists.map(({ tracks, ...playlist }) => {
         const {
@@ -1786,8 +1782,9 @@ export const getImageUrl = ({
 }
 
 // export const getAudioUrl = (audioName: string) => `${cdnUrl}/${audioName}`
-export const getAudioUrl = async (audioName: string) => {
-  return await getSignedUrl({ resource: audioName })
+export const getAudioUrl = (audioName: string) => {
+  // return await getSignedUrl({ resource: audioName })
+  return `${cdnUrl}/${audioName}`
 }
 
 export const getSessionDataFromAccount = (account: Partial<Account>) => {
