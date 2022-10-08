@@ -19,10 +19,12 @@ PORT = "8080"
   # R2 / E2
   S3_BUCKET = "files-mp3pam"
   S3_REGION = "auto"
-  S3_CDN = "https://e2.mp3pam.com"
-  #S3_PUBLIC_URL = "https://pub-fd5a73e891074ad6b02da4ecdf7f9d72.r2.dev"
-  S3_PUBLIC_URL = "https://e2.mp3pam.com"
-  S3_ENDPOINT = "https://p0l8.mi.idrivee2-21.com"
+  #S3_CDN = "https://e2.mp3pam.com"
+  S3_CDN="https://files.mp3pam.com"
+  S3_PUBLIC_URL = "https://pub-fd5a73e891074ad6b02da4ecdf7f9d72.r2.dev"
+  S3_ENDPOINT= "https://383befd916cc7e3167283d76d3f5d225.r2.cloudflarestorage.com"
+  #S3_PUBLIC_URL = "https://e2.mp3pam.com"
+  #S3_ENDPOINT = "https://p0l8.mi.idrivee2-21.com"
 
 
 [experimental]

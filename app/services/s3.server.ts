@@ -51,11 +51,12 @@ export const putSignedUrl = async ({
   isPublic = false,
   mimeType,
 }: PostURLParams) => {
+  console.log(mimeType)
   const command = new PutObjectCommand({
     Bucket: bucket,
     Key: resource,
     ContentType: mimeType,
-    ...(isPublic && { ACL: 'public-read' }),
+    // ...(isPublic && { ACL: 'public-read' }),
   })
   const url = await signUurl(s3, command, {
     expiresIn: putSignedUrlExpireSeconds,

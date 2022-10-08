@@ -38,9 +38,9 @@ export default function useFileUpload({ message, headers }: Params) {
     let h: Record<string, string> = {}
 
     if (headers) {
-      if (headers.public) {
-        h['x-amz-acl'] = 'public-read'
-      }
+      // if (headers.public) {
+      //   h['x-amz-acl'] = 'public-read'
+      // }
 
       if (headers.attachment) {
         h['Content-Disposition'] = 'attachment'
@@ -57,7 +57,7 @@ export default function useFileUpload({ message, headers }: Params) {
       const options = {
         headers: {
           'Content-Type': file.type,
-          'X-Requested-With': 'XMLHttpRequest',
+          // 'X-Requested-With': 'XMLHttpRequest',
           ...getHeaders(),
         },
         onUploadProgress: (progressEvent: ProgressEvent) => {
