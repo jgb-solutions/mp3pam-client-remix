@@ -40,6 +40,8 @@ app.use(
 // more aggressive with this caching.
 app.use(express.static('public', { maxAge: '1y' }))
 
+app.use('/build', express.static('public/~partytown', { maxAge: '1w' }))
+
 app.use(morgan('tiny'))
 
 app.all(

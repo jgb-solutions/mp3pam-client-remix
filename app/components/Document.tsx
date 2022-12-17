@@ -8,11 +8,13 @@ import {
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
 import { withEmotionCache } from '@emotion/react'
+import { Partytown } from '@builder.io/partytown/react'
 import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
 
 import ClientStyleContext from '~/mui/ClientStyleContext'
 import theme from '~/mui/theme'
 import { DOMAIN } from '~/utils/constants.server'
+import { useApp } from '~/hooks/useApp'
 
 interface DocumentProps {
   children: React.ReactNode
@@ -22,6 +24,7 @@ interface DocumentProps {
 
 export const Document = withEmotionCache(
   ({ children, title, pathname }: DocumentProps, emotionCache) => {
+    const { NODE_ENV } = useApp()
     const clientStyleData = useContext(ClientStyleContext)
 
     useEnhancedEffect(() => {
@@ -44,6 +47,7 @@ export const Document = withEmotionCache(
           {pathname && <link rel="canonical" href={`${DOMAIN}${pathname}`} />}
 
           {title ? <title>{title}</title> : null}
+          <Partytown />
           <Meta />
           <Links />
           <link
@@ -74,6 +78,15 @@ export const Document = withEmotionCache(
               title={`${type.toUpperCase()}'s XML Feed`}
             />
           ))}
+
+          {NODE_ENV === 'production' && (
+            <script
+              type="text/partytown"
+              async
+              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7985740684992774"
+              crossOrigin="anonymous"
+            ></script>
+          )}
         </head>
 
         <Box component="body" sx={{ bgcolor: 'black' }}>

@@ -119,6 +119,7 @@ export const loader = async ({ request }: LoaderArgs) => {
       currentUser,
       flashError,
       pathname: url.pathname,
+      NODE_ENV: process.env.NODE_ENV,
     },
     {
       headers: {
