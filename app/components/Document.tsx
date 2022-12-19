@@ -8,7 +8,7 @@ import {
 import { useContext } from 'react'
 import Box from '@mui/material/Box'
 import { withEmotionCache } from '@emotion/react'
-import { Partytown } from '@builder.io/partytown/react'
+// import { Partytown } from '@builder.io/partytown/react'
 import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material'
 
 import ClientStyleContext from '~/mui/ClientStyleContext'
@@ -47,7 +47,7 @@ export const Document = withEmotionCache(
           {pathname && <link rel="canonical" href={`${DOMAIN}${pathname}`} />}
 
           {title ? <title>{title}</title> : null}
-          <Partytown />
+          {/* <Partytown /> */}
           <Meta />
           <Links />
           <link
@@ -81,7 +81,7 @@ export const Document = withEmotionCache(
 
           {NODE_ENV === 'production' && (
             <script
-              type="text/partytown"
+              // type="text/partytown"
               async
               src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7985740684992774"
               crossOrigin="anonymous"
