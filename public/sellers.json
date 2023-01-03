@@ -1,0 +1,15 @@
+{
+  "contact_email": "jeangerardmac@gmail.com",
+  "identifiers": [{
+    "name": "TAG-ID",
+    "value": "f08c47fec0942fa0"
+  }],
+  "version": "1.0",
+  "sellers": [{
+    "seller_id": "pub-7985740684992774",
+    "is_confidential": 0,
+    "seller_type": "PUBLISHER",
+    "name": "Jean Gérard Bousiquot",
+    "domain": "mp3pam.com"
+  }]
+}
