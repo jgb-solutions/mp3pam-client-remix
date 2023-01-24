@@ -6,6 +6,8 @@ import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import { combineReducers } from 'redux'
 import playerReducer from './reducers/playerReducer'
 
+import type { PersistConfig } from 'redux-persist'
+
 const createNoopStorage = () => {
   return {
     getItem(_key: string) {
@@ -26,10 +28,11 @@ const rootReducer = combineReducers({
   player: playerReducer,
 })
 
-const persistConfig = {
+const persistConfig: PersistConfig = {
   key: `v_01_01_2022_001`,
   storage,
   whitelist: ['player'],
+  // timeout: 0,
   // stateReconciler: autoMergeLevel2
 }
 

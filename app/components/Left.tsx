@@ -9,7 +9,6 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle'
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
 import PrivacyTipIcon from '@mui/icons-material/PrivacyTip'
 import SecurityIcon from '@mui/icons-material/Security'
 import SafetyCheckIcon from '@mui/icons-material/SafetyCheck'
@@ -63,10 +62,7 @@ type Props = {
 }
 
 const Left = (props: Props) => {
-  const {
-    context: { isChatBoxOpen, openChatBox },
-    isLoggedIn,
-  } = useApp()
+  const { isLoggedIn } = useApp()
 
   const closeDrawer = () => {
     if (props.closeDrawerLeft) {
@@ -118,14 +114,12 @@ const Left = (props: Props) => {
       {/* Favorite Menu */}
       {isLoggedIn && (
         <Box mb="1rem">
-          <p>
-            <Typography
-              sx={[styles.link, styles.library] as BoxProps['sx']}
-              onClick={closeDrawer}
-            >
-              Your Favorites
-            </Typography>
-          </p>
+          <Typography
+            sx={[styles.link, styles.library] as BoxProps['sx']}
+            onClick={closeDrawer}
+          >
+            Your Favorites
+          </Typography>
 
           {favoriteMenu.map((menuItem, index) => (
             <NavLink
@@ -174,14 +168,12 @@ const Left = (props: Props) => {
       )}
 
       <Box>
-        <p>
-          <Typography
-            sx={[styles.link, styles.library] as BoxProps['sx']}
-            onClick={closeDrawer}
-          >
-            Pages
-          </Typography>
-        </p>
+        <Typography
+          sx={[styles.link, styles.library] as BoxProps['sx']}
+          onClick={closeDrawer}
+        >
+          Pages
+        </Typography>
         {pagesMenu.map((menuItem, index) => (
           <NavLink
             prefetch="intent"

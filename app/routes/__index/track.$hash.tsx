@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, Suspense } from 'react'
 import type {
   MetaFunction,
   HtmlMetaDescriptor,
@@ -14,7 +14,7 @@ import {
 } from 'react-share'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import { json } from '@remix-run/node'
+import { json, defer } from '@remix-run/node'
 import { darken } from '@mui/material'
 import Button from '@mui/material/Button'
 import InfoIcon from '@mui/icons-material/Info'
@@ -29,7 +29,13 @@ import TwitterIcon from '@mui/icons-material/Twitter'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsappIcon from '@mui/icons-material/WhatsApp'
 import HeadsetIcon from '@mui/icons-material/Headset'
-import { Link, useCatch, useLoaderData, useNavigate } from '@remix-run/react'
+import {
+  Link,
+  useCatch,
+  useLoaderData,
+  useNavigate,
+  Await,
+} from '@remix-run/react'
 
 import {
   SMALL_SCREEN_SIZE,
@@ -174,7 +180,14 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     throw new Response('Track not found', { status: 404 })
   }
 
-  return json({ track })
+  return defer({
+    track,
+    trackPromise: new Promise<TrackDetail>((resolve) => {
+      setTimeout(() => {
+        resolve(track)
+      }, 2000)
+    }),
+  })
 }
 
 export const action = async ({ request }: ActionArgs) => {
@@ -215,7 +228,7 @@ export default function TrackDetailPage() {
   const [openAddTrackToPlaylistPopup, setOpenAddTrackToPlaylistPopup] =
     useState(false)
 
-  const { track } = useLoaderData<NonNullable<typeof loader>>()
+  const { track, trackPromise } = useLoaderData<NonNullable<typeof loader>>()
 
   const makeSoundList = useCallback(() => {
     const { hash, title, posterUrl, artist, audioUrl } = track
@@ -259,7 +272,8 @@ export default function TrackDetailPage() {
   }, [dispatch, isPlaying, makeList, playingListHash, track.hash])
 
   const getTabs = () => {
-    const url = window.location.href
+    const url =
+      (typeof window === 'undefined' ? {} : window).location?.href || ''
     const title = `Listen to ${track.title} by ${track.artist.stageName}`
     const hashtags = `${APP_NAME} music track share`
     const tabs: TabItem[] = [
@@ -519,14 +533,24 @@ export default function TrackDetailPage() {
       <Tabs title="Detail Tabs" tabs={getTabs()} />
 
       <br />
-
-      {track.relatedTracks.length > 0 ? (
-        <TrackScrollingList
-          category="Related Tracks"
-          tracks={track.relatedTracks}
-          browse={AppRoutes.browse.tracks}
-        />
-      ) : null}
+      <Suspense fallback={<p>Loading related tracks...</p>}>
+        <Await
+          resolve={trackPromise}
+          errorElement={<p>Error loading package location!</p>}
+        >
+          {(trackResolved) =>
+            trackResolved.relatedTracks.length > 0 ? (
+              <TrackScrollingList
+                category="Related Tracks"
+                tracks={trackResolved.relatedTracks}
+                browse={AppRoutes.browse.tracks}
+              />
+            ) : (
+              <></>
+            )
+          }
+        </Await>
+      </Suspense>
 
       {openAddTrackToPlaylistPopup && (
         <AddTrackToPlaylist

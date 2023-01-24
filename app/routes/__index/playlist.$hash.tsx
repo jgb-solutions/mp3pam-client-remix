@@ -199,7 +199,8 @@ const PlaylistDetailPage = () => {
   }
 
   const getTabs = () => {
-    const url = window.location.href
+    const url =
+      (typeof window === 'undefined' ? {} : window).location?.href || ''
     const title = `Listen to ${playlist.title} (playlist) by ${playlist.account.name}`
     const hashtags = `${APP_NAME} music playlist share`
     const tabs: TabItem[] = []

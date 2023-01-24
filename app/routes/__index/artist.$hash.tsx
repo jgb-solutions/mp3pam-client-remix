@@ -163,7 +163,8 @@ export default function ArtistDetailPage() {
   if (!artist) return null
 
   const getTabs = () => {
-    const url = window.location.href
+    const url =
+      (typeof window === 'undefined' ? {} : window).location?.href || ''
     const title = `${artist.stageName} on ${APP_NAME}`
     const hashtags = `${APP_NAME} music artist share`
 

@@ -170,7 +170,8 @@ export default function LoginPage() {
       if (formRef.current) {
         submit(formRef.current, {
           method: 'post',
-          action: window.location.href,
+          action:
+            (typeof window === 'undefined' ? {} : window).location?.href || '',
         })
       }
     },

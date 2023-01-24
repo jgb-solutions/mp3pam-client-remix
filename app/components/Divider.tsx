@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
-import type { CSSProperties, FC } from 'react'
+
+import type { CSSProperties, FC, PropsWithChildren } from 'react'
 
 import colors from '../utils/colors'
 import type { BoxStyles } from '~/interfaces/types'
@@ -51,9 +52,7 @@ export const styles: BoxStyles = {
   },
 }
 
-type Props = {}
-
-const Divider: FC<Props> = ({ children }) => {
+const Divider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Box sx={styles.divider}>
       <Box component="strong" sx={styles.title}>

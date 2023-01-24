@@ -25,6 +25,11 @@ import type {
   addGenre,
 } from '~/database/requests.server'
 
+export enum TrackAction {
+  UPDATE_PLAY_COUNT = 'UPDATE_PLAY_COUNT',
+  UPDATE_FAVORITE = 'UPDATE_FAVORITE',
+}
+
 export type BoxStyles = { [key: string]: Required<BoxProps['sx']> }
 export type GridStyles = { [key: string]: GridProps['sx'] }
 export type TrackDetail = NonNullable<
@@ -33,6 +38,7 @@ export type TrackDetail = NonNullable<
 export type DownloadTrack = NonNullable<
   Awaited<ReturnType<typeof getTrackDownload>>
 >
+
 export type ArtistDetail = NonNullable<
   Awaited<ReturnType<typeof fetchArtistDetail>>
 >

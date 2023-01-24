@@ -1,10 +1,3 @@
-import type {
-  LoaderArgs,
-  MetaFunction,
-  LinksFunction,
-  HeadersFunction,
-  HtmlMetaDescriptor,
-} from '@remix-run/node'
 import {
   Link,
   Outlet,
@@ -16,12 +9,8 @@ import {
 import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import { Provider } from 'react-redux'
-import Dialog from '@mui/material/Dialog'
 import { useCallback, useState } from 'react'
 import Typography from '@mui/material/Typography'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 import { PersistGate } from 'redux-persist/integration/react'
 
@@ -42,6 +31,14 @@ import HeaderTitle from './components/HeaderTitle'
 import { authenticator } from './auth/auth.server'
 import { APP_NAME, FB_APP_ID, TWITTER_HANDLE } from './utils/constants'
 
+import type {
+  LoaderArgs,
+  MetaFunction,
+  LinksFunction,
+  HeadersFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
+
 export const links: LinksFunction = () => [
   {
     rel: 'stylesheet',
@@ -50,24 +47,6 @@ export const links: LinksFunction = () => [
 ]
 
 const { store, persistor } = persistedStore()
-
-type ChatProps = {
-  open: boolean
-  handleClose: () => void
-}
-export function Chat({ open, handleClose }: ChatProps) {
-  return (
-    <Dialog onClose={handleClose} open={open} maxWidth="sm" fullWidth>
-      <DialogTitle>Chat widget</DialogTitle>
-      <DialogContent>Content for you here</DialogContent>
-      <DialogActions>
-        {/* <Button autoFocus onClick={handleClose} variant="contained">
-          Save changes
-        </Button> */}
-      </DialogActions>
-    </Dialog>
-  )
-}
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
   return {
@@ -152,11 +131,6 @@ export default function App() {
     submit(null, { method: 'post', action: `/logout?returnTo=${returnTo}` })
   }, [location.pathname, submit])
 
-  // Chat box
-  const handleCloseChatBox = useCallback(() => {
-    setIsChatBoxOpen(false)
-  }, [])
-
   const handleOpenChatBox = useCallback(() => {
     setIsChatBoxOpen(true)
   }, [])
@@ -185,7 +159,6 @@ export default function App() {
         <PersistGate loading={null} persistor={persistor}>
           <RootLayout>
             <Outlet context={context} />
-            <Chat open={isChatBoxOpen} handleClose={handleCloseChatBox} />
           </RootLayout>
         </PersistGate>
       </Provider>

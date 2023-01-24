@@ -42,12 +42,13 @@ import { PhotonImage } from './PhotonImage'
 import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
 import colors from '../utils/colors'
-import type { BoxStyles } from '~/interfaces/types'
+import { TrackAction } from '~/interfaces/types'
 import type { SoundInterface } from '../interfaces/ListInterface'
 import type PlayerInterface from '../interfaces/PlayerInterface'
 import type AppStateInterface from '../interfaces/AppStateInterface'
 import { syncStateAction } from '~/redux/actions/playerActions'
-import { TrackAction } from '~/routes/api/track'
+
+import type { BoxStyles } from '~/interfaces/types'
 
 let syncStateTimeoutId: number
 

@@ -211,7 +211,8 @@ export default function AlbumDetailPage() {
   }
 
   const getTabs = () => {
-    const url = window.location.href
+    const url =
+      (typeof window === 'undefined' ? {} : window).location?.href || ''
     const title = `Listen to ${album.title} by ${album.artist.stageName}`
     const hashtags = `${APP_NAME} music album share`
     const tabs: TabItem[] = []
