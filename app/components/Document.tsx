@@ -60,14 +60,14 @@ export function Document({ children, title, pathname }: DocumentProps) {
           />
         ))}
 
-        {NODE_ENV === 'production' && (
+        {/* {NODE_ENV === 'production' && (
           <script
             type="text/partytown"
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7985740684992774"
             crossOrigin="anonymous"
           ></script>
-        )}
+        )} */}
       </head>
 
       <Box component="body" sx={{ bgcolor: 'black', color: 'white' }}>
