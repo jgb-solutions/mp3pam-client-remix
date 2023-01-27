@@ -1,11 +1,5 @@
-import type {
-  LoaderArgs,
-  ActionArgs,
-  MetaFunction,
-  HtmlMetaDescriptor,
-} from '@remix-run/node'
 import { z } from 'zod'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { json } from '@remix-run/node'
 import { useForm } from 'react-hook-form'
 import AlbumIcon from '@mui/icons-material/Album'
@@ -33,6 +27,13 @@ import { bucket } from '~/services/s3.server'
 import type { ResourceType } from '~/services/s3.server'
 import { addAlbum, addArtist, fetchMyArtists } from '~/database/requests.server'
 import { MAX_IMG_FILE_SIZE, CURRENT_YEAR } from '~/utils/constants'
+
+import type {
+  LoaderArgs,
+  ActionArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
 import type { AddArtist, BoxStyles, MyArtists } from '~/interfaces/types'
 
 const styles: BoxStyles = {
@@ -186,9 +187,12 @@ export default function AddAlbumPage() {
   const [chosenArtistId, setChosenArtistId] = useState('')
   const watchArtistValue = watch('artistId')
 
-  const handleAlbumSucessDialogClose = () => setOpenAlbumSuccessDialog(false)
+  const handleAlbumSucessDialogClose = useCallback(
+    () => setOpenAlbumSuccessDialog(false),
+    []
+  )
 
-  const handleAddArtistDialogClose = () => {
+  const handleAddArtistDialogClose = useCallback(() => {
     if (!watchArtistValue || watchArtistValue === 'add-artist') {
       setValue('artistId', '')
       setError('artistId', {
@@ -198,13 +202,16 @@ export default function AddAlbumPage() {
     }
 
     setOpenAddArtistDialog(false)
-  }
+  }, [setError, setValue, watchArtistValue])
 
-  const handleOpenInvalidFileSizeClose = () => setOpenInvalidFileSize('')
+  const handleOpenInvalidFileSizeClose = useCallback(
+    () => setOpenInvalidFileSize(''),
+    []
+  )
 
-  const handleOnArtistCreated = ({ id }: AddArtist) => {
+  const handleOnArtistCreated = useCallback(({ id }: AddArtist) => {
     setChosenArtistId(id.toString())
-  }
+  }, [])
 
   useEffect(() => {
     if (chosenArtistId) {
@@ -219,33 +226,36 @@ export default function AddAlbumPage() {
     }
   }, [watchArtistValue])
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = getFile(event)
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = getFile(event)
 
-    if (!file) {
-      alert('Please choose a cover')
-      return
-    }
+      if (!file) {
+        alert('Please choose a cover')
+        return
+      }
 
-    const type: ResourceType = 'image'
+      const type: ResourceType = 'image'
 
-    const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
+      const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
 
-    fetch(`/api/account?${query}`)
-      .then((res) => res.json())
-      .then(({ signedUrl, filePath }) => {
-        uploadImg({ file, signedUrl })
-        setValue('cover', filePath)
-        clearErrors('cover')
-      })
-  }
+      fetch(`/api/account?${query}`)
+        .then((res) => res.json())
+        .then(({ signedUrl, filePath }) => {
+          uploadImg({ file, signedUrl })
+          setValue('cover', filePath)
+          clearErrors('cover')
+        })
+    },
+    [clearErrors, setValue, uploadImg]
+  )
 
-  const handleInvalidImageSize = (filesize: number) => {
+  const handleInvalidImageSize = useCallback((filesize: number) => {
     setOpenInvalidFileSize(`
 		The file size exceeds 1 MB. <br />
 		Choose another one or reduce the size to upload.
 	`)
-  }
+  }, [])
 
   useEffect(() => {
     if (albumFetcher.data) {

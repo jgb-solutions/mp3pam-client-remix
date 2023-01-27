@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import { useCallback } from 'react'
 import { NavLink } from '@remix-run/react'
 import HomeIcon from '@mui/icons-material/Home'
 import InfoIcon from '@mui/icons-material/Info'
@@ -47,9 +48,6 @@ const favoriteMenu = [
     to: AppRoutes.account.favorites.tracks,
     icon: <MusicNoteIcon />,
   },
-  // { name: "Artists", to: AppRoutes.account.favorites.artists, icon: <PersonPinCircleIcon /> },
-  // { name: "Albums", to: AppRoutes.account.favorites.albums, icon: <AlbumIcon /> },
-  // { name: "PlayLists", to: AppRoutes.account.favorites.playlists, icon: <PlaylistAddIcon /> },
   {
     name: 'Queue',
     to: AppRoutes.account.queue,
@@ -64,18 +62,18 @@ type Props = {
 const Left = (props: Props) => {
   const { isLoggedIn } = useApp()
 
-  const closeDrawer = () => {
+  const closeDrawer = useCallback(() => {
     if (props.closeDrawerLeft) {
       props.closeDrawerLeft(false)
     }
-  }
+  }, [props])
 
   return (
     <>
       <Logo />
 
       {/* Browse Menu */}
-      <Box>
+      <Box sx={{ mb: 2 }}>
         <p>
           <NavLink
             prefetch="intent"
@@ -141,29 +139,6 @@ const Left = (props: Props) => {
               </Box>
             </NavLink>
           ))}
-
-          {/* <Box
-          style={
-            {
-              ...styles.link,
-              ...styles.libraryLink,
-              ...(isChatBoxOpen ? styles.activeClassName : {}),
-              cursor: 'pointer',
-              marginBottom: '3rem',
-            } as CSSProperties
-          }
-          onClick={() => {
-            openChatBox()
-            closeDrawer()
-          }}
-        >
-          <Box component="span" sx={styles.linkIcon}>
-            <ChatBubbleIcon />
-          </Box>
-          <Box component="span" sx={styles.linkText}>
-            Chat
-          </Box>
-        </Box> */}
         </Box>
       )}
 

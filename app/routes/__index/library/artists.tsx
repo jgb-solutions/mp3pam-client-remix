@@ -8,7 +8,7 @@ import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
 import Table from '@mui/material/Table'
 import Button from '@mui/material/Button'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 import TableHead from '@mui/material/TableHead'
@@ -97,9 +97,9 @@ export default function ManageArtistsPage() {
     }
   }, [fetcher])
 
-  const confirmDelete = (hash: number) => {
+  const confirmDelete = useCallback((hash: number) => {
     setArtistHashToDelete(hash)
-  }
+  }, [])
 
   return (
     <>

@@ -1,21 +1,20 @@
+import Box from '@mui/material/Box'
+import { Link } from '@remix-run/react'
 import Table from '@mui/material/Table'
+import { withStyles } from '@mui/styles'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
-import Box from '@mui/material/Box'
-import { Link } from '@remix-run/react'
 
+import theme from '~/mui/theme'
 import colors from '../utils/colors'
 import PlayPause from './PlayPause'
-import { useSelector } from 'react-redux'
-import type AppStateInterface from '../interfaces/AppStateInterface'
-import type { SoundInterface } from '../interfaces/ListInterface'
-
 import AppRoutes from '~/app-routes'
+import { usePlayer } from '~/hooks/usePlayer'
 import type { BoxStyles } from '~/interfaces/types'
-import theme from '~/mui/theme'
-import { withStyles } from '@mui/styles'
+
+import type { SoundInterface } from '../interfaces/types'
 
 const styles: BoxStyles = {
   table: {
@@ -48,9 +47,9 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell)
 
 export default function QueueTable() {
-  const { currentSound, currentPlayingIndex, queueList, list } = useSelector(
-    (appState: AppStateInterface) => appState.player
-  )
+  const {
+    playerState: { currentSound, currentPlayingIndex, queueList, list },
+  } = usePlayer()
 
   return (
     <Table sx={styles.table} size="small">

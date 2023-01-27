@@ -1,8 +1,6 @@
 import { z } from 'zod'
 import Box from '@mui/material/Box'
-import type { ChangeEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { BoxProps } from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
@@ -27,6 +25,10 @@ import { useApp } from '~/hooks/useApp'
 import TextIcon from '~/components/TextIcon'
 import useFileUpload from '~/hooks/useFileUpload'
 import HeaderTitle from '~/components/HeaderTitle'
+
+import type { ChangeEvent } from 'react'
+import type { BoxProps } from '@mui/material/Box'
+
 import type { ResourceType } from '~/services/s3.server'
 import type { BoxStyles, SessionAccount } from '~/interfaces/types'
 
@@ -57,6 +59,8 @@ export const ProfileSchema = z.object({
     .optional()
     .nullable(),
 })
+
+type Profile = z.infer<typeof ProfileSchema>
 
 export const PasswordSchema = z
   .object({
@@ -116,7 +120,7 @@ function Edit({ account, handleClose }: EditProps) {
   })
 
   const handleUpdateProfile = useCallback(
-    (data) => {
+    (data: any) => {
       if (!profileFetcher) return
 
       const values = ProfileSchema.parse(data)
@@ -137,7 +141,7 @@ function Edit({ account, handleClose }: EditProps) {
   )
 
   const handleUpdatePassword = useCallback(
-    (data) => {
+    (data: any) => {
       if (!passwordFetcher) return
 
       const values = PasswordSchema.parse(data)
@@ -412,8 +416,8 @@ export default function AccountModal() {
     }
   }, [avatarFetcher, filePath, isUploaded])
 
-  const handleWantToEdit = () => setWantToEdit(true)
-  const handleStopEditing = () => setWantToEdit(false)
+  const handleWantToEdit = useCallback(() => setWantToEdit(true), [])
+  const handleStopEditing = useCallback(() => setWantToEdit(false), [])
 
   const handleSelectAvatar = useCallback(() => {
     inputref.current?.click()

@@ -5,7 +5,7 @@ import type {
   HtmlMetaDescriptor,
 } from '@remix-run/node'
 import Box from '@mui/material/Box'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Table from '@mui/material/Table'
 import { json } from '@remix-run/node'
 import Button from '@mui/material/Button'
@@ -95,9 +95,9 @@ export default function ManageAlbumsPage() {
     }
   }, [fetcher])
 
-  const confirmDelete = (hash: number) => {
+  const confirmDelete = useCallback((hash: number) => {
     setAlbumHashToDelete(hash)
-  }
+  }, [])
 
   return (
     <>

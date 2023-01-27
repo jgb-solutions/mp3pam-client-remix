@@ -8,11 +8,9 @@ import {
 } from '@remix-run/react'
 import Box from '@mui/material/Box'
 import { json } from '@remix-run/node'
-import { Provider } from 'react-redux'
 import { useCallback, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
-import { PersistGate } from 'redux-persist/integration/react'
 
 import {
   shouldCache,
@@ -22,7 +20,6 @@ import {
 import theme from './mui/theme'
 import AppRoutes from './app-routes'
 import appStyles from '~/styles/app.css'
-import { persistedStore } from './redux/store'
 import { Document } from './components/Document'
 import FourOrFour from './components/FourOrFour'
 import { DOMAIN } from './utils/constants.server'
@@ -45,8 +42,6 @@ export const links: LinksFunction = () => [
     href: appStyles,
   },
 ]
-
-const { store, persistor } = persistedStore()
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
   return {
@@ -155,13 +150,9 @@ export default function App() {
 
   return (
     <Document pathname={pathname}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <RootLayout>
-            <Outlet context={context} />
-          </RootLayout>
-        </PersistGate>
-      </Provider>
+      <RootLayout>
+        <Outlet context={context} />
+      </RootLayout>
     </Document>
   )
 }

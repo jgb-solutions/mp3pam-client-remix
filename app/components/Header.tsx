@@ -1,5 +1,4 @@
-import type { FC } from 'react'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Box from '@mui/material/Box'
 import Menu from '@mui/material/Menu'
 import { Link, useLocation } from '@remix-run/react'
@@ -23,8 +22,10 @@ import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
 import SearchInput from './SearchInput'
 import { useApp } from '~/hooks/useApp'
-import type { BoxStyles } from '~/interfaces/types'
 import { SMALL_SCREEN_SIZE } from '~/utils/constants'
+
+import type { FC } from 'react'
+import type { BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   grow: {
@@ -97,12 +98,16 @@ const Header: FC = () => {
   // Menu
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(menuAnchorEl)
-  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setMenuAnchorEl(event.currentTarget)
-  }
-  const handleCloseMenu = () => {
+
+  const handleOpenMenu = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      setMenuAnchorEl(event.currentTarget)
+    },
+    []
+  )
+  const handleCloseMenu = useCallback(() => {
     setMenuAnchorEl(null)
-  }
+  }, [])
 
   return (
     <Box sx={styles.grow}>

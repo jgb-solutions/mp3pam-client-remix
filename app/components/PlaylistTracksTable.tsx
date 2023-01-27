@@ -2,20 +2,21 @@ import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
 import { Link } from '@remix-run/react'
 import { withStyles } from '@mui/styles'
-import { useSelector } from 'react-redux'
+import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
 
 import theme from '~/mui/theme'
 import PlayPause from './PlayPause'
 import AppRoutes from '~/app-routes'
 import colors from '../utils/colors'
+import ClientOnly from './ClientOnly'
+import { usePlayer } from '~/hooks/usePlayer'
 import { makeSoundFromTrack } from '../utils/helpers'
-import type ListInterface from '~/interfaces/ListInterface'
+
+import type { ListInterface } from '~/interfaces/types'
 import type { BoxStyles, PlaylistDetail } from '~/interfaces/types'
-import type AppStateInterface from '../interfaces/AppStateInterface'
 
 const styles: BoxStyles = {
   table: {
@@ -50,9 +51,9 @@ export const StyledTableCell = withStyles({
 type Props = { playlist: PlaylistDetail; list: ListInterface }
 
 export default function PlaylistTracksTable({ playlist, list }: Props) {
-  const { currentSound } = useSelector(
-    (appState: AppStateInterface) => appState.player
-  )
+  const {
+    playerState: { currentSound },
+  } = usePlayer()
 
   return (
     <Table sx={styles.table} size="small">
@@ -64,7 +65,6 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
 
           <StyledTableCell>Play</StyledTableCell>
           <StyledTableCell>Download</StyledTableCell>
-          {/* <StyledTableCell>By</StyledTableCell> */}
         </TableRow>
       </TableHead>
       <TableBody>
@@ -76,7 +76,7 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
 
           return (
             <TableRow
-              key={index}
+              key={track.hash}
               style={{
                 borderBottom:
                   playlist.tracks.length - 1 === index ? '' : '1px solid white',
@@ -85,9 +85,11 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
               <StyledTableCell style={{ width: '4%' }}>
                 {index + 1}
               </StyledTableCell>
+
               <StyledTableCell style={{ width: '10%', minWidth: '60px' }}>
-                <PlayPause sound={makeSoundFromTrack(track)} list={list} />
-                {/* <Heart /> */}
+                <ClientOnly>
+                  <PlayPause sound={makeSoundFromTrack(track)} list={list} />
+                </ClientOnly>
               </StyledTableCell>
               <StyledTableCell style={{ width: '90%', color }}>
                 <Box
@@ -106,15 +108,6 @@ export default function PlaylistTracksTable({ playlist, list }: Props) {
               <StyledTableCell style={{ width: '1.5%', color }}>
                 {track.downloadCount}
               </StyledTableCell>
-              {/* <StyledTableCell style={{ width: '35%', color }}>
-                {playlist.artist?.stage_name}
-              </StyledTableCell>
-              <StyledTableCell style={{ width: '20%', color }}>
-                {track.type?.toUpperCase()}
-              </StyledTableCell> */}
-              {/* <StyledTableCell>
-                <More />
-              </StyledTableCell> */}
             </TableRow>
           )
         })}

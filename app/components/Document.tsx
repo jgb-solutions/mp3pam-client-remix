@@ -6,11 +6,12 @@ import {
   ScrollRestoration,
 } from '@remix-run/react'
 import Box from '@mui/material/Box'
+
 // import { Partytown } from '@builder.io/partytown/react'
 
 import theme from '~/mui/theme'
-import { DOMAIN } from '~/utils/constants.server'
-
+import { DOMAIN } from '~/utils/constants'
+const NODE_ENV = process.env.NODE_ENV
 interface DocumentProps {
   children: React.ReactNode
   title?: string
@@ -59,14 +60,14 @@ export function Document({ children, title, pathname }: DocumentProps) {
           />
         ))}
 
-        {/* {NODE_ENV === 'production' && (
-            <script
-              type="text/partytown"
-              async
-              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7985740684992774"
-              crossOrigin="anonymous"
-            ></script>
-          )} */}
+        {NODE_ENV === 'production' && (
+          <script
+            type="text/partytown"
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7985740684992774"
+            crossOrigin="anonymous"
+          ></script>
+        )}
       </head>
 
       <Box component="body" sx={{ bgcolor: 'black', color: 'white' }}>

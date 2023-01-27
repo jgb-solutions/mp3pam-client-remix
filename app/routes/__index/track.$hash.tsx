@@ -1,10 +1,10 @@
-import { useCallback, useState, Suspense } from 'react'
-import type {
-  MetaFunction,
-  HtmlMetaDescriptor,
-  LoaderArgs,
-  ActionArgs,
-} from '@remix-run/node'
+import {
+  Link,
+  Await,
+  useCatch,
+  useNavigate,
+  useLoaderData,
+} from '@remix-run/react'
 import {
   EmailShareButton,
   TwitterShareButton,
@@ -14,42 +14,36 @@ import {
 } from 'react-share'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import { json, defer } from '@remix-run/node'
 import { darken } from '@mui/material'
 import Button from '@mui/material/Button'
+import { json, defer } from '@remix-run/node'
 import InfoIcon from '@mui/icons-material/Info'
 import ShareIcon from '@mui/icons-material/Share'
 import EmailIcon from '@mui/icons-material/Email'
 import GetAppIcon from '@mui/icons-material/GetApp'
-import { useDispatch, useSelector } from 'react-redux'
-import LineWeightIcon from '@mui/icons-material/LineWeight'
-import FindReplaceIcon from '@mui/icons-material/FindReplace'
-import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
+import FacebookIcon from '@mui/icons-material/Facebook'
+import { useCallback, useState, Suspense } from 'react'
+import HeadsetIcon from '@mui/icons-material/Headset'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsappIcon from '@mui/icons-material/WhatsApp'
-import HeadsetIcon from '@mui/icons-material/Headset'
-import {
-  Link,
-  useCatch,
-  useLoaderData,
-  useNavigate,
-  Await,
-} from '@remix-run/react'
+import LineWeightIcon from '@mui/icons-material/LineWeight'
+import FindReplaceIcon from '@mui/icons-material/FindReplace'
 
 import {
-  SMALL_SCREEN_SIZE,
   APP_NAME,
   SEO_TRACK_TYPE,
   TWITTER_HANDLE,
+  SMALL_SCREEN_SIZE,
 } from '~/utils/constants'
 import {
-  playNextAction,
+  usePlayer,
   pauseListAction,
+  playNextAction,
   playListAction,
-  resumeListAction,
   addToQueueAction,
-} from '~/redux/actions/playerActions'
+  resumeListAction,
+} from '~/hooks/usePlayer'
 import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
 import colors from '~/utils/colors'
@@ -58,18 +52,26 @@ import Tabs from '~/components/Tabs'
 import Heart from '~/components/Heart'
 import { db } from '~/database/db.server'
 import { useAuth } from '~/hooks/useAuth'
+import FourOrFour from '~/components/FourOrFour'
+import type { TabItem } from '~/components/Tabs'
+import ClientOnly from '~/components/ClientOnly'
 import { DOMAIN } from '~/utils/constants.server'
 import { authenticator } from '~/auth/auth.server'
-import type { TabItem } from '~/components/Tabs'
-import type ListInterface from '~/interfaces/ListInterface'
-import type AppStateInterface from '~/interfaces/AppStateInterface'
-import { TrackScrollingList } from '~/components/TrackScrollingList'
-import FourOrFour from '~/components/FourOrFour'
 import HeaderTitle from '~/components/HeaderTitle'
 import { PhotonImage } from '~/components/PhotonImage'
 import { fetchTrackDetail } from '~/database/requests.server'
 import type { BoxStyles, TrackDetail } from '~/interfaces/types'
 import { AddTrackToPlaylist } from '~/components/AddTrackToPlaylist'
+import { TrackScrollingList } from '~/components/TrackScrollingList'
+
+import type {
+  LoaderArgs,
+  ActionArgs,
+  MetaFunction,
+  HtmlMetaDescriptor,
+} from '@remix-run/node'
+
+import type { ListInterface } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   row: {
@@ -182,11 +184,11 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
   return defer({
     track,
-    trackPromise: new Promise<TrackDetail>((resolve) => {
-      setTimeout(() => {
-        resolve(track)
-      }, 2000)
-    }),
+    // trackPromise: new Promise<TrackDetail>((resolve) => {
+    //   setTimeout(() => {
+    //     resolve(track)
+    //   }, 500)
+    // }),
   })
 }
 
@@ -214,21 +216,17 @@ export const action = async ({ request }: ActionArgs) => {
 }
 
 export default function TrackDetailPage() {
-  const dispatch = useDispatch()
-  const { playingListHash, isPlaying } = useSelector(
-    ({ player }: AppStateInterface) => ({
-      playingListHash: player?.list?.hash,
-      isPlaying: player.isPlaying,
-      currentTime: player.currentTime,
-    })
-  )
+  const {
+    playerState: { list, isPlaying },
+  } = usePlayer()
+  const playingListHash = list?.hash
   const { isLoggedIn } = useAuth()
 
   const navigate = useNavigate()
   const [openAddTrackToPlaylistPopup, setOpenAddTrackToPlaylistPopup] =
     useState(false)
 
-  const { track, trackPromise } = useLoaderData<NonNullable<typeof loader>>()
+  const { track } = useLoaderData<NonNullable<typeof loader>>()
 
   const makeSoundList = useCallback(() => {
     const { hash, title, posterUrl, artist, audioUrl } = track
@@ -259,19 +257,19 @@ export default function TrackDetailPage() {
 
   const togglePlay = useCallback(() => {
     if (isPlaying && playingListHash === track.hash) {
-      dispatch(pauseListAction())
+      pauseListAction()
     }
 
     if (!isPlaying && playingListHash === track.hash) {
-      dispatch(resumeListAction())
+      resumeListAction()
     }
 
     if (playingListHash !== track.hash) {
-      dispatch(playListAction(makeList()))
+      playListAction(makeList())
     }
-  }, [dispatch, isPlaying, makeList, playingListHash, track.hash])
+  }, [isPlaying, makeList, playingListHash, track.hash])
 
-  const getTabs = () => {
+  const getTabs = useCallback(() => {
     const url =
       (typeof window === 'undefined' ? {} : window).location?.href || ''
     const title = `Listen to ${track.title} by ${track.artist.stageName}`
@@ -375,18 +373,18 @@ export default function TrackDetailPage() {
     }
 
     return tabs
-  }
+  }, [track.artist.stageName, track.detail, track.lyrics, track.title])
 
-  const handleAddTrackToPlaylist = () => {
+  const handleAddTrackToPlaylist = useCallback(() => {
     setOpenAddTrackToPlaylistPopup(true)
-  }
+  }, [])
 
   const getMoreOptions = useCallback(() => {
     let options = [
       {
         name: 'Play Next',
         method: () => {
-          dispatch(playNextAction(makeSoundList()))
+          playNextAction(makeSoundList())
         },
       },
     ]
@@ -409,11 +407,11 @@ export default function TrackDetailPage() {
 
     options.push({
       name: 'Add To Queue',
-      method: () => dispatch(addToQueueAction(makeSoundList())),
+      method: () => addToQueueAction(makeSoundList()),
     })
 
     return options
-  }, [dispatch, isLoggedIn, makeSoundList, navigate, track.album])
+  }, [isLoggedIn, makeSoundList, navigate, track.album])
 
   return (
     <Box>
@@ -481,24 +479,25 @@ export default function TrackDetailPage() {
               </Box>
             </Box>
             <Box>
-              <Button
-                variant="contained"
-                sx={{
-                  minWidth: 'fit-content',
-                  mr: '1rem',
-                  fontSize: {
-                    xs: '.8rem',
-                    sm: '1rem',
-                  },
-                }}
-                onClick={togglePlay}
-                size="large"
-              >
-                {playingListHash !== track.hash && 'Play'}
-                {isPlaying && playingListHash === track.hash && 'Pause'}
-                {!isPlaying && playingListHash === track.hash && 'Resume'}
-                {/* todo // using currentTime > 0  to display rsesume or replay */}
-              </Button>
+              <ClientOnly>
+                <Button
+                  variant="contained"
+                  sx={{
+                    minWidth: 'fit-content',
+                    mr: '1rem',
+                    fontSize: {
+                      xs: '.8rem',
+                      sm: '1rem',
+                    },
+                  }}
+                  onClick={togglePlay}
+                  size="large"
+                >
+                  {playingListHash !== track.hash && 'Play'}
+                  {isPlaying && playingListHash === track.hash && 'Pause'}
+                  {!isPlaying && playingListHash === track.hash && 'Resume'}
+                </Button>
+              </ClientOnly>
               <Heart hash={track.hash} isFavorite={track.isFavorite} />
               &nbsp; &nbsp;
               <More options={getMoreOptions()} sx={{ mr: '1rem' }} />
@@ -533,24 +532,14 @@ export default function TrackDetailPage() {
       <Tabs title="Detail Tabs" tabs={getTabs()} />
 
       <br />
-      <Suspense fallback={<p>Loading related tracks...</p>}>
-        <Await
-          resolve={trackPromise}
-          errorElement={<p>Error loading package location!</p>}
-        >
-          {(trackResolved) =>
-            trackResolved.relatedTracks.length > 0 ? (
-              <TrackScrollingList
-                category="Related Tracks"
-                tracks={trackResolved.relatedTracks}
-                browse={AppRoutes.browse.tracks}
-              />
-            ) : (
-              <></>
-            )
-          }
-        </Await>
-      </Suspense>
+
+      {track.relatedTracks.length > 0 ? (
+        <TrackScrollingList
+          category="Related Tracks"
+          tracks={track.relatedTracks}
+          browse={AppRoutes.browse.tracks}
+        />
+      ) : null}
 
       {openAddTrackToPlaylistPopup && (
         <AddTrackToPlaylist

@@ -1,21 +1,21 @@
-import type { FC } from 'react'
+import { useCallback } from 'react'
 import IconButton from '@mui/material/IconButton'
-import { useDispatch, useSelector } from 'react-redux'
 import PlayCircleOutline from '@mui/icons-material/PlayCircleOutline'
 import PauseCircleOutline from '@mui/icons-material/PauseCircleOutline'
 
 import {
+  usePlayer,
   playListAction,
   pauseListAction,
+  playSoundAction,
   resumeListAction,
   pauseSoundAction,
   resumeSoundAction,
-  playSoundAction,
-} from '~/redux/actions/playerActions'
+} from '~/hooks/usePlayer'
 import colors from '../utils/colors'
-import type { BoxStyles } from '~/interfaces/types'
-import type { SoundInterface } from '../interfaces/ListInterface'
-import type AppStateInterface from '../interfaces/AppStateInterface'
+
+import type { FC } from 'react'
+import type { BoxStyles, SoundInterface } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   icon: {
@@ -44,48 +44,41 @@ type Props = {
 }
 
 const PlayPause: FC<Props> = ({ list, sound }: Props) => {
-  const dispatch = useDispatch()
+  const {
+    playerState: { list: playingList, isPlaying, currentSound },
+  } = usePlayer()
 
-  const { playingListHash, isPlaying, currentSound } = useSelector(
-    ({ player }: AppStateInterface) => ({
-      playingListHash: player?.list?.hash,
-      isPlaying: player.isPlaying,
-      currentSound: player.currentSound,
-    })
-  )
+  const playingListHash = playingList?.hash
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     if (currentSound && list.hash === playingListHash) {
       if (sound.hash === currentSound.hash && isPlaying) {
-        // console.log('pause sound')
-        dispatch(pauseSoundAction())
+        pauseSoundAction()
       }
 
       if (sound.hash === currentSound.hash && !isPlaying) {
-        // console.log('resume sound')
-        dispatch(resumeSoundAction())
+        resumeSoundAction()
       }
 
       if (sound.hash !== currentSound.hash) {
-        // console.log('play sound')
-        dispatch(playSoundAction(sound))
+        playSoundAction(sound)
       }
     }
 
     if (list.hash !== playingListHash) {
       if (isPlaying && playingListHash === list.hash) {
-        dispatch(pauseListAction())
+        pauseListAction()
       }
 
       if (!isPlaying && playingListHash === list.hash) {
-        dispatch(resumeListAction())
+        resumeListAction()
       }
 
       if (playingListHash !== list.hash) {
-        dispatch(playListAction(list, sound))
+        playListAction(list, sound)
       }
     }
-  }
+  }, [])
 
   return currentSound ? (
     <IconButton onClick={togglePlay} sx={styles.button}>

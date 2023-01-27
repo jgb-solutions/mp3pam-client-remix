@@ -1,27 +1,20 @@
-import { useEffect } from 'react'
+import { useRef } from 'react'
 import Box from '@mui/material/Box'
-import { type FC, useRef } from 'react'
-import { useSelector } from 'react-redux'
+
+import { usePlayer } from '~/hooks/usePlayer'
+
+import type { FC, PropsWithChildren } from 'react'
+
 import type { BoxProps } from '@mui/material'
-import { useLocation } from '@remix-run/react'
 
-import type AppStateInterface from '~/interfaces/AppStateInterface'
-
-type Props = {} & BoxProps
+type Props = PropsWithChildren<{} & BoxProps>
 
 const Content: FC<Props> = (props) => {
-  const currentTrack = useSelector(
-    ({ player }: AppStateInterface) => player.currentSound
-  )
-  const { pathname } = useLocation()
+  const {
+    playerState: { currentSound: currentTrack },
+  } = usePlayer()
 
   const mainRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (mainRef.current) {
-      mainRef.current.scrollTo(0, 0)
-    }
-  }, [pathname])
 
   return (
     <Box

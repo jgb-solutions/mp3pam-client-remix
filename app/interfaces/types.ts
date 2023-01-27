@@ -1,4 +1,5 @@
 import type { BoxProps, GridProps } from '@mui/material'
+
 import type {
   fetchTracks,
   fetchAlbums,
@@ -87,3 +88,47 @@ export type SessionAccount = ReturnType<typeof getSessionDataFromAccount>
 export type SearchResults = Awaited<ReturnType<typeof doSearch>>
 export type AddArtist = Awaited<ReturnType<typeof addArtist>>
 export type AddGenre = Awaited<ReturnType<typeof addGenre>>
+
+// Player
+export enum RepeatStatus {
+  NONE = 'NONE',
+  ALL = 'ALL',
+  ONE = 'ONE',
+}
+export interface SoundInterface {
+  hash: number
+  title: string
+  image: string
+  authorName: string
+  authorHash: number
+  playUrl: string
+  type: string
+}
+
+export interface ListInterface {
+  hash: number
+  sounds: SoundInterface[]
+}
+
+export interface PlayerInterface {
+  volume: number
+  onRepeat: boolean
+  repeat: RepeatStatus
+  isPlaying: boolean
+  isShuffled: boolean
+  action: string
+  position: number
+  elapsed: string
+  duration: string
+  currentTime: number
+  currentPlayingIndex?: number
+  currentSound?: SoundInterface
+  sound?: SoundInterface
+  list?: ListInterface
+  soundList: SoundInterface[]
+  queueList: SoundInterface[]
+}
+
+export interface AppStateInterface {
+  player: PlayerInterface
+}

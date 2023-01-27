@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import type { ReactNode } from 'react'
+import { useCallback, useState } from 'react'
 import Tab from '@mui/material/Tab'
 import AppBar from '@mui/material/AppBar'
 import BaseTabs from '@mui/material/Tabs'
+
+import type { ReactNode } from 'react'
 
 interface TabPanelProps {
   children: any
@@ -38,9 +39,12 @@ export default function Tabs(props: TabsProps) {
   const { tabs, title } = props
   const [selected, setSelected] = useState(0)
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setSelected(newValue)
-  }
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<{}>, newValue: number) => {
+      setSelected(newValue)
+    },
+    []
+  )
 
   return (
     <>

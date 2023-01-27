@@ -86,12 +86,10 @@ function handleBrowserRequest(
     const cache = createEmotionCache()
 
     const MuiRemixServer = () => (
-      <CacheProvider value={cache}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <RemixServer context={remixContext} url={request.url} />
-        </ThemeProvider>
-      </CacheProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <RemixServer context={remixContext} url={request.url} />
+      </ThemeProvider>
     )
 
     const { pipe, abort } = renderToPipeableStream(<MuiRemixServer />, {

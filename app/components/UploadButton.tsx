@@ -1,6 +1,8 @@
+import { useCallback, useRef } from 'react'
 import Box from '@mui/material/Box'
-import type { ReactNode } from 'react'
 import Button from '@mui/material/Button'
+
+import type { ReactNode } from 'react'
 
 export interface ImageDimensions {
   width: number
@@ -26,7 +28,6 @@ type Props = {
 }
 
 const UploadButton = ({
-  style,
   buttonSize,
   icon,
   title,
@@ -42,13 +43,13 @@ const UploadButton = ({
   onDimensionsInvalid,
   validateImageDimensions,
 }: Props) => {
-  let input: HTMLInputElement | null
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const triggerInput = () => {
-    if (input) {
-      input.click()
+  const triggerInput = useCallback(() => {
+    if (inputRef.current) {
+      inputRef.current.click()
     }
-  }
+  }, [])
 
   const handleOnChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file: File | undefined = event.target.files?.[0]
@@ -86,30 +87,33 @@ const UploadButton = ({
 
   type PhotonImageDimensions = { width: number; height: number }
 
-  const getImageDimensions = (file: File): Promise<PhotonImageDimensions> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
+  const getImageDimensions = useCallback(
+    (file: File): Promise<PhotonImageDimensions> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
 
-      reader.onload = (readerEvt) => {
-        let image = new Image()
+        reader.onload = (readerEvt) => {
+          let image = new Image()
 
-        image.onload = (imgEvt) => {
-          const { width, height } = image
-          resolve({ width, height })
+          image.onload = (imgEvt) => {
+            const { width, height } = image
+            resolve({ width, height })
+          }
+
+          image.src = `${readerEvt.target!.result}`
+
+          reader.onerror = () => {
+            reader.abort()
+
+            reject(new DOMException('Problem parsing the file bitch.'))
+          }
         }
 
-        image.src = `${readerEvt.target!.result}`
-
-        reader.onerror = () => {
-          reader.abort()
-
-          reject(new DOMException('Problem parsing the file bitch.'))
-        }
-      }
-
-      reader.readAsDataURL(file)
-    })
-  }
+        reader.readAsDataURL(file)
+      })
+    },
+    []
+  )
 
   return (
     <Box>
@@ -124,9 +128,7 @@ const UploadButton = ({
       </Button>
       <input
         style={{ display: 'none' }}
-        ref={(inputRef) => {
-          input = inputRef
-        }}
+        ref={inputRef}
         accept={accept}
         onChange={handleOnChange}
         type="file"

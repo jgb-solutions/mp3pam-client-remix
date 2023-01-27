@@ -1,6 +1,3 @@
-export const ALL = 'all'
-export const ONE = 'one'
-export const NONE = 'none'
 export const SMALL_SCREEN_SIZE = 768
 export const MAX_AUDIO_FILE_SIZE = (sizeInMB = 128) => sizeInMB * 1000 * 1024
 export const MAX_IMG_FILE_SIZE = (sizeInMB = 1) => sizeInMB * 1000 * 1024
@@ -31,3 +28,4 @@ export const SEO_TRACK_TYPE = `music.song`
 export const SEO_ARTIST_TYPE = `music:musician`
 export const SEO_ALBUM_TYPE = `music:album`
 export const SEO_PLAYLIST_TYPE = `music.playlist`
+export const DOMAIN = `https://mp3pam.com`

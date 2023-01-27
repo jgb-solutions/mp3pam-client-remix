@@ -1,14 +1,14 @@
 import Box from '@mui/material/Box'
 import { Link } from '@remix-run/react'
-import { useSelector } from 'react-redux'
 import { IconButton } from '@mui/material'
 import type { BoxProps } from '@mui/material/Box'
 import { PauseCircleOutline, PlayCircleOutline } from '@mui/icons-material'
 
-import { PhotonImage } from './PhotonImage'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type AppStateInterface from '~/interfaces/AppStateInterface'
+import { PhotonImage } from './PhotonImage'
+import { usePlayer } from '~/hooks/usePlayer'
+
 import type { AlbumThumbnailData, BoxStyles } from '~/interfaces/types'
 
 const styles: BoxStyles = {
@@ -71,9 +71,9 @@ type Props = {
 }
 
 function AlbumThumbnail({ album, sx }: Props) {
-  const { isPlaying, list: playyingList } = useSelector(
-    ({ player }: AppStateInterface) => player
-  )
+  const {
+    playerState: { isPlaying, list: playyingList },
+  } = usePlayer()
 
   return (
     <Box>
@@ -110,7 +110,7 @@ function AlbumThumbnail({ album, sx }: Props) {
       <Box component="h3" sx={styles.title}>
         {album.title}
       </Box>
-      <Box component="p" sx={styles.details}>
+      <Box sx={styles.details}>
         <Link
           prefetch="intent"
           to={AppRoutes.artist.detailPage(album.artist.hash)}

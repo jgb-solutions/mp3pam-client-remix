@@ -1,21 +1,19 @@
 import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
+import { Link } from '@remix-run/react'
+import { withStyles } from '@mui/styles'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 
 import colors from '../utils/colors'
-import { useSelector } from 'react-redux'
-import type AppStateInterface from '../interfaces/AppStateInterface'
-import { makeSoundFromTrack } from '../utils/helpers'
-import type ListInterface from '../interfaces/ListInterface'
-import type { AlbumDetail, BoxStyles } from '~/interfaces/types'
+import { makeSoundFromTrack } from '~/utils/helpers'
+import type { AlbumDetail, BoxStyles, ListInterface } from '~/interfaces/types'
 import theme from '~/mui/theme'
 import PlayPause from './PlayPause'
 import AppRoutes from '~/app-routes'
-import { Link } from '@remix-run/react'
-import { withStyles } from '@mui/styles'
+import { usePlayer } from '~/hooks/usePlayer'
 
 const styles: BoxStyles = {
   table: {
@@ -53,9 +51,9 @@ type Props = {
 }
 
 export default function AlbumTracksTable({ album, list }: Props) {
-  const { currentSound } = useSelector(
-    (appState: AppStateInterface) => appState.player
-  )
+  const {
+    playerState: { currentSound },
+  } = usePlayer()
 
   return (
     <Table sx={styles.table} size="small">

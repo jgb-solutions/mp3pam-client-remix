@@ -391,20 +391,23 @@ export default function AlbumEditPage() {
     setTrackHashToDelete(undefined)
   }, [album.accountId, fetcher, trackHashToDelete])
 
-  const handleDeleteAlbumTrack = (hash: number) => {
+  const handleDeleteAlbumTrack = useCallback((hash: number) => {
     setTrackHashToDelete(hash)
-  }
+  }, [])
 
-  const handleTrackNumberChange = ({ trackNumber }: TrackNumberForm) => {
-    setTrackNumber(trackNumber)
+  const handleTrackNumberChange = useCallback(
+    ({ trackNumber }: TrackNumberForm) => {
+      setTrackNumber(trackNumber)
 
-    setOpenAskTrackNumberPopup(false)
-    setOpenChooseOptionsToAddPopup(true)
-  }
+      setOpenAskTrackNumberPopup(false)
+      setOpenChooseOptionsToAddPopup(true)
+    },
+    []
+  )
 
-  const handleShowAddTrackPopup = () => {
+  const handleShowAddTrackPopup = useCallback(() => {
     setOpenAskTrackNumberPopup(true)
-  }
+  }, [])
 
   return (
     <Box>

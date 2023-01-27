@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useCallback } from 'react'
 import type { FC } from 'react'
 import Box from '@mui/material/Box'
 import { Link } from '@remix-run/react'
@@ -52,7 +52,7 @@ export const PlaylistScrollingList: FC<Props> = (props) => {
   const { playlists, category, browse } = props
   const divRef = useRef<HTMLDivElement>(null)
 
-  const scroll = (dir: string) => {
+  const scroll = useCallback((dir: string) => {
     if (!divRef.current) return
 
     const distance = 400
@@ -62,7 +62,7 @@ export const PlaylistScrollingList: FC<Props> = (props) => {
     } else {
       divRef.current.scrollLeft += distance
     }
-  }
+  }, [])
 
   return (
     <Box sx={styles.container}>

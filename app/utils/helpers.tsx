@@ -1,13 +1,13 @@
-import type { SoundInterface } from '../interfaces/ListInterface'
+import type { SoundInterface } from '~/interfaces/types'
 
-export function debounce(
-  fn: () => void,
-  delay: number,
-  timeoutId: number
-): void {
-  clearTimeout(timeoutId)
+let ready = true
+
+export function debounce(fn: () => void, delay: number): void {
+  if (!ready) return
+
   setTimeout(() => {
     fn()
+    ready = true
   }, delay)
 }
 

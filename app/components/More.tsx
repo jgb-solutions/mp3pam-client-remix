@@ -1,5 +1,5 @@
 import { MoreHorizOutlined } from '@mui/icons-material'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -43,18 +43,21 @@ type Props = {
 function More({ sx = {}, options }: Props) {
   const [anchorEl, listAnchorEl] = useState(null)
 
-  const handleMenu = (event: any) => {
+  const handleMenu = useCallback((event: any) => {
     listAnchorEl(event.currentTarget)
-  }
+  }, [])
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     listAnchorEl(null)
-  }
+  }, [])
 
-  const handleClick = (method: () => void) => {
-    handleClose()
-    method()
-  }
+  const handleClick = useCallback(
+    (method: () => void) => {
+      handleClose()
+      method()
+    },
+    [handleClose]
+  )
 
   return (
     <>
