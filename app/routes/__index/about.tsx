@@ -18,9 +18,7 @@ import Logo from '~/components/Logo'
 import LogoJGB from '~/components/LogoJGB'
 
 export const headers: HeadersFunction = () => {
-  return {
-    'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=31536000',
-  }
+  return {}
 }
 
 export const meta: MetaFunction = (): HtmlMetaDescriptor => {

@@ -13,7 +13,6 @@ import Typography from '@mui/material/Typography'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 
 import {
-  shouldCache,
   getCookieSession,
   updateCookieSessionHeader,
 } from './auth/sessions.server'
@@ -45,7 +44,6 @@ export const links: LinksFunction = () => [
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
   return {
-    'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=86400',
     Vary: 'Cookie, Authorization',
     ...loaderHeaders,
   }
@@ -98,7 +96,6 @@ export const loader = async ({ request }: LoaderArgs) => {
     {
       headers: {
         ...(await updateCookieSessionHeader(session)),
-        ...(await shouldCache(request)),
       },
     }
   )
