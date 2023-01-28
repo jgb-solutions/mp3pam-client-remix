@@ -129,6 +129,11 @@ export interface PlayerInterface {
   queueList: SoundInterface[]
 }
 
+export type PlayerTimes = Pick<
+  PlayerInterface,
+  'currentTime' | 'position' | 'elapsed' | 'duration'
+>
+
 export interface AppStateInterface {
   player: PlayerInterface
 }

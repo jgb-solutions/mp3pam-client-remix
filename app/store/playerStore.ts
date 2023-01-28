@@ -1,9 +1,10 @@
+import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
 import { PAUSE } from '~/hooks/usePlayer'
 import { RepeatStatus } from '~/interfaces/types'
 
-import type { PlayerInterface } from '~/interfaces/types'
+import type { PlayerInterface, PlayerTimes } from '~/interfaces/types'
 
 const INITIAL_PLAYER_STATE: PlayerInterface = {
   volume: 80,
@@ -21,3 +22,19 @@ const INITIAL_PLAYER_STATE: PlayerInterface = {
 }
 
 export const playerAtom = atomWithStorage('playerStore', INITIAL_PLAYER_STATE)
+
+let updating = false
+
+export const updatePlayerTimesAtom = atom(
+  null,
+  async (get, set, data: PlayerTimes) => {
+    if (updating) return
+
+    setTimeout(() => {
+      set(playerAtom, { ...get(playerAtom), ...data })
+      updating = false
+    }, 2000)
+
+    updating = true
+  }
+)

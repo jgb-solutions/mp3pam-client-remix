@@ -42,12 +42,11 @@ import { PhotonImage } from './PhotonImage'
 import { TrackAction, RepeatStatus } from '~/interfaces/types'
 
 import type {
+  BoxStyles,
+  PlayerTimes,
   ListInterface,
   SoundInterface,
-  PlayerInterface,
 } from '~/interfaces/types'
-import type { BoxStyles } from '~/interfaces/types'
-import { debounce } from '~/utils/helpers'
 
 const styles: BoxStyles = {
   container: {
@@ -152,13 +151,16 @@ const styles: BoxStyles = {
   },
 }
 
+let loggedHash: number | undefined
+
 export default function Player() {
   const navigate = useNavigate()
   const playFetcher = useFetcher()
-  const { playerState: state, syncState } = usePlayer()
+  const { playerState: state, syncState, updatePlayerTimes } = usePlayer()
+  const [position, setPosition] = useState(state.position)
+  const [elapsed, setElapsed] = useState(state.elapsed)
   const audio = useRef<HTMLAudioElement>(new Audio()).current
   const [soundLoading, setSoundLoading] = useState(false)
-  const [loggedHash, setLoggedHash] = useState<number>()
 
   // Audio events for when the component first mounts
   useEffect(() => {
@@ -173,7 +175,7 @@ export default function Player() {
     if (state.currentTime > 0) {
       audio.currentTime = state.currentTime
 
-      play()
+      slowPlay()
     }
 
     emitter.on(ADD_TO_QUEUE, ({ soundList }) => {
@@ -236,8 +238,7 @@ export default function Player() {
       if (!sound) return
 
       setSoundLoading(true)
-
-      setLoggedHash(undefined)
+      loggedHash = undefined
 
       const currentPlayingIndex = findIndex(sound, state.queueList)
 
@@ -252,6 +253,7 @@ export default function Player() {
         },
         (error) => {
           console.log('failed because ' + error)
+          audio.pause()
 
           setSoundLoading(false)
           syncState({
@@ -261,6 +263,15 @@ export default function Player() {
       )
     },
     [audio, findIndex, state.currentSound, state.queueList, syncState]
+  )
+
+  const slowPlay = useCallback(
+    (sound?: SoundInterface) => {
+      setTimeout(() => {
+        play()
+      }, 200)
+    },
+    [play]
   )
 
   // play new list
@@ -300,10 +311,10 @@ export default function Player() {
   const resume = useCallback(() => {
     audio.play()
 
-    if (state.currentTime < SECONDS_TO_UPDATE_PLAY_COUNT) {
-      setLoggedHash(undefined)
+    if (audio.currentTime < SECONDS_TO_UPDATE_PLAY_COUNT) {
+      loggedHash = undefined
     }
-  }, [audio, state.currentTime])
+  }, [audio])
 
   const playNext = useCallback(
     (soundList: SoundInterface[]) => {
@@ -384,7 +395,7 @@ export default function Player() {
     if (state.isShuffled) {
       const sound = getRandomSound(sounds)
 
-      play(sound)
+      slowPlay(sound)
     } else {
       if (sounds.length > 1) {
         if (!state.currentSound) return
@@ -406,18 +417,18 @@ export default function Player() {
           currentSound: sound,
         })
 
-        play(sound)
+        slowPlay(sound)
       } else {
-        play()
+        slowPlay()
       }
     }
   }, [
-    findIndex,
-    getRandomSound,
-    play,
-    state.currentSound,
-    state.isShuffled,
     state.queueList,
+    state.isShuffled,
+    state.currentSound,
+    getRandomSound,
+    slowPlay,
+    findIndex,
     syncState,
   ])
 
@@ -449,47 +460,50 @@ export default function Player() {
   }, [findIndex, handlePlayNext, play, state])
 
   const onTimeUpdate = useCallback(() => {
+    const { currentSound } = state
     const currentTime = audio.currentTime
-    let duration = audio.duration
+    let durationNumber = audio.duration
+    const duration = durationNumber > 0 ? formatTime(durationNumber) : '0.0'
+    const elapsed = formatTime(currentTime)
+    const newPosition = (currentTime / durationNumber) * 100
 
-    const partialState: Partial<PlayerInterface> = {
-      position: (currentTime / duration) * 100,
-      elapsed: formatTime(currentTime),
-      duration: duration > 0 ? formatTime(duration) : '0.0',
+    const partialState: PlayerTimes = {
+      position: newPosition,
+      elapsed,
+      duration,
       currentTime,
     }
 
-    if (state.currentSound) {
-      const { hash } = state.currentSound
+    setPosition(newPosition)
+    setElapsed(elapsed)
 
+    if (currentSound) {
+      const { hash } = currentSound
+
+      // loggedHash = hash
       if (
         state.isPlaying &&
         !loggedHash &&
-        Math.floor(state.currentTime) === SECONDS_TO_UPDATE_PLAY_COUNT
+        Math.floor(currentTime) === SECONDS_TO_UPDATE_PLAY_COUNT
       ) {
-        setLoggedHash(hash)
+        loggedHash = hash
         updatePlayCount(hash)
       }
     }
 
-    if (state.elapsed === state.duration) {
+    updatePlayerTimes(partialState)
+
+    if (elapsed === duration) {
       onEnded()
     }
-
-    syncState(partialState)
   }, [
-    audio.currentTime,
-    audio.duration,
-    formatTime,
-    loggedHash,
+    state,
     onEnded,
-    state.currentSound,
-    state.currentTime,
-    state.duration,
-    state.elapsed,
-    state.isPlaying,
-    syncState,
+    formatTime,
+    audio.duration,
     updatePlayCount,
+    updatePlayerTimes,
+    audio.currentTime,
   ])
   const playOrResume = useCallback(() => {
     if (audio.paused && audio.currentTime > 0) {
@@ -553,11 +567,9 @@ export default function Player() {
 
       audio.currentTime = (newPosition * audio.duration) / 100
 
-      syncState({
-        position: newPosition,
-      })
+      setPosition(newPosition)
     },
-    [audio, syncState]
+    [audio]
   )
 
   const handleVolumeChange = useCallback(
@@ -715,10 +727,10 @@ export default function Player() {
             </Box>
             <Grid container alignItems={'center'}>
               <Grid item xs={1} sx={styles.time}>
-                {state.elapsed}
+                {elapsed}
               </Grid>
               <Grid item xs={10} sx={styles.slider}>
-                <Slider value={state.position} onChange={handleSeekChange} />
+                <Slider value={position} onChange={handleSeekChange} />
               </Grid>
               <Grid item xs={1} sx={styles.time} textAlign="right">
                 {state.duration}
