@@ -11,8 +11,8 @@ import Button from '@mui/material/Button'
 import LogoutIcon from '@mui/icons-material/Logout'
 
 import AppRoutes from '~/app-routes'
-import { sidebarStyles as styles } from '~/styles/sidebar-styles'
 import { useApp } from '~/hooks/useApp'
+import { sidebarStyles as styles } from '~/styles/sidebar-styles'
 
 const CreateMenu = [
   {

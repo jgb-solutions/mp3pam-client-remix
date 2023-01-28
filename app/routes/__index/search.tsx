@@ -18,7 +18,9 @@ import { getSearchParams } from '~/utils/helpers.server'
 import type { SearchResults } from '~/interfaces/types'
 
 export const getSearchTerm = () => {
-  const searchParams = new URLSearchParams(window.location.search)
+  const searchParams = new URLSearchParams(
+    (typeof window === 'undefined' ? {} : window).location?.search || ''
+  )
 
   return (searchParams.get('query') as string) || ''
 }

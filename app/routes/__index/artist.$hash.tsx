@@ -10,6 +10,7 @@ import {
   TelegramShareButton,
   WhatsappShareButton,
 } from 'react-share'
+import { useCallback } from 'react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { json } from '@remix-run/node'
@@ -19,13 +20,12 @@ import EmailIcon from '@mui/icons-material/Email'
 import ShareIcon from '@mui/icons-material/Share'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import YouTubeIcon from '@mui/icons-material/YouTube'
-import { Link, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import InstagramIcon from '@mui/icons-material/Instagram'
-import FindReplaceIcon from '@mui/icons-material/FindReplace'
 
 import {
   APP_NAME,
@@ -37,11 +37,9 @@ import theme from '~/mui/theme'
 import colors from '~/utils/colors'
 import AppRoutes from '~/app-routes'
 import Tabs from '~/components/Tabs'
-import { PhotonImage } from '~/components/PhotonImage'
+import { DOMAIN } from '~/utils/constants'
 import type { TabItem } from '~/components/Tabs'
-import FourOrFour from '~/components/FourOrFour'
-import HeaderTitle from '~/components/HeaderTitle'
-import { DOMAIN } from '~/utils/constants.server'
+import { PhotonImage } from '~/components/PhotonImage'
 import TrackThumbnail from '~/components/TrackThumbnail'
 import AlbumThumbnail from '~/components/AlbumThumbnail'
 import { fetchArtistDetail } from '~/database/requests.server'
@@ -158,12 +156,13 @@ export const loader = async ({ params }: LoaderArgs) => {
 }
 
 export default function ArtistDetailPage() {
-  const { artist } = useLoaderData<typeof loader>()
+  const { artist: art } = useLoaderData<typeof loader>()
 
-  if (!artist) return null
+  const artist = art as ArtistDetail
 
-  const getTabs = () => {
-    const url = window.location.href
+  const getTabs = useCallback(() => {
+    const url =
+      (typeof window === 'undefined' ? {} : window).location?.href || ''
     const title = `${artist.stageName} on ${APP_NAME}`
     const hashtags = `${APP_NAME} music artist share`
 
@@ -314,7 +313,7 @@ export default function ArtistDetailPage() {
     })
 
     return tabs
-  }
+  }, [artist.albums, artist.bio, artist.hash, artist.stageName, artist.tracks])
 
   return (
     <Box>

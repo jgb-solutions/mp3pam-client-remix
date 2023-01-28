@@ -7,7 +7,7 @@ import type {
   HtmlMetaDescriptor,
 } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -489,8 +489,11 @@ export default function AddTrackPage() {
   const watchArtistValue = watch('artistId')
   const watchGenreValue = watch('genreId')
 
-  const handleTrackSucessDialogClose = () => setOpenTrackSuccessDialog(false)
-  const handleAddArtistDialogClose = () => {
+  const handleTrackSucessDialogClose = useCallback(
+    () => setOpenTrackSuccessDialog(false),
+    []
+  )
+  const handleAddArtistDialogClose = useCallback(() => {
     if (!watchArtistValue || watchArtistValue === 'add-artist') {
       setValue('artistId', '')
       setError('artistId', {
@@ -500,9 +503,9 @@ export default function AddTrackPage() {
     }
 
     setOpenAddArtistDialog(false)
-  }
+  }, [setError, setValue, watchArtistValue])
 
-  const handleAddGenreDialogClose = () => {
+  const handleAddGenreDialogClose = useCallback(() => {
     if (!watchGenreValue || watchGenreValue === 'add-genre') {
       setValue('genreId', '')
       setError('genreId', {
@@ -512,17 +515,20 @@ export default function AddTrackPage() {
     }
 
     setOpenAddGenreDialog(false)
-  }
+  }, [setError, setValue, watchGenreValue])
 
-  const handleOpenInvalidFileSizeClose = () => setOpenInvalidFileSize('')
+  const handleOpenInvalidFileSizeClose = useCallback(
+    () => setOpenInvalidFileSize(''),
+    []
+  )
 
-  const handleOnArtistCreated = ({ id }: AddArtist) => {
+  const handleOnArtistCreated = useCallback(({ id }: AddArtist) => {
     setChosenArtistId(id)
-  }
+  }, [])
 
-  const handleOnGenreCreated = ({ id }: AddGenre) => {
+  const handleOnGenreCreated = useCallback(({ id }: AddGenre) => {
     setChosenGenreId(id)
-  }
+  }, [])
 
   useEffect(() => {
     if (chosenArtistId) {
@@ -557,67 +563,73 @@ export default function AddTrackPage() {
     }
   }, [audioSize, clearErrors, setValue])
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = getFile(event)
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = getFile(event)
 
-    if (!file) {
-      alert('Please choose a poster')
-      return
-    }
+      if (!file) {
+        alert('Please choose a poster')
+        return
+      }
 
-    const type: ResourceType = 'image'
+      const type: ResourceType = 'image'
 
-    const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
+      const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
 
-    fetch(`/api/account?${query}`)
-      .then((res) => res.json())
-      .then(({ signedUrl, filePath }) => {
-        uploadImg({ file, signedUrl })
-        setValue('poster', filePath)
-        clearErrors('poster')
-      })
-  }
+      fetch(`/api/account?${query}`)
+        .then((res) => res.json())
+        .then(({ signedUrl, filePath }) => {
+          uploadImg({ file, signedUrl })
+          setValue('poster', filePath)
+          clearErrors('poster')
+        })
+    },
+    [clearErrors, setValue, uploadImg]
+  )
 
-  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = getFile(event)
+  const handleAudioUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = getFile(event)
 
-    if (!file) {
-      alert('Please choose an MP3 file')
-      return
-    }
+      if (!file) {
+        alert('Please choose an MP3 file')
+        return
+      }
 
-    const type: ResourceType = 'audio'
+      const type: ResourceType = 'audio'
 
-    const query = `filename=${file.name}&type=${type}&mimeType=${file.type}`
+      const query = `filename=${file.name}&type=${type}&mimeType=${file.type}`
 
-    fetch(`/api/account?${query}`)
-      .then((res) => res.json())
-      .then(({ signedUrl, filePath }) => {
-        uploadAudio({ file, signedUrl })
-        setValue('audioName', filePath)
-        clearErrors('audioName')
-      })
-  }
+      fetch(`/api/account?${query}`)
+        .then((res) => res.json())
+        .then(({ signedUrl, filePath }) => {
+          uploadAudio({ file, signedUrl })
+          setValue('audioName', filePath)
+          clearErrors('audioName')
+        })
+    },
+    [clearErrors, setValue, uploadAudio]
+  )
 
-  const handleInvalidAudioSize = (filesize: number) => {
+  const handleInvalidAudioSize = useCallback((filesize: number) => {
     setOpenInvalidFileSize(`
   	The file size exceeds 128 MB. <br />
   	Choose another one or reduce the size to upload.
   `)
-  }
+  }, [])
 
-  const handleInvalidAudioType = (filetype: string) => {
+  const handleInvalidAudioType = useCallback((filetype: string) => {
     setOpenInvalidFileSize(`
   	You must choose an MP3 file.
   `)
-  }
+  }, [])
 
-  const handleInvalidImageSize = (filesize: number) => {
+  const handleInvalidImageSize = useCallback((filesize: number) => {
     setOpenInvalidFileSize(`
   	The file size exceeds 10 MB. <br />
   	Choose another one or reduce the size to upload.
   `)
-  }
+  }, [])
 
   useEffect(() => {
     if (trackFether.data) {

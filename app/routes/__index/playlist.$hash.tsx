@@ -10,6 +10,7 @@ import type {
   HtmlMetaDescriptor,
   LoaderArgs,
 } from '@remix-run/node'
+import { useCallback } from 'react'
 import { json } from '@remix-run/node'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -18,7 +19,6 @@ import Button from '@mui/material/Button'
 import { darken } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import ShareIcon from '@mui/icons-material/Share'
-import { useDispatch, useSelector } from 'react-redux'
 import { Link, useCatch, useLoaderData } from '@remix-run/react'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
@@ -28,34 +28,36 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import FindReplaceIcon from '@mui/icons-material/FindReplace'
 
 import {
+  usePlayer,
   playListAction,
+  playNextAction,
   pauseListAction,
   resumeListAction,
-  playNextAction,
   addToQueueAction,
-} from '~/redux/actions/playerActions'
+} from '~/hooks/usePlayer'
+import {
+  APP_NAME,
+  TWITTER_HANDLE,
+  SMALL_SCREEN_SIZE,
+  SEO_PLAYLIST_TYPE,
+} from '~/utils/constants'
+import theme from '~/mui/theme'
 import colors from '~/utils/colors'
 import More from '~/components/More'
 import Tabs from '~/components/Tabs'
-import type { TabItem } from '~/components/Tabs'
-import PlaylistTracksTable from '~/components/PlaylistTracksTable'
-import type AppStateInterface from '~/interfaces/AppStateInterface'
-import {
-  SMALL_SCREEN_SIZE,
-  APP_NAME,
-  SEO_PLAYLIST_TYPE,
-  TWITTER_HANDLE,
-} from '~/utils/constants'
-import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
-import { PhotonImage } from '~/components/PhotonImage'
+import type { TabItem } from '~/components/Tabs'
 import FourOrFour from '~/components/FourOrFour'
-import HeaderTitle from '~/components/HeaderTitle'
-import type { BoxStyles, PlaylistDetail } from '~/interfaces/types'
-import type ListInterface from '~/interfaces/ListInterface'
-import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
+import ClientOnly from '~/components/ClientOnly'
 import { DOMAIN } from '~/utils/constants.server'
+import HeaderTitle from '~/components/HeaderTitle'
+import { PhotonImage } from '~/components/PhotonImage'
 import { fetchPlaylistDetail } from '~/database/requests.server'
+import PlaylistTracksTable from '~/components/PlaylistTracksTable'
+import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
+
+import type { BoxStyles, PlaylistDetail } from '~/interfaces/types'
+import type { ListInterface } from '~/interfaces/types'
 
 const styles: BoxStyles = {
   imageContainer: {
@@ -150,27 +152,13 @@ export const loader = async ({ params }: LoaderArgs) => {
 }
 
 const PlaylistDetailPage = () => {
-  const dispatch = useDispatch()
-  const { playingListHash, isPlaying } = useSelector(
-    ({ player }: AppStateInterface) => ({
-      playingListHash: player?.list?.hash,
-      isPlaying: player.isPlaying,
-    })
-  )
-
+  const {
+    playerState: { list, isPlaying },
+  } = usePlayer()
+  const playingListHash = list?.hash
   const { playlist } = useLoaderData<typeof loader>()
-  const makeList = () => {
-    const { hash } = playlist
 
-    const list: ListInterface = {
-      hash,
-      sounds: makeSoundList(),
-    }
-
-    return list
-  }
-
-  const makeSoundList = () => {
+  const makeSoundList = useCallback(() => {
     return playlist.tracks.map(
       ({ hash, title, posterUrl, audioUrl, artist }) => ({
         hash,
@@ -182,24 +170,36 @@ const PlaylistDetailPage = () => {
         type: 'track',
       })
     )
-  }
+  }, [playlist.tracks])
 
-  const togglePlay = () => {
+  const makeList = useCallback(() => {
+    const { hash } = playlist
+
+    const list: ListInterface = {
+      hash,
+      sounds: makeSoundList(),
+    }
+
+    return list
+  }, [makeSoundList, playlist])
+
+  const togglePlay = useCallback(() => {
     if (isPlaying && playingListHash === playlist.hash) {
-      dispatch(pauseListAction())
+      pauseListAction()
     }
 
     if (!isPlaying && playingListHash === playlist.hash) {
-      dispatch(resumeListAction())
+      resumeListAction()
     }
 
     if (playingListHash !== playlist.hash) {
-      dispatch(playListAction(makeList()))
+      playListAction(makeList())
     }
-  }
+  }, [isPlaying, makeList, playingListHash, playlist.hash])
 
-  const getTabs = () => {
-    const url = window.location.href
+  const getTabs = useCallback(() => {
+    const url =
+      (typeof window === 'undefined' ? {} : window).location?.href || ''
     const title = `Listen to ${playlist.title} (playlist) by ${playlist.account.name}`
     const hashtags = `${APP_NAME} music playlist share`
     const tabs: TabItem[] = []
@@ -283,13 +283,13 @@ const PlaylistDetailPage = () => {
     })
 
     return tabs
-  }
+  }, [makeList, playlist])
 
-  const getMoreOptions = () => {
+  const getMoreOptions = useCallback(() => {
     let options = [
       {
         name: 'Play Next',
-        method: () => dispatch(playNextAction(makeSoundList())),
+        method: () => playNextAction(makeSoundList()),
       },
       // {
       //   name: 'Go To Artist',
@@ -303,11 +303,11 @@ const PlaylistDetailPage = () => {
 
     options.push({
       name: 'Add To Queue',
-      method: () => dispatch(addToQueueAction(makeSoundList())),
+      method: () => addToQueueAction(makeSoundList()),
     })
 
     return options
-  }
+  }, [makeSoundList])
 
   return playlist ? (
     <Box>
@@ -341,16 +341,18 @@ const PlaylistDetailPage = () => {
               {playlist.account.name}
             </Box>
             <Box>
-              <Button
-                sx={{ minWidth: 'fit-content', mr: '1rem' }}
-                onClick={togglePlay}
-                variant="contained"
-              >
-                {playingListHash !== playlist.hash && 'Play'}
-                {isPlaying && playingListHash === playlist.hash && 'Pause'}
-                {!isPlaying && playingListHash === playlist.hash && 'Resume'}
-                {/* todo // using currentTime > 0  to display rsesume or replay */}
-              </Button>
+              <ClientOnly>
+                <Button
+                  sx={{ minWidth: 'fit-content', mr: '1rem' }}
+                  onClick={togglePlay}
+                  variant="contained"
+                >
+                  {playingListHash !== playlist.hash && 'Play'}
+                  {isPlaying && playingListHash === playlist.hash && 'Pause'}
+                  {!isPlaying && playingListHash === playlist.hash && 'Resume'}
+                  {/* todo // using currentTime > 0  to display rsesume or replay */}
+                </Button>
+              </ClientOnly>
               <More options={getMoreOptions()} />
             </Box>
           </Box>

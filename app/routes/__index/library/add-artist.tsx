@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { json } from '@remix-run/node'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -23,25 +23,22 @@ import InstagramIcon from '@mui/icons-material/Instagram'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 import InputAdornment from '@mui/material/InputAdornment'
 
-import {
-  MAX_IMG_FILE_SIZE,
-  // MIN_SOCIAL_MEDIA_USERNAME_LENGTH,
-  // MIN_ARTIST_BIO_LENGTH,
-} from '~/utils/constants'
 import colors from '~/utils/colors'
 import AppRoutes from '~/app-routes'
-import { getFile, getHash } from '~/utils/helpers'
 import TextIcon from '~/components/TextIcon'
+import { bucket } from '~/services/s3.server'
 import ProgressBar from '~/components/ProgressBar'
-import UploadButton from '~/components/UploadButton'
 import HeaderTitle from '~/components/HeaderTitle'
+import { getFile, getHash } from '~/utils/helpers'
 import useFileUpload from '~/hooks/useFileUpload'
 import AlertDialog from '~/components/AlertDialog'
+import UploadButton from '~/components/UploadButton'
 import { withAccount } from '~/auth/sessions.server'
-import { bucket } from '~/services/s3.server'
+import { MAX_IMG_FILE_SIZE } from '~/utils/constants'
+import { addArtist } from '~/database/requests.server'
+
 import type { ResourceType } from '~/services/s3.server'
 import type { AddArtist, BoxStyles } from '~/interfaces/types'
-import { addArtist } from '~/database/requests.server'
 
 enum ArtistAction {
   AddArtist = 'addArtist',
@@ -149,37 +146,46 @@ export default function AddArtistPage() {
   const [openArtistSuccessDialog, setOpenArtistSuccessDialog] = useState(false)
   const [openInvalidFileSize, setOpenInvalidFileSize] = useState('')
 
-  const handleArtistSucessDialogClose = () => setOpenArtistSuccessDialog(false)
+  const handleArtistSucessDialogClose = useCallback(
+    () => setOpenArtistSuccessDialog(false),
+    []
+  )
 
-  const handleOpenInvalidFileSizeClose = () => setOpenInvalidFileSize('')
+  const handleOpenInvalidFileSizeClose = useCallback(
+    () => setOpenInvalidFileSize(''),
+    []
+  )
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = getFile(event)
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = getFile(event)
 
-    if (!file) {
-      alert('Please choose an MP3 file')
-      return
-    }
+      if (!file) {
+        alert('Please choose an MP3 file')
+        return
+      }
 
-    const type: ResourceType = 'image'
+      const type: ResourceType = 'image'
 
-    const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
+      const query = `filename=${file.name}&type=${type}&mimeType=${file.type}&shouldBePublic=true`
 
-    fetch(`/api/account?${query}`)
-      .then((res) => res.json())
-      .then(({ signedUrl, filePath }) => {
-        uploadImg({ file, signedUrl })
-        setValue('poster', filePath)
-        clearErrors('poster')
-      })
-  }
+      fetch(`/api/account?${query}`)
+        .then((res) => res.json())
+        .then(({ signedUrl, filePath }) => {
+          uploadImg({ file, signedUrl })
+          setValue('poster', filePath)
+          clearErrors('poster')
+        })
+    },
+    [clearErrors, setValue, uploadImg]
+  )
 
-  const handleInvalidImageSize = (filesize: number) => {
+  const handleInvalidImageSize = useCallback((filesize: number) => {
     setOpenInvalidFileSize(`
 		The file size exceeds 1 MB. <br />
 		Choose another one or reduce the size to upload.
 	`)
-  }
+  }, [])
 
   useEffect(() => {
     if (artistFetcher.data) {

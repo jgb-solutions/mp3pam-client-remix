@@ -1,21 +1,45 @@
+import Box from '@mui/material/Box'
+import { styled } from '@mui/material/styles'
+import { Link } from '@remix-run/react'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
-import Box from '@mui/material/Box'
-import { Link } from '@remix-run/react'
 
+import theme from '~/mui/theme'
 import colors from '../utils/colors'
 import PlayPause from './PlayPause'
-import { useSelector } from 'react-redux'
-import type AppStateInterface from '../interfaces/AppStateInterface'
-import type { SoundInterface } from '../interfaces/ListInterface'
-
 import AppRoutes from '~/app-routes'
+import { usePlayer } from '~/hooks/usePlayer'
 import type { BoxStyles } from '~/interfaces/types'
-import theme from '~/mui/theme'
-import { withStyles } from '@mui/styles'
+
+import type { SoundInterface } from '../interfaces/types'
+
+const PREFIX = 'QueueTable'
+
+const classes = {
+  head: `${PREFIX}-head`,
+  body: `${PREFIX}-body`,
+}
+
+const StyledTable = styled(Table)(({ theme }) => ({
+  [`& .${classes.head}`]: {
+    color: colors.grey,
+    textTransform: 'uppercase',
+    textAlign: 'left',
+    paddingLeft: 0,
+  },
+
+  [`& .${classes.body}`]: {
+    fontSize: 14,
+    color: colors.white,
+    border: 'none',
+    paddingLeft: 1,
+    paddingRight: 1,
+    textOverflow: 'ellipsis',
+  },
+}))
 
 const styles: BoxStyles = {
   table: {
@@ -30,30 +54,15 @@ const styles: BoxStyles = {
   },
 }
 
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    color: colors.grey,
-    textTransform: 'uppercase',
-    textAlign: 'left',
-    paddingLeft: 0,
-  },
-  body: {
-    fontSize: 14,
-    color: colors.white,
-    border: 'none',
-    paddingLeft: 1,
-    paddingRight: 1,
-    textOverflow: 'ellipsis',
-  },
-}))(TableCell)
+const StyledTableCell = TableCell
 
 export default function QueueTable() {
-  const { currentSound, currentPlayingIndex, queueList, list } = useSelector(
-    (appState: AppStateInterface) => appState.player
-  )
+  const {
+    playerState: { currentSound, currentPlayingIndex, queueList, list },
+  } = usePlayer()
 
   return (
-    <Table sx={styles.table} size="small">
+    <StyledTable sx={styles.table} size="small">
       <TableHead>
         <TableRow>{/* App */}</TableRow>
       </TableHead>
@@ -77,10 +86,22 @@ export default function QueueTable() {
                     queueList.length - 1 === index ? '' : '1px solid white',
                 }}
               >
-                <StyledTableCell style={{ width: '10%', minWidth: '60px' }}>
+                <StyledTableCell
+                  style={{ width: '10%', minWidth: '60px' }}
+                  classes={{
+                    head: classes.head,
+                    body: classes.body,
+                  }}
+                >
                   <PlayPause sound={sound} list={list} />
                 </StyledTableCell>
-                <StyledTableCell style={{ width: '30%', color }}>
+                <StyledTableCell
+                  style={{ width: '30%', color }}
+                  classes={{
+                    head: classes.head,
+                    body: classes.body,
+                  }}
+                >
                   <Box
                     component={Link}
                     prefetch="intent"
@@ -91,7 +112,13 @@ export default function QueueTable() {
                     {sound.title}
                   </Box>
                 </StyledTableCell>
-                <StyledTableCell style={{ width: '35%' }}>
+                <StyledTableCell
+                  style={{ width: '35%' }}
+                  classes={{
+                    head: classes.head,
+                    body: classes.body,
+                  }}
+                >
                   <Box
                     component={Link}
                     prefetch="intent"
@@ -113,6 +140,6 @@ export default function QueueTable() {
             )
           })}
       </TableBody>
-    </Table>
+    </StyledTable>
   )
 }

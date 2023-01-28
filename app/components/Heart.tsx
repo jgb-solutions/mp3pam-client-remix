@@ -7,8 +7,9 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
 import colors from '../utils/colors'
 import { useApp } from '~/hooks/useApp'
+import { TrackAction } from '~/interfaces/types'
+
 import type { BoxStyles } from '~/interfaces/types'
-import { TrackAction } from '~/routes/api/track'
 
 const styles: BoxStyles = {
   icon: {

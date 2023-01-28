@@ -4,11 +4,7 @@ import type { ActionArgs, LoaderFunction } from '@remix-run/node'
 import { db } from '~/database/db.server'
 import { getSearchParams } from '~/utils/helpers.server'
 import { authenticator } from '~/auth/auth.server'
-
-export enum TrackAction {
-  UPDATE_PLAY_COUNT = 'UPDATE_PLAY_COUNT',
-  UPDATE_FAVORITE = 'UPDATE_FAVORITE',
-}
+import { TrackAction } from '~/interfaces/types'
 
 export const loader: LoaderFunction = async () => {
   return redirect('/')

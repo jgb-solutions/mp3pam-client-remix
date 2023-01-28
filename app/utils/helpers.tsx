@@ -1,13 +1,13 @@
-import type { SoundInterface } from '../interfaces/ListInterface'
+import type { SoundInterface } from '~/interfaces/types'
 
-export function debounce(
-  fn: () => void,
-  delay: number,
-  timeoutId: number
-): void {
-  clearTimeout(timeoutId)
+let ready = true
+
+export function debounce(fn: () => void, delay: number): void {
+  if (!ready) return
+
   setTimeout(() => {
     fn()
+    ready = true
   }, delay)
 }
 
@@ -44,8 +44,8 @@ export const makeSoundFromTrack = ({
   type: 'track',
 })
 
-export const getHash = (size = 10) => {
-  return parseInt(Date.now().toString().slice(-size).replace('0', '9'))
+export const getHash = (size = 6) => {
+  return parseInt(Date.now().toString().slice(-size))
 }
 
 export const notEmpty = (array: any[]) => array.length > 0

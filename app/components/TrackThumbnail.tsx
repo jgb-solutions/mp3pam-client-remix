@@ -1,16 +1,17 @@
 import type { CSSProperties, FC } from 'react'
 import Box from '@mui/material/Box'
 import { Link } from '@remix-run/react'
-import { useSelector } from 'react-redux'
+
 import type { BoxProps } from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import PlayCircleOutline from '@mui/icons-material/PlayCircleOutline'
 import PauseCircleOutline from '@mui/icons-material/PauseCircleOutline'
 
-import { PhotonImage } from './PhotonImage'
 import colors from '../utils/colors'
 import AppRoutes from '~/app-routes'
-import type AppStateInterface from '~/interfaces/AppStateInterface'
+import { PhotonImage } from './PhotonImage'
+import { usePlayer } from '~/hooks/usePlayer'
+
 import type { BoxStyles, TrackThumbnailData } from '~/interfaces/types'
 
 const styles: BoxStyles = {
@@ -75,12 +76,11 @@ type Props = {
 }
 
 const TrackThumbnail: FC<Props> = ({ track, sx, imgStyles }: Props) => {
-  const { listHash, isPlaying } = useSelector(
-    ({ player }: AppStateInterface) => ({
-      listHash: player?.list?.hash,
-      isPlaying: player.isPlaying,
-    })
-  )
+  const {
+    playerState: { list, isPlaying },
+  } = usePlayer()
+
+  const listHash = list?.hash
 
   return (
     <Box sx={sx}>
@@ -118,7 +118,7 @@ const TrackThumbnail: FC<Props> = ({ track, sx, imgStyles }: Props) => {
         prefetch="intent"
         to={AppRoutes.artist.detailPage(track.artist.hash)}
       >
-        <Box component="p" sx={styles.details}>
+        <Box sx={styles.details}>
           <Box component="span" sx={styles.link}>
             {track.artist.stageName}
           </Box>

@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import Box from '@mui/material/Box'
 import { Link } from '@remix-run/react'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
@@ -44,7 +44,7 @@ export function TrackScrollingList(props: Props) {
   const { tracks, category, browse } = props
   const divRef = useRef<HTMLDivElement>(null)
 
-  const scroll = (dir: string) => {
+  const scroll = useCallback((dir: string) => {
     if (!divRef.current) return
 
     const distance = 400
@@ -53,7 +53,7 @@ export function TrackScrollingList(props: Props) {
     } else {
       divRef.current.scrollLeft += distance
     }
-  }
+  }, [])
 
   return (
     <Box sx={styles.container}>

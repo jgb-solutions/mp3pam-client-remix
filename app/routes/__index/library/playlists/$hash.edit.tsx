@@ -111,9 +111,9 @@ export default function PlaylistEditPage() {
     setTrackIdToDelete(undefined)
   }, [fetcher, playlist.accountId, playlist.id, trackIdToDelete])
 
-  const confirmDelete = (trackId: number) => {
+  const confirmDelete = useCallback((trackId: number) => {
     setTrackIdToDelete(trackId)
-  }
+  }, [])
 
   return (
     <Box>
