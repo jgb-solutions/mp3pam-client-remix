@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 
 import theme from '~/mui/theme'
 import AppRoutes from '~/app-routes'
+import { cache } from '~/utils/cache.server'
 import HeaderTitle from '~/components/HeaderTitle'
 import { fetchHomepage } from '~/database/requests.server'
 import { AlbumScrollingList } from '~/components/AlbumScrollingList'
@@ -13,8 +14,16 @@ import { TrackScrollingList } from '~/components/TrackScrollingList'
 import { ArtistScrollingList } from '~/components/ArtistScrollingList'
 import { PlaylistScrollingList } from '~/components/PlaylistScrollingList'
 
+import type { HomePage } from '~/interfaces/types'
+
 export const loader = async () => {
-  const home = await fetchHomepage()
+  const homepageKey = 'home'
+  let home: HomePage = cache.get(homepageKey)
+
+  if (!home) {
+    home = await fetchHomepage()
+    cache.set(homepageKey, home)
+  }
 
   return json(home)
 }
