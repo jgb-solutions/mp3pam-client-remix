@@ -27,7 +27,7 @@
     "@hookform/resolvers": "^2.9.7",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.6",
-    "@prisma/client": "^4.9.0",
+    "@prisma/client": "^4.11.0",
     "@remix-run/express": "^1.11.1",
     "@remix-run/node": "^1.11.1",
     "@remix-run/react": "^1.11.1",
@@ -72,15 +72,15 @@
     "eslint": "^8.27.0",
     "nodemon": "^2.0.19",
     "npm-run-all": "^4.1.5",
-    "prisma": "^4.9.0",
+    "prisma": "^4.11.0",
     "typescript": "^4.8.4"
   },
   "engines": {
     "node": ">=14"
   },
   "volta": {
-    "node": "16.15.1",
-    "npm": "8.5.5"
+    "node": "18.14.2",
+    "npm": "9.5.1"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

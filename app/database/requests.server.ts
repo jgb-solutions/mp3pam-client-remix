@@ -180,7 +180,11 @@ export async function fetchTracksByGenre({
     select: {
       name: true,
       slug: true,
-      _count: true,
+      _count: {
+        select: {
+          tracks: true,
+        },
+      },
       tracks: {
         take: first,
         skip: (page - 1) * first,
@@ -1051,7 +1055,11 @@ export async function fetchGenresWithTracks() {
       id: true,
       name: true,
       slug: true,
-      _count: true,
+      _count: {
+        select: {
+          tracks: true,
+        },
+      },
     },
     orderBy: [
       {
@@ -1072,7 +1080,11 @@ export async function fetchAllGenres() {
       id: true,
       name: true,
       slug: true,
-      _count: true,
+      // _count: {
+      //   select: {
+      //     tracks: true,
+      //   },
+      // },
     },
     orderBy: [
       {
@@ -1249,7 +1261,11 @@ export async function fetchMyAlbums(accountId: number) {
     select: {
       title: true,
       hash: true,
-      _count: true,
+      _count: {
+        select: {
+          tracks: true,
+        },
+      },
       accountId: true,
     },
   })
@@ -1350,7 +1366,12 @@ export async function fetchMyArtists(accountId: number) {
       hash: true,
       stageName: true,
       accountId: true,
-      _count: true,
+      _count: {
+        select: {
+          tracks: true,
+          albums: true,
+        },
+      },
     },
   })
 
