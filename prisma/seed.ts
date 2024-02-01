@@ -3002,10 +3002,10 @@ async function run() {
     ['Artist', 'Track', 'Album', 'Playlist', 'Genre'].map((table) => {
       return prisma.$queryRawUnsafe(
         'SELECT setval(pg_get_serial_sequence(\'"' +
-          table +
-          "\"', 'id'), coalesce(max(id)+1, 1), false) FROM \"" +
-          table +
-          '"'
+        table +
+        "\"', 'id'), coalesce(max(id)+1, 1), false) FROM \"" +
+        table +
+        '"'
       )
     })
   )
