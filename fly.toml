@@ -1,58 +1,38 @@
-# fly.toml file generated for mp3pam on 2022-08-10T02:24:46-04:00
+# fly.toml app configuration file generated for mp3pam on 2025-03-05T04:32:56-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-app = "mp3pam"
-kill_signal = "SIGINT"
-kill_timeout = 5
-processes = []
-
-[env]
-PORT = "8080"
-  API_URL = "https://mp3pam-api-laravel.fly.dev/graphql"
-
-  # Social Login
-  # Facebook
-  FACEBOOK_CLIENT_ID = "2586789314943948"
-  FACEBOOK_CLIENT_SECRET = "f367b5d5f345a0afa8ae7e39d1ba5afa"
-
-  SOCIAL_REDIRECT_URL = "https://mp3pam.com/auth"
-
-  # R2 / E2
-  S3_BUCKET = "files-mp3pam"
-  S3_REGION = "auto"
-  #S3_CDN = "https://e2.mp3pam.com"
-  S3_CDN="https://files.mp3pam.com"
-  S3_PUBLIC_URL = "https://pub-fd5a73e891074ad6b02da4ecdf7f9d72.r2.dev"
-  S3_ENDPOINT= "https://383befd916cc7e3167283d76d3f5d225.r2.cloudflarestorage.com"
-  #S3_PUBLIC_URL = "https://e2.mp3pam.com"
-  #S3_ENDPOINT = "https://p0l8.mi.idrivee2-21.com"
-
+app = 'mp3pam'
+primary_region = 'ewr'
+kill_signal = 'SIGINT'
+kill_timeout = '5s'
 
 [experimental]
-  allowed_public_ports = []
   auto_rollback = true
 
-[[services]]
-  http_checks = []
-  internal_port = 8080
+[build]
+
+[env]
+  API_URL = 'https://mp3pam-api-laravel.fly.dev/graphql'
+  FACEBOOK_CLIENT_ID = '2586789314943948'
+  FACEBOOK_CLIENT_SECRET = 'f367b5d5f345a0afa8ae7e39d1ba5afa'
+  S3_BUCKET = 'files-mp3pam'
+  S3_CDN = 'https://files.mp3pam.com'
+  S3_ENDPOINT = 'https://383befd916cc7e3167283d76d3f5d225.r2.cloudflarestorage.com'
+  S3_PUBLIC_URL = 'https://pub-fd5a73e891074ad6b02da4ecdf7f9d72.r2.dev'
+  S3_REGION = 'auto'
+  SOCIAL_REDIRECT_URL = 'https://mp3pam.com/auth'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 0
   processes = ["app"]
-  protocol = "tcp"
-  script_checks = []
-  [services.concurrency]
-    hard_limit = 25
-    soft_limit = 20
-    type = "connections"
 
-  [[services.ports]]
-    force_https = true
-    handlers = ["http"]
-    port = 80
-
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port = 443
-
-  [[services.tcp_checks]]
-    grace_period = "1s"
-    interval = "15s"
-    restart_limit = 0
-    timeout = "2s"
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512

@@ -43,9 +43,8 @@ authenticator.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
-      callbackURL: `${process.env.SOCIAL_REDIRECT_URL as string}/${
-        SocialsProvider.FACEBOOK
-      }/callback`,
+      callbackURL: `${process.env.SOCIAL_REDIRECT_URL as string}/${SocialsProvider.FACEBOOK
+        }/callback`,
     },
     async ({ profile: { _json: fbData, ...data } }) => {
       const email = fbData.email
@@ -126,9 +125,8 @@ authenticator.use(
     {
       clientID,
       clientSecret,
-      callbackURL: `${
-        process.env.SOCIAL_REDIRECT_URL as string
-      }/twitter/callback`,
+      callbackURL: `${process.env.SOCIAL_REDIRECT_URL as string
+        }/twitter/callback`,
       includeEmail: true,
     },
     async ({ accessToken, accessTokenSecret, profile }) => {

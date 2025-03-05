@@ -59,14 +59,14 @@ interface Photon {
   // https://i0.wp.com/s.ma.tt/files/2010/12/MCM_5875-1600x1064.jpg?w=200&filter=blurselective
   // https://i0.wp.com/s.ma.tt/files/2010/12/MCM_5875-1600x1064.jpg?w=200&filter=meanremoval
   filter?:
-    | 'negate'
-    | 'grayscale'
-    | 'sepia'
-    | 'edgedetect'
-    | 'emboss'
-    | 'blurgaussian'
-    | 'blurselective'
-    | 'meanremoval'
+  | 'negate'
+  | 'grayscale'
+  | 'sepia'
+  | 'edgedetect'
+  | 'emboss'
+  | 'blurgaussian'
+  | 'blurselective'
+  | 'meanremoval'
   // http://i0.wp.com/s.ma.tt/files/2011/06/MCM_9517-1600x1065.jpg?brightness=-40
   // http://i0.wp.com/s.ma.tt/files/2011/06/MCM_9517-1600x1065.jpg?brightness=0
   // http://i0.wp.com/s.ma.tt/files/2011/06/MCM_9517-1600x1065.jpg?brightness=80

@@ -2,6 +2,7 @@ import { PrismaClient, Prisma } from '@prisma/client'
 
 let db: PrismaClient
 
+
 declare global {
   var __db: PrismaClient | undefined
 }

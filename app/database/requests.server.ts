@@ -28,7 +28,7 @@ import { PhotonImage } from '~/components/PhotonImage'
 import { cdnUrl, getSignedDownloadUrl, publicUrl } from '~/services/s3.server'
 
 export async function fetchHomepage() {
-  const [tracks, artists, albums, playlists] = await db.$transaction([
+  const [tracks, artists, albums, playlists] = await Promise.all([
     db.track.findMany({
       take: HOMEPAGE_PER_PAGE_NUMBER,
       orderBy: [{ createdAt: 'desc' }],
@@ -45,6 +45,25 @@ export async function fetchHomepage() {
         },
       },
     }),
+    // driz.query.Track.findMany({
+    //   with: {
+    //     artist: {
+    //       columns: {
+    //         stageName: true,
+    //         hash: true,
+    //       },
+    //     },
+    //   },
+    //   limit: HOMEPAGE_PER_PAGE_NUMBER,
+    //   orderBy: [desc(Track.createdAt)],
+    //   columns: {
+    //     hash: true,
+    //     title: true,
+    //     poster: true,
+    //     imgBucket: true,
+    //   },
+    // }),
+
     db.artist.findMany({
       take: HOMEPAGE_PER_PAGE_NUMBER,
       where: {
@@ -130,8 +149,8 @@ export async function fetchHomepage() {
 
       const artistPosterUrl = poster
         ? getImageUrl({
-            resource: poster,
-          })
+          resource: poster,
+        })
         : ARTIST_DEFAULT_POSTER
 
       return {
@@ -142,8 +161,8 @@ export async function fetchHomepage() {
     albums: albums.map(({ imgBucket, cover, ...album }) => {
       const albumCoverUrl = cover
         ? getImageUrl({
-            resource: cover,
-          })
+          resource: cover,
+        })
         : ALBUM_DEFAULT_POSTER
 
       return {
@@ -230,7 +249,7 @@ export async function fetchTracksByGenre({
 }
 
 export async function fetchTrackDetail(hash: number, accountId?: number) {
-  const [track, relatedTracks] = await db.$transaction([
+  const [track, relatedTracks] = await Promise.all([
     db.track.findUnique({
       where: { hash },
       select: {
@@ -438,7 +457,7 @@ export async function addTrackToPlaylist({
 }
 
 export async function fetchAlbumDetail(hash: number) {
-  const [album, relatedAlbums] = await db.$transaction([
+  const [album, relatedAlbums] = await Promise.all([
     db.album.findUnique({
       where: { hash },
       select: {
@@ -518,8 +537,8 @@ export async function fetchAlbumDetail(hash: number) {
 
     const albumCoverUrl = albumCover
       ? getImageUrl({
-          resource: albumCover,
-        })
+        resource: albumCover,
+      })
       : ALBUM_DEFAULT_POSTER
 
     return {
@@ -536,8 +555,8 @@ export async function fetchAlbumDetail(hash: number) {
         ({ cover: albumCover, tracks, ...data }) => {
           const albumCoverUrl = albumCover
             ? getImageUrl({
-                resource: albumCover,
-              })
+              resource: albumCover,
+            })
             : ALBUM_DEFAULT_POSTER
 
           return {
@@ -556,7 +575,7 @@ export async function fetchAlbums({
   page = 1,
   first = FETCH_ALBUMS_NUMBER,
 } = {}) {
-  const [total, albums] = await db.$transaction([
+  const [total, albums] = await Promise.all([
     db.album.count(),
     db.album.findMany({
       take: first,
@@ -595,8 +614,8 @@ export async function fetchAlbums({
     data: albums.map(({ tracks, cover: albumCover, ...album }) => {
       const albumCoverUrl = albumCover
         ? getImageUrl({
-            resource: albumCover,
-          })
+          resource: albumCover,
+        })
         : ALBUM_DEFAULT_POSTER
 
       return {
@@ -613,7 +632,7 @@ export async function fetchAlbums({
 }
 
 export async function fetchArtistDetail(hash: number) {
-  const [artist, relatedArtists] = await db.$transaction([
+  const [artist, relatedArtists] = await Promise.all([
     db.artist.findUnique({
       where: { hash },
       select: {
@@ -717,8 +736,8 @@ export async function fetchArtistDetail(hash: number) {
       albums: albums.map(({ cover: albumCover, tracks, ...data }) => {
         const albumCoverUrl = albumCover
           ? getImageUrl({
-              resource: albumCover,
-            })
+            resource: albumCover,
+          })
           : ALBUM_DEFAULT_POSTER
 
         return {
@@ -732,8 +751,8 @@ export async function fetchArtistDetail(hash: number) {
 
           const artistPosterUrl = artistPoster
             ? getImageUrl({
-                resource: artistPoster,
-              })
+              resource: artistPoster,
+            })
             : ARTIST_DEFAULT_POSTER
 
           const trackPosterUrl = getImageUrl({
@@ -756,7 +775,7 @@ export async function fetchArtists({
   page = 1,
   first = FETCH_ARTISTS_NUMBER,
 } = {}) {
-  const [total, artists] = await db.$transaction([
+  const [total, artists] = await Promise.all([
     db.artist.count({
       where: {
         tracks: {
@@ -841,7 +860,7 @@ export async function deleteAlbum(hash: number) {
   if (album) {
     const trackIds = album.tracks.map((t) => t.id)
 
-    await db.$transaction([
+    await Promise.all([
       db.playlistTracks.deleteMany({
         where: {
           trackId: {
@@ -900,7 +919,7 @@ export async function deleteArtist(hash: number) {
     const trackIds = artist.tracks.map((t) => t.id)
     const albumIds = artist.albums.map((a) => a.id)
 
-    await db.$transaction([
+    await Promise.all([
       db.playlistTracks.deleteMany({
         where: {
           trackId: {
@@ -934,7 +953,7 @@ export async function deleteArtist(hash: number) {
 }
 
 export async function deletePlaylist(playlistHash: number) {
-  const [playlist] = await db.$transaction([
+  const [playlist] = await Promise.all([
     db.playlist.update({
       where: {
         hash: playlistHash,
@@ -975,7 +994,7 @@ export async function deletePlaylistTrack({
 }
 
 export async function deleteTrack(hash: number) {
-  const [track] = await db.$transaction([
+  const [track] = await Promise.all([
     db.track.update({
       where: {
         hash,
@@ -1121,7 +1140,7 @@ export async function doLogin({ email, password }: Credentials) {
 }
 
 export async function fetchManage(accountId: number) {
-  const [tracks, artists, albums, playlists] = await db.$transaction([
+  const [tracks, artists, albums, playlists] = await Promise.all([
     db.track.findMany({
       take: MANAGE_PAGE_PER_PAGE_NUMBER,
       where: {
@@ -1206,8 +1225,8 @@ export async function fetchManage(accountId: number) {
     artists: artists.map(({ imgBucket, poster, ...artist }) => {
       const artistPosterUrl = poster
         ? getImageUrl({
-            resource: poster,
-          })
+          resource: poster,
+        })
         : ARTIST_DEFAULT_POSTER
 
       return {
@@ -1218,8 +1237,8 @@ export async function fetchManage(accountId: number) {
     albums: albums.map(({ imgBucket, cover, ...album }) => {
       const albumCoverUrl = cover
         ? getImageUrl({
-            resource: cover,
-          })
+          resource: cover,
+        })
         : ALBUM_DEFAULT_POSTER
 
       return {
@@ -1358,7 +1377,7 @@ export async function fetchMyArtists(accountId: number) {
 }
 
 export async function fetchPlaylistDetail(hash: number) {
-  const [playlist, randomPlaylists] = await db.$transaction([
+  const [playlist, randomPlaylists] = await Promise.all([
     db.playlist.findUnique({
       where: { hash },
       select: {
@@ -1476,7 +1495,7 @@ export async function fetchPlaylists({
   page = 1,
   first = FETCH_PLAYLISTS_NUMBER,
 } = {}) {
-  const [total, playlists] = await db.$transaction([
+  const [total, playlists] = await Promise.all([
     db.playlist.count(),
     db.playlist.findMany({
       take: first,
@@ -1547,7 +1566,7 @@ export async function doSearch(searchTerm: string) {
   ;`,
   ])
 
-  const [tracks, artists, albums] = await db.$transaction([
+  const [tracks, artists, albums] = await Promise.all([
     db.track.findMany({
       where: {
         id: {
@@ -1612,8 +1631,8 @@ export async function doSearch(searchTerm: string) {
     artists: artists.map(({ imgBucket, poster, ...artist }) => {
       const artistPosterUrl = poster
         ? getImageUrl({
-            resource: poster,
-          })
+          resource: poster,
+        })
         : ARTIST_DEFAULT_POSTER
 
       return {
@@ -1624,8 +1643,8 @@ export async function doSearch(searchTerm: string) {
     albums: albums.map(({ imgBucket, cover, ...album }) => {
       const albumCoverUrl = cover
         ? getImageUrl({
-            resource: cover,
-          })
+          resource: cover,
+        })
         : ALBUM_DEFAULT_POSTER
 
       return {
@@ -1640,7 +1659,7 @@ export async function fetchTracks({
   page = 1,
   first = FETCH_TRACKS_NUMBER,
 } = {}) {
-  const [total, tracks] = await db.$transaction([
+  const [total, tracks] = await Promise.all([
     db.track.count(),
     db.track.findMany({
       take: first,
@@ -1752,16 +1771,16 @@ export const getSessionDataFromAccount = (account: Partial<Account>) => {
     ...accountData,
     ...(avatar && imgBucket
       ? {
-          avatarUrl: getImageUrl({
-            resource: avatar,
-            cdn: true,
-            width: 200,
-            height: 200,
-          }),
-        }
-      : {
-          avatarUrl: twitterAvatar || fbAvatar || '',
+        avatarUrl: getImageUrl({
+          resource: avatar,
+          cdn: true,
+          width: 200,
+          height: 200,
         }),
+      }
+      : {
+        avatarUrl: twitterAvatar || fbAvatar || '',
+      }),
   }
 }
 

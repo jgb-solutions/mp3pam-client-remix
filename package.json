@@ -28,7 +28,7 @@
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.8.5",
     "@mui/styles": "^5.8.7",
-    "@prisma/client": "^4.2.1",
+    "@prisma/client": "^6.4.1",
     "@remix-run/express": "^1.6.7",
     "@remix-run/node": "^1.6.7",
     "@remix-run/react": "^1.6.7",
@@ -40,7 +40,6 @@
     "eventemitter2": "^6.4.6",
     "express": "^4.18.1",
     "feed": "^4.2.2",
-    "install": "^0.13.0",
     "morgan": "^1.10.0",
     "nanoid": "^3.3.4",
     "npm": "^8.15.0",
@@ -62,6 +61,7 @@
     "zod": "^3.17.10"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.8",
     "@remix-run/dev": "^1.6.7",
     "@remix-run/eslint-config": "^1.6.7",
     "@types/bcrypt": "^5.0.0",
@@ -73,15 +73,12 @@
     "eslint": "^8.20.0",
     "nodemon": "^2.0.19",
     "npm-run-all": "^4.1.5",
-    "prisma": "^4.2.1",
-    "typescript": "^4.7.4"
+    "prisma": "^6.4.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   },
   "engines": {
-    "node": ">=14"
-  },
-  "volta": {
-    "node": "16.15.1",
-    "npm": "8.5.5"
+    "node": ">=18"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
